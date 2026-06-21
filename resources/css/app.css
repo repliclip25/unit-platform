@@ -1,0 +1,35 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    :root {
+        --brand:      #f3c531;
+        --brand-deep: #d9a91f;
+        --brand-text: #1a1404;
+        --navy:       #0a0e1a;
+        --navy-2:     #0d1220;
+        --navy-dark:  #05070d;
+        --cream:      #f4f1ea;
+        --line:       rgba(255,255,255,0.09);
+    }
+
+    html {
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+}
+
+@layer components {
+    .btn-brand {
+        @apply bg-brand text-brand-text font-semibold text-sm px-5 py-2.5 rounded-lg transition;
+        @apply hover:bg-brand-deep;
+        box-shadow: 0 0 0 0 rgba(243,197,49,0.4);
+    }
+    .btn-brand:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 20px rgba(243,197,49,0.22);
+    }
+}
