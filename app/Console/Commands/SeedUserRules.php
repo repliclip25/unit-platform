@@ -49,6 +49,8 @@ class SeedUserRules extends Command
             ]);
         }
 
-        $this->info("Seeded {$platformRules->count()} rules for user {$userId} / deployment {$dep->id}");
+        $this->line("Deployment ID: {$dep->id}");
+        $this->line("Platform rules found: {$platformRules->count()}");
+        $this->info("Done — seeded rules for user {$userId} / deployment {$dep->id}");
     }
 }
