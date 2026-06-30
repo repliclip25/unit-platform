@@ -16,7 +16,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         // Fail loudly on startup if critical env vars are missing — better than silent mid-pipeline failures
-        if ($this->app->environment('production', 'staging')) {
+        if ($this->app->environment('production', 'staging') && !$this->app->runningInConsole()) {
             $required = [
                 'APP_KEY', 'DB_PASSWORD',
                 'GMAIL_CLIENT_ID', 'GMAIL_CLIENT_SECRET', 'GMAIL_REDIRECT_URI', 'GMAIL_PUBSUB_TOPIC',
