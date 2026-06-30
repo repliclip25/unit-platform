@@ -395,7 +395,7 @@ class OnboardingController extends Controller
                     ->get();
 
                 foreach ($platformRules as $rule) {
-                    DB::table('ava_rules')->insert([
+                    DB::table('ava_rules')->insertOrIgnore([
                         'user_id'           => $userId,
                         'deployment_id'     => $depId,
                         'rule_id'           => $rule->rule_id,
