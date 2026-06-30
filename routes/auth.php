@@ -8,10 +8,14 @@ use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisteredUserController;
+use App\Http\Controllers\Auth\OAuthController;
 use App\Http\Controllers\Auth\VerifyEmailController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('guest')->group(function () {
+    Route::get('auth/{provider}', [OAuthController::class, 'redirect'])->name('oauth.redirect');
+    Route::get('auth/{provider}/callback', [OAuthController::class, 'callback'])->name('oauth.callback');
+
     Route::get('register', [RegisteredUserController::class, 'create'])
         ->name('register');
 
@@ -57,6 +61,11 @@ Route::middleware('auth')->group(function () {
     Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])
         ->name('logout');
 
-    // Gracefully handle accidental GET /logout (browser back button, cached link, etc.)
-    Route::get('logout', fn() => redirect('/'));
+    // GET /logout — clears session and logs out (escape hatch for stuck users)
+    Route::get('logout', function () {
+        auth()->logout();
+        request()->session()->invalidate();
+        request()->session()->regenerateToken();
+        return redirect('/');
+    });
 });

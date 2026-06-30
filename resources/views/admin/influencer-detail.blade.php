@@ -28,7 +28,7 @@
                     <span>{{ $influencer->audience_size }} audience</span>
                 @endif
                 <span>·</span>
-                <code class="text-xs px-2 py-0.5 rounded" style="background:var(--bg-raised);color:#f3c531">
+                <code class="text-xs px-2 py-0.5 rounded" style="background:var(--bg-raised);color:var(--text-secondary);border:1px solid var(--border)">
                     {{ url('/r/' . $influencer->slug) }}
                 </code>
             </div>
@@ -36,7 +36,7 @@
         @if($influencer->status === 'pending')
         <form action="{{ route('admin.influencers.approve', $influencer->id) }}" method="POST">
             @csrf
-            <button type="submit" class="px-4 py-2 rounded-lg text-sm font-bold" style="background:#f3c531;color:#1a1404">
+            <button type="submit" class="px-4 py-2 rounded-lg text-sm font-bold" style="background:var(--accent);color:#1a1404">
                 Approve & Activate
             </button>
         </form>
@@ -64,7 +64,7 @@
             <div class="text-xs mt-0.5" style="color:var(--text-muted)">Paid Conversions</div>
         </div>
         <div class="rounded-xl p-4" style="background:var(--bg-surface);border:1px solid var(--border-subtle)">
-            <div class="text-2xl font-bold" style="color:#f3c531">${{ number_format($stats->mrr, 2) }}</div>
+            <div class="text-2xl font-bold" style="color:var(--text-primary)">${{ number_format($stats->mrr, 2) }}</div>
             <div class="text-xs mt-0.5" style="color:var(--text-muted)">MRR Attributed</div>
         </div>
         <div class="rounded-xl p-4" style="background:var(--bg-surface);border:1px solid var(--border-subtle)">
@@ -88,7 +88,7 @@
                     </div>
                     <div class="flex justify-between">
                         <span style="color:var(--text-secondary)">Pending Payout</span>
-                        <span class="font-mono font-semibold" style="color:#f3c531">${{ number_format($stats->pending, 2) }}</span>
+                        <span class="font-mono font-semibold" style="color:var(--text-primary)">${{ number_format($stats->pending, 2) }}</span>
                     </div>
                     <div class="flex justify-between">
                         <span style="color:var(--text-secondary)">Paid Out</span>
@@ -110,7 +110,7 @@
                 <div class="mt-4">
                     <button @click="payoutOpen = !payoutOpen"
                             class="w-full py-2 rounded-lg text-sm font-bold"
-                            style="background:#f3c531;color:#1a1404">
+                            style="background:var(--accent);color:#1a1404">
                         Record Payout
                     </button>
                 </div>
@@ -183,7 +183,7 @@
                                   style="background:var(--bg-raised);color:var(--text-primary);border:1px solid var(--border-subtle)">{{ $influencer->notes }}</textarea>
                     </div>
                     <button type="submit" class="w-full py-2 rounded-lg text-sm font-bold"
-                            style="background:#f3c531;color:#1a1404">
+                            style="background:var(--accent);color:#1a1404">
                         Save Changes
                     </button>
                 </form>
@@ -203,7 +203,7 @@
                         <div class="w-20 text-xs font-mono" style="color:var(--text-muted)">{{ $m->month }}</div>
                         <div class="flex-1 rounded-full h-2" style="background:var(--bg-raised)">
                             @php $maxComm = $stats->monthly->max('commission') ?: 1; @endphp
-                            <div class="h-2 rounded-full" style="width:{{ min(100, ($m->commission/$maxComm)*100) }}%;background:#f3c531"></div>
+                            <div class="h-2 rounded-full" style="width:{{ min(100, ($m->commission/$maxComm)*100) }}%;background:var(--accent)"></div>
                         </div>
                         <div class="text-xs w-16 text-right font-mono text-green-500">${{ number_format($m->commission, 2) }}</div>
                         <div class="text-xs w-12 text-right" style="color:var(--text-muted)">{{ $m->conversions }}x</div>

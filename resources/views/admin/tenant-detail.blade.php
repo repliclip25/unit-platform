@@ -14,7 +14,7 @@
 
     $riskLevel = count($churnSignals) === 0 ? 'low'
                : (count($churnSignals) === 1 ? 'medium' : 'high');
-    $riskColor = ['low' => '#4ade80', 'medium' => '#f3c531', 'high' => '#f87171'][$riskLevel];
+    $riskColor = ['low' => '#4ade80', 'medium' => 'var(--accent-text)', 'high' => '#f87171'][$riskLevel];
 
     $ctaOptions = [
         'upgrade'   => ['label' => 'Upgrade Now →',       'url' => url('/billing')],
@@ -48,7 +48,7 @@
             <div class="w-px h-4 bg-gray-800"></div>
             <div class="flex items-center gap-3">
                 <div class="w-11 h-11 rounded-xl flex items-center justify-center text-base font-bold shrink-0"
-                     style="background:{{ $isBlocked ? 'rgba(239,68,68,0.15)' : 'rgba(243,197,49,0.15)' }};color:{{ $isBlocked ? '#fca5a5' : '#f3c531' }}">
+                     style="background:{{ $isBlocked ? 'rgba(239,68,68,0.15)' : 'var(--accent)' }};color:{{ $isBlocked ? '#f87171' : '#000000' }}">
                     {{ strtoupper(substr($tenant->name, 0, 1)) }}
                 </div>
                 <div>
@@ -59,7 +59,7 @@
                         @elseif($paidDepCount > 0)
                             <span class="text-xs px-2 py-0.5 rounded-full bg-green-900/30 text-green-400 border border-green-800/40">Subscribed</span>
                         @elseif($trialDepCount > 0)
-                            <span class="text-xs px-2 py-0.5 rounded-full bg-brand/15 text-brand border border-brand/30">Trial</span>
+                            <span class="text-xs px-2 py-0.5 rounded-full" style="background:var(--badge-balanced-bg);color:var(--badge-balanced-text);border:1px solid rgba(var(--accent-rgb),0.3)">Trial</span>
                         @endif
                         @if(count($churnSignals) > 0)
                             <span class="text-xs px-2 py-0.5 rounded-full border font-medium"
@@ -127,29 +127,29 @@
 
     {{-- ── Referral Card (Admin View) ────────────────────── --}}
     <div class="rounded-2xl overflow-hidden relative"
-         style="background:linear-gradient(135deg,#1a1404 0%,#221905 50%,#111 100%);border:1px solid rgba(243,197,49,0.2)">
+         style="background:linear-gradient(135deg,#1a1404 0%,#221905 50%,#111 100%);border:1px solid rgba(var(--accent-rgb),0.2)">
         <div class="absolute top-0 right-0 w-48 h-48 rounded-full pointer-events-none"
-             style="background:radial-gradient(circle,rgba(243,197,49,0.10) 0%,transparent 70%);transform:translate(30%,-30%)"></div>
+             style="background:radial-gradient(circle,rgba(var(--accent-rgb),0.10) 0%,transparent 70%);transform:translate(30%,-30%)"></div>
         <div class="relative px-6 py-5">
             <div class="flex items-start justify-between gap-6 flex-wrap">
 
                 {{-- Identity + source --}}
                 <div>
                     <div class="flex items-center gap-2 mb-2">
-                        <span class="text-xs font-semibold uppercase tracking-widest" style="color:#f3c531">Referral Program</span>
+                        <span class="text-xs font-semibold uppercase tracking-widest" style="color:var(--accent)">Referral Program</span>
                         @if($referredBy)
-                            <span class="text-xs px-2 py-0.5 rounded-full" style="background:rgba(243,197,49,0.12);border:1px solid rgba(243,197,49,0.25);color:#f3c531">
+                            <span class="text-xs px-2 py-0.5 rounded-full" style="background:rgba(var(--accent-rgb),0.12);border:1px solid rgba(var(--accent-rgb),0.25);color:var(--accent)">
                                 Referred by {{ $referredBy->name }}
                             </span>
                         @endif
                     </div>
                     <p class="text-white font-semibold">{{ $referralStats->converted }} paid conversion(s) · ${{ number_format($referralStats->earned, 2) }} earned · ${{ number_format($referralStats->balance, 2) }} balance</p>
                     <div class="flex items-center gap-3 mt-2">
-                        <span class="text-xs font-mono" style="color:rgba(243,197,49,0.7)">Code: {{ $referralCode }}</span>
-                        <span class="text-xs" style="color:rgba(243,197,49,0.4)">·</span>
-                        <span class="text-xs" style="color:rgba(243,197,49,0.5)">{{ $referralStats->signups }} signed up · {{ $referralStats->converted }} converted</span>
+                        <span class="text-xs font-mono" style="color:rgba(var(--accent-rgb),0.7)">Code: {{ $referralCode }}</span>
+                        <span class="text-xs" style="color:rgba(var(--accent-rgb),0.4)">·</span>
+                        <span class="text-xs" style="color:rgba(var(--accent-rgb),0.5)">{{ $referralStats->signups }} signed up · {{ $referralStats->converted }} converted</span>
                         @if($referralStats->nextTier)
-                        <span class="text-xs" style="color:rgba(243,197,49,0.5)">· {{ $referralStats->converted }}/{{ $referralStats->nextTier }} to {{ $referralStats->tierLabel }}</span>
+                        <span class="text-xs" style="color:rgba(var(--accent-rgb),0.5)">· {{ $referralStats->converted }}/{{ $referralStats->nextTier }} to {{ $referralStats->tierLabel }}</span>
                         @endif
                     </div>
                 </div>
@@ -161,24 +161,24 @@
                     <div class="flex items-center justify-between gap-4">
                         <div class="flex items-center gap-2 min-w-0">
                             <div class="w-5 h-5 rounded-md flex items-center justify-center text-xs font-bold shrink-0"
-                                 style="background:rgba(243,197,49,0.15);color:#f3c531">{{ strtoupper(substr($ref->referee_name,0,1)) }}</div>
+                                 style="background:rgba(var(--accent-rgb),0.15);color:var(--accent)">{{ strtoupper(substr($ref->referee_name,0,1)) }}</div>
                             <span class="text-white text-xs truncate">{{ $ref->referee_name }}</span>
                             <span class="text-xs shrink-0 px-1.5 py-0.5 rounded"
-                                  style="background:{{ $ref->event === 'paid_conversion' ? 'rgba(74,222,128,0.12)' : 'rgba(243,197,49,0.10)' }};color:{{ $ref->event === 'paid_conversion' ? '#4ade80' : '#f3c531' }}">
+                                  style="background:{{ $ref->event === 'paid_conversion' ? 'rgba(74,222,128,0.12)' : 'rgba(var(--accent-rgb),0.10)' }};color:{{ $ref->event === 'paid_conversion' ? '#4ade80' : 'var(--accent)' }}">
                                 {{ $ref->event === 'paid_conversion' ? 'Paid ✓' : 'Trial' }}
                             </span>
                         </div>
                         <div class="text-right shrink-0">
                             @if($ref->credit_usd > 0)
-                                <span class="text-xs font-semibold" style="color:#f3c531">+${{ number_format($ref->credit_usd,2) }}</span>
+                                <span class="text-xs font-semibold" style="color:var(--accent)">+${{ number_format($ref->credit_usd,2) }}</span>
                             @endif
-                            <span class="text-xs ml-2" style="color:rgba(243,197,49,0.4)">{{ \Carbon\Carbon::parse($ref->created_at)->format('M j') }}</span>
+                            <span class="text-xs ml-2" style="color:rgba(var(--accent-rgb),0.4)">{{ \Carbon\Carbon::parse($ref->created_at)->format('M j') }}</span>
                         </div>
                     </div>
                     @endforeach
                 </div>
                 @else
-                <p class="text-xs" style="color:rgba(243,197,49,0.4)">No referrals yet</p>
+                <p class="text-xs" style="color:rgba(var(--accent-rgb),0.4)">No referrals yet</p>
                 @endif
             </div>
         </div>
@@ -289,7 +289,7 @@
                     @php
                         $txDisplay = [
                             'completed'   => ['label'=>'Completed',    'color'=>'#4ade80'],
-                            'draft_ready' => ['label'=>'Draft Ready',  'color'=>'#f3c531'],
+                            'draft_ready' => ['label'=>'Draft Ready',  'color'=>'var(--accent)'],
                             'approved'    => ['label'=>'Approved',     'color'=>'#60a5fa'],
                             'failed'      => ['label'=>'Failed',       'color'=>'#f87171'],
                             'processing'  => ['label'=>'Processing',   'color'=>'#a78bfa'],
@@ -342,8 +342,8 @@
                         <div class="flex items-center gap-3">
                             <span class="text-gray-500 text-xs w-14 shrink-0">{{ \Carbon\Carbon::parse($mo->month.'-01')->format("M 'y") }}</span>
                             <div class="flex-1 h-5 rounded bg-gray-800 overflow-hidden relative">
-                                <div class="h-full rounded" style="width:{{ $pct }}%;background:linear-gradient(90deg,#f3c531,#d9a91f)"></div>
-                                <span class="absolute inset-0 flex items-center px-2 text-xs font-medium" style="color:{{ $pct > 25 ? '#1a1404' : '#f3c531' }}">
+                                <div class="h-full rounded" style="width:{{ $pct }}%;background:linear-gradient(90deg,var(--accent),#d9a91f)"></div>
+                                <span class="absolute inset-0 flex items-center px-2 text-xs font-medium" style="color:{{ $pct > 25 ? '#1a1404' : 'var(--accent)' }}">
                                     ${{ number_format($mo->spend,4) }}
                                 </span>
                             </div>
@@ -378,7 +378,7 @@
                 @php
                     $sections = $usageMap->groupBy('section');
                     $maxV = $usageMap->max('visits') ?: 1;
-                    $sColors = ['dashboard'=>'#f3c531','workers'=>'#4ade80','billing'=>'#60a5fa','transactions'=>'#f97316','settings'=>'#a78bfa','admin'=>'#f43f5e'];
+                    $sColors = ['dashboard'=>'var(--accent)','workers'=>'#4ade80','billing'=>'#60a5fa','transactions'=>'#f97316','settings'=>'#a78bfa','admin'=>'#f43f5e'];
                 @endphp
                 <div class="px-5 py-4 space-y-5">
                     <div class="grid grid-cols-3 md:grid-cols-6 gap-2">
@@ -622,7 +622,7 @@
                     </div>
 
                     {{-- AI Generate --}}
-                    <div class="rounded-lg px-3 py-2.5" style="background:rgba(243,197,49,0.06);border:1px solid rgba(243,197,49,0.15)">
+                    <div class="rounded-lg px-3 py-2.5" style="background:rgba(var(--accent-rgb),0.06);border:1px solid rgba(var(--accent-rgb),0.15)">
                         <p class="text-brand text-xs font-medium mb-2">✦ AI Draft</p>
                         <div class="flex gap-2">
                             <select x-model="aiGoal" class="flex-1 text-xs px-2 py-1.5 rounded border border-gray-800 bg-gray-800 text-white focus:outline-none focus:border-brand">
@@ -671,7 +671,7 @@
                                     <input type="hidden" name="cta_url"   :value="ctaUrl">
                                     <div class="flex items-center gap-2">
                                         <span class="text-gray-600 text-xs">Preview:</span>
-                                        <span class="text-xs px-3 py-1 rounded-md font-semibold" style="background:#f3c531;color:#1a1404" x-text="ctaLabel"></span>
+                                        <span class="text-xs px-3 py-1 rounded-md font-semibold" style="background:var(--accent);color:#1a1404" x-text="ctaLabel"></span>
                                     </div>
                                     <input type="text" x-model="ctaUrl" class="w-full text-xs px-2 py-1.5 rounded border border-gray-800 bg-gray-800 text-gray-400 focus:outline-none focus:border-brand font-mono">
                                 </div>

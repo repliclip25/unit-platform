@@ -20,6 +20,11 @@ class ReadEmailJob implements ShouldQueue
     public int $tries   = 3;
     public int $timeout = 90;
 
+    public function backoff(): array
+    {
+        return [30, 60, 120]; // exponential backoff in seconds between retries
+    }
+
     public function __construct(public string $txId) {}
 
     public function handle(ClaudeService $claude): void
@@ -33,9 +38,11 @@ class ReadEmailJob implements ShouldQueue
 
         $rawEmail = $input->raw['raw_email'] ?? '';
 
-        $system = 'You are Ava, UNIT\'s Subscription & Renewal Coordinator. Return valid JSON only. No extra text.';
+        $override = UnitPlatform::getPromptOverride($input->deploymentId, 'read') ?? [];
 
-        $prompt = <<<PROMPT
+        $system = $override['system'] ?? 'You are Ava, UNIT\'s Subscription & Renewal Coordinator. Return valid JSON only. No extra text.';
+
+        $defaultPrompt = <<<PROMPT
 Read the email below and explain what it means.
 
 Return valid JSON only with:
@@ -52,8 +59,12 @@ Return valid JSON only with:
 EMAIL:
 {$rawEmail}
 PROMPT;
+        $prompt = !empty($override['user'])
+            ? str_replace('{RAW_EMAIL}', $rawEmail, $override['user'])
+            : $defaultPrompt;
 
-        $output = $claude->ask($system, $prompt, $input->maxTokens('read'), $this->txId, 'read');
+        $maxTokens = $override['max_tokens'] ?? $input->maxTokens('read');
+        $output    = $claude->ask($system, $prompt, $maxTokens, $this->txId, 'read');
 
         UnitPlatform::commitOutput($this->txId, new WorkerOutput(
             stage:  'read',
@@ -71,7 +82,7 @@ PROMPT;
         if ($e instanceof BillingException) {
             UnitPlatform::setStatus($this->txId, 'blocked');
             UnitPlatform::log('ava', $this->txId, 'billing_blocked', [
-                'code' => $e->code, 'reason' => $e->getMessage(),
+                'code' => $e->billingCode, 'reason' => $e->getMessage(),
             ], 'warning');
             $this->delete(); // don't retry billing blocks
             return;
@@ -80,5 +91,9 @@ PROMPT;
         UnitPlatform::log('ava', $this->txId, 'job_failed', [
             'job' => 'ReadEmailJob', 'error' => $e->getMessage(),
         ], 'error');
+        \App\Platform\Services\UnitNotifier::adminAlert(
+            'Pipeline Job Failed: ReadEmailJob',
+            "TX: {$this->txId}\nError: {$e->getMessage()}\n\nCheck /admin/tenants for details."
+        );
     }
 }

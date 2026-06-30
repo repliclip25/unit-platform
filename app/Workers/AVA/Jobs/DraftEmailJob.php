@@ -18,6 +18,11 @@ class DraftEmailJob implements ShouldQueue
     public int $tries   = 3;
     public int $timeout = 90;
 
+    public function backoff(): array
+    {
+        return [30, 60, 120];
+    }
+
     public function __construct(public string $txId) {}
 
     public function handle(ClaudeService $claude): void
@@ -73,22 +78,41 @@ class DraftEmailJob implements ShouldQueue
 
     private function fillPlaceholders(string $tpl, array $memory, array $read, string $firstName): string
     {
+        $sanitize = fn(?string $v): string => trim(str_replace(["\r\n", "\r", "\n"], ' ', $v ?? ''));
+
         return str_replace(
             ['{{contact_first_name}}', '{{contact_name}}', '{{asset}}', '{{client}}', '{{due_date}}', '{{sender_name}}'],
-            [$firstName, $memory['primary_contact_name'] ?? '', $memory['asset'] ?? '', $memory['matched_client'] ?? '', $read['due_date_or_deadline'] ?? '', 'Franklin'],
+            [
+                $sanitize($firstName),
+                $sanitize($memory['primary_contact_name'] ?? ''),
+                $sanitize($memory['asset'] ?? ''),
+                $sanitize($memory['matched_client'] ?? ''),
+                $sanitize($read['due_date_or_deadline'] ?? ''),
+                'Franklin',
+            ],
             $tpl
         );
     }
 
     private function generateWithClaude(ClaudeService $claude, array $memory, array $classify, array $read, array $template, string $firstName, bool $lowConfidence): string
     {
+        $input   = UnitPlatform::getInput($this->txId);
+        $override = UnitPlatform::getPromptOverride($input->deploymentId, 'draft') ?? [];
+
         $lowNote = $lowConfidence
             ? "\n\nIMPORTANT: Memory match confidence is low ({$memory['confidence']}%). Keep the draft general enough to work even if the asset match is slightly off."
             : '';
 
-        $system = 'You are Ava, a professional email coordinator. Return only the email body — no subject line, no JSON, no extra text.';
+        $system = $override['system'] ?? 'You are Ava, a professional email coordinator. Return only the email body — no subject line, no JSON, no extra text.';
 
-        $prompt = <<<PROMPT
+        if ($override['user'] ?? null) {
+            $prompt = str_replace(
+                ['{FIRST_NAME}', '{ASSET}', '{CLIENT}', '{DUE_DATE}', '{CATEGORY}', '{APPROVAL_REQUIRED}', '{SENDER_NAME}', '{TEMPLATE_NAME}', '{TONE}', '{BODY_TEMPLATE}'],
+                [$firstName, $memory['asset'] ?? '', $memory['matched_client'] ?? '', $read['due_date_or_deadline'] ?? '', $classify['category'] ?? '', $template['approval_required'] ?? '', 'Franklin', $template['template_name'] ?? '', $template['tone'] ?? '', $template['body_template'] ?? ''],
+                $override['user']
+            );
+        } else {
+            $prompt = <<<PROMPT
 Write an email body using the template structure below.
 
 Template style: {$template['template_name']}
@@ -112,12 +136,19 @@ Rules:
 - Ask for approval when required
 - Return only the email body
 PROMPT;
+        }
 
-        return $claude->askForText($system, $prompt, 1024, $this->txId, 'draft');
+        return $claude->askForText($system, $prompt, $override['max_tokens'] ?? 1024, $this->txId, 'draft');
     }
 
     public function failed(\Throwable $e): void
     {
+        if ($e instanceof \App\Platform\Exceptions\BillingException) {
+            UnitPlatform::setStatus($this->txId, 'blocked');
+            UnitPlatform::log('ava', $this->txId, 'billing_blocked', ['code' => $e->billingCode, 'reason' => $e->getMessage()], 'warning');
+            $this->delete();
+            return;
+        }
         UnitPlatform::setStatus($this->txId, 'failed');
         UnitPlatform::log('ava', $this->txId, 'job_failed', [
             'job' => 'DraftEmailJob', 'error' => $e->getMessage(),

@@ -2,7 +2,10 @@
 
 namespace App\Platform\Services;
 
+use App\Http\Controllers\AdminMessagingController;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Http\Request;
 
 class InfluencerService
@@ -49,7 +52,7 @@ class InfluencerService
         DB::table('users')->where('id', $newUserId)->update(['referred_by_code' => 'inf:' . $slug]);
 
         DB::table('referral_credits')->insert([
-            'referrer_id'    => null,
+            'referrer_id'    => $influencer->id,
             'referee_id'     => $newUserId,
             'influencer_id'  => $influencer->id,
             'ref_type'       => 'influencer',
@@ -71,6 +74,16 @@ class InfluencerService
             ->orderByDesc('created_at')
             ->limit(1)
             ->update(['converted' => true]);
+
+        // Notify influencer on their very first referral signup
+        $totalSignups = DB::table('referral_credits')
+            ->where('influencer_id', $influencer->id)
+            ->where('event', 'signup')
+            ->count();
+
+        if ($totalSignups === 1) {
+            self::sendInfluencerEmail('influencer_first_signup', $influencer);
+        }
     }
 
     public static function handleConversion(int $refereeId): void
@@ -132,8 +145,24 @@ class InfluencerService
             ->where('event', 'signup')
             ->update(['status' => 'converted', 'converted_at' => now(), 'updated_at' => now()]);
 
-        // Auto-upgrade tier
+        // Notify influencer of conversion
+        $freshInfluencer = DB::table('influencers')->where('id', $influencer->id)->first();
+        self::sendInfluencerEmail('influencer_paid_conversion', $freshInfluencer, [
+            '{commission_usd}'  => '$' . number_format($commission, 2),
+            '{pending_payout}'  => '$' . number_format((float)$freshInfluencer->pending_payout, 2),
+        ]);
+
+        // Auto-upgrade tier and notify if changed
+        $tierBefore = $freshInfluencer->tier;
         self::maybeUpgradeTier($influencer->id);
+        $tierAfter = DB::table('influencers')->where('id', $influencer->id)->value('tier');
+        if ($tierAfter !== $tierBefore) {
+            $upgraded = DB::table('influencers')->where('id', $influencer->id)->first();
+            self::sendInfluencerEmail('influencer_tier_upgrade', $upgraded, [
+                '{new_tier}' => ucfirst($tierAfter),
+                '{new_rate}' => round($upgraded->commission_rate * 100) . '%',
+            ]);
+        }
     }
 
     public static function maybeUpgradeTier(int $influencerId): void
@@ -161,6 +190,26 @@ class InfluencerService
                 'tier'            => $newTier,
                 'commission_rate' => $newRate,
             ]);
+        }
+    }
+
+    private static function sendInfluencerEmail(string $key, object $influencer, array $extra = []): void
+    {
+        try {
+            $tpl = AdminMessagingController::getTemplate($key);
+            if (!$tpl) return;
+            $appUrl = config('app.url');
+            $replacements = array_merge([
+                '{name}'     => $influencer->name,
+                '{app_url}'  => $appUrl,
+                '{slug}'     => $influencer->slug,
+                '{referral_url}' => $appUrl . '/r/' . $influencer->slug,
+            ], $extra);
+            $body    = str_replace(array_keys($replacements), array_values($replacements), $tpl->body);
+            $subject = str_replace(array_keys($replacements), array_values($replacements), $tpl->subject);
+            Mail::raw($body, fn($m) => $m->to($influencer->email, $influencer->name)->subject($subject)->replyTo('hello@unit.report', $tpl->from_name));
+        } catch (\Throwable $e) {
+            Log::error("Influencer email failed [{$key}]", ['influencer_id' => $influencer->id, 'error' => $e->getMessage()]);
         }
     }
 

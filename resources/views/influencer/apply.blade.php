@@ -6,26 +6,26 @@
 <title>Influencer Partner Program — UNIT</title>
 <meta name="description" content="Earn 20–30% recurring MRR commission by promoting UNIT to license renewal and compliance teams. Apply for your vanity link and partner portal access.">
 <link rel="icon" type="image/png" href="/logo.png">
-<script>(function(){var t=localStorage.getItem('unit-theme')||'dark';document.getElementById('html-root').setAttribute('data-theme',t)})();</script>
+<script>(function(){var t=localStorage.getItem('unit-theme-v2')||'dark';document.getElementById('html-root').setAttribute('data-theme',t)})();</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@600;700;800&display=swap" rel="stylesheet">
 <style>
 :root,[data-theme="dark"]{
-  --bg:#080810;--card:rgba(12,12,20,0.9);--surf:rgba(255,255,255,0.04);--raised:rgba(255,255,255,0.07);
-  --cb:rgba(255,255,255,0.09);--line:rgba(255,255,255,0.07);--line2:rgba(255,255,255,0.13);
-  --gold:#f3c531;--gold-d:#c9920a;--glow:rgba(243,197,49,0.18);
+  --bg:#000000;--card:#212121;--surf:#1a1a1a;--raised:#2a2a2a;
+  --cb:rgba(255,255,255,0.12);--line:rgba(255,255,255,0.10);--line2:rgba(255,255,255,0.16);
+  --gold:#f1d362;--gold-d:#c9a800;--glow:rgba(241,211,98,0.18);--gold-text:#f1d362;
   --green:#22c55e;--green-bg:rgba(34,197,94,0.1);--green-border:rgba(34,197,94,0.25);
   --blue:#818cf8;--blue-bg:rgba(129,140,248,0.1);--blue-border:rgba(129,140,248,0.25);
-  --text:#f0f0f0;--t2:#b8b8b8;--t3:#7a7a8a;--t4:#4a4a5a;
+  --text:#ffffff;--t2:#cccccc;--t3:#999999;--t4:#555555;
   --fd:'Space Grotesk','Inter',sans-serif;--fb:'Inter',sans-serif;
 }
 [data-theme="light"]{
-  --bg:#F0EBE0;--card:rgba(252,250,246,0.97);--surf:rgba(0,0,0,0.03);--raised:rgba(0,0,0,0.05);
-  --cb:rgba(0,0,0,0.09);--line:rgba(0,0,0,0.07);--line2:rgba(0,0,0,0.13);
-  --gold:#c9870a;--gold-d:#a36908;--glow:rgba(201,135,10,0.15);
+  --bg:#f9f9f7;--card:#ffffff;--surf:#f0f0ee;--raised:#e2e2e0;
+  --cb:#e2e2e0;--line:#e2e2e0;--line2:#cccccc;
+  --gold:#f1d362;--gold-d:#c9a800;--glow:rgba(241,211,98,0.18);--gold-text:#7a5c00;
   --green:#16a34a;--green-bg:rgba(22,163,74,0.08);--green-border:rgba(22,163,74,0.2);
   --blue:#4f46e5;--blue-bg:rgba(79,70,229,0.08);--blue-border:rgba(79,70,229,0.2);
-  --text:#110f0c;--t2:#3a3530;--t3:#7a6e65;--t4:#b0a090;
+  --text:#000000;--t2:#1a1a1a;--t3:#555555;--t4:#999999;
 }
 *{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth}
@@ -42,13 +42,13 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:20px 4
 .back:hover{color:var(--text)}
 .tog{width:34px;height:19px;border-radius:10px;border:none;cursor:pointer;position:relative;transition:background .2s;flex-shrink:0}
 .tog::after{content:'';position:absolute;top:2.5px;left:2.5px;width:14px;height:14px;border-radius:50%;background:#fff;transition:transform .2s}
-[data-theme="dark"] .tog{background:var(--gold)}[data-theme="light"] .tog{background:#94a3b8}
+[data-theme="dark"] .tog{background:var(--gold)}[data-theme="light"] .tog{background:#cccccc}
 [data-theme="dark"] .tog::after{transform:translateX(15px)}
 
 /* HERO */
 .hero{padding:60px 0 56px;position:relative;overflow:hidden}
-.hero::before{content:'';position:absolute;top:-180px;right:-180px;width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(243,197,49,0.05) 0%,transparent 65%);pointer-events:none}
-.eyebrow{display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(243,197,49,0.28);background:rgba(243,197,49,0.06);color:var(--gold);font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:6px 14px;border-radius:100px;margin-bottom:22px}
+.hero::before{content:'';position:absolute;top:-180px;right:-180px;width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(var(--accent-rgb),0.05) 0%,transparent 65%);pointer-events:none}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(var(--accent-rgb),0.28);background:rgba(var(--accent-rgb),0.06);color:var(--gold);font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:6px 14px;border-radius:100px;margin-bottom:22px}
 .eyebrow-dot{width:6px;height:6px;border-radius:50%;background:var(--gold)}
 h1{font-family:var(--fd);font-size:52px;font-weight:800;letter-spacing:-2.5px;line-height:1.02;margin-bottom:16px;max-width:700px}
 h1 .gold{color:var(--gold)}
@@ -68,7 +68,7 @@ h1 .gold{color:var(--gold)}
 .tier-card:hover{box-shadow:0 12px 40px rgba(0,0,0,.5)}
 .tier-card.starter{border-color:rgba(34,197,94,0.25)}
 .tier-card.pro{border-color:var(--blue-border);background:linear-gradient(135deg,var(--blue-bg) 0%,var(--card) 60%)}
-.tier-card.elite{border-color:rgba(243,197,49,0.35);background:linear-gradient(135deg,rgba(243,197,49,0.06) 0%,var(--card) 60%)}
+.tier-card.elite{border-color:rgba(var(--accent-rgb),0.35);background:linear-gradient(135deg,rgba(var(--accent-rgb),0.06) 0%,var(--card) 60%)}
 .tier-icon{font-size:28px;margin-bottom:12px}
 .tier-name{font-family:var(--fd);font-size:17px;font-weight:800;margin-bottom:16px}
 .tier-card.starter .tier-name{color:var(--green)}
@@ -82,7 +82,7 @@ h1 .gold{color:var(--gold)}
 .tier-range{display:inline-block;font-size:11px;font-weight:700;padding:4px 12px;border-radius:100px;margin-bottom:16px}
 .tier-card.starter .tier-range{background:var(--green-bg);border:1px solid var(--green-border);color:var(--green)}
 .tier-card.pro .tier-range{background:var(--blue-bg);border:1px solid var(--blue-border);color:var(--blue)}
-.tier-card.elite .tier-range{background:rgba(243,197,49,0.1);border:1px solid rgba(243,197,49,0.25);color:var(--gold)}
+.tier-card.elite .tier-range{background:rgba(var(--accent-rgb),0.1);border:1px solid rgba(var(--accent-rgb),0.25);color:var(--gold)}
 .tier-perks{display:flex;flex-direction:column;gap:7px;text-align:left;margin-top:4px}
 .tier-perk{display:flex;align-items:flex-start;gap:8px;font-size:12.5px;color:var(--t2)}
 .tier-perk svg{flex-shrink:0;margin-top:1px}
@@ -98,10 +98,10 @@ h1 .gold{color:var(--gold)}
 .calc-field input,
 .calc-field select{width:100%;padding:12px 15px;border-radius:10px;border:1px solid var(--line2);background:var(--surf);color:var(--text);font-size:15px;font-weight:600;outline:none;transition:border-color .2s;font-family:var(--fd);appearance:none}
 .calc-field input:focus,
-.calc-field select:focus{border-color:rgba(243,197,49,0.5)}
-.calc-result{background:rgba(243,197,49,0.06);border:1px solid rgba(243,197,49,0.2);border-radius:14px;padding:24px;display:grid;grid-template-columns:repeat(3,1fr);gap:0;margin-top:4px}
+.calc-field select:focus{border-color:rgba(var(--accent-rgb),0.5)}
+.calc-result{background:rgba(var(--accent-rgb),0.06);border:1px solid rgba(var(--accent-rgb),0.2);border-radius:14px;padding:24px;display:grid;grid-template-columns:repeat(3,1fr);gap:0;margin-top:4px}
 .cr-item{text-align:center;padding:0 16px}
-.cr-item:not(:last-child){border-right:1px solid rgba(243,197,49,0.15)}
+.cr-item:not(:last-child){border-right:1px solid rgba(var(--accent-rgb),0.15)}
 .cr-label{font-size:11px;color:var(--t4);margin-bottom:6px;letter-spacing:.3px}
 .cr-val{font-family:var(--fd);font-size:28px;font-weight:800;color:var(--gold);letter-spacing:-1px}
 
@@ -120,7 +120,7 @@ h1 .gold{color:var(--gold)}
 .for-sec{padding:56px 0;border-top:1px solid var(--line);background:rgba(4,4,10,0.5)}
 .for-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:40px}
 .for-card{background:var(--card);border:1px solid var(--cb);border-radius:14px;padding:22px;display:flex;align-items:flex-start;gap:14px;backdrop-filter:blur(12px)}
-.for-icon{width:42px;height:42px;border-radius:11px;background:rgba(243,197,49,0.08);border:1px solid rgba(243,197,49,0.15);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.for-icon{width:42px;height:42px;border-radius:11px;background:rgba(var(--accent-rgb),0.08);border:1px solid rgba(var(--accent-rgb),0.15);display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .for-icon svg{width:19px;height:19px;color:var(--gold)}
 .for-title{font-size:14px;font-weight:700;color:var(--text);margin-bottom:4px}
 .for-desc{font-size:12.5px;color:var(--t3);line-height:1.6}
@@ -159,7 +159,7 @@ h1 .gold{color:var(--gold)}
 .form-field textarea{padding:11px 14px;border-radius:9px;border:1px solid var(--line2);background:var(--surf);color:var(--text);font-size:14px;outline:none;transition:border-color .2s;font-family:var(--fb);width:100%}
 .form-field input:focus,
 .form-field select:focus,
-.form-field textarea:focus{border-color:rgba(243,197,49,0.5);box-shadow:0 0 0 3px rgba(243,197,49,0.07)}
+.form-field textarea:focus{border-color:rgba(var(--accent-rgb),0.5);box-shadow:0 0 0 3px rgba(var(--accent-rgb),0.07)}
 .form-field input::placeholder,
 .form-field textarea::placeholder{color:var(--t4)}
 .form-field select option{background:#0c0c18;color:var(--text)}
@@ -189,7 +189,7 @@ footer .fa{color:var(--gold)}
   .how-steps::before{display:none}
   .calc-grid{grid-template-columns:1fr}
   .calc-result{grid-template-columns:1fr}
-  .cr-item{border-right:none!important;border-bottom:1px solid rgba(243,197,49,0.15);padding:14px 0}
+  .cr-item{border-right:none!important;border-bottom:1px solid rgba(var(--accent-rgb),0.15);padding:14px 0}
   .cr-item:last-child{border-bottom:none}
   h1{font-size:36px;letter-spacing:-1.5px}
 }
@@ -200,6 +200,16 @@ footer .fa{color:var(--gold)}
   .sec-h{font-size:26px}
   .form-row{grid-template-columns:1fr}
 }
+/* Light theme — gold text → dark amber, gold bg icons → yellow with black icons */
+[data-theme="light"] .brand{color:var(--gold-text)!important}
+[data-theme="light"] .eyebrow{color:var(--gold-text)!important;border-color:rgba(122,92,0,0.25)!important;background:rgba(122,92,0,0.06)!important}
+[data-theme="light"] h1 .gold{color:var(--gold-text)!important}
+[data-theme="light"] .sec-label{color:var(--gold-text)!important}
+[data-theme="light"] .htrust svg{color:var(--gold-text)!important}
+[data-theme="light"] .tier-card.elite{border-color:rgba(122,92,0,0.3)!important}
+[data-theme="light"] .tier-card.elite .tier-name{color:var(--gold-text)!important}
+[data-theme="light"] .tier-card.elite .tier-pct{color:var(--gold-text)!important}
+[data-theme="light"] .tier-card.elite .tier-range{background:rgba(122,92,0,0.08)!important;border-color:rgba(122,92,0,0.2)!important;color:var(--gold-text)!important}
 </style>
 </head>
 <body>
@@ -600,11 +610,11 @@ footer .fa{color:var(--gold)}
 </footer>
 
 <script>
-(function(){var t=localStorage.getItem('unit-theme')||'dark';document.getElementById('html-root').setAttribute('data-theme',t)})();
+(function(){var t=localStorage.getItem('unit-theme-v2')||'dark';document.getElementById('html-root').setAttribute('data-theme',t)})();
 document.getElementById('tog').addEventListener('click',function(){
   var n=document.getElementById('html-root').getAttribute('data-theme')==='dark'?'light':'dark';
   document.getElementById('html-root').setAttribute('data-theme',n);
-  localStorage.setItem('unit-theme',n);
+  localStorage.setItem('unit-theme-v2',n);
 });
 
 function calcEarnings(){

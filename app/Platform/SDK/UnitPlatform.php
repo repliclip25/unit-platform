@@ -30,6 +30,24 @@ final class UnitPlatform
         'draft'    => 'draft_output',
     ];
 
+    // ── Transaction status → (stage_key, event) for stage log ────────────
+    private const STATUS_STAGE_MAP = [
+        'queued'        => ['stage' => 'filter',   'event' => 'completed'],
+        'ingesting'     => ['stage' => 'ingest',   'event' => 'started'],
+        'reading'       => ['stage' => 'read',     'event' => 'started'],
+        'classifying'   => ['stage' => 'classify', 'event' => 'started'],
+        'memory_lookup' => ['stage' => 'memory',   'event' => 'started'],
+        'logging'       => ['stage' => 'log',      'event' => 'started'],
+        'templating'    => ['stage' => 'template', 'event' => 'started'],
+        'drafting'      => ['stage' => 'draft',    'event' => 'started'],
+        'pushing'       => ['stage' => 'push',     'event' => 'started'],
+        'draft_ready'   => ['stage' => 'push',     'event' => 'completed'],
+        'sent'          => ['stage' => 'push',     'event' => 'completed'],
+        'approved'      => ['stage' => 'push',     'event' => 'completed'],
+        'failed'        => ['stage' => null,        'event' => 'failed'],
+        'blocked'       => ['stage' => null,        'event' => 'failed'],
+    ];
+
     // ─────────────────────────────────────────────────────────────────────
     // INPUT — build the full context package for a worker job
     // ─────────────────────────────────────────────────────────────────────
@@ -76,7 +94,10 @@ final class UnitPlatform
 
         $tenantEmail = DB::table('users')->where('id', $userId)->value('email');
 
-        $queue = $dep ? "{$dep->worker_slug}-{$dep->id}" : 'ava';
+        // Queue routing: worker-type queues, not per-deployment queues.
+        // Tenant isolation is at the job level (deployment_id + user_id in payload).
+        // _queue in raw_input allows explicit override (e.g. 'fast-track' for onboarding tests).
+        $queue = $rawInput['_queue'] ?? ($slug ?: 'default');
 
         // Per-stage pipeline config — stored on the deployment, editable from UI
         $defaultConfig = [
@@ -183,12 +204,13 @@ final class UnitPlatform
             $scope = $layer['scope'] ?? 'user';
             $key   = $table; // memory key matches table name
 
+            $softDelete = in_array($table, ['clients', 'contacts', 'assets']);
             $memory[$key] = match ($scope) {
-                'user'             => DB::table($table)->where('user_id', $userId)->get()->toArray(),
-                'user+worker_slug' => DB::table($table)->where('user_id', $userId)->where('worker_slug', $slug)->get()->toArray(),
-                'deployment'       => $depId ? DB::table($table)->where('deployment_id', $depId)->get()->toArray() : [],
-                'global'           => DB::table($table)->get()->toArray(),
-                default            => DB::table($table)->where('user_id', $userId)->get()->toArray(),
+                'user'             => DB::table($table)->where('user_id', $userId)->when($softDelete, fn($q) => $q->whereNull('deleted_at'))->get()->toArray(),
+                'user+worker_slug' => DB::table($table)->where('user_id', $userId)->where('worker_slug', $slug)->when($softDelete, fn($q) => $q->whereNull('deleted_at'))->get()->toArray(),
+                'deployment'       => $depId ? DB::table($table)->where('deployment_id', $depId)->when($softDelete, fn($q) => $q->whereNull('deleted_at'))->get()->toArray() : [],
+                'global'           => DB::table($table)->when($softDelete, fn($q) => $q->whereNull('deleted_at'))->get()->toArray(),
+                default            => DB::table($table)->where('user_id', $userId)->when($softDelete, fn($q) => $q->whereNull('deleted_at'))->get()->toArray(),
             };
         }
 
@@ -208,22 +230,145 @@ final class UnitPlatform
             $update[$col] = json_encode($output->data, JSON_INVALID_UTF8_SUBSTITUTE);
         }
 
-        if ($output->category !== null)    $update['category']       = $output->category;
-        if ($output->priority !== null)    $update['priority']       = $output->priority;
+        if ($output->category !== null)     $update['category']       = $output->category;
+        if ($output->priority !== null)     $update['priority']       = $output->priority;
         if ($output->gmailDraftId !== null) $update['gmail_draft_id'] = $output->gmailDraftId;
 
         DB::table('transactions')->where('tx_id', $txId)->update($update);
+
+        // Mark stage completed in the stage log with duration
+        self::logStageCompleted($txId, $output->stage);
     }
 
     // ─────────────────────────────────────────────────────────────────────
-    // STATUS — lightweight status-only update
+    // STATUS — lightweight status-only update (also drives stage log)
     // ─────────────────────────────────────────────────────────────────────
 
     public static function setStatus(string $txId, string $status): void
     {
-        DB::table('transactions')
+        $mapped = self::STATUS_STAGE_MAP[$status] ?? null;
+        $currentStage = $mapped ? $mapped['stage'] : null;
+
+        $txUpdate = ['status' => $status, 'updated_at' => now()];
+        if ($currentStage) {
+            $txUpdate['current_stage'] = $currentStage;
+        }
+
+        DB::table('transactions')->where('tx_id', $txId)->update($txUpdate);
+
+        if (!$mapped) return;
+
+        $tx = DB::table('transactions')->where('tx_id', $txId)
+            ->select('deployment_id', 'user_id', 'worker_slug', 'current_stage')
+            ->first();
+
+        $stageKey = $mapped['stage'] ?? $tx?->current_stage;
+        if (!$stageKey) return;
+
+        $event = $mapped['event'];
+
+        try {
+            if ($event === 'started') {
+                DB::table('transaction_stage_log')->insert([
+                    'tx_id'         => $txId,
+                    'deployment_id' => $tx?->deployment_id,
+                    'user_id'       => $tx?->user_id,
+                    'worker_slug'   => $tx?->worker_slug,
+                    'stage_key'     => $stageKey,
+                    'event'         => 'started',
+                    'attempt'       => self::currentAttempt($txId, $stageKey),
+                    'created_at'    => now(),
+                ]);
+            } elseif ($event === 'completed') {
+                self::logStageCompleted($txId, $stageKey);
+            } elseif ($event === 'failed') {
+                self::logStageFailed($txId, $stageKey, $status);
+            }
+        } catch (\Throwable $e) {
+            Log::warning('StageLog write failed', ['tx_id' => $txId, 'error' => $e->getMessage()]);
+        }
+    }
+
+    // ─────────────────────────────────────────────────────────────────────
+    // STAGE LOG HELPERS — internal only
+    // ─────────────────────────────────────────────────────────────────────
+
+    private static function logStageCompleted(string $txId, string $stageKey): void
+    {
+        try {
+            $started = DB::table('transaction_stage_log')
+                ->where('tx_id', $txId)
+                ->where('stage_key', $stageKey)
+                ->where('event', 'started')
+                ->latest('id')
+                ->first();
+
+            $durationMs = $started
+                ? max(0, (int) \Carbon\Carbon::parse($started->created_at)->diffInMilliseconds(now()))
+                : null;
+
+            $tx = DB::table('transactions')->where('tx_id', $txId)
+                ->select('deployment_id', 'user_id', 'worker_slug')
+                ->first();
+
+            DB::table('transaction_stage_log')->insert([
+                'tx_id'         => $txId,
+                'deployment_id' => $tx?->deployment_id,
+                'user_id'       => $tx?->user_id,
+                'worker_slug'   => $tx?->worker_slug,
+                'stage_key'     => $stageKey,
+                'event'         => 'completed',
+                'duration_ms'   => $durationMs,
+                'attempt'       => self::currentAttempt($txId, $stageKey),
+                'created_at'    => now(),
+            ]);
+        } catch (\Throwable $e) {
+            Log::warning('StageLog completed write failed', ['tx_id' => $txId, 'error' => $e->getMessage()]);
+        }
+    }
+
+    private static function logStageFailed(string $txId, string $stageKey, string $errorSummary = 'failed'): void
+    {
+        try {
+            $started = DB::table('transaction_stage_log')
+                ->where('tx_id', $txId)
+                ->where('stage_key', $stageKey)
+                ->where('event', 'started')
+                ->latest('id')
+                ->first();
+
+            $durationMs = $started
+                ? max(0, (int) \Carbon\Carbon::parse($started->created_at)->diffInMilliseconds(now()))
+                : null;
+
+            $tx = DB::table('transactions')->where('tx_id', $txId)
+                ->select('deployment_id', 'user_id', 'worker_slug')
+                ->first();
+
+            DB::table('transaction_stage_log')->insert([
+                'tx_id'         => $txId,
+                'deployment_id' => $tx?->deployment_id,
+                'user_id'       => $tx?->user_id,
+                'worker_slug'   => $tx?->worker_slug,
+                'stage_key'     => $stageKey,
+                'event'         => 'failed',
+                'duration_ms'   => $durationMs,
+                'error_summary' => $errorSummary,
+                'attempt'       => self::currentAttempt($txId, $stageKey),
+                'created_at'    => now(),
+            ]);
+        } catch (\Throwable $e) {
+            Log::warning('StageLog failed write failed', ['tx_id' => $txId, 'error' => $e->getMessage()]);
+        }
+    }
+
+    private static function currentAttempt(string $txId, string $stageKey): int
+    {
+        return (int) DB::table('transaction_stage_log')
             ->where('tx_id', $txId)
-            ->update(['status' => $status, 'updated_at' => now()]);
+            ->where('stage_key', $stageKey)
+            ->where('event', 'started')
+            ->count() + 1;
     }
 
     // ─────────────────────────────────────────────────────────────────────
@@ -262,6 +407,29 @@ final class UnitPlatform
                 'updated_at'    => now(),
             ]));
         }
+    }
+
+    // ─────────────────────────────────────────────────────────────────────
+    // PROMPT OVERRIDES — per-deployment prompt tuning
+    // ─────────────────────────────────────────────────────────────────────
+
+    public static function getPromptOverride(int $deploymentId, string $stageKey): ?array
+    {
+        if (!$deploymentId) return null;
+
+        $row = DB::table('deployment_prompt_overrides')
+            ->where('deployment_id', $deploymentId)
+            ->where('stage_key', $stageKey)
+            ->first();
+
+        if (!$row) return null;
+
+        return array_filter([
+            'system'     => $row->system_prompt ?: null,
+            'user'       => $row->user_prompt   ?: null,
+            'model'      => $row->model         ?: null,
+            'max_tokens' => $row->max_tokens    ?: null,
+        ], fn($v) => $v !== null);
     }
 
     // ─────────────────────────────────────────────────────────────────────
@@ -344,7 +512,7 @@ final class UnitPlatform
         $recordId = null;
 
         if ($table === 'contacts' && !empty($safe['email'])) {
-            $existing = DB::table('contacts')
+            $existing = DB::table('contacts')->whereNull('deleted_at')
                 ->where('user_id', $userId)
                 ->where('email', $safe['email'])
                 ->first();
@@ -363,6 +531,7 @@ final class UnitPlatform
         } elseif ($table === 'clients' && !empty($safe['name'])) {
             $existing = DB::table('clients')
                 ->where('user_id', $userId)
+                ->whereNull('deleted_at')
                 ->whereRaw('LOWER(name) = ?', [strtolower($safe['name'])])
                 ->first();
 
@@ -380,6 +549,7 @@ final class UnitPlatform
         } elseif ($table === 'assets' && !empty($safe['name'])) {
             $existing = DB::table('assets')
                 ->where('user_id', $userId)
+                ->whereNull('deleted_at')
                 ->whereRaw('LOWER(name) = ?', [strtolower($safe['name'])])
                 ->first();
 

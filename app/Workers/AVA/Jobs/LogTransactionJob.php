@@ -56,6 +56,12 @@ class LogTransactionJob implements ShouldQueue
 
     public function failed(\Throwable $e): void
     {
+        if ($e instanceof \App\Platform\Exceptions\BillingException) {
+            UnitPlatform::setStatus($this->txId, 'blocked');
+            UnitPlatform::log('ava', $this->txId, 'billing_blocked', ['code' => $e->billingCode, 'reason' => $e->getMessage()], 'warning');
+            $this->delete();
+            return;
+        }
         UnitPlatform::setStatus($this->txId, 'failed');
         UnitPlatform::log('ava', $this->txId, 'job_failed', [
             'job' => 'LogTransactionJob', 'error' => $e->getMessage(),

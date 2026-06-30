@@ -6,7 +6,133 @@
         <div class="mb-4 bg-green-900 border border-green-700 text-green-200 rounded-xl px-5 py-3 text-sm">{{ session('success') }}</div>
     @endif
 
-    @php $config = json_decode($dep->config, true) ?? []; @endphp
+    @php
+        $config       = json_decode($dep->config, true) ?? [];
+        $coverImg     = $registryRow?->cover_image   ? asset('storage/' . $registryRow->cover_image)   : null;
+        $profileImg   = $registryRow?->profile_image ? asset('storage/' . $registryRow->profile_image) : null;
+        $mediaColor   = $registryRow ? (json_decode($registryRow->media ?? '{}', true)['color'] ?? '#f1d362') : '#f1d362';
+        $mediaQuote   = $registryRow ? (json_decode($registryRow->media ?? '{}', true)['quote'] ?? '') : '';
+        $rawGallery   = json_decode($registryRow?->gallery ?? '[]', true) ?? [];
+        $galleryItems = array_values(array_filter($rawGallery, fn($g) => !in_array($g['type']??'', ['profile','cover'])));
+    @endphp
+
+    {{-- ── Worker Hero ──────────────────────────────────────────────────────── --}}
+    @if($coverImg)
+    <div style="position:relative;height:200px;border-radius:16px;overflow:hidden;margin-bottom:20px">
+        <img src="{{ $coverImg }}" alt="{{ $dep->name }}"
+             style="width:100%;height:100%;object-fit:cover;object-position:center top;display:block">
+        <div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,0) 30%,rgba(0,0,0,.8) 100%)"></div>
+        {{-- Worker identity over cover --}}
+        <div style="position:absolute;bottom:0;left:0;right:0;padding:18px 20px;display:flex;align-items:flex-end;gap:14px">
+            @if($profileImg)
+            <img src="{{ $profileImg }}" alt="{{ $dep->name }}"
+                 style="width:60px;height:60px;border-radius:14px;object-fit:cover;border:3px solid rgba(255,255,255,.15);flex-shrink:0;box-shadow:0 4px 20px rgba(0,0,0,.5)">
+            @endif
+            <div style="flex:1;min-width:0">
+                <p style="font-size:20px;font-weight:800;color:#fff;line-height:1.2;text-shadow:0 2px 8px rgba(0,0,0,.6)">{{ $dep->name }}</p>
+                @if($mediaQuote)
+                <p style="font-size:12px;color:rgba(255,255,255,.7);margin-top:3px;font-style:italic">"{{ $mediaQuote }}"</p>
+                @endif
+            </div>
+            <span style="font-size:11px;font-weight:700;padding:4px 12px;border-radius:20px;flex-shrink:0;
+                background:rgba(0,0,0,.5);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.15);
+                color:{{ $dep->status === 'active' ? '#4ade80' : '#fbbf24' }}">
+                {{ $dep->status === 'active' ? '● Active' : '⏸ Paused' }}
+            </span>
+        </div>
+    </div>
+    @endif
+
+    {{-- ── Gallery ─────────────────────────────────────────────────────────── --}}
+    @if(!empty($galleryItems))
+    <div style="margin-bottom:24px">
+        <p style="font-size:11px;font-weight:700;letter-spacing:.07em;color:var(--text-muted);text-transform:uppercase;margin-bottom:10px">Worker in Action</p>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px">
+        @foreach($galleryItems as $gi => $gitem)
+        @php
+            $isYt = in_array($gitem['type']??'', ['youtube_intro','youtube_pipeline']);
+            $isFileVideo = !$isYt && ($gitem['kind']??'') === 'file' && preg_match('/\.(mp4|mov|webm)$/i', $gitem['path']??'');
+            if ($isYt) {
+                preg_match('/(?:v=|\/embed\/|youtu\.be\/)([a-zA-Z0-9_-]{11})/', $gitem['url']??'', $ytm);
+                $ytId = $ytm[1] ?? '';
+                $thumb = "https://img.youtube.com/vi/{$ytId}/mqdefault.jpg";
+            } else {
+                $gUrl = asset('storage/' . ($gitem['path']??''));
+            }
+        @endphp
+        <div style="border-radius:12px;overflow:hidden;position:relative;height:140px;cursor:pointer;border:1px solid var(--border)" onclick="openDetailGallery({{ $gi }})">
+            @if($isYt)
+            <img src="{{ $thumb }}" alt="{{ $gitem['caption'] ?? '' }}" style="width:100%;height:100%;object-fit:cover;display:block">
+            <div style="position:absolute;inset:0;background:rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center">
+                <span style="width:40px;height:40px;background:#f00;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;color:#fff">▶</span>
+            </div>
+            @elseif($isFileVideo)
+            <video src="{{ $gUrl }}" style="width:100%;height:100%;object-fit:cover;display:block" muted preload="metadata"></video>
+            <div style="position:absolute;inset:0;background:rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center">
+                <span style="font-size:32px;opacity:.9">▶</span>
+            </div>
+            @else
+            <img src="{{ $gUrl }}" alt="{{ $gitem['caption'] ?? '' }}" style="width:100%;height:100%;object-fit:cover;display:block">
+            @endif
+            @if(!empty($gitem['caption']))
+            <div style="position:absolute;bottom:0;left:0;right:0;background:linear-gradient(to top,rgba(0,0,0,.8),transparent);padding:8px 10px 6px">
+                <p style="font-size:11px;color:#fff">{{ $gitem['caption'] }}</p>
+            </div>
+            @endif
+        </div>
+        @endforeach
+        </div>
+    </div>
+
+    {{-- Detail page lightbox --}}
+    <div id="detail-gallery-lb" onclick="if(event.target===this)closeDetailGallery()"
+         style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:9999;align-items:center;justify-content:center;flex-direction:column">
+        <button onclick="closeDetailGallery()" style="position:absolute;top:16px;right:20px;background:none;border:none;color:#fff;font-size:28px;cursor:pointer;opacity:.7">×</button>
+        <button onclick="detailGalleryPrev()" style="position:absolute;left:16px;top:50%;transform:translateY(-50%);background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#fff;font-size:22px;width:44px;height:44px;border-radius:50%;cursor:pointer">‹</button>
+        <button onclick="detailGalleryNext()" style="position:absolute;right:16px;top:50%;transform:translateY(-50%);background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#fff;font-size:22px;width:44px;height:44px;border-radius:50%;cursor:pointer">›</button>
+        <div id="detail-lb-media" style="max-width:90vw;max-height:80vh;display:flex;align-items:center;justify-content:center"></div>
+        <p id="detail-lb-caption" style="color:rgba(255,255,255,.65);font-size:13px;margin-top:14px;text-align:center"></p>
+        <div id="detail-lb-dots" style="display:flex;gap:6px;margin-top:12px"></div>
+    </div>
+    <script>
+    const _detailGallery = @json($galleryItems);
+    let _detailIdx = 0;
+    function openDetailGallery(idx) { _detailIdx = idx; document.getElementById('detail-gallery-lb').style.display='flex'; document.body.style.overflow='hidden'; renderDetailLb(); }
+    function closeDetailGallery() { document.getElementById('detail-gallery-lb').style.display='none'; document.body.style.overflow=''; document.getElementById('detail-lb-media').innerHTML=''; }
+    function detailGalleryPrev() { _detailIdx = (_detailIdx - 1 + _detailGallery.length) % _detailGallery.length; renderDetailLb(); }
+    function detailGalleryNext() { _detailIdx = (_detailIdx + 1) % _detailGallery.length; renderDetailLb(); }
+    const _ytTypes = ['youtube_intro','youtube_pipeline'];
+    function _ytId(url) { const m = (url||'').match(/(?:v=|\/embed\/|youtu\.be\/)([a-zA-Z0-9_-]{11})/); return m ? m[1] : null; }
+    function renderDetailLb() {
+        const item = _detailGallery[_detailIdx];
+        const el = document.getElementById('detail-lb-media');
+        el.innerHTML = '';
+        if (_ytTypes.includes(item.type)) {
+            const id = _ytId(item.url||'');
+            const iframe = document.createElement('iframe');
+            iframe.src = 'https://www.youtube.com/embed/' + id + '?autoplay=1';
+            iframe.style.cssText = 'width:min(90vw,800px);height:min(50vw,450px);border:none;border-radius:12px';
+            iframe.allow = 'autoplay; fullscreen';
+            el.appendChild(iframe);
+        } else if (item.kind === 'file' && /\.(mp4|mov|webm)$/i.test(item.path||'')) {
+            const v = document.createElement('video'); v.src='/storage/'+item.path; v.controls=true; v.autoplay=true; v.style.cssText='max-width:90vw;max-height:78vh;border-radius:12px'; el.appendChild(v);
+        } else {
+            const img = document.createElement('img'); img.src='/storage/'+(item.path||''); img.style.cssText='max-width:90vw;max-height:78vh;border-radius:12px;object-fit:contain'; el.appendChild(img);
+        }
+        document.getElementById('detail-lb-caption').textContent = item.caption || '';
+        const dots = document.getElementById('detail-lb-dots');
+        dots.innerHTML = '';
+        _detailGallery.forEach((_,i) => { const d=document.createElement('div'); d.style.cssText=`width:7px;height:7px;border-radius:50%;background:${i===_detailIdx?'#fff':'rgba(255,255,255,.3)'};cursor:pointer`; d.onclick=()=>{_detailIdx=i;renderDetailLb();}; dots.appendChild(d); });
+    }
+    document.addEventListener('keydown', e => {
+        if (document.getElementById('detail-gallery-lb').style.display !== 'none') {
+            if (e.key==='ArrowLeft') detailGalleryPrev();
+            if (e.key==='ArrowRight') detailGalleryNext();
+            if (e.key==='Escape') closeDetailGallery();
+        }
+    });
+    </script>
+    @endif
 
     {{-- ── Policy Violations ───────────────────────────────────────────────── --}}
     @if(!empty($policyViolations))
@@ -16,17 +142,16 @@
     @endif
 
     {{-- ── Production Readiness ───────────────────────────────────────────── --}}
-    @if($connectedInboxes->isEmpty())
+    @if(!$productionReadiness['ready'])
     <div class="mb-4 flex items-start justify-between gap-4 px-5 py-4 rounded-xl border"
          style="background:rgba(239,68,68,0.06);border-color:rgba(239,68,68,0.3)">
         <div class="flex items-start gap-3">
             <span class="text-red-400 mt-0.5 shrink-0">⛔</span>
             <div>
-                <p class="text-red-300 font-semibold text-sm">Not production ready — no inbox connected</p>
+                <p class="text-red-300 font-semibold text-sm">{{ $productionReadiness['banner_title'] }}</p>
                 <p class="text-gray-400 text-xs mt-0.5 leading-relaxed">
-                    This worker has no Gmail inbox connected via the Connect tab.
-                    Real emails will not be received or processed until you connect an inbox.
-                    @if($credential)
+                    {{ $productionReadiness['banner_body'] }}
+                    @if(!$isMultiCredential && $credential)
                         Fast Track can still run using <span class="text-gray-300">{{ $credential->gmail_address }}</span>
                         (a credential on your account), but that account is <strong>not monitoring this worker</strong> in production.
                     @endif
@@ -35,7 +160,7 @@
         </div>
         <a href="{{ route('workers.connect', $dep->id) }}"
            class="shrink-0 text-xs px-3 py-1.5 rounded-lg border border-red-700 text-red-400 hover:bg-red-900/20 transition font-medium">
-            Connect Inbox →
+            {{ $productionReadiness['connect_label'] }}
         </a>
     </div>
     @endif
@@ -45,16 +170,16 @@
     <div class="space-y-2 mb-4">
         @if($pendingReview > 0)
         <div class="flex items-center justify-between px-4 py-3 rounded-xl border"
-             style="background:rgba(243,197,49,0.08);border-color:rgba(243,197,49,0.35)">
+             style="background:rgba(var(--accent-rgb),0.08);border-color:rgba(var(--accent-rgb),0.35)">
             <div class="flex items-center gap-3">
-                <span class="w-2 h-2 rounded-full animate-pulse" style="background:#a78bfa"></span>
-                <span class="text-sm" style="color:#f3c531">
+                <span class="w-2 h-2 rounded-full animate-pulse" style="background:var(--accent)"></span>
+                <span class="text-sm font-medium" style="color:var(--text-primary)">
                     <strong>{{ $pendingReview }}</strong> draft{{ $pendingReview !== 1 ? 's' : '' }} awaiting your review
                 </span>
             </div>
             <a href="{{ route('transactions', ['filter' => 'draft_ready']) }}"
                class="text-xs px-3 py-1.5 rounded-lg font-medium transition"
-               style="background:rgba(243,197,49,0.20);color:#f3c531;border:1px solid rgba(243,197,49,0.45)">
+               style="background:var(--accent);color:#000000;border:1px solid var(--accent-dark)">
                 Review Now →
             </a>
         </div>
@@ -79,16 +204,16 @@
     </div>
     @endif
 
-    <div class="grid grid-cols-3 gap-6">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
         {{-- Left: stats + recent activity --}}
-        <div class="col-span-2 space-y-4">
+        <div class="lg:col-span-2 space-y-4">
 
             {{-- Status bar --}}
-            <div class="bg-gray-900 border border-gray-800 rounded-xl p-5 flex items-center justify-between">
+            <div class="rounded-xl p-4 sm:p-5 flex flex-wrap items-center justify-between gap-3" style="background:var(--bg-card);border:1px solid var(--border)">
                 <div class="flex items-center gap-4">
-                    <div class="w-10 h-10 bg-brand/15 rounded-lg flex items-center justify-center">
-                        <span class="text-brand font-bold">{{ strtoupper(substr($dep->worker_slug, 0, 1)) }}</span>
+                    <div class="w-10 h-10 rounded-lg flex items-center justify-center shrink-0" style="background:var(--accent)">
+                        <span class="font-bold text-sm" style="color:#000000">{{ strtoupper(substr($dep->worker_slug, 0, 1)) }}</span>
                     </div>
                     <div>
                         <p class="text-white font-semibold">{{ $dep->name }}</p>
@@ -97,140 +222,193 @@
                 </div>
                 <div class="flex items-center gap-2">
                     @if($dep->status === 'active')
-                        <span class="flex items-center gap-1.5 text-xs text-green-400 bg-green-900 border border-green-800 px-2 py-1 rounded">
-                            <span class="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse"></span> Active
+                        <span class="flex items-center gap-1.5 text-xs font-medium px-2 py-1 rounded" style="background:rgba(34,197,94,0.15);color:#16a34a;border:1px solid rgba(34,197,94,0.35)">
+                            <span class="w-1.5 h-1.5 rounded-full animate-pulse" style="background:#16a34a"></span> Active
                         </span>
                         <form method="POST" action="{{ route('workers.status', $dep->id) }}">
                             @csrf @method('PATCH')
                             <input type="hidden" name="status" value="paused">
-                            <button class="text-xs text-yellow-500 border border-yellow-800 rounded px-3 py-1 hover:bg-yellow-900">Pause</button>
+                            <button class="text-xs px-3 py-1 rounded" style="color:var(--accent-text);border:1px solid rgba(var(--accent-rgb),0.4)">Pause</button>
                         </form>
                     @elseif($dep->status === 'paused')
-                        <span class="flex items-center gap-1.5 text-xs text-yellow-400 bg-yellow-900 border border-yellow-800 px-2 py-1 rounded">
-                            <span class="w-1.5 h-1.5 bg-yellow-400 rounded-full"></span> Paused
+                        <span class="flex items-center gap-1.5 text-xs font-medium px-2 py-1 rounded" style="background:var(--badge-balanced-bg);color:var(--badge-balanced-text);border:1px solid rgba(var(--accent-rgb),0.35)">
+                            <span class="w-1.5 h-1.5 rounded-full" style="background:var(--badge-balanced-text)"></span> Paused
                         </span>
                         <form method="POST" action="{{ route('workers.status', $dep->id) }}">
                             @csrf @method('PATCH')
                             <input type="hidden" name="status" value="active">
-                            <button class="text-xs text-green-500 border border-green-800 rounded px-3 py-1 hover:bg-green-900">Resume</button>
+                            <button class="text-xs px-3 py-1 rounded" style="color:#16a34a;border:1px solid rgba(34,197,94,0.35)">Resume</button>
                         </form>
                     @endif
                     <form method="POST" action="{{ route('workers.destroy', $dep->id) }}" onsubmit="return confirm('Remove this worker?')">
                         @csrf @method('DELETE')
-                        <button class="text-xs text-gray-600 hover:text-red-400 border border-gray-700 rounded px-3 py-1">Remove</button>
+                        <button class="text-xs px-3 py-1 rounded transition" style="color:var(--text-muted);border:1px solid var(--border)">Remove</button>
                     </form>
                 </div>
             </div>
 
             {{-- Stats --}}
-            <div class="grid grid-cols-3 gap-4">
-                <div class="bg-gray-900 border border-gray-800 rounded-xl p-4">
-                    <p class="text-gray-500 text-xs">Transactions</p>
-                    <p class="text-white text-2xl font-semibold mt-1">{{ $txCount }}</p>
+            <div class="grid grid-cols-3 gap-3 sm:gap-4">
+                <div class="rounded-xl p-3 sm:p-4" style="background:var(--bg-card);border:1px solid var(--border)">
+                    <p class="text-xs" style="color:var(--text-muted)">Transactions</p>
+                    <p class="text-xl sm:text-2xl font-semibold mt-1" style="color:var(--text-primary)">{{ $txCount }}</p>
                 </div>
-                <div class="bg-gray-900 border border-gray-800 rounded-xl p-4">
-                    <p class="text-gray-500 text-xs">Tokens Used</p>
-                    <p class="text-white text-2xl font-semibold mt-1">{{ number_format($usage->tokens ?? 0) }}</p>
+                <div class="rounded-xl p-3 sm:p-4" style="background:var(--bg-card);border:1px solid var(--border)">
+                    <p class="text-xs" style="color:var(--text-muted)">Tokens Used</p>
+                    <p class="text-xl sm:text-2xl font-semibold mt-1 truncate" style="color:var(--text-primary)">{{ number_format($usage->tokens ?? 0) }}</p>
                 </div>
-                <div class="bg-gray-900 border border-gray-800 rounded-xl p-4">
-                    <p class="text-gray-500 text-xs">AI Cost</p>
-                    <p class="text-white text-2xl font-semibold mt-1">${{ number_format($usage->cost ?? 0, 4) }}</p>
+                <div class="rounded-xl p-3 sm:p-4" style="background:var(--bg-card);border:1px solid var(--border)">
+                    <p class="text-xs" style="color:var(--text-muted)">AI Cost</p>
+                    <p class="text-xl sm:text-2xl font-semibold mt-1 truncate" style="color:var(--text-primary)">${{ number_format($usage->cost ?? 0, 4) }}</p>
                 </div>
             </div>
 
-            {{-- Fast Track --}}
+            {{-- Idea Submission (NUX only) --}}
+            @if($isMultiCredential)
+            <div class="rounded-xl p-4 sm:p-5" style="background:var(--bg-card);border:1px solid var(--border)">
+                <h3 class="text-sm font-semibold mb-1" style="color:var(--text-primary)">Submit an Idea</h3>
+                <p class="text-xs mb-3" style="color:var(--text-muted)">Record a thought or draft — NUX will repurpose it into polished posts for your chosen channels.</p>
+                <form id="idea-form" onsubmit="submitIdea(event)">
+                    @csrf
+                    <textarea id="idea-text" name="idea_text" rows="3"
+                              placeholder="What's on your mind? A lesson learned, a hot take, a story…"
+                              class="w-full text-sm rounded-lg px-3 py-2 border focus:outline-none resize-none"
+                              style="background:var(--bg-surface);color:var(--text-primary);border-color:var(--border);placeholder-color:var(--text-faint)"></textarea>
+                    <div class="flex flex-wrap items-center gap-2 mt-2">
+                        <span class="text-xs shrink-0" style="color:var(--text-muted)">Post to:</span>
+                        @foreach(['linkedin','x'] as $ch)
+                        <label class="flex items-center gap-1.5 cursor-pointer text-xs" style="color:var(--text-secondary)">
+                            <input type="checkbox" name="target_channels[]" value="{{ $ch }}" class="rounded" {{ $ch === 'linkedin' ? 'checked' : '' }}>
+                            {{ ucfirst($ch) }}
+                        </label>
+                        @endforeach
+                        <button type="submit" id="idea-submit-btn"
+                                class="ml-auto text-xs font-bold px-4 py-2 rounded-xl hover:opacity-90 transition"
+                                style="background:var(--accent);color:#1a1404">
+                            Submit Idea
+                        </button>
+                    </div>
+                    <p id="idea-feedback" class="text-xs mt-2 hidden"></p>
+                </form>
+            </div>
+            @endif
+
+            {{-- Fast Track + Subscribe --}}
             @php
                 $ftUses      = (int) ($config['fast_track_uses'] ?? 0);
-                $ftMax       = 10;
-                $ftLeft      = max(0, $ftMax - $ftUses);
                 $ftBilling   = \Illuminate\Support\Facades\DB::table('deployment_billing')->where('deployment_id', $dep->id)->first();
+                $ftMax       = (int) ($ftBilling?->trial_transactions_limit ?: 10);
+                $ftLeft      = max(0, $ftMax - $ftUses);
                 $ftSubscribed = $ftBilling && $ftBilling->status === 'active';
                 $watchTxId   = request('watch');
+                // Multi-credential workers (NUX) always have a demo payload — no Gmail inbox needed for Fast Track
+                $ftInbox     = $isMultiCredential ? null : ($connectedInboxes->firstWhere('is_primary', true) ?? $connectedInboxes->first());
+                $ftFallback  = (!$isMultiCredential && $ftInbox === null && $credential) ? $credential : null;
+                $ftCanRun    = $isMultiCredential || $ftInbox !== null || $ftFallback !== null;
             @endphp
-            <div class="bg-gray-900 border border-gray-800 rounded-xl p-5">
-                <div class="flex items-center justify-between mb-3">
+
+            <div class="rounded-xl p-4 sm:p-5" style="background:var(--bg-card);border:1px solid var(--border)">
+
+                {{-- Header row --}}
+                <div class="flex items-center justify-between mb-3 gap-3">
                     <div>
-                        <h3 class="text-white text-sm font-semibold">Fast Track Test</h3>
-                        <p class="text-gray-500 text-xs mt-0.5">Runs a simulated email through the full pipeline — draft appears in the selected inbox's Drafts folder</p>
+                        <h3 class="text-sm font-semibold" style="color:var(--text-primary)">Fast Track Test</h3>
+                        <p class="text-xs mt-0.5" style="color:var(--text-muted)">{{ $productionReadiness['fast_track_desc'] }}</p>
                     </div>
-                    <div class="text-right">
+                    <div class="shrink-0 text-right">
                         @if($ftSubscribed)
-                            <span class="text-xs text-green-400 font-medium">Unlimited · Active Plan</span>
+                            <span class="text-xs text-green-400 font-medium">Unlimited · Active</span>
                         @else
-                            <span class="text-xs font-mono {{ $ftLeft > 0 ? 'text-gray-400' : 'text-red-400' }}">
-                                {{ $ftLeft }}/{{ $ftMax }} trial runs left
+                            <span class="text-xs font-mono {{ $ftLeft > 2 ? '' : ($ftLeft > 0 ? 'text-amber-400' : 'text-red-400') }}" style="{{ $ftLeft > 2 ? 'color:var(--text-muted)' : '' }}">
+                                {{ $ftLeft }}/{{ $ftMax }} trial left
                             </span>
-                            <div class="mt-1 h-1.5 w-24 bg-gray-800 rounded-full overflow-hidden">
+                            <div class="mt-1 h-1 w-20 ml-auto rounded-full overflow-hidden" style="background:var(--border)">
                                 <div class="h-full rounded-full transition-all"
-                                     style="width:{{ ($ftUses / $ftMax) * 100 }}%;background:{{ $ftLeft > 3 ? '#a78bfa' : ($ftLeft > 0 ? '#f59e0b' : '#ef4444') }}"></div>
+                                     style="width:{{ $ftMax > 0 ? ($ftUses / $ftMax) * 100 : 0 }}%;background:{{ $ftLeft > 3 ? '#a78bfa' : ($ftLeft > 0 ? '#f59e0b' : '#ef4444') }}"></div>
                             </div>
                         @endif
                     </div>
                 </div>
 
-                @if($ftSubscribed || $ftLeft > 0)
-                    @php
-                        // Effective credential for fast track: connected inbox first, then dep fallback
-                        $ftInbox = $connectedInboxes->firstWhere('is_primary', true)
-                                ?? $connectedInboxes->first();
-                        $ftFallback = ($ftInbox === null && $credential) ? $credential : null;
-                        $ftCanRun   = $ftInbox !== null || $ftFallback !== null;
-                    @endphp
-                    <form method="POST" action="{{ route('workers.fast-track', $dep->id) }}" class="space-y-2">
+                {{-- Inbox hint / selector (Gmail workers only) --}}
+                @if($isMultiCredential)
+                    {{-- Multi-credential workers use a demo payload — no inbox selector needed --}}
+                    <form method="POST" action="{{ route('workers.fast-track', $dep->id) }}" id="ft-form">
                         @csrf
-                        {{-- Inbox selector: only show when multiple inboxes connected --}}
-                        @if($connectedInboxes->count() > 1)
-                        <div>
-                            <label class="text-gray-500 text-xs block mb-1">Run on inbox</label>
-                            <select name="credential_id"
-                                    class="w-full bg-gray-800 text-white text-xs rounded-lg px-3 py-2 border border-gray-700 focus:border-yellow-400 focus:outline-none">
-                                @foreach($connectedInboxes as $inbox)
-                                    <option value="{{ $inbox->id }}" {{ $inbox->is_primary ? 'selected' : '' }}>
-                                        {{ $inbox->gmail_address }}{{ $inbox->is_primary ? ' (Primary)' : '' }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
-                        @elseif($ftInbox)
-                            <p class="text-gray-600 text-xs">
-                                Will run on <span class="text-gray-400">{{ $ftInbox->gmail_address }}</span>
-                            </p>
-                            <input type="hidden" name="credential_id" value="{{ $ftInbox->id }}">
-                        @elseif($ftFallback)
-                            {{-- Fallback: dep->credential_id is set but not in deployment_credentials --}}
-                            <div class="px-3 py-2 rounded-lg border border-amber-800/50 text-xs"
-                                 style="background:rgba(120,53,15,0.15)">
-                                <p class="text-amber-400 font-medium">⚠ Using fallback credential</p>
-                                <p class="text-amber-200/70 mt-0.5">
-                                    Fast Track will use <strong>{{ $ftFallback->gmail_address }}</strong> — but this inbox is not connected to this worker via the Connect tab.
-                                    Production emails will not be processed until you
-                                    <a href="{{ route('workers.connect', $dep->id) }}" class="underline hover:text-amber-300">connect it properly</a>.
-                                </p>
-                            </div>
-                        @endif
+                        <p class="text-xs mb-3" style="color:var(--text-muted)">
+                            Uses the built-in demo post — no social account needed to test.
+                        </p>
+                    </form>
+                @elseif($connectedInboxes->count() > 1)
+                <form method="POST" action="{{ route('workers.fast-track', $dep->id) }}" id="ft-form" class="mb-3">
+                    @csrf
+                    <select name="credential_id"
+                            class="w-full text-xs rounded-lg px-3 py-2 border focus:outline-none"
+                            style="background:var(--bg-surface);color:var(--text-primary);border-color:var(--border)">
+                        @foreach($connectedInboxes as $inbox)
+                            <option value="{{ $inbox->id }}" {{ $inbox->is_primary ? 'selected' : '' }}>
+                                {{ $inbox->gmail_address }}{{ $inbox->is_primary ? ' · Primary' : '' }}
+                            </option>
+                        @endforeach
+                    </select>
+                </form>
+                @elseif($ftInbox)
+                <form method="POST" action="{{ route('workers.fast-track', $dep->id) }}" id="ft-form">
+                    @csrf
+                    <input type="hidden" name="credential_id" value="{{ $ftInbox->id }}">
+                    <p class="text-xs mb-3" style="color:var(--text-muted)">Will run on <span style="color:var(--text-secondary)">{{ $ftInbox->gmail_address }}</span></p>
+                </form>
+                @elseif($ftFallback)
+                <form method="POST" action="{{ route('workers.fast-track', $dep->id) }}" id="ft-form">
+                    @csrf
+                    <div class="mb-3 px-3 py-2 rounded-lg border border-amber-800/50 text-xs" style="background:rgba(120,53,15,0.15)">
+                        <p class="text-amber-400 font-medium mb-0.5">Using fallback inbox</p>
+                        <p class="text-amber-200/60">{{ $ftFallback->gmail_address }} — <a href="{{ route('workers.connect', $dep->id) }}" class="underline">connect it properly</a> for live monitoring.</p>
+                    </div>
+                </form>
+                @else
+                <div id="ft-form"></div>
+                @endif
 
+                @if($ftLeft > 0 || $ftSubscribed)
+                    {{-- Split: Fast Track + Subscribe side by side --}}
+                    <div class="{{ $ftSubscribed ? '' : 'grid grid-cols-1 sm:grid-cols-2 gap-3' }}">
+
+                        {{-- Fast Track button --}}
                         @if($ftCanRun)
-                        <button type="submit" id="ft-submit-btn"
-                                onclick="this.disabled=true;this.innerHTML='<span style=\'opacity:0.6\'>Running…</span>';this.form.submit();"
-                                class="w-full text-sm font-bold px-4 py-2.5 rounded-xl text-gray-900 hover:opacity-90 flex items-center justify-center gap-2"
-                                style="background:#F5C100">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-                            Run Fast Track{{ $ftFallback ? ' (fallback)' : '' }}
+                        <button type="submit" form="ft-form" id="ft-submit-btn"
+                                onclick="this.disabled=true;this.innerHTML='<span style=\'opacity:0.6\'>Running…</span>';document.getElementById(\'ft-form\').submit();"
+                                class="w-full text-sm font-bold px-4 py-3 rounded-xl hover:opacity-90 flex items-center justify-center gap-2 transition"
+                                style="background:var(--accent);color:#1a1404">
+                            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                            Run Fast Track
                         </button>
                         @else
-                        <div class="w-full text-center text-xs text-gray-600 py-2.5 rounded-xl border border-gray-800">
-                            No inbox available — <a href="{{ route('workers.connect', $dep->id) }}" class="text-brand hover:text-brand">connect one</a> to run Fast Track
+                        <div class="w-full text-center text-xs py-3 rounded-xl border" style="color:var(--text-faint);border-color:var(--border)">
+                            <a href="{{ route('workers.connect', $dep->id) }}" style="color:var(--text-muted)" class="hover:underline">{{ $productionReadiness['no_credential_msg'] }}</a>
                         </div>
                         @endif
-                    </form>
+
+                        {{-- Subscribe CTA — only while on trial --}}
+                        @if(!$ftSubscribed)
+                        <a href="{{ route('workers.billing', $dep->worker_slug) }}"
+                           class="w-full flex flex-col items-center justify-center gap-0.5 px-4 py-3 rounded-xl border transition hover:border-yellow-400/40 group"
+                           style="border-color:var(--border);background:var(--bg-surface)">
+                            <span class="text-sm font-bold group-hover:text-yellow-300 transition" style="color:var(--text-primary)">Subscribe →</span>
+                            <span class="text-xs" style="color:var(--text-muted)">Unlock unlimited runs</span>
+                        </a>
+                        @endif
+
+                    </div>
                 @else
-                    <div class="bg-red-900/20 border border-red-900/50 rounded-xl px-4 py-3 text-center space-y-2">
-                        <p class="text-red-400 text-xs font-semibold">Trial Fast Track limit reached (10/10)</p>
-                        <p class="text-gray-500 text-xs">Subscribe to unlock unlimited runs, or contact support to reset your trial counter.</p>
-                        <a href="{{ route('billing.checkout', $dep->id) }}"
-                           class="inline-block text-xs px-4 py-1.5 rounded-lg font-medium text-gray-900 hover:opacity-90 transition"
-                           style="background:#F5C100">
-                            Upgrade to subscription →
+                    {{-- Trial exhausted --}}
+                    <div class="rounded-xl border border-red-900/40 px-4 py-4 text-center space-y-3" style="background:rgba(127,29,29,0.08)">
+                        <p class="text-sm font-semibold text-red-400">Trial runs used up</p>
+                        <p class="text-xs" style="color:var(--text-muted)">Subscribe to unlock unlimited Fast Track runs and live email processing.</p>
+                        <a href="{{ route('workers.billing', $dep->worker_slug) }}"
+                           class="inline-block text-sm font-bold px-5 py-2 rounded-xl hover:opacity-90 transition"
+                           style="background:var(--accent);color:#1a1404">
+                            Choose a plan →
                         </a>
                     </div>
                 @endif
@@ -246,8 +424,8 @@
                     <div class="px-7 py-4 border-b border-gray-800 flex items-center justify-between">
                         <div class="flex items-center gap-3">
                             <div class="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
-                                 style="background:rgba(245,193,0,0.12);border:1px solid rgba(245,193,0,0.25)">
-                                <svg class="w-4 h-4" fill="none" stroke="#F5C100" viewBox="0 0 24 24">
+                                 style="background:rgba(var(--accent-rgb),0.12);border:1px solid rgba(var(--accent-rgb),0.25)">
+                                <svg class="w-4 h-4" fill="none" stroke="var(--accent)" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
                                 </svg>
                             </div>
@@ -318,7 +496,7 @@
                     <div class="mx-6 mb-5 rounded-xl border px-5 py-3 flex items-center gap-3 transition-all duration-500"
                          id="pipeline-status-bar" style="background:rgba(255,255,255,0.02);border-color:#1f2937">
                         <div id="pipeline-spinner" class="{{ $watchTxId ? '' : 'hidden' }} shrink-0">
-                            <svg class="animate-spin w-4 h-4" style="color:#f3c531" fill="none" viewBox="0 0 24 24">
+                            <svg class="animate-spin w-4 h-4" style="color:var(--accent)" fill="none" viewBox="0 0 24 24">
                                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
                                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
                             </svg>
@@ -333,20 +511,27 @@
             </div>
 
             {{-- Recent transactions --}}
-            <div class="bg-gray-900 border border-gray-800 rounded-xl">
-                <div class="px-5 py-4 border-b border-gray-800 flex items-center justify-between">
-                    <h3 class="text-white text-sm font-semibold">Recent Activity</h3>
+            <div class="rounded-xl" style="background:var(--bg-card);border:1px solid var(--border)">
+                <div class="px-5 py-4 flex items-center justify-between" style="border-bottom:1px solid var(--border)">
+                    <h3 class="text-sm font-semibold" style="color:var(--text-primary)">Recent Activity</h3>
                     <a href="{{ route('transactions') }}" class="text-xs text-gray-500 hover:text-brand">View all →</a>
                 </div>
                 @forelse($recentTx as $tx)
                     <div class="px-5 py-3 border-b border-gray-800 last:border-0 flex items-center justify-between">
                         <div>
-                            <a href="{{ route('transactions.show', $tx->tx_id) }}" class="text-brand text-xs font-mono hover:underline">{{ $tx->tx_id }}</a>
+                            <a href="{{ route('transactions.show', $tx->tx_id) }}" class="text-xs font-mono hover:underline" style="color:var(--text-secondary)">{{ $tx->tx_id }}</a>
                             <span class="text-gray-500 text-xs ml-2">{{ $tx->category }}</span>
                         </div>
                         <div class="flex items-center gap-3">
                             <span class="text-xs text-gray-600">{{ \Carbon\Carbon::parse($tx->created_at)->diffForHumans() }}</span>
-                            <span class="text-xs px-2 py-0.5 rounded {{ $tx->status === 'draft_ready' ? 'bg-brand/15 text-brand' : ($tx->status === 'failed' ? 'bg-red-900 text-red-300' : 'bg-gray-800 text-gray-400') }}">{{ $tx->status }}</span>
+                            @php
+                                $badgeStyle = $tx->status === 'draft_ready'
+                                    ? 'background:rgba(var(--accent-rgb),0.18);color:var(--accent-text);border:1px solid rgba(var(--accent-rgb),0.35)'
+                                    : ($tx->status === 'failed'
+                                        ? 'background:rgba(239,68,68,0.15);color:#f87171;border:1px solid rgba(239,68,68,0.3)'
+                                        : 'background:var(--bg-raised);color:var(--text-muted);border:1px solid var(--border)');
+                            @endphp
+                            <span class="text-xs px-2 py-0.5 rounded" style="{{ $badgeStyle }}">{{ $tx->status }}</span>
                         </div>
                     </div>
                 @empty
@@ -356,8 +541,6 @@
 
             {{-- Connected Accounts summary — links to Connect tab --}}
             @php
-                $credContract = $contract?->credential() ?? [];
-                $credLabel    = $credContract['label'] ?? 'Account';
                 $watchInactive = $connectedInboxes->where('watch_active', false)->count();
             @endphp
             <a href="{{ route('workers.connect', $dep->id) }}"
@@ -365,30 +548,53 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-white text-sm font-semibold group-hover:text-brand transition">
-                            Connected {{ $credLabel }}s
+                            Connected Accounts
                         </p>
                         <p class="text-gray-500 text-xs mt-0.5">
-                            @if($connectedInboxes->isEmpty())
-                                <span class="text-red-400">⛔ No inbox connected — not production ready</span>
-                            @else
-                                {{ $connectedInboxes->count() }} connected
-                                @if($watchInactive > 0)
-                                    · <span class="text-yellow-400">{{ $watchInactive }} watch inactive</span>
+                            @if($isMultiCredential)
+                                @if(empty($productionReadiness['connected_accounts']))
+                                    <span class="text-red-400">⛔ No accounts connected — not production ready</span>
                                 @else
-                                    · <span class="text-green-400">all watching</span>
+                                    @foreach($productionReadiness['connected_accounts'] as $platform)
+                                        <span class="text-green-400">✓ {{ ucfirst($platform) }}</span>{{ !$loop->last ? ' · ' : '' }}
+                                    @endforeach
+                                @endif
+                            @else
+                                @if($connectedInboxes->isEmpty())
+                                    <span class="text-red-400">⛔ No inbox connected — not production ready</span>
+                                @else
+                                    {{ $connectedInboxes->count() }} connected
+                                    @if($watchInactive > 0)
+                                        · <span class="text-yellow-400">{{ $watchInactive }} watch inactive</span>
+                                    @else
+                                        · <span class="text-green-400">all watching</span>
+                                    @endif
                                 @endif
                             @endif
                         </p>
                     </div>
                     <div class="flex items-center gap-3">
-                        @foreach($connectedInboxes->take(3) as $inbox)
-                            <div class="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-bold shrink-0
-                                        {{ $inbox->watch_active ? 'bg-green-900 ring-1 ring-green-700' : 'bg-yellow-900 ring-1 ring-yellow-700' }}">
-                                {{ strtoupper(substr($inbox->gmail_address, 0, 1)) }}
-                            </div>
-                        @endforeach
-                        @if($connectedInboxes->count() > 3)
-                            <span class="text-gray-600 text-xs">+{{ $connectedInboxes->count() - 3 }}</span>
+                        @if($isMultiCredential)
+                            @foreach($productionReadiness['connected_accounts'] as $platform)
+                                <div class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold shrink-0"
+                                     style="background:var(--accent);color:#000000;box-shadow:0 0 0 2px rgba(34,197,94,0.4)">
+                                    {{ strtoupper(substr($platform, 0, 1)) }}
+                                </div>
+                            @endforeach
+                            @if(empty($productionReadiness['connected_accounts']))
+                                <div class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold shrink-0"
+                                     style="background:var(--bg-raised);color:var(--text-muted);border:1px solid var(--border)">—</div>
+                            @endif
+                        @else
+                            @foreach($connectedInboxes->take(3) as $inbox)
+                                <div class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold shrink-0"
+                                     style="{{ $inbox->watch_active ? 'background:var(--accent);color:#000000;box-shadow:0 0 0 2px rgba(34,197,94,0.4)' : 'background:var(--bg-raised);color:var(--text-muted);border:1px solid var(--border)' }}">
+                                    {{ strtoupper(substr($inbox->gmail_address, 0, 1)) }}
+                                </div>
+                            @endforeach
+                            @if($connectedInboxes->count() > 3)
+                                <span class="text-gray-600 text-xs">+{{ $connectedInboxes->count() - 3 }}</span>
+                            @endif
                         @endif
                         <svg class="w-4 h-4 text-gray-600 group-hover:text-brand transition ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
@@ -406,7 +612,7 @@
 
             {{-- Configure link --}}
             <a href="{{ route('workers.configure', $dep->id) }}"
-               class="flex items-center justify-between bg-gray-900 border border-gray-800 hover:border-gray-700 rounded-xl px-4 py-3.5 transition group">
+               class="flex items-center justify-between rounded-xl px-4 py-3.5 transition group" style="background:var(--bg-card);border:1px solid var(--border)">
                 <div>
                     <p class="text-white text-sm font-medium group-hover:text-brand transition">Configuration</p>
                     <p class="text-gray-500 text-xs mt-0.5">
@@ -421,7 +627,7 @@
 
             {{-- Memory link --}}
             <a href="{{ route('workers.memory', $dep->id) }}"
-               class="flex items-center justify-between bg-gray-900 border border-gray-800 hover:border-gray-700 rounded-xl px-4 py-3.5 transition group">
+               class="flex items-center justify-between rounded-xl px-4 py-3.5 transition group" style="background:var(--bg-card);border:1px solid var(--border)">
                 <div>
                     <p class="text-white text-sm font-medium group-hover:text-brand transition">Memory</p>
                     <p class="text-gray-500 text-xs mt-0.5">Clients · Contacts · Assets</p>
@@ -433,7 +639,7 @@
 
             {{-- Rules link --}}
             <a href="{{ route('workers.rules', $dep->id) }}"
-               class="flex items-center justify-between bg-gray-900 border border-gray-800 hover:border-gray-700 rounded-xl px-4 py-3.5 transition group">
+               class="flex items-center justify-between rounded-xl px-4 py-3.5 transition group" style="background:var(--bg-card);border:1px solid var(--border)">
                 <div>
                     <p class="text-white text-sm font-medium group-hover:text-brand transition">Rules</p>
                     <p class="text-gray-500 text-xs mt-0.5">Processing & action rules</p>
@@ -445,7 +651,7 @@
 
             {{-- Schema link --}}
             <a href="{{ route('workers.schema', $dep->id) }}"
-               class="flex items-center justify-between bg-gray-900 border border-gray-800 hover:border-gray-700 rounded-xl px-4 py-3.5 transition group">
+               class="flex items-center justify-between rounded-xl px-4 py-3.5 transition group" style="background:var(--bg-card);border:1px solid var(--border)">
                 <div>
                     <p class="text-white text-sm font-medium group-hover:text-brand transition">Pipeline Schema</p>
                     <p class="text-gray-500 text-xs mt-0.5">Input · Pipeline · Emit</p>
@@ -635,5 +841,71 @@
         });
     });
     </script>
+
+    @if($isMultiCredential)
+    <script>
+    async function submitIdea(e) {
+        e.preventDefault();
+        const btn  = document.getElementById('idea-submit-btn');
+        const fb   = document.getElementById('idea-feedback');
+        const text = document.getElementById('idea-text').value.trim();
+        const channels = [...document.querySelectorAll('input[name="target_channels[]"]:checked')].map(c => c.value);
+
+        if (!text || text.length < 10) {
+            fb.textContent = 'Please write at least 10 characters.';
+            fb.style.color = 'var(--text-muted)';
+            fb.classList.remove('hidden');
+            return;
+        }
+        if (channels.length === 0) {
+            fb.textContent = 'Select at least one channel.';
+            fb.style.color = 'var(--text-muted)';
+            fb.classList.remove('hidden');
+            return;
+        }
+
+        btn.disabled = true;
+        btn.textContent = 'Submitting…';
+        fb.classList.add('hidden');
+
+        try {
+            const res = await fetch('{{ route('nux.submit.idea', $dep->id) }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json',
+                },
+                body: JSON.stringify({ idea_text: text, target_channels: channels }),
+            });
+            const data = await res.json();
+            if (res.ok && data.success) {
+                document.getElementById('idea-text').value = '';
+                fb.textContent = data.message;
+                fb.style.color = '#4ade80';
+                fb.classList.remove('hidden');
+                btn.textContent = 'Submit Idea';
+                btn.disabled = false;
+                // Open pipeline watcher
+                if (data.tx_id) {
+                    window.location.href = window.location.pathname + '?watch=' + data.tx_id;
+                }
+            } else {
+                fb.textContent = data.error ?? 'Something went wrong.';
+                fb.style.color = '#f87171';
+                fb.classList.remove('hidden');
+                btn.textContent = 'Submit Idea';
+                btn.disabled = false;
+            }
+        } catch (err) {
+            fb.textContent = 'Network error — please try again.';
+            fb.style.color = '#f87171';
+            fb.classList.remove('hidden');
+            btn.textContent = 'Submit Idea';
+            btn.disabled = false;
+        }
+    }
+    </script>
+    @endif
 
 </x-app-layout>

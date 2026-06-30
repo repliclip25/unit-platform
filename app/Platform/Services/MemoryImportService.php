@@ -90,7 +90,7 @@ class MemoryImportService
     {
         $inserted = 0;
         $skipped = 0;
-        $clientLookup = DB::table('clients')->where('user_id', $userId)
+        $clientLookup = DB::table('clients')->where('user_id', $userId)->whereNull('deleted_at')
             ->pluck('id', 'name')->map(fn($id) => (int) $id)->toArray();
 
         foreach ($rows as $row) {
@@ -116,7 +116,7 @@ class MemoryImportService
     private function insertClient(array $data, int $userId): void
     {
         if (empty($data['name'])) return;
-        $existing = DB::table('clients')->where('user_id', $userId)->where('name', $data['name'])->first();
+        $existing = DB::table('clients')->where('user_id', $userId)->where('name', $data['name'])->whereNull('deleted_at')->first();
         if ($existing) {
             DB::table('clients')->where('id', $existing->id)->update(array_filter([
                 'industry' => $data['industry'] ?? null,
@@ -139,7 +139,7 @@ class MemoryImportService
     {
         if (empty($data['email'])) return;
         $clientId = $this->resolveClient($data['client_name'] ?? null, $userId, $clientLookup);
-        $existing = DB::table('contacts')->where('user_id', $userId)->where('email', $data['email'])->first();
+        $existing = DB::table('contacts')->where('user_id', $userId)->where('email', $data['email'])->whereNull('deleted_at')->first();
         if ($existing) {
             DB::table('contacts')->where('id', $existing->id)->update(array_filter([
                 'name' => $data['name'] ?? null, 'phone' => $data['phone'] ?? null,

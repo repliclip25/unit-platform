@@ -6,10 +6,16 @@
     <title>UNIT — AI Workforce Platform for Construction</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
-        :root { --unit-yellow: #F5C100; }
-        .unit-yellow { color: #F5C100; }
-        .bg-unit-yellow { background-color: #F5C100; }
-        .border-unit-yellow { border-color: #F5C100; }
+        :root {
+            --unit-yellow: #f1d362;
+            --accent:      #f1d362;
+            --accent-rgb:  241, 211, 98;
+            --accent-dark: #c9a800;
+            --accent-text: #f1d362;
+        }
+        .unit-yellow { color: var(--accent); }
+        .bg-unit-yellow { background-color: var(--accent); }
+        .border-unit-yellow { border-color: var(--accent); }
         .hero-bg {
             background: radial-gradient(ellipse at 50% 100%, #0a2040 0%, #050c1a 50%, #020710 100%);
         }

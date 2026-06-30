@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Platform\Services\WorkerRegistry;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redis;
@@ -93,7 +94,7 @@ class QAController extends Controller
             "Renewal Price: {$scenario->renewal_price}",
             "Contact Email: {$tenantEmail}",
             "",
-            ($scenario->custom_note ? $scenario->custom_note . "\n\n" : "") . "Please renew before it expires.",
+            ($scenario->custom_note ? strip_tags(trim($scenario->custom_note)) . "\n\n" : "") . "Please renew before it expires.",
             "",
             "Thank you,",
             $scenario->sender_name,
@@ -109,7 +110,11 @@ class QAController extends Controller
             'deployment_id' => $deploymentId,
         ]);
 
-        \App\Workers\AVA\Jobs\ReadEmailJob::dispatch($tx->tx_id)->onQueue($txService->queueForTx($tx));
+        $dep      = DB::table('worker_deployments')->where('id', $deploymentId)->first();
+        $contract = $dep ? \App\Platform\Services\WorkerRegistry::resolveActive($dep->worker_slug) : null;
+        if ($contract && !\App\Platform\Services\WorkerRegistry::isNull($contract)) {
+            $contract->ingestJobClass()::dispatch($tx->tx_id)->onQueue($txService->queueForTx($tx));
+        }
 
         return redirect()->route('qa', ['watch' => $tx->tx_id, 'worker' => $deploymentId]);
     }
@@ -523,7 +528,7 @@ MD;
         }
 
         try {
-            $watchService = app(\App\Workers\AVA\Services\GmailWatchService::class, ['credential' => $credential]);
+            $watchService = app(\App\Platform\Services\Gmail\GmailWatchService::class, ['credential' => $credential]);
             $result       = $watchService->watch(config('services.gmail.pubsub_topic'));
             $expiry       = now()->addDays(7);
 
@@ -551,20 +556,12 @@ MD;
             ->where('updated_at', '<', now()->subMinutes(5))
             ->get();
 
-        // Stage → next job to dispatch
-        $recoveryMap = [
-            'received'     => \App\Workers\AVA\Jobs\ReadEmailJob::class,
-            'reading'      => \App\Workers\AVA\Jobs\ReadEmailJob::class,
-            'classifying'  => \App\Workers\AVA\Jobs\ClassifyEmailJob::class,
-            'memory_lookup'=> \App\Workers\AVA\Jobs\MemoryLookupJob::class,
-            'logging'      => \App\Workers\AVA\Jobs\LogTransactionJob::class,
-            'templating'   => \App\Workers\AVA\Jobs\SelectTemplateJob::class,
-            'drafting'     => \App\Workers\AVA\Jobs\DraftEmailJob::class,
-        ];
-
         $recovered = 0;
         foreach ($stuck as $tx) {
-            $jobClass = $recoveryMap[$tx->status] ?? null;
+            $dep         = DB::table('worker_deployments')->where('id', $tx->deployment_id)->first();
+            $contract    = $dep ? \App\Platform\Services\WorkerRegistry::resolveActive($dep->worker_slug) : null;
+            $recoveryMap = $contract ? $contract->stuckRecoveryMap() : [];
+            $jobClass    = $recoveryMap[$tx->status] ?? null;
             if (!$jobClass) continue;
 
             $dep   = DB::table('worker_deployments')->where('id', $tx->deployment_id)->first();
@@ -612,41 +609,101 @@ MD;
 
         $hasFailed = fn(string $class) => $failedPayloads->contains(fn($f) => str_contains($f, $class));
 
-        // Statuses that mean the pipeline has passed a given stage
-        $pastLog      = in_array($tx->status, ['logging', 'templating', 'drafting', 'draft_ready', 'human_review', 'approved', 'sent']);
-        $pastTemplate = in_array($tx->status, ['templating', 'drafting', 'draft_ready', 'human_review', 'approved', 'sent']);
-
         // A job is only truly failed if the stage output is ALSO missing — retries that
         // eventually succeeded must not be flagged red just because an earlier attempt failed.
         $stageFailedWithNoOutput = fn(string $class, mixed $output) =>
             $hasFailed($class) && empty($output);
 
-        $stages = [
-            ['key' => 'webhook',       'label' => 'Webhook',       'status' => 'done',  'detail' => 'Transaction created'],
-            ['key' => 'read_email',    'label' => 'Read Email',    'status' => $stageFailedWithNoOutput('ReadEmailJob',     $tx->read_output)    ? 'fail' : ($tx->read_output    ? 'done' : 'pending'), 'detail' => $tx->read_output    ? $this->excerpt($tx->read_output, 'plain_english_summary') : null],
-            ['key' => 'classify',      'label' => 'Classify',      'status' => $stageFailedWithNoOutput('ClassifyEmailJob', $tx->classify_output) ? 'fail' : ($tx->classify_output ? 'done' : 'pending'), 'detail' => $tx->classify_output ? $this->excerpt($tx->classify_output, 'category') . ' · ' . $this->excerpt($tx->classify_output, 'priority') : null],
-            ['key' => 'memory',        'label' => 'Memory Lookup', 'status' => $stageFailedWithNoOutput('MemoryLookupJob',  $tx->memory_output)  ? 'fail' : ($tx->memory_output  ? 'done' : 'pending'), 'detail' => $tx->memory_output  ? $this->excerpt($tx->memory_output, 'matched_client') : null],
-            ['key' => 'log_entry',     'label' => 'Log Entry',     'status' => $stageFailedWithNoOutput('LogTransactionJob', $pastLog)            ? 'fail' : ($pastLog            ? 'done' : 'pending'), 'detail' => $pastLog ? 'Logged to register' : null],
-            ['key' => 'generate_draft','label' => 'Generate Draft','status' => $stageFailedWithNoOutput('DraftEmailJob',     $tx->draft_output)   ? 'fail' : ($tx->draft_output   ? 'done' : 'pending'), 'detail' => $tx->draft_output   ? $this->excerpt($tx->draft_output, 'subject') : null],
-            ['key' => 'push_draft',    'label' => 'Push to Gmail', 'status' => $stageFailedWithNoOutput('PushToGmailJob',   $tx->gmail_draft_id) ? 'fail' : ($tx->gmail_draft_id ? 'done' : 'pending'), 'detail' => $tx->gmail_draft_id ? 'Draft saved · email sent' : null],
-        ];
+        // Merge worker-defined stage metadata (label, sub, icon) with live status
+        $worker          = WorkerRegistry::resolve($tx->worker_slug ?? 'ava');
+        $workerStageDefs = $worker ? $worker->pipelineStages() : [];
 
+        // Build status per key from the transaction's live state
+        $liveStatus = $this->buildLiveStatus($tx, $tx->worker_slug ?? 'ava', $stageFailedWithNoOutput);
+
+        if ($workerStageDefs) {
+            $stages = array_map(function (array $def) use ($liveStatus) {
+                $live = $liveStatus[$def['key']] ?? ['status' => 'pending', 'detail' => null];
+                return array_merge($def, $live);
+            }, $workerStageDefs);
+        } else {
+            // Fallback for workers without pipelineStages() — derive from liveStatus keys
+            $stages = [];
+            foreach ($liveStatus as $key => $live) {
+                $stages[] = array_merge(['key' => $key, 'label' => ucwords(str_replace('_', ' ', $key)), 'sub' => '', 'icon' => 'check', 'job_class' => null], $live);
+            }
+        }
+
+        // Mark the first pending stage as 'active'
         $seenPending = false;
         foreach ($stages as &$s) {
             if ($s['status'] === 'pending' && !$seenPending) { $s['status'] = 'active'; $seenPending = true; }
         }
 
-        $terminalStatuses = ['draft_ready', 'human_review', 'approved', 'sent', 'failed'];
+        $terminalStatuses = ['draft_ready', 'human_review', 'approved', 'sent', 'failed', 'blocked', 'dismissed'];
         $isTerminal = in_array($tx->status, $terminalStatuses);
         $allResolved = collect($stages)->every(fn($s) => in_array($s['status'], ['done', 'fail']));
 
         return response()->json([
-            'tx_id'  => $txId,
-            'status' => $tx->status,
-            'stages' => $stages,
-            'done'   => $isTerminal || $allResolved,
-            'failed' => $tx->status === 'failed' || collect($stages)->contains(fn($s) => $s['status'] === 'fail'),
+            'tx_id'   => $txId,
+            'status'  => $tx->status,
+            'stages'  => $stages,
+            'done'    => $isTerminal || $allResolved,
+            'failed'  => in_array($tx->status, ['failed', 'blocked']) || collect($stages)->contains(fn($s) => $s['status'] === 'fail'),
+            'blocked' => $tx->status === 'blocked',
         ], 200, [], JSON_INVALID_UTF8_SUBSTITUTE);
+    }
+
+    // ── Pipeline live-status builder — one per worker type ───────────────────
+
+    private function buildLiveStatus(object $tx, string $workerSlug, callable $stageFailedWithNoOutput): array
+    {
+        if ($workerSlug === 'nux') {
+            return $this->buildNuxLiveStatus($tx, $stageFailedWithNoOutput);
+        }
+
+        // AVA (default)
+        $pastLog      = in_array($tx->status, ['logging', 'templating', 'drafting', 'draft_ready', 'human_review', 'approved', 'sent']);
+        return [
+            'webhook'         => ['status' => 'done', 'detail' => 'Transaction created'],
+            'read_email'      => ['status' => $stageFailedWithNoOutput('ReadEmailJob',      $tx->read_output)      ? 'fail' : ($tx->read_output      ? 'done' : 'pending'), 'detail' => $tx->read_output      ? $this->excerpt($tx->read_output,      'plain_english_summary') : null],
+            'classify'        => ['status' => $stageFailedWithNoOutput('ClassifyEmailJob',  $tx->classify_output)  ? 'fail' : ($tx->classify_output  ? 'done' : 'pending'), 'detail' => $tx->classify_output  ? $this->excerpt($tx->classify_output,  'category') . ' · ' . $this->excerpt($tx->classify_output, 'priority') : null],
+            'memory'          => ['status' => $stageFailedWithNoOutput('MemoryLookupJob',   $tx->memory_output)    ? 'fail' : ($tx->memory_output    ? 'done' : 'pending'), 'detail' => $tx->memory_output    ? $this->excerpt($tx->memory_output,    'matched_client') : null],
+            'log_entry'       => ['status' => $stageFailedWithNoOutput('LogTransactionJob', $pastLog)              ? 'fail' : ($pastLog              ? 'done' : 'pending'), 'detail' => $pastLog              ? 'Logged to register' : null],
+            'select_template' => ['status' => $stageFailedWithNoOutput('SelectTemplateJob', $tx->template_output)  ? 'fail' : ($tx->template_output  ? 'done' : 'pending'), 'detail' => $tx->template_output  ? $this->excerpt($tx->template_output, 'selected_template') : null],
+            'draft_email'     => ['status' => $stageFailedWithNoOutput('DraftEmailJob',     $tx->draft_output)     ? 'fail' : ($tx->draft_output     ? 'done' : 'pending'), 'detail' => $tx->draft_output     ? $this->excerpt($tx->draft_output,     'subject') : null],
+            'push_draft'      => ['status' => $stageFailedWithNoOutput('PushToGmailJob',    $tx->gmail_draft_id)   ? 'fail' : ($tx->gmail_draft_id   ? 'done' : 'pending'), 'detail' => $tx->gmail_draft_id   ? 'Draft saved to Gmail' : null],
+        ];
+    }
+
+    private function buildNuxLiveStatus(object $tx, callable $stageFailedWithNoOutput): array
+    {
+        // NUX doesn't write to STAGE_COLUMNS — derive completion from status progression.
+        // Status flow: received → reading → classifying → repurposing → generating → drafting → draft_ready
+        $statusOrder = ['received', 'reading', 'classifying', 'repurposing', 'generating', 'drafting', 'draft_ready', 'skipped', 'failed', 'blocked'];
+        $currentIdx  = array_search($tx->status, $statusOrder) ?: 0;
+
+        $past = fn(int $minIdx) => $currentIdx >= $minIdx
+            ? 'done'
+            : ($stageFailedWithNoOutput('', true) ? 'fail' : 'pending');
+
+        // Load nux_register for final stage detail
+        $nuxReg = DB::table('nux_register')->where('transaction_id', $tx->id ?? 0)->first();
+
+        return [
+            'read_post'  => ['status' => $past(1), 'detail' => $past(1) === 'done' ? 'Post parsed' : null],
+            'classify'   => [
+                'status' => $stageFailedWithNoOutput('ClassifyPostJob', $tx->classify_output) ? 'fail' : $past(2),
+                'detail' => $tx->classify_output ? $this->excerpt($tx->classify_output, 'post_type') . ' · ' . $this->excerpt($tx->classify_output, 'repurpose_value') : null,
+            ],
+            'repurpose'  => ['status' => $past(3), 'detail' => $past(3) === 'done' ? 'Copies generated' : null],
+            'media'      => ['status' => $past(4), 'detail' => $nuxReg?->image_url ? 'Image generated' : ($past(4) === 'done' ? 'No image' : null)],
+            'draft_post' => ['status' => $past(5), 'detail' => $past(5) === 'done' ? 'Package compiled' : null],
+            'push_draft' => [
+                'status' => $stageFailedWithNoOutput('PushToGmailJob', $nuxReg?->gmail_draft_id) ? 'fail' : $past(6),
+                'detail' => $nuxReg?->gmail_draft_id ? 'Delivered to inbox' : null,
+            ],
+        ];
     }
 
     // ── PLATFORM LAYER ─────────────────────────────────────────────────────
@@ -998,10 +1055,10 @@ MD;
 
             // ── Memory stats
             $memory = [
-                'assets'    => DB::table('assets')->where('user_id', $dep->user_id)->count(),
+                'assets'    => DB::table('assets')->where('user_id', $dep->user_id)->whereNull('deleted_at')->count(),
                 'rules'     => DB::table('ava_rules')->where('deployment_id', $dep->id)->count(),
                 'templates' => DB::table('email_templates')->where('user_id', $dep->user_id)->where('worker_slug', $dep->worker_slug)->count(),
-                'contacts'  => DB::table('contacts')->where('user_id', $dep->user_id)->count(),
+                'contacts'  => DB::table('contacts')->where('user_id', $dep->user_id)->whereNull('deleted_at')->count(),
             ];
 
             // ── Schema (I/O contract)
@@ -1027,27 +1084,31 @@ MD;
 
     private function getJobMap(string $workerSlug): array
     {
-        // Per-worker job definitions — add new worker types here as they're built
-        $d = ['status' => 'warn', 'detail' => '—', 'fail_count' => 0];
-        $maps = [
-            'ava' => [
-                'gmail_watch'    => $d + ['label' => 'Gmail Watch',    'class' => null],
-                'webhook'        => $d + ['label' => 'Webhook',        'class' => null],
-                'ReadEmailJob'   => $d + ['label' => 'Read Email',     'class' => 'App\Workers\AVA\Jobs\ReadEmailJob'],
-                'ClassifyEmail'  => $d + ['label' => 'Classify',       'class' => 'App\Workers\AVA\Jobs\ClassifyEmailJob'],
-                'MemoryLookup'   => $d + ['label' => 'Memory Lookup',  'class' => 'App\Workers\AVA\Jobs\MemoryLookupJob'],
-                'LogTransaction' => $d + ['label' => 'Log Entry',      'class' => 'App\Workers\AVA\Jobs\LogTransactionJob'],
-                'GenerateDraft'  => $d + ['label' => 'Generate Draft', 'class' => 'App\Workers\AVA\Jobs\GenerateDraftJob'],
-                'PushToGmail'    => $d + ['label' => 'Push Draft',     'class' => 'App\Workers\AVA\Jobs\PushToGmailJob'],
-                'DailySummary'   => $d + ['label' => 'Daily Summary',  'class' => 'App\Workers\AVA\Jobs\DailySummaryJob'],
-            ],
-        ];
+        // Build from the worker contract — no hardcoded job class lists needed
+        $contract = \App\Platform\Services\WorkerRegistry::resolve($workerSlug);
+        if (\App\Platform\Services\WorkerRegistry::isNull($contract)) {
+            return [
+                'trigger' => ['label' => 'Trigger', 'class' => null, 'status' => 'warn', 'detail' => 'Worker not registered', 'fail_count' => 0],
+                'process' => ['label' => 'Process', 'class' => null, 'status' => 'warn', 'detail' => '', 'fail_count' => 0],
+                'output'  => ['label' => 'Output',  'class' => null, 'status' => 'warn', 'detail' => '', 'fail_count' => 0],
+            ];
+        }
 
-        return $maps[$workerSlug] ?? [
-            'trigger'  => ['label' => 'Trigger', 'class' => null, 'status' => 'warn', 'detail' => 'No job map defined for this worker', 'fail_count' => 0],
-            'process'  => ['label' => 'Process', 'class' => null, 'status' => 'warn', 'detail' => '', 'fail_count' => 0],
-            'output'   => ['label' => 'Output',  'class' => null, 'status' => 'warn', 'detail' => '', 'fail_count' => 0],
-        ];
+        $d   = ['status' => 'warn', 'detail' => '—', 'fail_count' => 0];
+        $map = [];
+
+        foreach ($contract->pipelineStages() as $stage) {
+            $shortName = $stage['job_class'] ? class_basename($stage['job_class']) : $stage['key'];
+            $map[$shortName] = $d + ['label' => $stage['label'], 'class' => $stage['job_class']];
+        }
+
+        // Scheduled jobs declared by the worker also appear in the job map
+        foreach ($contract->scheduledJobs() as $scheduled) {
+            $shortName = class_basename($scheduled['job']);
+            $map[$shortName] = $d + ['label' => $shortName, 'class' => $scheduled['job']];
+        }
+
+        return $map;
     }
 
     private function excerpt(string $json, string $key): ?string

@@ -26,6 +26,7 @@ class RegistrationTest extends TestCase
         ]);
 
         $this->assertAuthenticated();
-        $response->assertRedirect(route('dashboard', absolute: false));
+        // New registrations redirect to onboarding, not dashboard
+        $response->assertRedirect(route('onboarding', absolute: false));
     }
 }

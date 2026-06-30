@@ -9,32 +9,42 @@ class TransactionService
 {
     public function create(string $workerSlug, array $rawInput): object
     {
-        $txId = $this->generateTxId();
+        $txId         = $this->generateTxId();
+        $deploymentId = $rawInput['deployment_id'] ?? null;
 
-        DB::table('transactions')->insert([
-            'tx_id'         => $txId,
-            'worker_slug'   => $workerSlug,
-            'user_id'       => $rawInput['user_id'] ?? null,
-            'deployment_id' => $rawInput['deployment_id'] ?? null,
-            'status'        => 'received',
-            'raw_input'     => json_encode($rawInput),
-            'created_at'    => now(),
-            'updated_at'    => now(),
-        ]);
+        DB::transaction(function () use ($txId, $workerSlug, $rawInput, $deploymentId) {
+            DB::table('transactions')->insert([
+                'tx_id'         => $txId,
+                'worker_slug'   => $workerSlug,
+                'user_id'       => $rawInput['user_id'] ?? null,
+                'deployment_id' => $deploymentId,
+                'status'        => 'received',
+                'is_test'       => $rawInput['is_test'] ?? false,
+                'raw_input'     => json_encode($rawInput),
+                'created_at'    => now(),
+                'updated_at'    => now(),
+            ]);
+
+            if ($deploymentId) {
+                // Always increment unit_count — used for quota enforcement on all plan types
+                DB::table('deployment_billing')
+                    ->where('deployment_id', $deploymentId)
+                    ->increment('unit_count');
+
+                // Only increment trial counter while the deployment is still in trial
+                $billingStatus = DB::table('deployment_billing')
+                    ->where('deployment_id', $deploymentId)
+                    ->value('status');
+
+                if ($billingStatus === 'trial') {
+                    DB::table('deployment_billing')
+                        ->where('deployment_id', $deploymentId)
+                        ->increment('trial_transactions_used');
+                }
+            }
+        });
 
         $this->log($workerSlug, $txId, 'transaction_created', ['raw_input' => $rawInput]);
-
-        // Increment usage counters — fire-and-forget so counter issues never block ingestion
-        if (!empty($rawInput['deployment_id'])) {
-            try {
-                DB::table('deployment_billing')
-                    ->where('deployment_id', $rawInput['deployment_id'])
-                    ->increment('trial_transactions_used');
-                DB::table('deployment_billing')
-                    ->where('deployment_id', $rawInput['deployment_id'])
-                    ->increment('period_transaction_count');
-            } catch (\Throwable) {}
-        }
 
         return $this->find($txId);
     }
@@ -60,7 +70,10 @@ class TransactionService
 
     public function log(string $workerSlug, ?string $txId, string $event, array $payload = [], string $level = 'info'): void
     {
+        $userId = $txId ? DB::table('transactions')->where('tx_id', $txId)->value('user_id') : null;
+
         DB::table('platform_events')->insert([
+            'user_id'     => $userId,
             'worker_slug' => $workerSlug,
             'tx_id'       => $txId,
             'event'       => $event,
@@ -71,19 +84,25 @@ class TransactionService
         ]);
     }
 
-    // Resolve the isolated queue name for a transaction's deployment
+    // Resolve the queue for a transaction.
+    // Uses worker-type queues (not per-deployment) so Horizon can manage one pool
+    // per worker type regardless of how many deployments exist.
+    // Tenant isolation is at the job level — every job carries deployment_id + user_id.
     public function queueForTx(object $tx): string
     {
         if ($tx->deployment_id) {
-            $dep = DB::table('worker_deployments')->where('id', $tx->deployment_id)->first();
-            if ($dep) return $dep->worker_slug . '-' . $dep->id;
+            $slug = DB::table('worker_deployments')
+                ->where('id', $tx->deployment_id)
+                ->value('worker_slug');
+            if ($slug) return $slug; // e.g. 'ava', 'nova', 'rex'
         }
-        return 'ava'; // platform fallback
+        return 'default';
     }
 
+    // Kept for backwards compatibility — returns worker-type queue, not deployment-scoped.
     public static function queueForDeployment(int $deploymentId, string $workerSlug): string
     {
-        return $workerSlug . '-' . $deploymentId;
+        return $workerSlug;
     }
 
     private function generateTxId(): string

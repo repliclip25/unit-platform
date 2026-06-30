@@ -1,7 +1,7 @@
 <x-guest-layout>
     <div class="text-center mb-7">
-        <div class="w-14 h-14 rounded-full mx-auto mb-4 flex items-center justify-center" style="background:rgba(243,197,49,0.12);border:1px solid rgba(243,197,49,0.3)">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#f3c531" stroke-width="1.8"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 6-10 7L2 6"/></svg>
+        <div class="w-14 h-14 rounded-full mx-auto mb-4 flex items-center justify-center" style="background:rgba(var(--accent-rgb),0.12);border:1px solid rgba(var(--accent-rgb),0.3)">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.8"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 6-10 7L2 6"/></svg>
         </div>
         <h1 class="font-display font-bold text-xl mb-1">Check your email</h1>
         <p class="auth-muted text-sm auth-text-dark max-w-xs mx-auto">

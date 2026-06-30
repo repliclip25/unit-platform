@@ -30,18 +30,35 @@ class UnitNotifier
             $user = $dep ? DB::table('users')->where('id', $dep->user_id)->first() : null;
             if (!$user || !$dep) return;
 
-            $worker = DB::table('workers')->where('slug', $dep->worker_slug)->first();
+            $contract = \App\Platform\Services\WorkerRegistry::resolve($dep->worker_slug);
+            $employee = \App\Platform\Services\WorkerRegistry::isNull($contract) ? [] : $contract->employee();
 
             Mail::to($user->email)->queue(new WorkerDeployed(
                 name:           $user->name,
                 workerName:     $dep->name,
                 workerSlug:     $dep->worker_slug,
-                workerDesc:     $worker?->description ?? '',
+                workerDesc:     $employee['title'] ?? '',
                 deploymentId:   $deploymentId,
                 trialEndsAt:    now()->addDays(14)->format('F j, Y'),
             ));
         } catch (\Throwable $e) {
             Log::error('[UnitNotifier] workerDeployed failed', ['dep' => $deploymentId, 'error' => $e->getMessage()]);
+        }
+    }
+
+    /**
+     * Alert admin of a platform-level error or critical event.
+     * Fire-and-forget — never throws.
+     */
+    public static function adminAlert(string $subject, string $message): void
+    {
+        try {
+            Mail::raw($message, fn($m) => $m
+                ->to('hello@unit.report', 'UNIT Admin')
+                ->subject('[UNIT Alert] ' . $subject)
+            );
+        } catch (\Throwable $e) {
+            Log::error('[UnitNotifier] adminAlert failed', ['error' => $e->getMessage()]);
         }
     }
 

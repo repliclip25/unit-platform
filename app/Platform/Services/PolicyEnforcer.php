@@ -2,6 +2,7 @@
 
 namespace App\Platform\Services;
 
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -34,23 +35,35 @@ class PolicyEnforcer
      */
     public static function run(): array
     {
-        $actions = [];
-
-        $users = DB::table('users')
-            ->whereNull('blocked_at')
-            ->select('id', 'email', 'name', 'monthly_spend_cap', 'spend_cap_breach_since')
-            ->get();
-
-        foreach ($users as $user) {
-            $userActions = self::evaluateUser($user);
-            $actions = array_merge($actions, $userActions);
+        // Distributed lock — prevents duplicate runs from clock skew or manual triggers
+        $lock = Cache::lock('policy_enforcer_run', 3600);
+        if (!$lock->get()) {
+            Log::info('PolicyEnforcer: skipped — another run is in progress');
+            return [];
         }
 
-        if (!empty($actions)) {
-            Log::warning('PolicyEnforcer: auto-enforcement actions taken', ['count' => count($actions)]);
-        }
+        try {
+            $actions = [];
 
-        return $actions;
+            DB::table('users')
+                ->whereNull('blocked_at')
+                ->select('id', 'email', 'name', 'monthly_spend_cap', 'spend_cap_breach_since')
+                ->orderBy('id')
+                ->chunkById(100, function ($users) use (&$actions) {
+                    foreach ($users as $user) {
+                        $userActions = self::evaluateUser($user);
+                        $actions     = array_merge($actions, $userActions);
+                    }
+                });
+
+            if (!empty($actions)) {
+                Log::warning('PolicyEnforcer: auto-enforcement actions taken', ['count' => count($actions)]);
+            }
+
+            return $actions;
+        } finally {
+            $lock->release();
+        }
     }
 
     // ── Per-user evaluation ───────────────────────────────────────────────────
@@ -100,7 +113,7 @@ class PolicyEnforcer
                     ]);
                     self::log($user->id, 'breach_detected', 'SPEND_CAP_REACHED', "First detection — watching");
                     $actions[] = ['breach_detected', $user->id, 'SPEND_CAP_REACHED', "First detection ({$user->email})"];
-                } elseif (now()->diffInHours($breachSince) >= 2) {
+                } elseif (now()->diffInSeconds($breachSince) >= 7200) {
                     // 2+ hours over cap → escalate to hard block
                     UsageGuard::blockUser(
                         $user->id,

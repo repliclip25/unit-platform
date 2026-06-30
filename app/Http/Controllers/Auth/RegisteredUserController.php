@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Http\Controllers\AdminMessagingController;
 use App\Http\Controllers\Controller;
-use App\Mail\TenantWelcome;
 use App\Models\User;
 use App\Platform\Services\InfluencerService;
 use App\Platform\Services\ReferralService;
@@ -25,7 +25,10 @@ class RegisteredUserController extends Controller
      */
     public function create(Request $request): View
     {
-        return view('auth.register', ['refCode' => $request->query('ref')]);
+        return view('auth.register', [
+            'refCode'      => $request->query('ref'),
+            'workerIntent' => $request->query('worker'),
+        ]);
     }
 
     /**
@@ -82,7 +85,35 @@ class RegisteredUserController extends Controller
             'updated_at'  => now(),
         ]);
 
-        Mail::to($user->email)->queue(new TenantWelcome($user->name));
+        // Send welcome email — referred tenants get a distinct welcome acknowledging the referral
+        try {
+            $appUrl       = config('app.url');
+            $isReferred   = DB::table('referral_credits')->where('referee_id', $user->id)->where('event', 'signup')->exists();
+            $welcomeKey   = $isReferred ? 'referral_welcome_tenant' : 'welcome_tenant';
+            $welcomeTpl   = AdminMessagingController::getTemplate($welcomeKey);
+            if ($welcomeTpl) {
+                $replacements = [
+                    '{name}'     => $user->name,
+                    '{app_url}'  => $appUrl,
+                    '{bonus_tx}' => (string) \App\Platform\Services\ReferralService::REFEREE_BONUS_TX,
+                ];
+                $subject = str_replace(array_keys($replacements), array_values($replacements), $welcomeTpl->subject);
+                $body    = str_replace(array_keys($replacements), array_values($replacements), $welcomeTpl->body);
+                Mail::raw($body, fn($m) => $m
+                    ->to($user->email, $user->name)
+                    ->subject($subject)
+                    ->replyTo('hello@unit.report', $welcomeTpl->from_name)
+                );
+            }
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('Welcome email failed', ['user_id' => $user->id, 'error' => $e->getMessage()]);
+        }
+
+        // Capture worker intent from form (passed from /register?worker=ava)
+        $workerIntent = $request->input('worker');
+        if ($workerIntent && in_array($workerIntent, ['ava', 'nova', 'rex', 'lena'])) {
+            session(['onboarding_intent_worker' => $workerIntent]);
+        }
 
         return redirect()->route('onboarding');
     }

@@ -3,8 +3,8 @@
 
 <div class="badge-green"><span class="dot" style="background:#16a34a;"></span> Live</div>
 
-<h1>{{ $workerName }} is now running</h1>
-<p>Hi {{ $name }}, your worker has been deployed and is actively monitoring for work.</p>
+<h1>{{ $workerName }} is now on your team</h1>
+<p>Hi {{ $name }}, your new employee has been hired and is actively monitoring for work.</p>
 
 <table class="info-table">
   <tr>
@@ -17,7 +17,7 @@
   </tr>
   @if($workerDesc)
   <tr>
-    <td>Role</td>
+    <td>Title</td>
     <td>{{ $workerDesc }}</td>
   </tr>
   @endif
@@ -39,6 +39,6 @@
 
 <hr class="divider">
 
-<p style="font-size:13px; color:#71717a;">Next step: make sure your Gmail inbox is connected and the watch is active so {{ $workerName }} can start receiving emails.</p>
+<p style="font-size:13px; color:#71717a;">Next step: make sure your Gmail inbox is connected and the watch is active so {{ $workerName }} can start working for you.</p>
 
 @include('emails.partials.footer', ['footerNote' => "You're receiving this because you just deployed a worker on UNIT. Questions? Reply to this email."])

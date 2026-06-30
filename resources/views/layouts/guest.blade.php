@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" id="html-root" data-theme="dark">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" id="html-root" data-theme="light">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -12,38 +12,46 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
         :root, [data-theme="dark"] {
-            --bg-base:      #0d0d0d;
-            --bg-card:      rgba(33,33,33,0.97);
-            --border:       rgba(255,255,255,0.09);
-            --border-card:  rgba(255,255,255,0.09);
-            --text-primary:   #ececec;
-            --text-secondary: #b4b4b4;
-            --text-muted:     #8e8ea0;
-            --text-faint:     #555568;
-            --nav-bg:       rgba(23,23,23,0.90);
-            --nav-border:   rgba(255,255,255,0.08);
-            --input-bg:     rgba(255,255,255,0.05);
-            --input-border: rgba(255,255,255,0.1);
-            --input-text:   #ececec;
-            --input-ph:     #555568;
-            --link-color:   #f3c531;
+            --bg-base:      #000000;
+            --bg-card:      #212121;
+            --border:       rgba(255,255,255,0.12);
+            --border-card:  rgba(255,255,255,0.12);
+            --text-primary:   #ffffff;
+            --text-secondary: #cccccc;
+            --text-muted:     #999999;
+            --text-faint:     #555555;
+            --nav-bg:       rgba(0,0,0,0.92);
+            --nav-border:   rgba(255,255,255,0.10);
+            --input-bg:     #212121;
+            --input-border: rgba(255,255,255,0.15);
+            --input-text:   #ffffff;
+            --input-ph:     #555555;
+            --link-color:   #f1d362;
+            --accent:      #f1d362;
+            --accent-rgb:  241, 211, 98;
+            --accent-dark: #c9a800;
+            --accent-text: #f1d362;
         }
         [data-theme="light"] {
-            --bg-base:      radial-gradient(ellipse at 50% 100%, #EDE8DF 0%, #F5F0E8 55%, #FDFAF5 100%);
-            --bg-card:      rgba(253,250,245,0.97);
-            --border:       rgba(0,0,0,0.09);
-            --border-card:  rgba(0,0,0,0.09);
-            --text-primary:   #1C1917;
-            --text-secondary: #44403C;
-            --text-muted:     #78716C;
-            --text-faint:     #A8A29E;
-            --nav-bg:       rgba(253,250,245,0.90);
-            --nav-border:   rgba(0,0,0,0.08);
+            --bg-base:      #f9f9f7;
+            --bg-card:      #ffffff;
+            --border:       #e2e2e0;
+            --border-card:  #e2e2e0;
+            --text-primary:   #000000;
+            --text-secondary: #1a1a1a;
+            --text-muted:     #555555;
+            --text-faint:     #999999;
+            --nav-bg:       rgba(249,249,247,0.92);
+            --nav-border:   #e2e2e0;
             --input-bg:     #ffffff;
-            --input-border: #C2BBB0;
-            --input-text:   #1C1917;
-            --input-ph:     #A8A29E;
-            --link-color:   #92700a;
+            --input-border: #e2e2e0;
+            --input-text:   #000000;
+            --input-ph:     #999999;
+            --link-color:   #7a5c00;
+            --accent:      #f1d362;
+            --accent-rgb:  241, 211, 98;
+            --accent-dark: #c9a800;
+            --accent-text: #7a5c00;
         }
 
         body {
@@ -69,7 +77,7 @@
             font-family: inherit;
         }
         .auth-input::placeholder { color: var(--input-ph); }
-        .auth-input:focus { outline: none; border-color: #f3c531; box-shadow: 0 0 0 3px rgba(243,197,49,0.15); }
+        .auth-input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(var(--accent-rgb),0.15); }
 
         .auth-muted  { color: var(--text-muted); }
         .auth-faint  { color: var(--text-faint); }
@@ -86,8 +94,8 @@
             width: 14px; height: 14px; border-radius: 50%; background: white;
             transition: transform .2s ease;
         }
-        [data-theme="dark"]  .theme-toggle { background: #f3c531; }
-        [data-theme="light"] .theme-toggle { background: #cbd5e1; }
+        [data-theme="dark"]  .theme-toggle { background: var(--accent); }
+        [data-theme="light"] .theme-toggle { background: #cccccc; }
         [data-theme="dark"]  .theme-toggle::after { transform: translateX(16px); }
         [data-theme="light"] .theme-toggle::after { transform: translateX(0); }
 
@@ -99,7 +107,7 @@
     <script>
         /* Prevent flash */
         (function() {
-            const t = localStorage.getItem('unit-theme') || 'dark';
+            const t = localStorage.getItem('unit-theme-v2') || 'light';
             document.getElementById('html-root').setAttribute('data-theme', t);
         })();
     </script>
@@ -109,7 +117,7 @@
 <nav class="auth-nav px-6 py-4 flex items-center justify-between">
     <a href="{{ url('/') }}" class="flex items-center gap-2.5">
         <img src="/logo.png" alt="UNIT" class="w-8 h-8 rounded-md">
-        <span style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.1rem;color:#f3c531">UNIT</span>
+        <span style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.1rem;color:var(--accent-text,var(--accent))">UNIT</span>
     </a>
     <div class="flex items-center gap-3">
         <span id="theme-label" class="text-xs" style="color:var(--text-faint)"></span>
@@ -133,13 +141,33 @@ function applyTheme(theme) {
 }
 
 document.addEventListener('DOMContentLoaded', function () {
-    applyTheme(localStorage.getItem('unit-theme') || 'dark');
+    applyTheme(localStorage.getItem('unit-theme-v2') || 'light');
     document.getElementById('theme-toggle').addEventListener('click', function () {
         const next = document.getElementById('html-root').getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-        localStorage.setItem('unit-theme', next);
+        localStorage.setItem('unit-theme-v2', next);
         applyTheme(next);
     });
 });
+</script>
+<script>
+(function(){
+    const SP='<svg style="width:1em;height:1em;display:inline-block;vertical-align:-0.15em;animation:spin 0.7s linear infinite;margin-right:0.35em" fill="none" viewBox="0 0 24 24"><circle style="opacity:.3" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path style="opacity:.85" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path></svg>';
+    const s=document.createElement('style');s.textContent='@keyframes spin{to{transform:rotate(360deg)}}';document.head.appendChild(s);
+    function load(btn){
+        if(!btn||btn._loadingActive||btn.dataset.noLoading!==undefined)return;
+        btn._loadingActive=true;btn.disabled=true;
+        btn.style.opacity='0.75';btn.style.cursor='wait';
+        btn.innerHTML=SP+(btn.dataset.loadingText||btn.textContent.trim()||'Please wait…');
+    }
+    document.addEventListener('submit',function(e){
+        if(e.target.dataset.noLoading!==undefined)return;
+        const b=e.target._submitter||e.target.querySelector('[type="submit"]:not([data-no-loading])')||e.target.querySelector('button:not([data-no-loading])');
+        if(b)load(b);
+    },true);
+    document.addEventListener('click',function(e){
+        const b=e.target.closest('[type="submit"]');if(b?.form)b.form._submitter=b;
+    },true);
+})();
 </script>
 </body>
 </html>

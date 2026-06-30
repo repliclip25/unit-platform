@@ -8,8 +8,120 @@
                 <h2 class="text-white font-semibold">Tenant Billing Controls</h2>
                 <p class="text-gray-500 text-xs mt-0.5">Monitor usage, set spend caps, block policy violations</p>
             </div>
-            <span class="text-xs text-gray-600 border border-gray-800 rounded px-2 py-1">{{ $tenants->count() }} tenants</span>
+            <span class="text-xs text-gray-600 border border-gray-800 rounded px-2 py-1">{{ $tenants->total() }} tenants</span>
         </div>
+
+        {{-- Leaderboard cards --}}
+        <div class="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-5 gap-4">
+
+            {{-- Top Spenders --}}
+            <div class="bg-gray-900 border border-gray-800 rounded-2xl p-4">
+                <p class="text-xs text-gray-500 font-medium mb-3 uppercase tracking-wide">Top Spenders</p>
+                <div class="space-y-2">
+                    @forelse($topSpenders as $i => $u)
+                    <a href="{{ route('admin.tenants.show', $u->user_id) }}" class="flex items-center gap-2 group">
+                        <span class="text-xs text-gray-600 w-4">{{ $i+1 }}</span>
+                        <div class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0" style="background:var(--accent);color:#1a1404">{{ strtoupper(substr($u->name,0,1)) }}</div>
+                        <div class="min-w-0 flex-1">
+                            <p class="text-xs text-white truncate group-hover:underline">{{ $u->name }}</p>
+                            <p class="text-xs font-semibold" style="color:var(--accent-text)">${{ number_format($u->total_spend,4) }}</p>
+                        </div>
+                    </a>
+                    @empty
+                    <p class="text-xs text-gray-600">No data yet</p>
+                    @endforelse
+                </div>
+            </div>
+
+            {{-- Top Token Consumers --}}
+            <div class="bg-gray-900 border border-gray-800 rounded-2xl p-4">
+                <p class="text-xs text-gray-500 font-medium mb-3 uppercase tracking-wide">Top Token Use</p>
+                <div class="space-y-2">
+                    @forelse($topTokens as $i => $u)
+                    <a href="{{ route('admin.tenants.show', $u->user_id) }}" class="flex items-center gap-2 group">
+                        <span class="text-xs text-gray-600 w-4">{{ $i+1 }}</span>
+                        <div class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 bg-purple-900 text-purple-300">{{ strtoupper(substr($u->name,0,1)) }}</div>
+                        <div class="min-w-0 flex-1">
+                            <p class="text-xs text-white truncate group-hover:underline">{{ $u->name }}</p>
+                            <p class="text-xs text-purple-400 font-semibold">{{ number_format($u->total_tokens) }}</p>
+                        </div>
+                    </a>
+                    @empty
+                    <p class="text-xs text-gray-600">No data yet</p>
+                    @endforelse
+                </div>
+            </div>
+
+            {{-- Top Deployments --}}
+            <div class="bg-gray-900 border border-gray-800 rounded-2xl p-4">
+                <p class="text-xs text-gray-500 font-medium mb-3 uppercase tracking-wide">Most Workers</p>
+                <div class="space-y-2">
+                    @forelse($topDeployments as $i => $u)
+                    <a href="{{ route('admin.tenants.show', $u->id) }}" class="flex items-center gap-2 group">
+                        <span class="text-xs text-gray-600 w-4">{{ $i+1 }}</span>
+                        <div class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 bg-blue-900 text-blue-300">{{ strtoupper(substr($u->name,0,1)) }}</div>
+                        <div class="min-w-0 flex-1">
+                            <p class="text-xs text-white truncate group-hover:underline">{{ $u->name }}</p>
+                            <p class="text-xs text-blue-400 font-semibold">{{ $u->dep_count }} worker{{ $u->dep_count != 1 ? 's' : '' }}</p>
+                        </div>
+                    </a>
+                    @empty
+                    <p class="text-xs text-gray-600">No data yet</p>
+                    @endforelse
+                </div>
+            </div>
+
+            {{-- Top Referrers --}}
+            <div class="bg-gray-900 border border-gray-800 rounded-2xl p-4">
+                <p class="text-xs text-gray-500 font-medium mb-3 uppercase tracking-wide">Top Referrers</p>
+                <div class="space-y-2">
+                    @forelse($topReferrers as $i => $u)
+                    <a href="{{ route('admin.tenants.show', $u->id) }}" class="flex items-center gap-2 group">
+                        <span class="text-xs text-gray-600 w-4">{{ $i+1 }}</span>
+                        <div class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 bg-green-900 text-green-300">{{ strtoupper(substr($u->name,0,1)) }}</div>
+                        <div class="min-w-0 flex-1">
+                            <p class="text-xs text-white truncate group-hover:underline">{{ $u->name }}</p>
+                            <p class="text-xs text-green-400 font-semibold">{{ $u->referral_count }} referral{{ $u->referral_count != 1 ? 's' : '' }}</p>
+                        </div>
+                    </a>
+                    @empty
+                    <p class="text-xs text-gray-600">No referrals yet</p>
+                    @endforelse
+                </div>
+            </div>
+
+            {{-- Newest Registrants --}}
+            <div class="bg-gray-900 border border-gray-800 rounded-2xl p-4">
+                <p class="text-xs text-gray-500 font-medium mb-3 uppercase tracking-wide">Newest Signups</p>
+                <div class="space-y-2">
+                    @forelse($newestTenants as $i => $u)
+                    <a href="{{ route('admin.tenants.show', $u->id) }}" class="flex items-center gap-2 group">
+                        <span class="text-xs text-gray-600 w-4">{{ $i+1 }}</span>
+                        <div class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 bg-orange-900 text-orange-300">{{ strtoupper(substr($u->name,0,1)) }}</div>
+                        <div class="min-w-0 flex-1">
+                            <p class="text-xs text-white truncate group-hover:underline">{{ $u->name }}</p>
+                            <p class="text-xs text-gray-500">{{ \Carbon\Carbon::parse($u->created_at)->diffForHumans() }}</p>
+                        </div>
+                    </a>
+                    @empty
+                    <p class="text-xs text-gray-600">No tenants yet</p>
+                    @endforelse
+                </div>
+            </div>
+
+        </div>
+
+        {{-- Search bar --}}
+        <form method="GET" action="{{ route('admin.tenants') }}" class="flex items-center gap-3">
+            <div class="relative flex-1 max-w-sm">
+                <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z"/></svg>
+                <input type="text" name="search" value="{{ $search }}" placeholder="Search by name or email…"
+                    class="w-full bg-gray-900 border border-gray-800 rounded-xl pl-9 pr-4 py-2 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-gray-600">
+            </div>
+            @if($search)
+            <a href="{{ route('admin.tenants') }}" class="text-xs text-gray-500 hover:text-white">Clear</a>
+            @endif
+        </form>
 
         {{-- Tenant table --}}
         <div class="bg-gray-900 border border-gray-800 rounded-2xl overflow-hidden">
@@ -38,8 +150,8 @@
                         {{-- Tenant identity --}}
                         <td class="px-5 py-4">
                             <div class="flex items-center gap-3">
-                                <div class="w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold text-white shrink-0"
-                                     style="background:{{ $isBlocked ? '#7f1d1d' : '#4c1d95' }}">
+                                <div class="w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold shrink-0"
+                                     style="background:{{ $isBlocked ? '#7f1d1d' : 'var(--accent)' }};color:{{ $isBlocked ? '#fca5a5' : '#000000' }}">
                                     {{ strtoupper(substr($tenant->name, 0, 1)) }}
                                 </div>
                                 <div>
@@ -130,6 +242,11 @@
                 @endforeach
                 </tbody>
             </table>
+            @if($tenants->hasPages())
+            <div class="mt-4">
+                {{ $tenants->links() }}
+            </div>
+            @endif
         </div>
 
         {{-- Orphaned deployments (no billing record) --}}
@@ -164,7 +281,7 @@
                             <p class="text-gray-600 text-xs">{{ $dep->tenant_email }}</p>
                         </td>
                         <td class="px-4 py-3">
-                            <span class="text-xs font-mono text-brand bg-violet-900/20 border border-violet-800/40 px-2 py-0.5 rounded">{{ $dep->worker_slug }}</span>
+                            <span class="text-xs font-mono px-2 py-0.5 rounded" style="background:var(--bg-raised);color:var(--text-secondary);border:1px solid var(--border)">{{ $dep->worker_slug }}</span>
                         </td>
                         <td class="px-4 py-3 text-right">
                             <form method="POST" action="{{ route('admin.deployments.backfill-billing', $dep->id) }}">

@@ -2,7 +2,7 @@
 @include('emails.partials.header')
 
 <h1>Welcome to UNIT, {{ $name }}</h1>
-<p>Your AI workforce platform is ready. Here's how to get your first worker running in the next few minutes:</p>
+<p>Your AI workforce platform is ready. Here's how to hire your first employee in the next few minutes:</p>
 
 <table class="info-table">
   <tr>
@@ -15,7 +15,7 @@
   </tr>
   <tr>
     <td>Step 3</td>
-    <td><strong>Deploy AVA</strong> and let it get to work</td>
+    <td><strong>Hire AVA</strong> and put her to work</td>
   </tr>
 </table>
 

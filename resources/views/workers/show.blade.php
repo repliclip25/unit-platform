@@ -1,33 +1,35 @@
 <!DOCTYPE html>
-<html lang="en" id="html-root" data-theme="dark">
+<html lang="en" id="html-root" data-theme="light">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>{{ $worker['name'] }} — {{ $worker['role'] }} | UNIT</title>
 <meta name="description" content="{{ $worker['meta_desc'] }}">
 <link rel="icon" type="image/png" href="/logo.png">
-<script>(function(){var t=localStorage.getItem('unit-theme')||'dark';document.getElementById('html-root').setAttribute('data-theme',t)})();</script>
+<script>(function(){var t=localStorage.getItem('unit-theme-v2')||'light';document.getElementById('html-root').setAttribute('data-theme',t)})();</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Space+Grotesk:wght@500;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root{
-  --gold:#f3c531;--gold-d:#c9920a;--glow:rgba(243,197,49,0.18);
+  --gold:#f1d362;--gold-d:#c9a800;--glow:rgba(241,211,98,0.18);--gold-text:#f1d362;
+  --accent:var(--gold);--accent-rgb:241,211,98;--accent-dark:var(--gold-d);
   --green:#22c55e;--green-bg:rgba(34,197,94,0.1);--green-border:rgba(34,197,94,0.25);
-  --text:#f0f0f0;--t2:#b8b8b8;--t3:#7a7a8a;--t4:#4a4a5a;
-  --line:rgba(255,255,255,0.07);--line2:rgba(255,255,255,0.13);
-  --surf:rgba(255,255,255,0.04);--raised:rgba(255,255,255,0.07);
-  --card:rgba(12,12,18,0.9);--cb:rgba(255,255,255,0.09);
+  --text:#ffffff;--t2:#cccccc;--t3:#999999;--t4:#555555;
+  --line:rgba(255,255,255,0.12);--line2:rgba(255,255,255,0.18);
+  --surf:#1a1a1a;--raised:#212121;
+  --card:#212121;--cb:rgba(255,255,255,0.12);
   --fd:'Space Grotesk','Inter',sans-serif;--fb:'Inter',sans-serif;
-  --bg:#080810;
+  --bg:#000000;
 }
 [data-theme="light"]{
-  --gold:#c9870a;--gold-d:#a36908;--glow:rgba(201,135,10,0.15);
+  --gold:#f1d362;--gold-d:#c9a800;--glow:rgba(241,211,98,0.18);--gold-text:#7a5c00;
   --green:#16a34a;--green-bg:rgba(22,163,74,0.08);--green-border:rgba(22,163,74,0.2);
-  --text:#110f0c;--t2:#3a3530;--t3:#7a6e65;--t4:#b0a090;
-  --line:rgba(0,0,0,0.07);--line2:rgba(0,0,0,0.13);
-  --surf:rgba(0,0,0,0.03);--raised:rgba(0,0,0,0.05);
-  --card:rgba(252,250,246,0.95);--cb:rgba(0,0,0,0.09);
-  --bg:#F0EBE0;
+  --text:#000000;--t2:#1a1a1a;--t3:#555555;--t4:#999999;
+  --line:#e2e2e0;--line2:#cccccc;
+  --surf:#f0f0ee;--raised:#e2e2e0;
+  --card:#ffffff;--cb:#e2e2e0;
+  --bg:#f9f9f7;
+  --accent:var(--gold);--accent-rgb:241,211,98;--accent-dark:var(--gold-d);
 }
 *{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth}
@@ -250,6 +252,42 @@ footer .fa-gold{color:var(--gold)}
   .pd-nodes{grid-template-columns:repeat(4,1fr)!important}
   .nav-right-hide{display:none}
 }
+
+/* ── Light theme overrides ── */
+[data-theme="light"] header{background:rgba(249,249,247,0.97)!important;border-bottom:1px solid #e2e2e0!important}
+[data-theme="light"] .brand{color:#000000!important}
+[data-theme="light"] .btn-gh{color:#555555!important;background:none!important}
+[data-theme="light"] .btn-gh:hover{color:#000000!important}
+[data-theme="light"] .tog{background:#cccccc!important}
+[data-theme="light"] .slabel{color:#7a5c00!important}
+[data-theme="light"] .sh2{color:#000000!important}
+[data-theme="light"] h1.wh{color:#000000!important}
+[data-theme="light"] h1.wh em{color:#7a5c00!important}
+[data-theme="light"] .hero-sub{color:#444444!important}
+[data-theme="light"] .hero-badge{color:#7a5c00!important;border-color:rgba(122,92,0,0.25)!important;background:rgba(122,92,0,0.07)!important}
+[data-theme="light"] .org-chip{color:#000000!important;border-color:rgba(0,0,0,0.15)!important;background:var(--gold)!important}
+/* Stats card numbers — black on light card */
+[data-theme="light"] .hsc-n{color:#000000!important}
+[data-theme="light"] .hsc-l{color:#555555!important}
+[data-theme="light"] .hsc-title{color:#999999!important}
+[data-theme="light"] .hsc-stat{border-color:#e2e2e0!important}
+/* Pipeline step icons — yellow bg, black icon */
+[data-theme="light"] .step-icon,
+[data-theme="light"] .pd-step-icon,
+[data-theme="light"] .pipe-icon{background:var(--gold)!important;border-color:var(--gold-d)!important}
+[data-theme="light"] .step-icon svg,
+[data-theme="light"] .pd-step-icon svg,
+[data-theme="light"] .pipe-icon svg{color:#000000!important;stroke:#000000!important}
+[data-theme="light"] .fa-gold{color:#7a5c00!important}
+[data-theme="light"] .btn-ln{color:#444444!important;border-color:#cccccc!important}
+[data-theme="light"] .btn-ln:hover{color:#7a5c00!important;border-color:#7a5c00!important}
+[data-theme="light"] .pipeline-sec{border-color:#e2e2e0!important}
+/* Footer always dark — force light text regardless of theme */
+footer{background:rgba(4,4,10,0.99)!important;color:#aaaaaa!important}
+footer .brand span{color:#ffffff!important}
+footer a{color:#888888!important}
+footer a:hover{color:#ffffff!important}
+footer .fa-gold{color:var(--gold)!important}
 </style>
 </head>
 <body>
@@ -265,7 +303,7 @@ footer .fa-gold{color:var(--gold)}
       @else
         <a href="{{ route('login') }}" class="btn-gh nav-right-hide">Sign In</a>
       @endauth
-      <a href="{{ route('register') }}" class="btn-g">Deploy Free</a>
+      <a href="{{ route('register') }}" class="btn-g">Hire Free</a>
     </div>
   </div>
 </header>
@@ -290,7 +328,7 @@ footer .fa-gold{color:var(--gold)}
         <p class="hero-sub">{{ $worker['sub'] }}</p>
         <div class="hero-ctas">
           <a href="#fasttrack" class="btn-g" style="padding:11px 24px;font-size:15px">Try Free — 30 Seconds</a>
-          <a href="{{ route('register') }}" class="btn-ln" style="padding:11px 20px;font-size:14px">Deploy This Worker</a>
+          <a href="{{ route('register') }}?worker={{ $worker['slug'] }}" class="btn-ln" style="padding:11px 20px;font-size:14px">Hire This Employee</a>
         </div>
         <div class="hero-orgs">
           <span class="hero-org-label">Handles:</span>
@@ -302,7 +340,7 @@ footer .fa-gold{color:var(--gold)}
 
       {{-- Stats card --}}
       <div class="hero-stats-card">
-        <div class="hsc-title">Live Worker Stats</div>
+        <div class="hsc-title">Live Activity</div>
         <div class="hsc-row">
           <div class="hsc-stat">
             <div class="hsc-n">{{ number_format($deploymentCount) }}</div>
@@ -392,6 +430,31 @@ footer .fa-gold{color:var(--gold)}
   </div>
 </section>
 
+{{-- ── WORKER VIDEO ── --}}
+@if(!empty($worker['youtube_id']))
+<section style="background:var(--surf);padding:72px 0;border-top:1px solid var(--line)">
+  <div class="w" style="max-width:900px">
+    <div style="text-align:center;margin-bottom:32px">
+      <div class="slabel">See It In Action</div>
+      <h2 class="sh2" style="margin-bottom:10px">Watch {{ $worker['name'] }} handle a real job.</h2>
+      <p style="font-size:15px;color:var(--t3);max-width:500px;margin:0 auto">A full walkthrough — from email in to draft ready. No narration fluff, just the actual pipeline running.</p>
+    </div>
+    <div style="border-radius:16px;overflow:hidden;background:#000;box-shadow:0 0 0 1px var(--line),0 24px 48px rgba(0,0,0,0.25)">
+      <div style="position:relative;padding-bottom:56.25%;height:0">
+        <iframe
+          src="https://www.youtube.com/embed/{{ $worker['youtube_id'] }}?rel=0&modestbranding=1&color=white"
+          title="{{ $worker['name'] }} Demo — UNIT"
+          frameborder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowfullscreen
+          style="position:absolute;top:0;left:0;width:100%;height:100%;border:0">
+        </iframe>
+      </div>
+    </div>
+  </div>
+</section>
+@endif
+
 {{-- ── WHAT IT DOES ── --}}
 <section class="what-sec">
   <div class="w">
@@ -462,7 +525,7 @@ footer .fa-gold{color:var(--gold)}
         <h2>See {{ $worker['name'] }} work right now</h2>
         <p>Enter your email and we'll fire a real test job through {{ $worker['name'] }} — watch the pipeline run live, then get the output in your inbox.</p>
         <div class="ft-pts">
-          @foreach(['Real AI — not a demo','Output in under 60 seconds','One-click deploy after you see it','No account needed'] as $pt)
+          @foreach(['Real AI — not a demo','Output in under 60 seconds','One-click hire after you see it','No account needed'] as $pt)
           <div class="ft-pt">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m4 12 5 5L20 6"/></svg>
             {{ $pt }}
@@ -498,8 +561,8 @@ footer .fa-gold{color:var(--gold)}
         <div class="ft-note" style="margin-top:10px">No account needed. Output emailed to you instantly.</div>
         <div class="ft-result" id="wft-result">
           <div class="ft-result-lbl">✓ Job queued</div>
-          <div class="ft-result-body" id="wft-result-text">Processing complete. Check your email for the full draft output and a one-click deploy link for {{ $worker['name'] }}.</div>
-          <a href="{{ route('register') }}" class="btn-g" style="display:block;text-align:center;margin-top:14px;padding:11px;border-radius:9px;font-size:14px;width:100%">Deploy {{ $worker['name'] }} free →</a>
+          <div class="ft-result-body" id="wft-result-text">Processing complete. Check your email for the full draft output and a one-click hire link for {{ $worker['name'] }}.</div>
+          <a href="{{ route('register') }}?worker={{ $worker['slug'] }}" class="btn-g" style="display:block;text-align:center;margin-top:14px;padding:11px;border-radius:9px;font-size:14px;width:100%">Hire {{ $worker['name'] }} free →</a>
         </div>
       </div>
     </div>
@@ -556,12 +619,12 @@ footer .fa-gold{color:var(--gold)}
 {{-- ── DEPLOY CTA ── --}}
 <section class="deploy-sec">
   <div class="w" style="position:relative">
-    <div class="slabel" style="text-align:center">Deploy {{ $worker['name'] }}</div>
-    <h2 style="font-family:var(--fd);font-size:44px;font-weight:800;letter-spacing:-2px;margin-bottom:14px;text-align:center">Ready to put {{ $worker['name'] }} to work?</h2>
+    <div class="slabel" style="text-align:center">Hire {{ $worker['name'] }}</div>
+    <h2 style="font-family:var(--fd);font-size:44px;font-weight:800;letter-spacing:-2px;margin-bottom:14px;text-align:center">Ready to hire {{ $worker['name'] }}?</h2>
     <p style="font-size:16px;color:var(--t2);max-width:400px;margin:0 auto 28px;line-height:1.65;text-align:center">First 25 transactions free. No card, no contracts. Cancel any time.</p>
     <div class="deploy-btns">
-      <a href="{{ route('register') }}" class="btn-g" style="padding:13px 28px;font-size:15px">Deploy {{ $worker['name'] }} Free →</a>
-      <a href="/#workers" class="btn-ln" style="padding:13px 20px;font-size:14px">See All Workers</a>
+      <a href="{{ route('register') }}?worker={{ $worker['slug'] }}" class="btn-g" style="padding:13px 28px;font-size:15px">Hire {{ $worker['name'] }} Free →</a>
+      <a href="/marketplace" class="btn-ln" style="padding:13px 20px;font-size:14px">See All Employees</a>
     </div>
   </div>
 </section>
@@ -569,18 +632,18 @@ footer .fa-gold{color:var(--gold)}
 <footer>
   <div>© {{ date('Y') }} UNIT &nbsp;·&nbsp;
     <a href="/">Home</a> &nbsp;·&nbsp;
-    <a href="/#workers">Workers</a> &nbsp;·&nbsp;
+    <a href="/marketplace">Employees</a> &nbsp;·&nbsp;
     <a href="{{ route('register') }}" class="fa-gold">Get Started</a>
   </div>
 </footer>
 
 <script>
 // Theme toggle
-(function(){var t=localStorage.getItem('unit-theme')||'dark';document.getElementById('html-root').setAttribute('data-theme',t)})();
+(function(){var t=localStorage.getItem('unit-theme-v2')||'dark';document.getElementById('html-root').setAttribute('data-theme',t)})();
 document.getElementById('tog').addEventListener('click',function(){
   var n=document.getElementById('html-root').getAttribute('data-theme')==='dark'?'light':'dark';
   document.getElementById('html-root').setAttribute('data-theme',n);
-  localStorage.setItem('unit-theme',n);
+  localStorage.setItem('unit-theme-v2',n);
 });
 
 // Pipeline auto-animation
@@ -657,7 +720,7 @@ function runWorkerFT(){
       })
       .then(function(r){return r.json()})
       .then(function(d){
-        document.getElementById('wft-result-text').textContent=d.preview||'Job queued. Check your email for the full output and deploy link.';
+        document.getElementById('wft-result-text').textContent=d.preview||'Job queued. Check your email for the full output and hire link.';
         document.getElementById('wft-result').classList.add('show');
         btn.textContent='✓ Job Queued';
       })

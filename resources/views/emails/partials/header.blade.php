@@ -11,9 +11,9 @@
   .container { max-width: 560px; margin: 0 auto; }
 
   /* Header */
-  .header { background: #ffffff; border-radius: 12px 12px 0 0; padding: 28px 36px 20px; border-bottom: 3px solid #F5C100; }
+  .header { background: #ffffff; border-radius: 12px 12px 0 0; padding: 28px 36px 20px; border-bottom: 3px solid var(--accent); }
   .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
-  .logo-mark { width: 32px; height: 32px; background: #F5C100; border-radius: 6px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .logo-mark { width: 32px; height: 32px; background: var(--accent); border-radius: 6px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
   .logo-inner { width: 14px; height: 14px; background: #0a0f1e; border-radius: 2px; }
   .logo-name { font-size: 18px; font-weight: 900; color: #0a0f1e; letter-spacing: -0.5px; }
 
@@ -23,7 +23,7 @@
   p { font-size: 15px; line-height: 1.65; color: #3f3f46; margin-bottom: 16px; }
   p:last-child { margin-bottom: 0; }
   strong { color: #0a0f1e; }
-  a.btn { display: inline-block; background: #F5C100; color: #0a0f1e; font-size: 15px; font-weight: 700; text-decoration: none; padding: 13px 30px; border-radius: 8px; margin-top: 8px; }
+  a.btn { display: inline-block; background: var(--accent); color: #0a0f1e; font-size: 15px; font-weight: 700; text-decoration: none; padding: 13px 30px; border-radius: 8px; margin-top: 8px; }
   .divider { border: none; border-top: 1px solid #e4e4e7; margin: 28px 0; }
 
   /* Info rows */
@@ -39,7 +39,7 @@
   .dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
 
   /* Alert boxes */
-  .alert-yellow { background: #fffbeb; border-left: 3px solid #F5C100; padding: 12px 16px; border-radius: 0 6px 6px 0; font-size: 14px; color: #92400e; margin: 16px 0; }
+  .alert-yellow { background: #fffbeb; border-left: 3px solid var(--accent); padding: 12px 16px; border-radius: 0 6px 6px 0; font-size: 14px; color: #92400e; margin: 16px 0; }
   .alert-red { background: #fff1f2; border-left: 3px solid #f43f5e; padding: 12px 16px; border-radius: 0 6px 6px 0; font-size: 14px; color: #9f1239; margin: 16px 0; }
 
   /* Confidence bar */

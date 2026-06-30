@@ -88,11 +88,15 @@
                     @php
                         $href = $v['cta_url']
                             ?? ($v['cta_route']
-                                ? (($v['cta_route'] === 'billing.checkout' && $deploymentId)
-                                    ? route('billing.checkout', $deploymentId)
-                                    : (($v['cta_route'] === 'workers.show' && $deploymentId)
-                                        ? route('workers.show', $deploymentId)
-                                        : route($v['cta_route'])))
+                                ? match(true) {
+                                    $v['cta_route'] === 'billing' && $deploymentId
+                                        => route('billing') . '?pick=' . $deploymentId,
+                                    $v['cta_route'] === 'billing.checkout' && $deploymentId
+                                        => route('billing') . '?pick=' . $deploymentId,
+                                    $v['cta_route'] === 'workers.show' && $deploymentId
+                                        => route('workers.show', $deploymentId),
+                                    default => route($v['cta_route']),
+                                }
                                 : '#');
                     @endphp
                     <a href="{{ $href }}"

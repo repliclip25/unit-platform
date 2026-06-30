@@ -73,16 +73,16 @@
         <div class="space-y-2">
             @if($pendingReview > 0)
             <div class="flex items-center justify-between px-4 py-3 rounded-xl border"
-                 style="background:rgba(243,197,49,0.08);border-color:rgba(243,197,49,0.35)">
+                 style="background:rgba(var(--accent-rgb),0.08);border-color:rgba(var(--accent-rgb),0.35)">
                 <div class="flex items-center gap-3">
                     <span class="w-2 h-2 rounded-full animate-pulse" style="background:#a78bfa"></span>
-                    <span class="text-sm" style="color:#f3c531">
+                    <span class="text-sm" style="color:var(--accent)">
                         <strong>{{ $pendingReview }}</strong> draft{{ $pendingReview !== 1 ? 's' : '' }} awaiting your review
                     </span>
                 </div>
                 <a href="{{ route('transactions', ['filter' => 'draft_ready']) }}"
                    class="text-xs px-3 py-1.5 rounded-lg font-medium transition"
-                   style="background:rgba(243,197,49,0.20);color:#f3c531;border:1px solid rgba(243,197,49,0.45)">
+                   style="background:rgba(var(--accent-rgb),0.20);color:var(--accent);border:1px solid rgba(var(--accent-rgb),0.45)">
                     Review Now →
                 </a>
             </div>
@@ -184,7 +184,7 @@
 
                 {{-- Header --}}
                 <div class="px-5 py-4 border-b border-gray-800 flex items-center gap-4">
-                    <div class="w-10 h-10 rounded-xl flex items-center justify-center text-sm font-bold shrink-0" style="background:rgba(245,193,0,0.15);color:#F5C100">
+                    <div class="w-10 h-10 rounded-xl flex items-center justify-center text-sm font-bold shrink-0" style="background:rgba(var(--accent-rgb),0.15);color:var(--accent)">
                         {{ strtoupper(substr($w->slug, 0, 2)) }}
                     </div>
                     <div class="flex-1 min-w-0">
@@ -229,7 +229,7 @@
                             @if($status !== 'published' && $status !== 'deprecated')
                                 <form method="POST" action="{{ route('qa.marketplace-publish', $w->id) }}">
                                     @csrf
-                                    <button type="submit" class="text-xs font-bold px-4 py-1.5 rounded-lg text-gray-900 hover:opacity-90" style="background:#F5C100">
+                                    <button type="submit" class="text-xs font-bold px-4 py-1.5 rounded-lg text-gray-900 hover:opacity-90" style="background:var(--accent)">
                                         ✓ Publish to Marketplace
                                     </button>
                                 </form>
@@ -563,7 +563,7 @@
                         id="wtab-{{ $w->dep->id }}"
                         class="wtab w-full text-left px-4 py-3 rounded-xl border transition {{ $i === 0 ? 'border-brand bg-brand/10 text-white' : 'border-gray-800 bg-gray-900 text-gray-400 hover:text-white hover:border-gray-700' }}">
                         <div class="flex items-center gap-2.5">
-                            <div class="w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold shrink-0" style="background:rgba(245,193,0,0.15);color:#F5C100">
+                            <div class="w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold shrink-0" style="background:rgba(var(--accent-rgb),0.15);color:var(--accent)">
                                 {{ strtoupper(substr($w->dep->worker_slug, 0, 2)) }}
                             </div>
                             <div class="min-w-0">
@@ -589,7 +589,7 @@
                     <div class="bg-gray-900 border border-gray-800 rounded-xl px-5 py-4">
                         <div class="flex items-center justify-between">
                             <div class="flex items-center gap-4">
-                                <div class="w-10 h-10 rounded-xl flex items-center justify-center text-sm font-bold" style="background:rgba(245,193,0,0.15);color:#F5C100">
+                                <div class="w-10 h-10 rounded-xl flex items-center justify-center text-sm font-bold" style="background:rgba(var(--accent-rgb),0.15);color:var(--accent)">
                                     {{ strtoupper(substr($w->dep->worker_slug, 0, 2)) }}
                                 </div>
                                 <div>
@@ -629,7 +629,7 @@
                                     @csrf
                                     <button type="submit"
                                         class="text-sm font-bold px-4 py-2 rounded-xl text-gray-900 hover:opacity-90 flex items-center gap-1.5"
-                                        style="background:#F5C100"
+                                        style="background:var(--accent)"
                                         onclick="return confirm('Run Fast Track test through {{ $w->dep->name }}?')">
                                         ⚡ Fast Track
                                     </button>
@@ -692,7 +692,7 @@
                         <div class="bg-gray-900 border border-gray-800 rounded-xl overflow-hidden">
                             <div class="px-4 py-3 border-b border-gray-800 flex items-center justify-between">
                                 <p class="text-white text-xs font-semibold">Worker Memory</p>
-                                <a href="{{ route('workers.show', $w->dep->id) }}" class="text-brand text-xs hover:underline">Manage →</a>
+                                <a href="{{ route('workers.show', $w->dep->worker_slug) }}" class="text-brand text-xs hover:underline">Manage →</a>
                             </div>
                             <div class="divide-y divide-gray-800/60">
                                 @foreach([
@@ -933,7 +933,7 @@
                                 @endforeach
                                 <div class="px-5 py-4 border-t border-gray-800 flex items-center justify-between">
                                     <p class="text-gray-600 text-xs">Changes take effect on next job dispatch · no Horizon restart needed</p>
-                                    <button type="submit" class="text-sm font-bold px-5 py-2 rounded-lg text-gray-900 hover:opacity-90" style="background:#F5C100">Save Config</button>
+                                    <button type="submit" class="text-sm font-bold px-5 py-2 rounded-lg text-gray-900 hover:opacity-90" style="background:var(--accent)">Save Config</button>
                                 </div>
                             </form>
                         </div>
@@ -980,7 +980,7 @@
                                 </div>
                                 <div class="flex items-center justify-between pt-1">
                                     <p class="text-gray-600 text-xs">Draft & email → <span class="text-gray-400">{{ auth()->user()->email }}</span></p>
-                                    <button type="submit" class="text-sm font-bold px-5 py-2 rounded-lg text-gray-900 hover:opacity-90" style="background:#F5C100">Save Scenario</button>
+                                    <button type="submit" class="text-sm font-bold px-5 py-2 rounded-lg text-gray-900 hover:opacity-90" style="background:var(--accent)">Save Scenario</button>
                                 </div>
                             </form>
                         </div>
@@ -1254,31 +1254,33 @@
     </div>
 
     {{-- ── LIVE PIPELINE MODAL ────────────────────────────────────────────── --}}
-    <div id="pipeline-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4" style="background:rgba(0,0,0,0.8)">
+    <div id="pipeline-modal"
+         x-data="{ shown: false, currentTxId: '' }"
+         x-show="shown"
+         x-cloak
+         @open-pipeline.window="shown = true; currentTxId = $event.detail.txId"
+         @close-pipeline.window="shown = false; currentTxId = ''"
+         class="fixed inset-0 z-50 flex items-center justify-center p-4"
+         style="background:rgba(0,0,0,0.8)">
         <div class="bg-gray-900 border border-gray-800 rounded-2xl w-full max-w-5xl shadow-2xl">
             <div class="px-6 py-4 border-b border-gray-800 flex items-center justify-between">
                 <div>
-                    <p class="text-white font-bold">⚡ Fast Track — Live Pipeline</p>
-                    <p id="modal-tx-id" class="text-gray-500 text-xs font-mono mt-0.5"></p>
+                    <div class="flex items-center gap-2">
+                        <svg class="w-4 h-4 text-brand" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                        </svg>
+                        <p class="text-white font-bold">Fast Track Pipeline</p>
+                    </div>
+                    <p class="text-gray-500 text-xs font-mono mt-0.5" x-text="currentTxId"></p>
                 </div>
-                <div class="flex items-center gap-3">
-                    <span id="modal-status-badge" class="text-xs px-3 py-1 rounded-full bg-yellow-900 text-yellow-300 font-bold animate-pulse">Running…</span>
-                    <button onclick="closePipelineModal()" class="text-gray-600 hover:text-white text-xl">✕</button>
-                </div>
+                <button @click="$dispatch('close-pipeline')" class="text-gray-600 hover:text-white transition">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
             </div>
-            <div class="px-6 py-8 overflow-x-auto">
-                <div id="live-pipeline" class="flex items-start gap-0 min-w-max"></div>
-            </div>
-            <div id="stage-detail" class="hidden mx-6 mb-4 bg-gray-800/60 border border-gray-700 rounded-xl px-5 py-4">
-                <p id="stage-detail-label" class="text-white text-xs font-bold mb-1.5"></p>
-                <p id="stage-detail-text" class="text-gray-400 text-xs leading-relaxed"></p>
-            </div>
-            <div class="px-6 py-4 border-t border-gray-800 flex items-center justify-between">
-                <p class="text-gray-600 text-xs">Polls every 2s · Click a completed stage to inspect output</p>
-                <div class="flex gap-4">
-                    <a id="modal-view-tx" href="#" class="text-xs text-brand hover:underline">View full transaction →</a>
-                    <button onclick="closePipelineModal()" class="text-xs text-gray-500 hover:text-white">Close</button>
-                </div>
+            <div class="px-6 py-2">
+                <x-pipeline-tracker txId="" context="dashboard" />
             </div>
         </div>
     </div>
@@ -1310,92 +1312,20 @@
         document.getElementById('wpanel-' + id)?.classList.remove('hidden');
     }
 
-    // ── Pipeline modal
-    let pollInterval = null, stageDetails = {};
-
+    // ── Pipeline modal — delegates to the Alpine pipeline-tracker component via events
     function openPipelineModal(txId) {
-        stageDetails = {};
-        document.getElementById('modal-tx-id').textContent = txId;
-        document.getElementById('modal-view-tx').href = '/transactions/' + txId;
-        const badge = document.getElementById('modal-status-badge');
-        badge.className = 'text-xs px-3 py-1 rounded-full bg-yellow-900 text-yellow-300 font-bold animate-pulse';
-        badge.textContent = 'Running…';
-        document.getElementById('live-pipeline').innerHTML = '<p class="text-gray-500 text-sm animate-pulse">Starting pipeline…</p>';
-        document.getElementById('stage-detail').classList.add('hidden');
-        document.getElementById('pipeline-modal').classList.remove('hidden');
-        fetchStatus(txId);
-        pollInterval = setInterval(() => fetchStatus(txId), 2000);
-        // Safety: stop polling after 3 minutes regardless
-        setTimeout(() => clearInterval(pollInterval), 180000);
+        window.dispatchEvent(new CustomEvent('open-pipeline', { detail: { txId } }));
+        const url = new URL(window.location);
+        url.searchParams.set('watch', txId);
+        window.history.replaceState({}, '', url);
     }
 
     function closePipelineModal() {
-        document.getElementById('pipeline-modal').classList.add('hidden');
-        clearInterval(pollInterval);
+        window.dispatchEvent(new CustomEvent('close-pipeline'));
         const url = new URL(window.location);
         url.searchParams.delete('watch');
         url.searchParams.delete('worker');
         window.history.replaceState({}, '', url);
-    }
-
-    async function fetchStatus(txId) {
-        try {
-            const res = await fetch('/qa/pipeline/' + txId, {
-                credentials: 'same-origin',
-                headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
-            });
-            if (!res.ok) { console.warn('pipeline status', res.status); return; }
-            const data = await res.json();
-            if (!data.stages) { console.warn('no stages', data); return; }
-            renderPipeline(data.stages);
-            stageDetails = {};
-            data.stages.forEach(s => { if (s.detail) stageDetails[s.key] = { label: s.label, text: s.detail }; });
-            if (data.done) {
-                clearInterval(pollInterval);
-                const b = document.getElementById('modal-status-badge');
-                b.classList.remove('animate-pulse');
-                b.className = `text-xs px-3 py-1 rounded-full font-bold ${data.failed ? 'bg-red-900 text-red-300' : 'bg-green-900 text-green-300'}`;
-                b.textContent = data.failed ? '✗ Failed' : '✓ Complete';
-                // Auto-close and reload after success so historical strip reflects latest run
-                if (!data.failed) {
-                    const workerParam = new URLSearchParams(window.location.search).get('worker');
-                    setTimeout(() => {
-                        closePipelineModal();
-                        window.location.href = window.location.pathname + (workerParam ? '?worker=' + workerParam : '');
-                    }, 3000);
-                }
-            }
-        } catch(e) { console.error('fetchStatus error', e); }
-    }
-
-    function renderPipeline(stages) {
-        const c = document.getElementById('live-pipeline');
-        if (!stages?.length) { c.innerHTML = '<p class="text-gray-500 text-sm animate-pulse">Waiting for pipeline…</p>'; return; }
-        c.innerHTML = stages.map((s, i) => {
-            const last = i === stages.length - 1;
-            let bd, bg, ic, sym, pulse = '';
-            if      (s.status === 'done')   { bd = 'border-green-500';  bg = 'bg-green-900/30';  ic = 'text-green-400';  sym = '✓'; }
-            else if (s.status === 'fail')   { bd = 'border-red-500';    bg = 'bg-red-900/30';    ic = 'text-red-400';    sym = '✗'; }
-            else if (s.status === 'active') { bd = 'border-yellow-400'; bg = 'bg-yellow-900/20'; ic = 'text-yellow-400'; sym = '◉'; pulse = 'animate-pulse'; }
-            else                            { bd = 'border-gray-700';   bg = 'bg-gray-800/40';   ic = 'text-gray-600';   sym = '·'; }
-            const click = s.detail ? `onclick="showStageDetail('${s.key}')" style="cursor:pointer"` : '';
-            return `<div class="flex items-center">
-                <div class="w-32" ${click}>
-                    <div class="border rounded-xl px-3 py-3 text-center ${bd} ${bg} ${pulse} transition-all duration-500">
-                        <p class="text-xs font-bold ${ic}">${sym} ${s.label}</p>
-                        <p class="text-gray-500 text-xs mt-1 truncate">${s.detail || '—'}</p>
-                    </div>
-                </div>
-                ${!last ? '<div class="w-6 text-center text-gray-700 text-xs shrink-0">→</div>' : ''}
-            </div>`;
-        }).join('');
-    }
-
-    function showStageDetail(key) {
-        const d = stageDetails[key]; if (!d) return;
-        document.getElementById('stage-detail-label').textContent = d.label;
-        document.getElementById('stage-detail-text').textContent = d.text;
-        document.getElementById('stage-detail').classList.remove('hidden');
     }
 
     @if(request('watch'))

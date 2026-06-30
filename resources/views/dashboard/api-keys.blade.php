@@ -14,7 +14,7 @@
         </div>
         <button onclick="document.getElementById('register-panel').classList.toggle('hidden')"
             class="text-sm font-bold px-4 py-2 rounded-xl text-gray-900 hover:opacity-90 flex items-center gap-2"
-            style="background:#F5C100">
+            style="background:var(--accent)">
             + Register Model
         </button>
     </div>
@@ -23,7 +23,7 @@
         $catalog = \App\Platform\Services\LLM\ModelCatalog::all();
 
         $providerMeta = [
-            'anthropic' => ['color' => '#F5C100', 'bg' => 'rgba(245,193,0,0.1)',   'border' => 'rgba(245,193,0,0.3)',   'keyHint' => 'sk-ant-…',  'docsUrl' => 'https://console.anthropic.com/settings/keys'],
+            'anthropic' => ['color' => 'var(--accent)', 'bg' => 'rgba(var(--accent-rgb),0.1)',   'border' => 'rgba(var(--accent-rgb),0.3)',   'keyHint' => 'sk-ant-…',  'docsUrl' => 'https://console.anthropic.com/settings/keys'],
             'openai'    => ['color' => '#10b981', 'bg' => 'rgba(16,185,129,0.1)',  'border' => 'rgba(16,185,129,0.3)',  'keyHint' => 'sk-…',      'docsUrl' => 'https://platform.openai.com/api-keys'],
             'kimi'      => ['color' => '#06b6d4', 'bg' => 'rgba(6,182,212,0.1)',   'border' => 'rgba(6,182,212,0.3)',   'keyHint' => 'sk-…',      'docsUrl' => 'https://platform.moonshot.cn/console/api-keys'],
             'google'    => ['color' => '#a855f7', 'bg' => 'rgba(168,85,247,0.1)',  'border' => 'rgba(168,85,247,0.3)',  'keyHint' => 'AIza…',     'docsUrl' => 'https://aistudio.google.com/app/apikey'],
@@ -31,11 +31,11 @@
         ];
 
         $tierColors = [
-            'Fast'      => ['bg' => 'rgba(6,182,212,0.15)',  'color' => '#67e8f9'],
-            'Balanced'  => ['bg' => 'rgba(245,193,0,0.15)',  'color' => '#fde68a'],
-            'Powerful'  => ['bg' => 'rgba(168,85,247,0.15)', 'color' => '#c4b5fd'],
-            'Reasoning' => ['bg' => 'rgba(239,68,68,0.15)',  'color' => '#fca5a5'],
-            'Custom'    => ['bg' => 'rgba(156,163,175,0.1)', 'color' => '#9ca3af'],
+            'Fast'      => ['bg' => 'var(--badge-fast-bg)',      'color' => 'var(--badge-fast-text)'],
+            'Balanced'  => ['bg' => 'var(--badge-balanced-bg)',  'color' => 'var(--badge-balanced-text)'],
+            'Powerful'  => ['bg' => 'var(--badge-powerful-bg)',  'color' => 'var(--badge-powerful-text)'],
+            'Reasoning' => ['bg' => 'var(--badge-reasoning-bg)', 'color' => 'var(--badge-reasoning-text)'],
+            'Custom'    => ['bg' => 'var(--badge-custom-bg)',    'color' => 'var(--badge-custom-text)'],
         ];
 
         // Group workers by model for "in use" display
@@ -77,7 +77,7 @@
                 </div>
             </div>
             <div class="flex items-center gap-3">
-                <button type="submit" class="text-sm font-bold px-6 py-2 rounded-lg text-gray-900 hover:opacity-90" style="background:#F5C100">
+                <button type="submit" class="text-sm font-bold px-6 py-2 rounded-lg text-gray-900 hover:opacity-90" style="background:var(--accent)">
                     Register Model
                 </button>
                 <p class="text-gray-600 text-xs">After registering, select this model from any worker's configuration page.</p>
@@ -116,8 +116,8 @@
                         @endif
                         @if($keys->has($providerKey))
                             <span class="flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-full"
-                                  style="background:rgba(245,193,0,0.12);color:#fde68a;border:1px solid rgba(245,193,0,0.25)">
-                                <span class="w-1.5 h-1.5 rounded-full" style="background:#F5C100"></span>
+                                  style="background:rgba(var(--accent-rgb),0.12);color:#fde68a;border:1px solid rgba(var(--accent-rgb),0.25)">
+                                <span class="w-1.5 h-1.5 rounded-full" style="background:var(--accent)"></span>
                                 Your key connected
                             </span>
                             <form method="POST" action="{{ route('settings.api-keys.destroy', $providerKey) }}"
@@ -156,7 +156,7 @@
                                 autocomplete="new-password"
                                 class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white text-sm font-mono focus:outline-none focus:border-yellow-500 transition">
                         </div>
-                        <button type="submit" class="text-sm font-bold px-5 py-2 rounded-lg text-gray-900 shrink-0" style="background:#F5C100">
+                        <button type="submit" class="text-sm font-bold px-5 py-2 rounded-lg text-gray-900 shrink-0" style="background:var(--accent)">
                             Save Key
                         </button>
                         <button type="button" onclick="toggleKeyForm('{{ $providerKey }}')"
@@ -195,12 +195,12 @@
                                     <span class="text-xs px-1.5 py-0.5 rounded-full font-medium"
                                           style="background:{{ $tc['bg'] }};color:{{ $tc['color'] }}">{{ $m['tier'] }}</span>
                                     @if(!empty($m['recommended']))
-                                        <span class="text-xs px-1.5 py-0.5 rounded-full" style="background:rgba(255,255,255,0.05);color:#6b7280">recommended</span>
+                                        <span class="text-xs px-1.5 py-0.5 rounded-full" style="background:var(--bg-raised);color:var(--text-muted);border:1px solid var(--border)">recommended</span>
                                     @endif
                                     @if($hasPlatform && !$hasOwnKey)
-                                        <span class="text-xs px-1.5 py-0.5 rounded-full" style="background:rgba(16,185,129,0.1);color:#6ee7b7;border:1px solid rgba(16,185,129,0.2)">Platform</span>
+                                        <span class="text-xs px-1.5 py-0.5 rounded-full" style="background:var(--badge-platform-bg);color:var(--badge-platform-text);border:1px solid rgba(16,185,129,0.25)">Platform</span>
                                     @elseif($hasOwnKey)
-                                        <span class="text-xs px-1.5 py-0.5 rounded-full" style="background:rgba(245,193,0,0.1);color:#fde68a;border:1px solid rgba(245,193,0,0.2)">Your Key</span>
+                                        <span class="text-xs px-1.5 py-0.5 rounded-full" style="background:var(--badge-yourkey-bg);color:var(--badge-yourkey-text);border:1px solid rgba(var(--accent-rgb),0.25)">Your Key</span>
                                     @endif
                                 </div>
                                 <p class="text-gray-700 text-xs font-mono mt-0.5">{{ $modelId }}</p>
@@ -217,9 +217,9 @@
                                 @if($usingWorkers->isNotEmpty())
                                     <div class="flex items-center justify-end gap-1.5 flex-wrap">
                                         @foreach($usingWorkers as $w)
-                                            <a href="{{ route('workers.show', $w->id) }}"
+                                            <a href="{{ route('workers.show', $w->worker_slug) }}"
                                                class="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full hover:opacity-80 transition"
-                                               style="background:rgba(245,193,0,0.12);color:#F5C100;border:1px solid rgba(245,193,0,0.25)"
+                                               style="background:rgba(var(--accent-rgb),0.12);color:var(--accent);border:1px solid rgba(var(--accent-rgb),0.25)"
                                                title="{{ $w->name }}">
                                                 <span class="w-1.5 h-1.5 rounded-full {{ $w->status === 'active' ? 'bg-green-400 animate-pulse' : 'bg-yellow-400' }}"></span>
                                                 {{ Str::limit($w->name, 18) }}
@@ -263,9 +263,9 @@
                         </div>
                         <div class="shrink-0 w-44 text-right">
                             @foreach($usingWorkers as $w)
-                                <a href="{{ route('workers.show', $w->id) }}"
+                                <a href="{{ route('workers.show', $w->worker_slug) }}"
                                    class="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full"
-                                   style="background:rgba(245,193,0,0.12);color:#F5C100;border:1px solid rgba(245,193,0,0.25)">
+                                   style="background:rgba(var(--accent-rgb),0.12);color:var(--accent);border:1px solid rgba(var(--accent-rgb),0.25)">
                                     <span class="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse"></span>
                                     {{ Str::limit($w->name, 18) }}
                                 </a>
@@ -299,5 +299,56 @@
         document.getElementById('key-form-' + provider)?.classList.toggle('hidden');
     }
     </script>
+
+    {{-- ── Danger Zone ────────────────────────────────────────────────────── --}}
+    <div class="mt-10" style="border:1px solid rgba(239,68,68,.25);border-radius:16px;overflow:hidden">
+        <div class="px-6 py-4" style="background:rgba(239,68,68,.05);border-bottom:1px solid rgba(239,68,68,.15)">
+            <h2 class="text-sm font-bold" style="color:#f87171">Danger Zone</h2>
+        </div>
+        <div class="px-6 py-5 flex items-start justify-between gap-6">
+            <div>
+                <p class="text-sm font-semibold" style="color:var(--text-primary)">Delete account</p>
+                <p class="text-xs mt-1" style="color:var(--text-muted)">Permanently deletes your account, all workers, transactions, Gmail connections, memory, and billing records. This cannot be undone. Any active subscriptions will be canceled immediately.</p>
+            </div>
+            <button onclick="document.getElementById('delete-account-modal').classList.remove('hidden')"
+                    class="shrink-0 text-xs font-semibold px-4 py-2 rounded-lg transition"
+                    style="border:1px solid rgba(239,68,68,.4);background:rgba(239,68,68,.07);color:#f87171">
+                Delete account
+            </button>
+        </div>
+    </div>
+
+    {{-- Delete account confirmation modal --}}
+    <div id="delete-account-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center" style="background:rgba(0,0,0,.7)">
+        <div class="w-full max-w-md mx-4 rounded-2xl p-7" style="background:var(--bg-card);border:1px solid rgba(239,68,68,.3)">
+            <h3 class="text-base font-bold mb-2" style="color:#f87171">Delete your account</h3>
+            <p class="text-sm mb-5" style="color:var(--text-muted)">This will permanently delete everything — your workers, transactions, Gmail connections, memory bank, and billing records. Your Stripe subscription will be canceled immediately. <strong style="color:var(--text-primary)">This cannot be undone.</strong></p>
+            <form method="POST" action="{{ route('settings.account.delete') }}">
+                @csrf
+                @method('DELETE')
+                <div class="mb-4">
+                    <label class="block text-xs font-semibold mb-2" style="color:var(--text-muted)">
+                        Type <span style="color:#f87171;font-family:monospace">DELETE</span> to confirm
+                    </label>
+                    <input type="text" name="confirm_delete" autocomplete="off" placeholder="DELETE"
+                           class="w-full rounded-xl px-4 py-2.5 text-sm font-mono outline-none transition"
+                           style="background:var(--bg-raised);border:1px solid rgba(239,68,68,.3);color:var(--text-primary)"
+                           oninput="document.getElementById('confirm-delete-btn').disabled = this.value !== 'DELETE'">
+                </div>
+                <div class="flex gap-3">
+                    <button type="submit" id="confirm-delete-btn" disabled
+                            class="flex-1 py-2.5 rounded-xl text-sm font-bold transition disabled:opacity-40 disabled:cursor-not-allowed"
+                            style="background:#ef4444;color:#fff">
+                        Permanently delete everything
+                    </button>
+                    <button type="button" onclick="document.getElementById('delete-account-modal').classList.add('hidden')"
+                            class="flex-1 py-2.5 rounded-xl text-sm font-semibold"
+                            style="background:var(--bg-raised);border:1px solid var(--border);color:var(--text-secondary)">
+                        Cancel
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
 
 </x-app-layout>

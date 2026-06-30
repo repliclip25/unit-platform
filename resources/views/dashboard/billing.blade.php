@@ -15,13 +15,14 @@
     @endif
 
     {{-- Header row --}}
-    <div class="flex items-center justify-between mb-6">
+    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-6">
         <div>
-            <h1 class="text-white text-lg font-bold">Billing & Usage</h1>
-            <p class="text-gray-500 text-xs mt-0.5">{{ now()->format('F Y') }} · resets on the 1st</p>
+            <h1 class="font-bold text-lg" style="color:var(--text-primary)">Billing & Usage</h1>
+            <p class="text-xs mt-0.5" style="color:var(--text-muted)">{{ now()->format('F Y') }} · resets on the 1st</p>
         </div>
         <a href="{{ route('billing.portal') }}"
-           class="text-sm bg-gray-800 hover:bg-gray-700 text-gray-300 px-4 py-2 rounded-lg border border-gray-700 transition">
+           class="text-sm px-4 py-2 rounded-lg shrink-0"
+           style="background:var(--bg-raised);color:var(--text-secondary);border:1px solid var(--border)">
             Manage Payment →
         </a>
     </div>
@@ -38,10 +39,10 @@
     </div>
     @endif
 
-    <div class="grid grid-cols-3 gap-5 mb-6">
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-6">
 
         {{-- Monthly spend meter --}}
-        <div class="col-span-2 bg-gray-900 border border-gray-800 rounded-2xl p-5">
+        <div class="sm:col-span-2 rounded-2xl p-5" style="background:var(--bg-card);border:1px solid var(--border)">
             <div class="flex items-start justify-between mb-4">
                 <div>
                     <p class="text-gray-500 text-xs">AI Spend · {{ now()->format('F Y') }}</p>
@@ -68,7 +69,7 @@
                 </div>
                 <div class="h-2.5 bg-gray-800 rounded-full overflow-hidden">
                     <div class="h-full rounded-full transition-all duration-700"
-                         style="width:{{ $capPct }}%;background:{{ $capDanger ? 'linear-gradient(90deg,#ef4444,#dc2626)' : 'linear-gradient(90deg,#f3c531,#d9a91f)' }}"></div>
+                         style="width:{{ $capPct }}%;background:{{ $capDanger ? 'linear-gradient(90deg,#ef4444,#dc2626)' : 'linear-gradient(90deg,var(--accent),#d9a91f)' }}"></div>
                 </div>
                 @if($capDanger)
                 <p class="text-red-400 text-xs mt-1.5">⚠ Approaching cap — new transactions will block when reached</p>
@@ -89,7 +90,7 @@
                 <div class="flex items-end gap-px h-10">
                     @foreach($bars as $i => $h)
                     <div class="flex-1 rounded-sm transition-all"
-                         style="height:{{ max(2,$h) }}px;background:{{ $values[$i] > 0 ? 'rgba(243,197,49,0.7)' : '#1f2937' }}"
+                         style="height:{{ max(2,$h) }}px;background:{{ $values[$i] > 0 ? 'rgba(var(--accent-rgb),0.7)' : '#1f2937' }}"
                          title="{{ $days[$i] }}: ${{ number_format($values[$i], 6) }}"></div>
                     @endforeach
                 </div>
@@ -102,7 +103,7 @@
         </div>
 
         {{-- Stage breakdown --}}
-        <div class="bg-gray-900 border border-gray-800 rounded-2xl p-5">
+        <div class="rounded-2xl p-5" style="background:var(--bg-card);border:1px solid var(--border)">
             <p class="text-gray-500 text-xs mb-4">Cost by Pipeline Stage</p>
             @if($stageBreakdown->isEmpty())
                 <p class="text-gray-700 text-xs">No AI usage this month</p>
@@ -117,7 +118,7 @@
                             <span class="text-gray-400 text-xs font-mono">${{ number_format($stage->cost, 4) }}</span>
                         </div>
                         <div class="h-1.5 bg-gray-800 rounded-full overflow-hidden">
-                            <div class="h-full rounded-full" style="width:{{ $pct }}%;background:#f3c531"></div>
+                            <div class="h-full rounded-full" style="width:{{ $pct }}%;background:var(--accent)"></div>
                         </div>
                         <p class="text-gray-700 text-xs mt-0.5">{{ number_format($stage->calls) }} calls · {{ number_format($stage->tokens) }} tokens</p>
                     </div>
@@ -130,101 +131,184 @@
 
     {{-- Estimated Bill This Month --}}
     @php
-        $estimatedFlat   = 0;
-        $flatLineItems   = [];
+        $invoiceWorkers  = [];
+        $grandTotal      = 0;
+
         foreach ($deployments as $dep) {
-            $bill  = $billingRecords[$dep->id] ?? null;
-            $price = $pricing[$dep->worker_slug] ?? null;
-            if (!$bill || !$price || $bill->status !== 'active') continue;
+            $bill    = $billingRecords[$dep->id] ?? null;
+            $depStages = $workerStageBreakdown[$dep->id] ?? collect();
 
-            $flat  = (float) $price->monthly_flat_rate;
-            $start = $bill->billing_period_start ? \Carbon\Carbon::parse($bill->billing_period_start) : null;
+            // Pipeline AI cost (email processing)
+            $pipelineCost   = $depStages->whereIn('stage', $pipelineStages)->sum('cost');
+            $pipelineTokens = $depStages->whereIn('stage', $pipelineStages)->sum('tokens');
+            $pipelineCalls  = $depStages->whereIn('stage', $pipelineStages)->sum('calls');
 
-            if ($start && $start->month == now()->month && $start->year == now()->year && $start->day > 1) {
-                // Prorated: charged only from subscription start to end of month
-                $daysInMonth  = now()->daysInMonth;
-                $daysActive   = now()->diffInDays($start) + 1;
-                $prorated     = round($flat * ($daysActive / $daysInMonth), 2);
-                $flatLineItems[] = [
-                    'name'      => $dep->name,
-                    'flat'      => $flat,
-                    'charge'    => $prorated,
-                    'prorated'  => true,
-                    'days'      => $daysActive,
-                    'totalDays' => $daysInMonth,
-                    'start'     => $start->format('M j'),
-                ];
-                $estimatedFlat += $prorated;
-            } else {
-                $flatLineItems[] = [
-                    'name'     => $dep->name,
-                    'flat'     => $flat,
-                    'charge'   => $flat,
-                    'prorated' => false,
-                ];
-                $estimatedFlat += $flat;
+            // Testing / prompt rewrite AI cost
+            $testCost       = $depStages->whereIn('stage', $testStages)->sum('cost');
+            $testTokens     = $depStages->whereIn('stage', $testStages)->sum('tokens');
+            $testCalls      = $depStages->whereIn('stage', $testStages)->sum('calls');
+
+            $totalDepCost   = (float) ($workerSpend[$dep->id]->cost ?? 0);
+            $totalDepTokens = (int)   ($workerSpend[$dep->id]->tokens ?? 0);
+
+            if (!$bill || ($bill->status !== 'active' && $totalDepCost == 0)) continue;
+
+            $isActive = $bill?->status === 'active';
+            $isTrial  = $bill?->status === 'trial';
+
+            // Subscription flat rate
+            $flatCharge  = 0;
+            $flatFull    = 0;
+            $prorated    = false;
+            $prorateNote = '';
+            $planLabel   = null;
+            $unitUsed    = (int) ($bill?->unit_count ?? 0);
+            $unitLabel   = $bill?->billing_unit ?? 'email';
+            $unitLimit   = null;
+
+            if ($isActive && $bill->plan_slug) {
+                $tier      = ($pricingTiers[$dep->worker_slug] ?? collect())->firstWhere('plan_slug', $bill->plan_slug);
+                $flatFull  = (float) ($tier?->monthly_flat_rate ?? 0);
+                $unitLimit = $tier?->transaction_limit ?? null;
+                $planLabel = $tier ? ucfirst($tier->plan_slug) . ' plan' : null;
+
+                $start = $bill->billing_period_start ? \Carbon\Carbon::parse($bill->billing_period_start) : null;
+                if ($start && $start->month == now()->month && $start->year == now()->year && $start->day > 1) {
+                    $daysIn      = now()->daysInMonth;
+                    $daysActive  = now()->diffInDays($start) + 1;
+                    $flatCharge  = round($flatFull * ($daysActive / $daysIn), 2);
+                    $prorated    = true;
+                    $prorateNote = $daysActive . '/' . $daysIn . ' days from ' . $start->format('M j');
+                } else {
+                    $flatCharge = $flatFull;
+                }
+                $grandTotal += $flatCharge;
+            }
+
+            // AI passthrough per worker (cost × 1.30)
+            $aiPassWorker = round($totalDepCost * 1.30, 4);
+            $grandTotal  += $aiPassWorker;
+
+            if ($flatCharge > 0 || $totalDepCost > 0 || $isTrial) {
+                $invoiceWorkers[] = compact(
+                    'dep', 'bill', 'isActive', 'isTrial',
+                    'flatCharge', 'flatFull', 'prorated', 'prorateNote', 'planLabel',
+                    'unitUsed', 'unitLabel', 'unitLimit',
+                    'pipelineCost', 'pipelineTokens', 'pipelineCalls',
+                    'testCost', 'testTokens', 'testCalls',
+                    'totalDepCost', 'totalDepTokens', 'aiPassWorker'
+                );
             }
         }
-        $aiPassthrough   = round($totalCost * 1.30, 4);
-        $estimatedTotal  = $estimatedFlat + $aiPassthrough;
-        $hasActiveWorkers = count($flatLineItems) > 0;
     @endphp
 
-    @if($hasActiveWorkers || $totalCost > 0)
-    <div class="bg-gray-900 border border-gray-800 rounded-2xl mb-6 overflow-hidden">
-        <div class="px-5 py-4 border-b border-gray-800 flex items-center justify-between">
-            <h2 class="text-white text-sm font-semibold">Estimated Bill This Month</h2>
-            <p class="text-gray-600 text-xs">{{ now()->format('F Y') }} · final invoice generated at period end</p>
+    @if(count($invoiceWorkers) > 0 || $totalCost > 0)
+    <div class="rounded-2xl mb-6 overflow-hidden" style="background:var(--bg-card);border:1px solid var(--border)">
+        <div class="px-5 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-1" style="border-bottom:1px solid var(--border)">
+            <div>
+                <h2 class="text-sm font-semibold" style="color:var(--text-primary)">Estimated Bill This Month</h2>
+                <p class="text-xs mt-0.5" style="color:var(--text-muted)">One invoice accumulates all active worker subscriptions · final amount generated at period end</p>
+            </div>
+            <p class="text-xs shrink-0" style="color:var(--text-muted)">{{ now()->format('F Y') }}</p>
         </div>
-        <div class="px-5 py-4 space-y-2.5">
 
-            {{-- Per-deployment flat fees --}}
-            @foreach($flatLineItems as $item)
-            <div class="flex items-start justify-between text-sm">
-                <div>
-                    <span class="text-gray-300">{{ $item['name'] }} — flat rate</span>
-                    @if($item['prorated'])
-                        <span class="ml-2 text-xs px-1.5 py-0.5 rounded bg-amber-900/30 text-amber-400 border border-amber-800/40">
-                            prorated {{ $item['days'] }}/{{ $item['totalDays'] }} days from {{ $item['start'] }}
-                        </span>
-                        <p class="text-gray-600 text-xs mt-0.5">Full rate ${{ number_format($item['flat'], 2) }}/mo · charged for {{ $item['days'] }} of {{ $item['totalDays'] }} days</p>
+        {{-- Per-worker blocks --}}
+        @foreach($invoiceWorkers as $iw)
+        <div class="px-5 py-4" style="border-bottom:1px solid var(--border)">
+
+            {{-- Worker header --}}
+            <div class="flex items-center justify-between mb-3">
+                <div class="flex items-center gap-2">
+                    <div class="w-6 h-6 rounded-lg flex items-center justify-center text-xs font-bold text-gray-900"
+                         style="background:var(--accent)">{{ strtoupper(substr($iw['dep']->worker_slug,0,1)) }}</div>
+                    <span class="text-sm font-semibold" style="color:var(--text-primary)">{{ $iw['dep']->name }}</span>
+                    @if($iw['isTrial'])
+                        <span class="text-xs px-2 py-0.5 rounded-full" style="background:rgba(var(--accent-rgb),0.15);color:#fbbf24;border:1px solid rgba(var(--accent-rgb),0.3)">Trial</span>
+                    @elseif($iw['planLabel'])
+                        <span class="text-xs px-2 py-0.5 rounded-full" style="background:rgba(34,197,94,0.1);color:#4ade80;border:1px solid rgba(34,197,94,0.3)">{{ $iw['planLabel'] }}</span>
                     @endif
                 </div>
-                <span class="text-gray-300 font-mono shrink-0">${{ number_format($item['charge'], 2) }}</span>
+                <span class="text-sm font-mono font-semibold" style="color:var(--text-primary)">
+                    ${{ number_format($iw['flatCharge'] + $iw['aiPassWorker'], 4) }}
+                </span>
             </div>
-            @endforeach
 
-            {{-- AI passthrough line --}}
-            @if($totalCost > 0)
-            <div class="flex items-center justify-between text-sm">
-                <div>
-                    <span class="text-gray-300">AI passthrough (${{ number_format($totalCost, 4) }} × 1.30)</span>
-                    <p class="text-gray-600 text-xs mt-0.5">Actual Anthropic cost + 30% platform fee · {{ number_format($totalTokens) }} tokens</p>
+            <div class="space-y-2 pl-8">
+
+                {{-- Subscription line --}}
+                @if($iw['flatCharge'] > 0)
+                <div class="flex items-start justify-between">
+                    <div>
+                        <span class="text-xs" style="color:var(--text-secondary)">Subscription · {{ $iw['planLabel'] }}</span>
+                        @if($iw['prorated'])
+                            <span class="ml-2 text-xs px-1.5 py-0.5 rounded" style="background:rgba(245,158,11,0.15);color:#fbbf24;border:1px solid rgba(245,158,11,0.3)">
+                                prorated {{ $iw['prorateNote'] }}
+                            </span>
+                        @endif
+                        <p class="text-xs mt-0.5" style="color:var(--text-muted)">
+                            @if(!is_null($iw['unitLimit']))
+                                {{ number_format($iw['unitUsed']) }} / {{ number_format($iw['unitLimit']) }} {{ $iw['unitLabel'] }}s used this period
+                            @else
+                                {{ number_format($iw['unitUsed']) }} {{ $iw['unitLabel'] }}s processed · unlimited
+                            @endif
+                            @if($iw['prorated'])
+                                · full rate ${{ number_format($iw['flatFull'], 2) }}/mo
+                            @endif
+                        </p>
+                    </div>
+                    <span class="text-xs font-mono shrink-0 ml-4" style="color:var(--text-secondary)">${{ number_format($iw['flatCharge'], 2) }}</span>
                 </div>
-                <span class="text-gray-300 font-mono shrink-0">${{ number_format($aiPassthrough, 4) }}</span>
-            </div>
-            @endif
+                @endif
 
-            {{-- Divider + total --}}
-            <div class="pt-2 border-t border-gray-800 flex items-center justify-between">
-                <span class="text-white text-sm font-semibold">Estimated total</span>
-                <span class="text-brand text-lg font-bold font-mono">${{ number_format($estimatedTotal, 2) }}</span>
-            </div>
+                {{-- Pipeline AI cost --}}
+                @if($iw['pipelineCost'] > 0)
+                <div class="flex items-start justify-between">
+                    <div>
+                        <span class="text-xs" style="color:var(--text-secondary)">AI · Email pipeline</span>
+                        <p class="text-xs mt-0.5" style="color:var(--text-muted)">
+                            ${{ number_format($iw['pipelineCost'], 4) }} × 1.30 · {{ number_format($iw['pipelineCalls']) }} calls · {{ number_format($iw['pipelineTokens']) }} tokens
+                        </p>
+                    </div>
+                    <span class="text-xs font-mono shrink-0 ml-4" style="color:var(--text-secondary)">${{ number_format($iw['pipelineCost'] * 1.30, 4) }}</span>
+                </div>
+                @endif
 
-            @if(count($flatLineItems) > 1)
-            <p class="text-gray-700 text-xs pt-1">
-                {{ count($flatLineItems) }} active worker subscription{{ count($flatLineItems) > 1 ? 's' : '' }} ·
-                each billed independently by Stripe
-            </p>
-            @endif
+                {{-- Prompt testing / rewrite AI cost --}}
+                @if($iw['testCost'] > 0)
+                <div class="flex items-start justify-between">
+                    <div>
+                        <span class="text-xs" style="color:var(--text-secondary)">AI · Prompt testing & rewrites</span>
+                        <p class="text-xs mt-0.5" style="color:var(--text-muted)">
+                            ${{ number_format($iw['testCost'], 4) }} × 1.30 · {{ number_format($iw['testCalls']) }} test runs · {{ number_format($iw['testTokens']) }} tokens
+                        </p>
+                    </div>
+                    <span class="text-xs font-mono shrink-0 ml-4" style="color:var(--text-secondary)">${{ number_format($iw['testCost'] * 1.30, 4) }}</span>
+                </div>
+                @endif
+
+                {{-- Trial notice --}}
+                @if($iw['isTrial'] && $iw['totalDepCost'] == 0 && $iw['flatCharge'] == 0)
+                <p class="text-xs" style="color:var(--text-muted)">Free trial · no charge until you subscribe</p>
+                @endif
+            </div>
+        </div>
+        @endforeach
+
+        {{-- Grand total --}}
+        <div class="px-5 py-4 flex items-center justify-between">
+            <div>
+                <span class="text-sm font-semibold" style="color:var(--text-primary)">Estimated total</span>
+                <p class="text-xs mt-0.5" style="color:var(--text-muted)">Collected as one invoice via Stripe at period end</p>
+            </div>
+            <span class="text-xl font-bold font-mono" style="color:var(--accent-text)">${{ number_format($grandTotal, 2) }}</span>
         </div>
     </div>
     @endif
 
     {{-- Worker subscriptions --}}
-    <div class="bg-gray-900 border border-gray-800 rounded-2xl mb-6">
-        <div class="px-5 py-4 border-b border-gray-800">
-            <h2 class="text-white text-sm font-semibold">Worker Subscriptions</h2>
+    <div class="rounded-2xl mb-6" style="background:var(--bg-card);border:1px solid var(--border)">
+        <div class="px-5 py-4" style="border-bottom:1px solid var(--border)">
+            <h2 class="text-sm font-semibold" style="color:var(--text-primary)">Worker Subscriptions</h2>
         </div>
 
         @forelse($deployments as $dep)
@@ -240,7 +324,7 @@
                 $trialWarn  = $trialPct >= 70;
                 $statusColor = match($bill?->status) {
                     'active'   => ['bg'=>'rgba(34,197,94,0.1)','border'=>'rgba(34,197,94,0.3)','text'=>'#4ade80','label'=>'Active'],
-                    'trial'    => ['bg'=>'rgba(245,193,0,0.1)','border'=>'rgba(245,193,0,0.3)','text'=>'#fbbf24','label'=>'Trial'],
+                    'trial'    => ['bg'=>'rgba(var(--accent-rgb),0.1)','border'=>'rgba(var(--accent-rgb),0.3)','text'=>'#fbbf24','label'=>'Trial'],
                     'past_due' => ['bg'=>'rgba(239,68,68,0.1)','border'=>'rgba(239,68,68,0.3)','text'=>'#f87171','label'=>'Past Due'],
                     'paused'   => ['bg'=>'rgba(107,114,128,0.1)','border'=>'rgba(107,114,128,0.3)','text'=>'#9ca3af','label'=>'Paused'],
                     'canceled' => ['bg'=>'rgba(127,29,29,0.1)','border'=>'rgba(127,29,29,0.4)','text'=>'#fca5a5','label'=>'Canceled'],
@@ -252,8 +336,9 @@
 
                     {{-- Worker info --}}
                     <div class="flex items-center gap-3 min-w-0">
-                        <div class="w-9 h-9 bg-brand/15 rounded-xl flex items-center justify-center shrink-0">
-                            <span class="text-brand font-bold text-sm">{{ strtoupper(substr($dep->worker_slug,0,1)) }}</span>
+                        <div class="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
+                             style="background:rgba(var(--accent-rgb),0.15)">
+                            <span class="font-bold text-sm" style="color:var(--accent-text)">{{ strtoupper(substr($dep->worker_slug,0,1)) }}</span>
                         </div>
                         <div class="min-w-0">
                             <p class="text-white text-sm font-medium truncate">{{ $dep->name }}</p>
@@ -284,23 +369,61 @@
                     </div>
 
                     {{-- Pricing --}}
-                    @if($price)
+                    @php
+                        $currentPlanSlug = $bill?->plan_slug;
+                        $currentTier     = $currentPlanSlug
+                            ? ($pricingTiers[$dep->worker_slug] ?? collect())->firstWhere('plan_slug', $currentPlanSlug)
+                            : null;
+                        $displayPrice    = $currentTier ?? $price;
+                    @endphp
+                    @if($displayPrice)
                     <div class="text-right shrink-0">
                         <p class="text-gray-500 text-xs">Plan</p>
-                        <p class="text-gray-300 text-sm">${{ number_format($price->monthly_flat_rate, 2) }}/mo</p>
-                        <p class="text-gray-600 text-xs">+${{ number_format($price->overage_price_per_tx, 2) }}/tx over {{ number_format($price->included_transactions) }}</p>
+                        <p class="text-gray-300 text-sm">
+                            @if($currentTier)
+                                {{ ucfirst($currentTier->plan_slug) }} · ${{ number_format($currentTier->price_monthly ?? $currentTier->monthly_flat_rate ?? 0, 2) }}/mo
+                            @else
+                                ${{ number_format($displayPrice->monthly_flat_rate ?? 0, 2) }}/mo
+                            @endif
+                        </p>
+                        <p class="text-gray-600 text-xs">
+                            @if($currentTier && !is_null($currentTier->transaction_limit))
+                                {{ number_format($currentTier->transaction_limit) }} {{ $bill?->billing_unit ?? 'email' }}s/mo
+                            @elseif($currentTier)
+                                Unlimited {{ $bill?->billing_unit ?? 'email' }}s
+                            @endif
+                        </p>
                     </div>
                     @endif
 
                     {{-- Action button --}}
                     <div class="shrink-0">
                         @if(($bill?->status ?? '') === 'trial')
-                            <a href="{{ route('billing.checkout', $dep->id) }}"
-                               class="text-xs px-4 py-2 rounded-lg font-bold text-gray-900 hover:opacity-90 transition block text-center"
-                               style="background:#F5C100">Subscribe</a>
+                            <button onclick="togglePlans('plans-{{ $dep->id }}')"
+                                    class="text-xs px-4 py-2 rounded-lg font-bold text-gray-900 hover:opacity-90 transition"
+                                    style="background:var(--accent)">Choose Plan ↓</button>
                         @elseif(($bill?->status ?? '') === 'active')
-                            <a href="{{ route('billing.portal') }}"
-                               class="text-xs px-4 py-2 rounded-lg font-medium text-gray-400 border border-gray-700 hover:bg-gray-800 transition block text-center">Manage</a>
+                            <div class="text-right">
+                                @php
+                                    $activePlan     = $bill->plan_slug ?? 'starter';
+                                    $activePricing  = ($pricingTiers[$dep->worker_slug] ?? collect())->firstWhere('plan_slug', $activePlan);
+                                    $unitLabel      = $bill->billing_unit ?? 'email';
+                                    $unitUsed       = (int) ($bill->unit_count ?? 0);
+                                    $unitLimit      = $activePricing?->transaction_limit ?? null;
+                                @endphp
+                                <span class="text-xs px-2 py-0.5 rounded-full bg-green-900/40 text-green-400 border border-green-800/40 block mb-1">
+                                    {{ ucfirst($activePlan) }} plan
+                                </span>
+                                @if($unitLimit)
+                                    <span class="text-xs block mb-2" style="color:var(--text-muted)">
+                                        {{ number_format($unitUsed) }} / {{ number_format($unitLimit) }} {{ $unitLabel }}s
+                                    </span>
+                                @else
+                                    <span class="text-xs block mb-2" style="color:var(--text-muted)">{{ number_format($unitUsed) }} {{ $unitLabel }}s this month</span>
+                                @endif
+                                <a href="{{ route('billing.portal') }}"
+                                   class="text-xs px-4 py-2 rounded-lg font-medium text-gray-400 border border-gray-700 hover:bg-gray-800 transition block text-center">Manage</a>
+                            </div>
                         @elseif(in_array($bill?->status ?? '', ['past_due','canceled']))
                             <a href="{{ route('billing.portal') }}"
                                class="text-xs px-4 py-2 rounded-lg font-medium text-red-400 border border-red-800 hover:bg-red-900/20 transition block text-center">Reactivate</a>
@@ -321,7 +444,7 @@
                 <div class="mt-4 pl-12">
                     <div class="flex items-center justify-between text-xs mb-1">
                         <span class="{{ $trialWarn ? 'text-yellow-400' : 'text-gray-600' }}">
-                            Trial: {{ $trialUsed }} / {{ $trialLimit }} transactions used
+                            Trial: {{ $trialUsed }} / {{ $trialLimit }} emails used
                         </span>
                         <span class="text-gray-600">{{ $trialLimit - $trialUsed }} remaining</span>
                     </div>
@@ -334,6 +457,72 @@
                     @elseif($trialUsed >= $trialLimit)
                         <p class="text-red-400 text-xs mt-1 font-medium">Trial exhausted — new emails will be blocked until you subscribe</p>
                     @endif
+                </div>
+                @endif
+
+                {{-- Plan picker (shown on trial, toggled by Choose Plan button) --}}
+                @if(($bill?->status ?? '') === 'trial')
+                @php $depTiers = $pricingTiers[$dep->worker_slug] ?? collect(); @endphp
+                <div id="plans-{{ $dep->id }}" class="hidden mt-5 border-t pt-5" style="border-color:var(--border)">
+                    <p class="text-xs mb-4" style="color:var(--text-muted)">Choose the plan that fits your volume:</p>
+                    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px">
+                        @foreach($depTiers as $tier)
+                        @php
+                            $isEnterprise = $tier->plan_slug === 'enterprise';
+                            $isPro        = $tier->plan_slug === 'pro';
+                            $highlights   = json_decode($tier->plan_highlights ?? '[]', true);
+                        @endphp
+                        <div style="
+                            background:var(--bg-raised);
+                            border:1px solid {{ $isPro ? 'rgba(var(--accent-rgb),0.5)' : 'var(--border)' }};
+                            border-radius:12px;padding:16px;
+                            display:flex;flex-direction:column;gap:12px;position:relative;
+                        ">
+                            @if($isPro)
+                            <span style="
+                                position:absolute;top:-10px;left:14px;
+                                font-size:10px;padding:2px 8px;border-radius:99px;
+                                font-weight:700;color:#111;background:var(--accent)
+                            ">Most popular</span>
+                            @endif
+
+                            <div>
+                                <p style="font-size:13px;font-weight:600;color:var(--text-primary)">{{ $tier->display_name }}</p>
+                                <p style="font-size:22px;font-weight:700;color:var(--text-primary);margin-top:4px;line-height:1">
+                                    @if($isEnterprise) Custom
+                                    @else ${{ number_format($tier->monthly_flat_rate, 0) }}<span style="font-size:11px;font-weight:400;color:var(--text-muted)">/mo</span>
+                                    @endif
+                                </p>
+                                <p style="font-size:11px;color:var(--text-muted);margin-top:3px">
+                                    @if($tier->transaction_limit) {{ number_format($tier->transaction_limit) }} emails/mo
+                                    @else Unlimited emails
+                                    @endif
+                                </p>
+                            </div>
+
+                            <ul style="flex:1;display:flex;flex-direction:column;gap:6px;list-style:none;padding:0;margin:0">
+                                @foreach($highlights as $h)
+                                <li style="display:flex;align-items:flex-start;gap:6px;font-size:11px;color:var(--text-secondary)">
+                                    <span style="color:#4ade80;flex-shrink:0;margin-top:1px">✓</span> {{ $h }}
+                                </li>
+                                @endforeach
+                            </ul>
+
+                            @if($isEnterprise)
+                                <a href="mailto:hello@unit.report?subject=AVA Enterprise"
+                                   style="display:block;text-align:center;font-size:12px;font-weight:600;padding:8px 12px;border-radius:8px;border:1px solid var(--border);color:var(--text-secondary);text-decoration:none">
+                                    Contact Us
+                                </a>
+                            @else
+                                <a href="{{ route('billing.checkout', $dep->id) }}?plan={{ $tier->plan_slug }}"
+                                   style="display:block;text-align:center;font-size:12px;font-weight:700;padding:8px 12px;border-radius:8px;text-decoration:none;color:#111;
+                                          {{ $isPro ? 'background:var(--accent)' : 'border:1px solid var(--border);color:var(--text-secondary)' }}">
+                                    Get {{ ucfirst($tier->plan_slug) }}
+                                </a>
+                            @endif
+                        </div>
+                        @endforeach
+                    </div>
                 </div>
                 @endif
 
@@ -372,7 +561,7 @@
                 @endif
 
                 <a href="{{ route('billing.invoice', $invoice->id) }}"
-                   class="text-xs text-gray-500 hover:text-brand">Download PDF →</a>
+                   class="text-xs text-gray-500" style="text-decoration:none">Download PDF →</a>
 
                 @if(auth()->user()->role === 'admin' && $isDue)
                 <form method="POST" action="{{ route('admin.invoices.void', $invoice->id) }}">
@@ -391,4 +580,23 @@
     </div>
     @endif
 
+<script>
+function togglePlans(id) {
+    const el = document.getElementById(id);
+    if (el) el.classList.toggle('hidden');
+}
+
+// Auto-open plan picker if ?pick={deploymentId} is in URL (e.g. from trial gate or Subscribe Now redirect)
+(function() {
+    const params = new URLSearchParams(window.location.search);
+    const pickId = params.get('pick');
+    if (pickId) {
+        const el = document.getElementById('plans-' + pickId);
+        if (el) {
+            el.classList.remove('hidden');
+            setTimeout(() => el.scrollIntoView({ behavior: 'smooth', block: 'center' }), 150);
+        }
+    }
+})();
+</script>
 </x-app-layout>

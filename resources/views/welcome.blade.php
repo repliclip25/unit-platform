@@ -3,31 +3,33 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>UNIT — AI Workers for License Renewal Teams</title>
-<meta name="description" content="UNIT builds AI workflows for license renewal agencies. Each worker is trained for a specific org, knows the process, and gets it done.">
+<title>UNIT — Deploy AI Workers for Any Workflow</title>
+<meta name="description" content="UNIT is a platform for deploying purpose-built AI workers. Each worker is trained for a specific workflow, knows the process end to end, and runs on your team.">
 <link rel="icon" type="image/png" href="/logo.png">
-<script>(function(){var t=localStorage.getItem('unit-theme')||'dark';document.getElementById('html-root').setAttribute('data-theme',t)})();</script>
+<script>(function(){var t=localStorage.getItem('unit-theme-v2')||'dark';document.getElementById('html-root').setAttribute('data-theme',t)})();</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Space+Grotesk:wght@500;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root{
-  --gold:#f3c531;--gold-d:#c9920a;--glow:rgba(243,197,49,0.18);
+  --gold:#f1d362;--gold-d:#c9a800;--glow:rgba(241,211,98,0.18);--gold-text:#f1d362;
+  --accent:var(--gold);--accent-rgb:241,211,98;--accent-dark:var(--gold-d);
   --green:#22c55e;--green-bg:rgba(34,197,94,0.1);--green-border:rgba(34,197,94,0.25);
-  --text:#f0f0f0;--t2:#b8b8b8;--t3:#7a7a8a;--t4:#4a4a5a;
-  --line:rgba(255,255,255,0.07);--line2:rgba(255,255,255,0.13);
-  --surf:rgba(255,255,255,0.04);--raised:rgba(255,255,255,0.07);--overlay2:rgba(255,255,255,0.03);
-  --card:rgba(12,12,18,0.9);--cb:rgba(255,255,255,0.09);
+  --text:#ffffff;--t2:#cccccc;--t3:#999999;--t4:#555555;
+  --line:rgba(255,255,255,0.12);--line2:rgba(255,255,255,0.18);
+  --surf:#1a1a1a;--raised:#212121;--overlay2:rgba(255,255,255,0.04);
+  --card:#212121;--cb:rgba(255,255,255,0.12);
   --fd:'Space Grotesk','Inter',sans-serif;--fb:'Inter',sans-serif;
-  --bg:#080810;
+  --bg:#000000;
 }
 [data-theme="light"]{
-  --gold:#c9870a;--gold-d:#a36908;--glow:rgba(201,135,10,0.15);
+  --gold:#f1d362;--gold-d:#c9a800;--glow:rgba(241,211,98,0.18);--gold-text:#7a5c00;
   --green:#16a34a;--green-bg:rgba(22,163,74,0.08);--green-border:rgba(22,163,74,0.2);
-  --text:#110f0c;--t2:#3a3530;--t3:#7a6e65;--t4:#b0a090;
-  --line:rgba(0,0,0,0.07);--line2:rgba(0,0,0,0.13);
-  --surf:rgba(0,0,0,0.03);--raised:rgba(0,0,0,0.05);--overlay2:rgba(0,0,0,0.02);
-  --card:rgba(252,250,246,0.95);--cb:rgba(0,0,0,0.09);
-  --bg:#F0EBE0;
+  --text:#000000;--t2:#1a1a1a;--t3:#555555;--t4:#999999;
+  --line:#e2e2e0;--line2:#cccccc;
+  --surf:#f0f0ee;--raised:#e2e2e0;--overlay2:rgba(0,0,0,0.02);
+  --card:#ffffff;--cb:#e2e2e0;
+  --bg:#f9f9f7;
+  --accent:var(--gold);--accent-rgb:241,211,98;--accent-dark:var(--gold-d);
 }
 *{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth}
@@ -62,14 +64,58 @@ header.scrolled{background:rgba(6,6,14,0.94);backdrop-filter:blur(20px);border-b
 .hero-bg{position:absolute;inset:0;background-image:url('/hero-bg.jpg');background-size:cover;background-position:center 30%;z-index:0}
 .hero-bg::after{content:'';position:absolute;inset:0;background:linear-gradient(to top,rgba(8,8,16,1) 0%,rgba(8,8,16,0.82) 45%,rgba(8,8,16,0.25) 75%,transparent 100%)}
 .hero-content{position:relative;z-index:2;padding:0 0 0}
+.hero-split{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center;padding-top:80px}
+.hero-left{}
 .eyebrow{display:inline-flex;align-items:center;gap:9px;border:1px solid rgba(243,197,49,0.28);background:rgba(243,197,49,0.06);color:var(--gold);font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:7px 15px;border-radius:100px;margin-bottom:28px}
 .pulse{width:6px;height:6px;border-radius:50%;background:var(--gold);animation:blink 2s ease infinite;flex-shrink:0}
-h1.hh{font-family:var(--fd);font-size:86px;line-height:.95;font-weight:800;letter-spacing:-4px;margin-bottom:26px;max-width:900px}
+h1.hh{font-family:var(--fd);font-size:76px;line-height:.95;font-weight:800;letter-spacing:-4px;margin-bottom:26px;max-width:720px}
 h1.hh .gold{color:var(--gold)}
-.hero-sub{font-size:18px;line-height:1.6;color:var(--t2);max-width:520px;margin-bottom:36px}
+.hero-sub{font-size:17px;line-height:1.6;color:var(--t2);max-width:460px;margin-bottom:36px}
 .hero-ctas{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:32px}
 .hero-trust{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--t3)}
 .hdot{width:3px;height:3px;border-radius:50%;background:var(--t4)}
+
+/* ── HERO WORKER CARDS ── */
+.hero-right{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:40px 0 20px;min-height:480px}
+.hero-glow{position:absolute;top:50%;left:50%;transform:translate(-50%,-55%);width:340px;height:340px;border-radius:50%;background:radial-gradient(circle,rgba(241,211,98,0.13) 0%,transparent 70%);pointer-events:none;animation:glowpulse 3s ease-in-out infinite}
+@keyframes glowpulse{0%,100%{opacity:.7;transform:translate(-50%,-55%) scale(1)}50%{opacity:1;transform:translate(-50%,-55%) scale(1.08)}}
+.hw-card{background:rgba(20,20,30,0.82);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.1);border-radius:18px;padding:18px 20px;width:300px;position:relative;opacity:0;transform:translateY(40px);animation:cardfloat-in .7s cubic-bezier(.22,.68,0,1.2) forwards}
+.hw-card:nth-child(2){animation-delay:.15s;transform:translateY(40px) translateX(28px)}
+.hw-card:nth-child(3){animation-delay:.3s;transform:translateY(40px) translateX(-20px)}
+@keyframes cardfloat-in{to{opacity:1;transform:translateY(0) translateX(var(--tx,0px))}}
+.hw-card:nth-child(2){--tx:28px}
+.hw-card:nth-child(3){--tx:-20px}
+.hw-card.live-card{border-color:rgba(241,211,98,0.28);box-shadow:0 0 0 1px rgba(241,211,98,0.12),0 20px 60px rgba(0,0,0,.6)}
+.hw-card::after{content:'';position:absolute;inset:0;border-radius:18px;pointer-events:none}
+.hw-card-top{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.hw-av{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-family:var(--fd);font-weight:800;font-size:19px;flex-shrink:0}
+.hw-name{font-family:var(--fd);font-size:16px;font-weight:800;line-height:1;margin-bottom:2px}
+.hw-role{font-size:11.5px;color:rgba(255,255,255,0.45);line-height:1.3}
+.hw-chip-live{display:inline-flex;align-items:center;gap:4px;font-size:9.5px;font-weight:700;padding:3px 9px;border-radius:20px;background:rgba(34,197,94,0.15);border:1px solid rgba(34,197,94,0.3);color:#22c55e;margin-left:auto;white-space:nowrap}
+.hw-chip-soon{display:inline-flex;font-size:9.5px;font-weight:700;padding:3px 9px;border-radius:20px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.35);margin-left:auto;white-space:nowrap}
+.hw-dot{width:5px;height:5px;border-radius:50%;background:#22c55e;animation:blink 1.4s ease infinite;flex-shrink:0}
+.hw-caps{display:flex;flex-direction:column;gap:5px}
+.hw-cap{display:flex;align-items:center;gap:7px;font-size:12px;color:rgba(255,255,255,0.5)}
+.hw-cap-dot{width:4px;height:4px;border-radius:50%;flex-shrink:0}
+.hw-divider{height:1px;background:rgba(255,255,255,0.07);margin:12px 0}
+.hw-footer{display:flex;align-items:center;justify-content:space-between;font-size:11px;color:rgba(255,255,255,0.3)}
+.hw-footer-stat{font-family:var(--fd);font-size:15px;font-weight:700;color:rgba(255,255,255,0.7)}
+/* Float loop after appearing */
+.hw-card:nth-child(1){animation:cardfloat-in .7s cubic-bezier(.22,.68,0,1.2) forwards, floatloop 5s ease-in-out 0.9s infinite}
+.hw-card:nth-child(2){animation:cardfloat-in .7s cubic-bezier(.22,.68,0,1.2) .15s forwards, floatloop2 5.5s ease-in-out 1.1s infinite}
+.hw-card:nth-child(3){animation:cardfloat-in .7s cubic-bezier(.22,.68,0,1.2) .3s forwards, floatloop3 6s ease-in-out 1.3s infinite}
+@keyframes floatloop{0%,100%{transform:translateY(0) translateX(0)}50%{transform:translateY(-8px) translateX(0)}}
+@keyframes floatloop2{0%,100%{transform:translateY(0) translateX(28px)}50%{transform:translateY(-6px) translateX(28px)}}
+@keyframes floatloop3{0%,100%{transform:translateY(0) translateX(-20px)}50%{transform:translateY(-10px) translateX(-20px)}}
+@media(max-width:1080px){
+  .hero-split{grid-template-columns:1fr 1fr;gap:32px}
+  h1.hh{font-size:62px}
+  .hw-card{width:270px}
+}
+@media(max-width:900px){
+  .hero-split{grid-template-columns:1fr;padding-top:100px}
+  .hero-right{display:none}
+}
 
 /* ── ORG WORKFLOWS STRIP ── */
 .org-strip{position:relative;z-index:2;border-top:1px solid var(--line);background:rgba(6,6,14,0.75);backdrop-filter:blur(14px);padding:28px 0}
@@ -329,6 +375,65 @@ svg{display:block}
   .org-item{padding:12px 16px}
   .sec{padding:64px 0}
 }
+
+/* ── Light theme overrides ── */
+/* Nav */
+[data-theme="light"] header,
+[data-theme="light"] header.scrolled{background:rgba(249,249,247,0.97)!important;border-bottom:1px solid #e2e2e0!important}
+[data-theme="light"] .nl a{color:#555555!important}
+[data-theme="light"] .nl a:hover{color:#000000!important}
+[data-theme="light"] .btn-gh{color:#555555!important;background:none!important}
+[data-theme="light"] .btn-gh:hover{color:#000000!important}
+[data-theme="light"] .brand{color:#000000!important}
+[data-theme="light"] .tog{background:#cccccc!important}
+/* Hero — always dark bg image, keep white text */
+[data-theme="light"] .hero-content h1,
+[data-theme="light"] h1.hh{color:#ffffff!important}
+[data-theme="light"] h1.hh .gold{color:var(--gold)!important}
+[data-theme="light"] .hero-content .hero-sub{color:rgba(255,255,255,0.75)!important}
+[data-theme="light"] .eyebrow{color:#ffffff!important;border-color:rgba(255,255,255,0.35)!important;background:rgba(255,255,255,0.1)!important}
+[data-theme="light"] .hero-trust{color:rgba(255,255,255,0.55)!important}
+[data-theme="light"] .hdot{background:rgba(255,255,255,0.3)!important}
+[data-theme="light"] .hero-ctas .btn-ln{color:rgba(255,255,255,0.8)!important;border-color:rgba(255,255,255,0.3)!important}
+[data-theme="light"] .hero-ctas .btn-ln:hover{color:#ffffff!important;border-color:rgba(255,255,255,0.7)!important}
+/* Org strip */
+[data-theme="light"] .org-strip{background:rgba(240,240,238,0.97)!important;border-color:#e2e2e0!important}
+[data-theme="light"] .org-strip-label{color:#999999!important}
+[data-theme="light"] .org-item{border-color:#e2e2e0!important}
+[data-theme="light"] .org-name{color:#000000!important}
+[data-theme="light"] .org-workflow{color:#555555!important}
+[data-theme="light"] .org-icon{background:var(--gold)!important;border-color:var(--gold-d)!important}
+[data-theme="light"] .org-icon svg{color:#000000!important}
+/* Stats row — numbers black on light bg */
+[data-theme="light"] .stat-n{color:#000000!important}
+[data-theme="light"] .stat-l{color:#555555!important}
+[data-theme="light"] .stat{border-color:#e2e2e0!important}
+[data-theme="light"] .stats-row{border-color:#e2e2e0!important}
+/* Sections */
+[data-theme="light"] .sec-dark{background:#f0f0ee!important;border-color:#e2e2e0!important}
+[data-theme="light"] .slabel{color:#7a5c00!important}
+[data-theme="light"] .sh2{color:#000000!important}
+[data-theme="light"] .ssub{color:#555555!important}
+[data-theme="light"] .btn-ln{color:#444444!important;border-color:#cccccc!important}
+[data-theme="light"] .btn-ln:hover{color:#7a5c00!important;border-color:#7a5c00!important}
+[data-theme="light"] .univ-stat-n{color:#7a5c00!important}
+[data-theme="light"] .tstat-n{color:#000000!important}
+[data-theme="light"] .tstat-l{color:#555555!important}
+/* Feature/step icons — yellow bg with black icon */
+[data-theme="light"] .feat-icon,
+[data-theme="light"] .step-icon,
+[data-theme="light"] .univ-icon{background:var(--gold)!important;border-color:var(--gold-d)!important}
+[data-theme="light"] .feat-icon svg,
+[data-theme="light"] .step-icon svg,
+[data-theme="light"] .univ-icon svg{color:#000000!important;stroke:#000000!important}
+/* Footer always dark — force light text regardless of theme */
+footer{background:rgba(4,4,10,0.99)!important;color:#aaaaaa!important}
+footer .brand span{color:#ffffff!important}
+footer .foot-brand{color:#777777!important}
+footer .foot-col h4{color:#555555!important}
+footer .foot-col a{color:#888888!important}
+footer .foot-col a:hover{color:#ffffff!important}
+footer .foot-btm{color:#555555!important;border-color:rgba(255,255,255,0.08)!important}
 </style>
 </head>
 <body>
@@ -339,7 +444,8 @@ svg{display:block}
     <a href="/" class="brand"><img src="/logo.png" alt="UNIT"><span>UNIT</span></a>
     <nav class="nl">
       <a href="#workers">Workers</a>
-      <a href="#team">Team</a>
+      <a href="{{ route('marketplace') }}">Marketplace</a>
+      <a href="{{ route('blog') }}">Blog</a>
       <a href="#how">How It Works</a>
       <a href="javascript:void(0)" onclick="openFT(null)">Try Free</a>
     </nav>
@@ -359,22 +465,98 @@ svg{display:block}
 <section class="hero">
   <div class="hero-bg"></div>
   <div class="hero-content">
-    <div class="w" style="padding-bottom:0">
-      <div class="eyebrow"><span class="pulse"></span>AI Workforce for Compliance Teams</div>
-      <h1 class="hh">Your back-office,<br><span class="gold">on autopilot.</span></h1>
-      <p class="hero-sub">UNIT builds AI workflows for license renewal agencies. Each worker is trained for a specific org, knows the process, and gets it done — without hand-holding.</p>
-      <div class="hero-ctas">
-        @auth
-          <a href="{{ route('dashboard') }}" class="btn-g" style="padding:13px 28px;font-size:15px">Go to Dashboard →</a>
-        @else
-          <button onclick="openFT(null)" class="btn-g" style="padding:13px 28px;font-size:15px">Try a Worker Free →</button>
-          <a href="{{ route('register') }}" class="btn-ln" style="padding:13px 22px">Sign Up Free</a>
-        @endauth
+    <div class="w hero-split" style="padding-bottom:0">
+
+      {{-- Left: text --}}
+      <div class="hero-left">
+        <div class="eyebrow"><span class="pulse"></span>Purpose-Built AI Workers</div>
+        <h1 class="hh">Your workflow,<br><span class="gold">automated.</span></h1>
+        <p class="hero-sub">UNIT deploys AI workers built for specific jobs. Each one is trained on a real workflow, knows the process end to end, and runs on your team — without hand-holding.</p>
+        <div class="hero-ctas">
+          @auth
+            <a href="{{ route('dashboard') }}" class="btn-g" style="padding:13px 28px;font-size:15px">Go to Dashboard →</a>
+          @else
+            <button onclick="openFT(null)" class="btn-g" style="padding:13px 28px;font-size:15px">Try a Worker Free →</button>
+            <a href="{{ route('register') }}" class="btn-ln" style="padding:13px 22px">Sign Up Free</a>
+          @endauth
+        </div>
+        <div class="hero-trust">
+          <span>25 free transactions</span><span class="hdot"></span>
+          <span>No credit card</span><span class="hdot"></span>
+          <span>Deploy in minutes</span>
+        </div>
       </div>
-      <div class="hero-trust">
-        <span>25 free transactions</span><span class="hdot"></span>
-        <span>No credit card</span><span class="hdot"></span>
-        <span>Deploy in minutes</span>
+
+      {{-- Right: animated worker cards --}}
+      <div class="hero-right">
+        <div class="hero-glow"></div>
+
+        {{-- AVA — Live --}}
+        <div class="hw-card live-card">
+          <div class="hw-card-top">
+            <div class="hw-av" style="background:linear-gradient(135deg,#1a1207,#c9a800);color:#f1d362">A</div>
+            <div>
+              <div class="hw-name" style="color:#fff">AVA</div>
+              <div class="hw-role">Renewal &amp; Subscription Coordinator</div>
+            </div>
+            <span class="hw-chip-live"><span class="hw-dot"></span>Live</span>
+          </div>
+          <div class="hw-caps">
+            <div class="hw-cap"><span class="hw-cap-dot" style="background:#f1d362"></span>Inbox monitoring &amp; renewal classification</div>
+            <div class="hw-cap"><span class="hw-cap-dot" style="background:#f1d362"></span>Client history lookup &amp; draft generation</div>
+            <div class="hw-cap"><span class="hw-cap-dot" style="background:#f1d362"></span>Human-review gate before anything sends</div>
+          </div>
+          <div class="hw-divider"></div>
+          <div class="hw-footer">
+            <span>NYCSCA · DOB · FDNY · MTA</span>
+            <span class="hw-footer-stat">25k+ tx</span>
+          </div>
+        </div>
+
+        {{-- LIQ — Coming Soon --}}
+        <div class="hw-card">
+          <div class="hw-card-top">
+            <div class="hw-av" style="background:linear-gradient(135deg,#0a1a2e,#0369a1);color:#7dd3fc">L</div>
+            <div>
+              <div class="hw-name" style="color:rgba(255,255,255,0.75)">LIQ</div>
+              <div class="hw-role">Lead Qualification Specialist</div>
+            </div>
+            <span class="hw-chip-soon">Coming Soon</span>
+          </div>
+          <div class="hw-caps">
+            <div class="hw-cap"><span class="hw-cap-dot" style="background:#7dd3fc"></span>Inbound lead scoring &amp; intent analysis</div>
+            <div class="hw-cap"><span class="hw-cap-dot" style="background:#7dd3fc"></span>CRM enrichment &amp; follow-up sequencing</div>
+            <div class="hw-cap"><span class="hw-cap-dot" style="background:#7dd3fc"></span>Qualification summary for sales handoff</div>
+          </div>
+          <div class="hw-divider"></div>
+          <div class="hw-footer">
+            <span>CRM · Email · Web forms</span>
+            <span class="hw-footer-stat" style="color:rgba(255,255,255,0.3)">—</span>
+          </div>
+        </div>
+
+        {{-- NUX — Coming Soon --}}
+        <div class="hw-card">
+          <div class="hw-card-top">
+            <div class="hw-av" style="background:linear-gradient(135deg,#1a0a2e,#7c3aed);color:#c4b5fd">N</div>
+            <div>
+              <div class="hw-name" style="color:rgba(255,255,255,0.75)">NUX</div>
+              <div class="hw-role">Newsletter Creation Worker</div>
+            </div>
+            <span class="hw-chip-soon">Coming Soon</span>
+          </div>
+          <div class="hw-caps">
+            <div class="hw-cap"><span class="hw-cap-dot" style="background:#c4b5fd"></span>Content curation from sources &amp; feeds</div>
+            <div class="hw-cap"><span class="hw-cap-dot" style="background:#c4b5fd"></span>Draft generation with brand voice</div>
+            <div class="hw-cap"><span class="hw-cap-dot" style="background:#c4b5fd"></span>One-click send or schedule</div>
+          </div>
+          <div class="hw-divider"></div>
+          <div class="hw-footer">
+            <span>Email · RSS · Notion · Substack</span>
+            <span class="hw-footer-stat" style="color:rgba(255,255,255,0.3)">—</span>
+          </div>
+        </div>
+
       </div>
     </div>
 
@@ -412,9 +594,9 @@ svg{display:block}
   <div class="w">
     <div class="univ-grid">
       <div>
-        <div class="slabel">The UNIT Universe</div>
-        <h2 class="sh2" style="text-align:left;margin:0 0 16px;font-size:42px">Built for the agencies<br>that don't wait.</h2>
-        <p class="ssub" style="text-align:left;margin-bottom:28px">Each UNIT worker is purpose-built for a specific org's workflow. Not a general AI assistant — a trained coordinator that knows exactly what needs to happen and when.</p>
+        <div class="slabel">How UNIT Works</div>
+        <h2 class="sh2" style="text-align:left;margin:0 0 16px;font-size:42px">A worker for every<br>workflow that matters.</h2>
+        <p class="ssub" style="text-align:left;margin-bottom:28px">Each UNIT worker is built for a specific job — not a general AI assistant. It knows the process, the data it needs, and exactly what to hand back to you.</p>
         @foreach([
           ['<circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/>','Agency-trained from day one','Each worker is built around a specific org\'s renewal process, forms, and requirements.'],
           ['<path d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/>','Every step logged','Full audit trail on every transaction. You see exactly what ran, when, and why.'],
@@ -496,7 +678,7 @@ svg{display:block}
           </div>
           <div class="wr-btns">
             <a href="/w/ava" class="wrb-g">View Profile</a>
-            <button class="wrb-p" onclick="openFT('AVA — Renewal Coordinator')">Try Free →</button>
+            <a href="{{ route('register') }}?worker=ava" class="wrb-p">Deploy Free →</a>
           </div>
         </div>
         {{-- Center: workflow steps --}}
@@ -676,6 +858,39 @@ svg{display:block}
   </div>
 </section>
 
+{{-- ── WORKER VIDEO SECTION ── --}}
+<section class="sec" id="demo" style="background:var(--bg);padding:80px 0">
+  <div class="w">
+    <div class="sh">
+      <div class="slabel">See It In Action</div>
+      <h2 class="sh2">Watch AVA work a real renewal.</h2>
+      <p class="ssub">A 3-minute walkthrough — email comes in, AVA reads it, classifies it, pulls memory, drafts the reply. You review and approve. That's it.</p>
+    </div>
+    <div style="max-width:860px;margin:0 auto;position:relative;border-radius:18px;overflow:hidden;background:#000;box-shadow:0 0 0 1px rgba(255,255,255,0.08),0 32px 64px rgba(0,0,0,0.6)">
+      {{-- YouTube embed — replace VIDEO_ID when you have the real video --}}
+      <div style="position:relative;padding-bottom:56.25%;height:0">
+        <iframe
+          src="https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0&modestbranding=1&color=white"
+          title="AVA — UNIT Renewal Coordinator Demo"
+          frameborder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowfullscreen
+          style="position:absolute;top:0;left:0;width:100%;height:100%;border:0">
+        </iframe>
+      </div>
+      {{-- caption bar --}}
+      <div style="background:#111;padding:14px 20px;display:flex;align-items:center;gap:10px;border-top:1px solid rgba(255,255,255,0.07)">
+        <div style="width:32px;height:32px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;color:#000;flex-shrink:0">A</div>
+        <div>
+          <div style="font-size:13px;font-weight:600;color:#fff">AVA — Renewal &amp; Subscription Coordinator</div>
+          <div style="font-size:12px;color:#888">Live walkthrough · NYCSCA workflow · 3 min</div>
+        </div>
+        <a href="/w/ava" style="margin-left:auto;font-size:12px;font-weight:600;color:var(--gold);text-decoration:none;white-space:nowrap">Full profile →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
 {{-- ── TEAM VIDEO SECTION ── --}}
 <section class="team-sec" id="team">
   <div class="team-video-bg">
@@ -692,7 +907,7 @@ svg{display:block}
       We built the<br>
       workers.
     </h2>
-    <p class="team-sub">We're compliance coordinators, ops leads, and engineers who got tired of watching renewal deadlines slip through the cracks of manual processes. UNIT is what we built to fix it.</p>
+    <p class="team-sub">We're operations leads and engineers who got tired of building workflows that still needed people to babysit them. UNIT is what we built instead — workers that actually run the process.</p>
     <div class="team-stats">
       <div>
         <div class="tstat-n">3+</div>
@@ -805,7 +1020,7 @@ svg{display:block}
     <div class="foot-grid">
       <div>
         <a href="/" class="brand"><img src="/logo.png" alt="UNIT"><span>UNIT</span></a>
-        <p class="foot-brand">AI workers for license renewal teams. Deploy in minutes, automate the work that slows you down.</p>
+        <p class="foot-brand">A platform for deploying purpose-built AI workers. Each one is trained for a specific workflow and runs on your team.</p>
       </div>
       <div class="foot-col">
         <h4>Workers</h4>
@@ -822,7 +1037,8 @@ svg{display:block}
       </div>
       <div class="foot-col">
         <h4>Company</h4>
-        <a href="#team">Our Story</a>
+        <a href="{{ route('about') }}">About Us</a>
+        <a href="{{ route('blog') }}">Blog</a>
         @auth
           <a href="{{ route('dashboard') }}">Dashboard</a>
         @else
@@ -830,10 +1046,15 @@ svg{display:block}
         @endauth
         <a href="{{ route('influencer.apply') }}">Become a Partner</a>
       </div>
+      <div class="foot-col">
+        <h4>Legal</h4>
+        <a href="{{ route('privacy') }}">Privacy Policy</a>
+        <a href="{{ route('terms') }}">Terms of Use</a>
+      </div>
     </div>
     <div class="foot-btm">
       <span>© {{ date('Y') }} UNIT. All rights reserved.</span>
-      <span>Built for operations-focused teams.</span>
+      <span><a href="{{ route('privacy') }}" style="color:inherit">Privacy</a> · <a href="{{ route('terms') }}" style="color:inherit">Terms</a></span>
     </div>
   </div>
 </footer>
@@ -879,10 +1100,10 @@ svg{display:block}
 
 <script>
 // ── Theme ────────────────────────────────
-(function(){var t=localStorage.getItem('unit-theme')||'dark';document.getElementById('html-root').setAttribute('data-theme',t)})();
+(function(){var t=localStorage.getItem('unit-theme-v2')||'dark';document.getElementById('html-root').setAttribute('data-theme',t)})();
 document.getElementById('tog').addEventListener('click',function(){
   var n=document.getElementById('html-root').getAttribute('data-theme')==='dark'?'light':'dark';
-  document.getElementById('html-root').setAttribute('data-theme',n);localStorage.setItem('unit-theme',n);
+  document.getElementById('html-root').setAttribute('data-theme',n);localStorage.setItem('unit-theme-v2',n);
 });
 window.addEventListener('scroll',function(){document.getElementById('nav').classList.toggle('scrolled',window.scrollY>40)},{passive:true});
 

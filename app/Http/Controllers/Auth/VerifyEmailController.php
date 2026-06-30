@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Platform\Services\PlatformVerificationService;
+use App\Platform\Services\WorkerOnboardingService;
 use Illuminate\Auth\Events\Verified;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\RedirectResponse;
@@ -15,13 +17,23 @@ class VerifyEmailController extends Controller
     public function __invoke(EmailVerificationRequest $request): RedirectResponse
     {
         if ($request->user()->hasVerifiedEmail()) {
-            return redirect()->intended(route('dashboard', absolute: false).'?verified=1');
+            // Already verified — go to onboarding if not complete, otherwise dashboard
+            return $request->user()->hasCompletedOnboarding()
+                ? redirect()->route('dashboard')
+                : redirect()->route('onboarding');
         }
 
         if ($request->user()->markEmailAsVerified()) {
             event(new Verified($request->user()));
         }
 
-        return redirect()->intended(route('dashboard', absolute: false).'?verified=1');
+        // Record email verification in platform_verifications table
+        PlatformVerificationService::markVerified($request->user()->id, 'email');
+
+        // Advance the active worker onboarding session past the verify-email step
+        WorkerOnboardingService::advanceStepByName($request->user()->id, 'verify-email');
+
+        // Always continue to onboarding after verification
+        return redirect()->route('onboarding');
     }
 }

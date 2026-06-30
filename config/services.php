@@ -35,6 +35,18 @@ return [
         ],
     ],
 
+    'google' => [
+        'client_id'     => env('GOOGLE_CLIENT_ID'),
+        'client_secret' => env('GOOGLE_CLIENT_SECRET'),
+        'redirect'      => env('GOOGLE_REDIRECT_URI', '/auth/google/callback'),
+    ],
+
+    'apple' => [
+        'client_id'     => env('APPLE_CLIENT_ID'),
+        'client_secret' => env('APPLE_CLIENT_SECRET'),
+        'redirect'      => env('APPLE_REDIRECT_URI', '/auth/apple/callback'),
+    ],
+
     'facebook_pixel_id' => env('FACEBOOK_PIXEL_ID'),
     'gtm_id'            => env('GTM_ID'),
 
@@ -44,13 +56,14 @@ return [
     ],
 
     'gmail' => [
-        'client_id'     => env('GMAIL_CLIENT_ID'),
-        'client_secret' => env('GMAIL_CLIENT_SECRET'),
-        'redirect_uri'  => env('GMAIL_REDIRECT_URI'),
-        'refresh_token' => env('GMAIL_REFRESH_TOKEN'),
-        'address'       => env('AVA_GMAIL_ADDRESS'),
-        'handler_email' => env('AVA_HANDLER_EMAIL'),
-        'pubsub_topic'  => env('GMAIL_PUBSUB_TOPIC'),
+        'client_id'            => env('GMAIL_CLIENT_ID'),
+        'client_secret'        => env('GMAIL_CLIENT_SECRET'),
+        'redirect_uri'         => env('GMAIL_REDIRECT_URI'),
+        'refresh_token'        => env('GMAIL_REFRESH_TOKEN'),
+        'address'              => env('AVA_GMAIL_ADDRESS'),
+        'handler_email'        => env('AVA_HANDLER_EMAIL'),
+        'pubsub_topic'         => env('GMAIL_PUBSUB_TOPIC'),
+        'pubsub_service_account' => env('GMAIL_PUBSUB_SERVICE_ACCOUNT'), // e.g. service-{project-number}@gcp-sa-pubsub.iam.gserviceaccount.com
     ],
 
 ];

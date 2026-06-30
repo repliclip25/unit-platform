@@ -21,32 +21,44 @@
         </div>
 
         {{-- Progress steps --}}
-        <div class="flex items-center gap-2">
-            @foreach([1,2,3,4,5] as $s)
+        @php
+        $stepLabels = [1 => 'Worker', 2 => 'Credentials', 3 => 'Memory', 4 => 'Rules', 5 => 'Test'];
+        @endphp
+        <div class="hidden sm:flex items-center gap-1">
+            @foreach($stepLabels as $s => $label)
                 @php
                     $isActive   = $s === $step;
                     $isComplete = $s < $step;
                 @endphp
-                <div class="flex items-center gap-2">
-                    <div class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold
-                        {{ $isComplete ? 'bg-yellow-400 text-gray-950' : ($isActive ? 'bg-gray-700 border-2 border-yellow-400 text-yellow-400' : 'bg-gray-800 text-gray-600') }}">
+                <div class="flex items-center gap-1">
+                    <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold
+                        {{ $isComplete ? 'bg-yellow-400/20 text-yellow-400' : ($isActive ? 'bg-gray-700 text-white' : 'text-gray-700') }}">
                         @if($isComplete)
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
                         @else
-                            {{ $s }}
+                            <span class="w-4 h-4 rounded-full flex items-center justify-center text-xs
+                                {{ $isActive ? 'bg-yellow-400 text-gray-950' : 'bg-gray-800 text-gray-600' }}">{{ $s }}</span>
                         @endif
+                        {{ $label }}
                     </div>
                     @if($s < 5)
-                        <div class="w-8 h-px {{ $s < $step ? 'bg-yellow-400' : 'bg-gray-800' }}"></div>
+                        <div class="w-4 h-px {{ $s < $step ? 'bg-yellow-400/40' : 'bg-gray-800' }}"></div>
                     @endif
                 </div>
             @endforeach
         </div>
+        {{-- Mobile: just step count --}}
+        <div class="sm:hidden text-gray-600 text-sm">Step {{ $step }} of 5</div>
 
-        <div class="text-gray-600 text-sm">Step {{ $step }} of 5</div>
+        <a href="{{ route('onboarding.skip') }}"
+           onclick="return confirm('Skip setup? You can always complete it from your dashboard.')"
+           class="hidden sm:block text-gray-700 hover:text-gray-500 text-xs transition-colors whitespace-nowrap">
+            Skip setup →
+        </a>
     </div>
 
-    {{-- Content --}}
+
+{{-- Content --}}
     <div class="flex-1 flex items-center justify-center px-4 py-12">
         <div class="w-full max-w-lg">
             @if(session('success'))

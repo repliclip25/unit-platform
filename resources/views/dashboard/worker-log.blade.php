@@ -25,7 +25,7 @@
             <div class="px-5 py-4 border-b border-gray-800 last:border-0 flex items-start justify-between">
                 <div class="flex-1">
                     <div class="flex items-center gap-2 mb-1">
-                        <a href="{{ route('transactions.show', $entry->tx_id) }}" class="text-brand text-xs font-mono hover:text-brand">{{ $entry->tx_id }}</a>
+                        <a href="{{ route('transactions.show', $entry->tx_id) }}" class="text-xs font-mono hover:underline" style="color:var(--text-secondary)">{{ $entry->tx_id }}</a>
                         <span class="text-xs px-1.5 py-0.5 rounded {{ $color }}">{{ $entry->status }}</span>
                         @if($entry->priority)
                             <span class="text-xs text-gray-600">{{ $entry->priority }}</span>

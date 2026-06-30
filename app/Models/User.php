@@ -28,6 +28,14 @@ class User extends Authenticatable implements MustVerifyEmail
         'name',
         'email',
         'password',
+        'email_verified_at',
+        'google_id',
+        'apple_id',
+        'avatar',
+        'referral_code',
+        'referred_by_code',
+        'onboarding_completed_at',
+        'onboarding_skipped',
     ];
 
     /**
@@ -48,8 +56,15 @@ class User extends Authenticatable implements MustVerifyEmail
     protected function casts(): array
     {
         return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
+            'email_verified_at'        => 'datetime',
+            'onboarding_completed_at'  => 'datetime',
+            'onboarding_skipped'       => 'boolean',
+            'password'                 => 'hashed',
         ];
+    }
+
+    public function hasCompletedOnboarding(): bool
+    {
+        return $this->onboarding_completed_at !== null || $this->onboarding_skipped;
     }
 }

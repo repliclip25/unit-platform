@@ -5,7 +5,11 @@ namespace App\Workers\AVA;
 use App\Platform\Contracts\WorkerContract;
 use App\Platform\Enums\QACheck;
 use App\Workers\AVA\Jobs\ClassifyEmailJob;
+use App\Workers\AVA\Jobs\DailySummaryJob;
 use App\Workers\AVA\Jobs\DraftEmailJob;
+use App\Workers\AVA\Jobs\FastTrackIngestJob;
+use App\Workers\AVA\Jobs\FilterEmailJob;
+use App\Workers\AVA\Jobs\LogTransactionJob;
 use App\Workers\AVA\Jobs\MemoryLookupJob;
 use App\Workers\AVA\Jobs\PushToGmailJob;
 use App\Workers\AVA\Jobs\ReadEmailJob;
@@ -22,6 +26,33 @@ class AvaWorker implements WorkerContract
             'slug'        => 'ava',
             'version'     => '1.0',
             'description' => 'Monitors your Gmail inbox, classifies renewal and subscription emails, and drafts responses using your contacts, assets, and rules.',
+        ];
+    }
+
+    public function employee(): array
+    {
+        return [
+            'name'        => 'AVA',
+            'pronoun'     => 'she',
+            'title'       => 'Renewal Coordinator',
+            'department'  => 'Customer Success',
+            'employer'    => 'Freelancers, Solo Founders, Startup CEOs, Agency Owners',
+            'mission'     => 'Never let a subscription, contract, invoice, or renewal request go unanswered.',
+            'introduction'=> "Hi, I'm AVA. I make sure you never miss an important renewal. I watch your inbox, understand each renewal request, use what I know about your customers and business, prepare the reply, and leave it in Gmail for your approval.",
+            'what_i_do'   => [
+                'Monitor your Gmail 24/7',
+                'Detect renewal and subscription requests',
+                'Understand the customer using your memory',
+                'Draft a personalized response',
+                'Save it to Gmail Drafts for your review',
+                'Learn from every interaction',
+            ],
+            'activity_labels' => [
+                'watching'      => 'Inbox for renewal notices',
+                'working_on'    => 'renewal responses',
+                'waiting_label' => 'drafts to review',
+                'memory_label'  => 'Customer history, subscription plans, writing style, company policies, past renewals',
+            ],
         ];
     }
 
@@ -62,6 +93,77 @@ class AvaWorker implements WorkerContract
         ];
     }
 
+    // ── Block 2: Onboarding Requirements ────────────────────────────────────
+
+    public function platformRequirements(): array
+    {
+        return ['email'];
+    }
+
+    public function onboardingSteps(): array
+    {
+        return [
+            [
+                'name'        => 'credential',
+                'label'       => 'Connect your Gmail',
+                'description' => 'AVA watches this inbox for renewal and subscription emails.',
+                'optional'    => false,
+                'icon'        => 'mail',
+            ],
+            [
+                'name'        => 'memory',
+                'label'       => 'Upload your contacts & assets',
+                'description' => 'Your clients, domains, and subscriptions — so AVA knows who each email is about.',
+                'optional'    => true,
+                'icon'        => 'brain',
+            ],
+            [
+                'name'        => 'fast-track',
+                'label'       => 'Run a live test',
+                'description' => 'Fire a sample email through AVA and watch it draft a response end-to-end.',
+                'optional'    => false,
+                'icon'        => 'bolt',
+            ],
+        ];
+    }
+
+    public function tags(): array
+    {
+        return [
+            'email', 'gmail', 'renewal', 'subscription', 'domain', 'ssl',
+            'invoice', 'inbox', 'draft', 'automation', 'coordinator',
+        ];
+    }
+
+    public function media(): array
+    {
+        return [
+            'avatar' => '/workers/ava/avatar.png',
+            'banner' => '/workers/ava/banner.jpg',
+            'color'  => '#f3c531',
+            'quote'  => 'Methodical, thorough, never misses a deadline. I watch your inbox so you don\'t have to — and I draft everything before the agency ever has to ask twice.',
+        ];
+    }
+
+    public function ingestJobClass(): string
+    {
+        return \App\Workers\AVA\Jobs\FilterEmailJob::class;
+    }
+
+    public function pipelineStages(): array
+    {
+        return [
+            ['key' => 'webhook',        'label' => 'Inject & Fetch',  'sub' => 'Insert into inbox, read back',   'icon' => 'bolt',     'job_class' => null],
+            ['key' => 'read_email',     'label' => 'Read Email',      'sub' => 'Parse & extract fields',         'icon' => 'mail',     'job_class' => 'ReadEmailJob'],
+            ['key' => 'classify',       'label' => 'Classify',        'sub' => 'Category, priority & type',      'icon' => 'tag',      'job_class' => 'ClassifyEmailJob'],
+            ['key' => 'memory',         'label' => 'Memory Lookup',   'sub' => 'Match client, asset & rules',    'icon' => 'brain',    'job_class' => 'MemoryLookupJob'],
+            ['key' => 'log_entry',      'label' => 'Log Transaction', 'sub' => 'Write to register',              'icon' => 'log',      'job_class' => 'LogTransactionJob'],
+            ['key' => 'select_template','label' => 'Select Template', 'sub' => 'Pick best-match template',       'icon' => 'template', 'job_class' => 'SelectTemplateJob'],
+            ['key' => 'draft_email',    'label' => 'Draft Email',     'sub' => 'AI-personalised draft',          'icon' => 'draft',    'job_class' => 'DraftEmailJob'],
+            ['key' => 'push_draft',     'label' => 'Push to Gmail',   'sub' => 'Create draft in inbox',          'icon' => 'send',     'job_class' => 'PushToGmailJob'],
+        ];
+    }
+
     // ── Block 2: Deployment DNA ──────────────────────────────────────────────
 
     public function instances(): array
@@ -70,6 +172,7 @@ class AvaWorker implements WorkerContract
             'multiple'  => true,
             'min'       => 1,
             'max'       => null,
+            'limit_by'  => 'gmail_credentials', // enforce: one deployment per connected Gmail inbox
             'label'     => 'inbox',
             'rationale' => 'Each AVA instance monitors one Gmail inbox independently — deploy one per email account you want covered.',
         ];
@@ -96,15 +199,31 @@ class AvaWorker implements WorkerContract
                 'type'        => 'text',
                 'placeholder' => 'e.g. Renewal and subscription emails',
                 'default'     => 'All incoming emails',
-                'hint'        => 'Describe what type of emails this worker should process.',
+                'hint'        => 'Human-readable description of what this deployment monitors.',
             ],
             [
                 'key'         => 'capture_keywords',
-                'label'       => 'Capture Keywords',
+                'label'       => 'Keywords',
                 'type'        => 'text',
                 'placeholder' => 'renew, invoice, expires, subscription',
                 'default'     => '',
-                'hint'        => 'Comma-separated keywords. Leave blank to capture all emails.',
+                'hint'        => 'Email must contain at least one keyword (subject or body). Leave blank to capture all.',
+            ],
+            [
+                'key'         => 'capture_domains',
+                'label'       => 'Allowed Domains',
+                'type'        => 'text',
+                'placeholder' => 'godaddy.com, namecheap.com, stripe.com',
+                'default'     => '',
+                'hint'        => 'Only process emails from these sender domains. Leave blank to allow any.',
+            ],
+            [
+                'key'         => 'exclude_senders',
+                'label'       => 'Excluded Senders',
+                'type'        => 'text',
+                'placeholder' => 'noreply@parking.com, promo@ads.com',
+                'default'     => '',
+                'hint'        => 'Always skip emails from these addresses. Checked before all other rules.',
             ],
         ];
     }
@@ -173,6 +292,25 @@ class AvaWorker implements WorkerContract
                 'Regards,',
                 'The Registrar Team',
             ]),
+        ];
+    }
+
+    public function fastTrackOutcome(): array
+    {
+        return [
+            'headline'      => 'AVA just handled her first renewal — end to end.',
+            'what_happened' => [
+                ['icon' => 'read',      'text' => 'Read the email and pulled out the key details — sender, domain, deadline.'],
+                ['icon' => 'classify',  'text' => 'Classified it as a renewal notice and scored it by urgency.'],
+                ['icon' => 'memory',    'text' => 'Checked your contacts and assets to find who this email belongs to.'],
+                ['icon' => 'template',  'text' => 'Selected the right response template based on your rules.'],
+                ['icon' => 'draft',     'text' => 'Drafted a reply, ready for you to review and send — or approve automatically.'],
+            ],
+            'where_to_find' => [
+                'label' => 'See the transaction in your workspace',
+                'hint'  => 'Go to Transactions → look for the Fast Track entry. The draft is waiting under "Draft Ready."',
+            ],
+            'going_forward' => 'From now on, every renewal or subscription email that hits your Gmail will go through this same pipeline — automatically, without you lifting a finger.',
         ];
     }
 
@@ -404,6 +542,77 @@ class AvaWorker implements WorkerContract
         return null;
     }
 
+    public function subscriptions(): array
+    {
+        return [
+            [
+                'slug'                => 'starter',
+                'label'               => 'Starter',
+                'price_monthly'       => 49,
+                'price_currency'      => 'USD',
+                'transaction_limit'   => 100,
+                'transaction_overage' => null,
+                'prompt_overrides'    => false,
+                'support'             => 'Email support',
+                'highlights'          => [
+                    '100 emails processed per month',
+                    'Full 8-stage pipeline',
+                    'Gmail draft creation',
+                    'Memory: clients, contacts, assets',
+                    'Email support',
+                ],
+            ],
+            [
+                'slug'                => 'pro',
+                'label'               => 'Pro',
+                'price_monthly'       => 149,
+                'price_currency'      => 'USD',
+                'transaction_limit'   => null, // unlimited
+                'transaction_overage' => null,
+                'prompt_overrides'    => true,
+                'support'             => 'Priority email support',
+                'highlights'          => [
+                    'Unlimited emails processed',
+                    'Per-stage prompt overrides',
+                    'Multi-inbox support',
+                    'Advanced renewal register',
+                    'Priority email support',
+                ],
+            ],
+            [
+                'slug'                => 'enterprise',
+                'label'               => 'Enterprise',
+                'price_monthly'       => null, // custom
+                'price_currency'      => 'USD',
+                'transaction_limit'   => null,
+                'transaction_overage' => null,
+                'prompt_overrides'    => true,
+                'support'             => 'Dedicated support + SLA',
+                'highlights'          => [
+                    'Unlimited emails processed',
+                    'Per-stage prompt overrides',
+                    'Dedicated support & SLA',
+                    'Custom onboarding',
+                    'Volume pricing',
+                ],
+            ],
+        ];
+    }
+
+    public function versionChangelog(): array
+    {
+        return [
+            [
+                'version'         => '1.0',
+                'date'            => '2024-01-01',
+                'notes'           => 'Initial release. Gmail watch, 8-stage pipeline, renewal register, memory layers.',
+                'breaking'        => false,
+                'breaking_reason' => '',
+                'upgrade_steps'   => [],
+            ],
+        ];
+    }
+
     // ── Block 3b: Notifications ─────────────────────────────────────────────
 
     public function notifications(): array
@@ -510,6 +719,162 @@ class AvaWorker implements WorkerContract
                 'values' => ['draft_ready', 'sent'],
                 'label' => 'Draft pushed to Gmail',
             ],
+        ];
+    }
+
+    // ── Block 5: Output ──────────────────────────────────────────────────────
+
+    public function output(): array
+    {
+        return [
+            'description'  => 'A Gmail draft placed in the connected inbox, ready for human review and one-click send. Every processed email produces exactly one draft.',
+            'destination'  => 'Gmail Drafts + renewal_register table',
+            'format'       => 'email_draft',
+            'fields'       => [
+                ['key' => 'gmail_draft_id', 'type' => 'string',  'description' => 'Gmail API draft ID — used to send or delete the draft',   'nullable' => false],
+                ['key' => 'to',             'type' => 'string',  'description' => 'Recipient email address resolved from memory lookup',       'nullable' => false],
+                ['key' => 'subject',        'type' => 'string',  'description' => 'Email subject line from template + placeholders',           'nullable' => false],
+                ['key' => 'body',           'type' => 'string',  'description' => 'Full email body — template-filled or Claude-generated',     'nullable' => false],
+                ['key' => 'human_review_note', 'type' => 'string', 'description' => 'Internal note shown to tenant on the transaction detail', 'nullable' => true],
+                ['key' => 'low_confidence', 'type' => 'boolean', 'description' => 'True when memory match confidence < 70% — flags caution',  'nullable' => false],
+                ['key' => 'auto_sent',      'type' => 'boolean', 'description' => 'True when template approval_required = false and email was auto-sent without human review', 'nullable' => true],
+            ],
+            'human_action' => 'Review the draft on the Transactions page → Approve (sends immediately) or Reject (deletes draft).',
+            'auto_action'  => 'When a template has approval_required = false, AVA sends the email immediately without creating a draft for review.',
+        ];
+    }
+
+    // ── Block 6: Prompts ─────────────────────────────────────────────────────
+
+    public function prompts(): array
+    {
+        return [
+            [
+                'stage'         => 'read',
+                'label'         => 'Read Email',
+                'uses_ai'       => true,
+                'model'         => null,
+                'system'        => 'You are Ava, UNIT\'s Subscription & Renewal Coordinator. Return valid JSON only. No extra text.',
+                'user'          => "Read the email below and explain what it means.\n\nReturn valid JSON only with:\n{\n  \"plain_english_summary\": \"\",\n  \"what_happened\": \"\",\n  \"action_needed\": \"\",\n  \"due_date_or_deadline\": \"\",\n  \"risk_if_ignored\": \"\",\n  \"urgency\": \"Low|Medium|High|Critical\",\n  \"questions_for_memory_lookup\": []\n}\n\nEMAIL:\n{RAW_EMAIL}",
+                'output_format' => 'json',
+                'output_shape'  => ['plain_english_summary', 'what_happened', 'action_needed', 'due_date_or_deadline', 'risk_if_ignored', 'urgency', 'questions_for_memory_lookup'],
+                'max_tokens'    => 512,
+            ],
+            [
+                'stage'         => 'classify',
+                'label'         => 'Classify',
+                'uses_ai'       => true,
+                'model'         => null,
+                'system'        => 'You are Ava, UNIT\'s Subscription & Renewal Coordinator. Return valid JSON only. No extra text.',
+                'user'          => "Classify this transaction using the email understanding below.\n\nAvailable categories: Domain Renewal, SSL Expiry, Hosting Invoice, SaaS Renewal, Failed Payment, Security Alert, Meeting Request, Client Support, Other\n\nReturn JSON:\n{\n  \"category\": \"\",\n  \"subcategory\": \"\",\n  \"priority\": \"Low|Medium|High|Critical\",\n  \"required_action\": \"\",\n  \"register_to_update\": \"\",\n  \"status\": \"\",\n  \"reason\": \"\"\n}\n\nCONTEXT:\n{READ_OUTPUT}",
+                'output_format' => 'json',
+                'output_shape'  => ['category', 'subcategory', 'priority', 'required_action', 'register_to_update', 'status', 'reason'],
+                'max_tokens'    => 256,
+            ],
+            [
+                'stage'         => 'memory',
+                'label'         => 'Memory Lookup',
+                'uses_ai'       => true,
+                'model'         => null,
+                'system'        => 'You are Ava, UNIT\'s Subscription & Renewal Coordinator. Return valid JSON only. No extra text.',
+                'user'          => "Using the extracted email information and the memory tables below, find who owns this asset and how it should be handled.\n\nReturn JSON:\n{\n  \"asset\": \"\",\n  \"matched_client\": \"\",\n  \"primary_contact_name\": \"\",\n  \"primary_contact_email\": \"\",\n  \"related_project_or_service\": \"\",\n  \"client_preference\": \"\",\n  \"ava_rule\": \"\",\n  \"confidence\": 0,\n  \"missing_information\": []\n}\n\nEXTRACTED EMAIL CONTEXT:\n{READ_OUTPUT}\n\nMEMORY TABLES:\n{MEMORY_TABLES}",
+                'output_format' => 'json',
+                'output_shape'  => ['asset', 'matched_client', 'primary_contact_name', 'primary_contact_email', 'related_project_or_service', 'client_preference', 'ava_rule', 'confidence', 'missing_information'],
+                'max_tokens'    => 768,
+            ],
+            [
+                'stage'         => 'log_entry',
+                'label'         => 'Log Transaction',
+                'uses_ai'       => false,
+                'model'         => null,
+                'system'        => null,
+                'user'          => null,
+                'output_format' => null,
+                'output_shape'  => null,
+                'max_tokens'    => null,
+            ],
+            [
+                'stage'         => 'select_template',
+                'label'         => 'Select Template',
+                'uses_ai'       => false,
+                'model'         => null,
+                'system'        => null,
+                'user'          => null,
+                'output_format' => null,
+                'output_shape'  => null,
+                'max_tokens'    => null,
+            ],
+            [
+                'stage'         => 'draft_email',
+                'label'         => 'Draft Email',
+                'uses_ai'       => true,
+                'model'         => null,
+                'system'        => 'You are Ava, a professional email coordinator. Return only the email body — no subject line, no JSON, no extra text.',
+                'user'          => "Write an email body using the template structure below.\n\nTemplate style: {TEMPLATE_NAME}\nTone: {TONE}\nTemplate body to follow:\n{BODY_TEMPLATE}\n\nFill in:\n- Contact first name: {FIRST_NAME}\n- Asset: {ASSET}\n- Client: {CLIENT}\n- Due date: {DUE_DATE}\n- Category: {CATEGORY}\n- Approval required: {APPROVAL_REQUIRED}\n- Sign as: {SENDER_NAME}\n\nRules:\n- Keep it concise\n- Do not promise work is done\n- Ask for approval when required\n- Return only the email body",
+                'output_format' => 'text',
+                'output_shape'  => 'Professional email body addressed to the contact, referencing the asset and due date, signed by the tenant.',
+                'max_tokens'    => 1024,
+            ],
+            [
+                'stage'         => 'push_draft',
+                'label'         => 'Push to Gmail',
+                'uses_ai'       => false,
+                'model'         => null,
+                'system'        => null,
+                'user'          => null,
+                'output_format' => null,
+                'output_shape'  => null,
+                'max_tokens'    => null,
+            ],
+        ];
+    }
+
+    // ── Block 7: Owner ───────────────────────────────────────────────────────
+
+    public function owner(): array
+    {
+        return [
+            'type'     => 'platform',
+            'name'     => 'UNIT',
+            'contact'  => 'hello@unit.report',
+            'website'  => 'https://unit.report',
+            'license'  => 'proprietary',
+            'sla'      => '99.9% pipeline uptime · 4h support response · daily digest on failures',
+            'since'    => 2024,
+            'verified' => true,
+        ];
+    }
+
+    // ── Block 8: Platform Integration ────────────────────────────────────────
+
+    public function scheduledJobs(): array
+    {
+        return [
+            [
+                'job'            => DailySummaryJob::class,
+                'cron'           => '0 17 * * *',
+                'queue'          => 'ava',
+                'per_deployment' => true,
+                'name'           => 'daily_summary',
+            ],
+        ];
+    }
+
+    public function fastTrackJobClass(): string
+    {
+        return FastTrackIngestJob::class;
+    }
+
+    public function stuckRecoveryMap(): array
+    {
+        return [
+            'received'      => ReadEmailJob::class,
+            'reading'       => ReadEmailJob::class,
+            'classifying'   => ClassifyEmailJob::class,
+            'memory_lookup' => MemoryLookupJob::class,
+            'logging'       => LogTransactionJob::class,
+            'templating'    => SelectTemplateJob::class,
+            'drafting'      => DraftEmailJob::class,
         ];
     }
 }

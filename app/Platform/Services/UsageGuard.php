@@ -44,6 +44,20 @@ class UsageGuard
         }
     }
 
+    // ── Pre-TX gate — check before creating the transaction ───────────────────
+    // Call this before txService->create() to prevent quota bypass via rapid submissions.
+
+    public static function checkDeployment(int $userId, int $deploymentId): void
+    {
+        $violations = PolicyEngine::evaluate($userId, $deploymentId);
+
+        foreach ($violations as $v) {
+            if (array_intersect(['pipeline', 'pipeline_new'], $v['blocks'])) {
+                throw new BillingException($v['title'] . ': ' . $v['description'], $v['code']);
+            }
+        }
+    }
+
     // ── Admin actions ─────────────────────────────────────────────────────────
 
     public static function blockUser(int $userId, string $reason, string $policyCode = 'ACCOUNT_SUSPENDED', bool $notify = true): void
@@ -85,6 +99,21 @@ class UsageGuard
                     );
                 } catch (\Throwable $e) {
                     Log::error('UsageGuard: block notification failed', ['user_id' => $userId, 'error' => $e->getMessage()]);
+
+                    // Write to platform_events so admin can see this in the dashboard
+                    DB::table('platform_events')->insert([
+                        'user_id'     => $userId,
+                        'worker_slug' => null,
+                        'tx_id'       => null,
+                        'event'       => 'block_notify_failed',
+                        'payload'     => json_encode([
+                            'policy_code' => $policyCode,
+                            'error'       => $e->getMessage(),
+                        ]),
+                        'level'      => 'error',
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]);
                 }
             }
         }

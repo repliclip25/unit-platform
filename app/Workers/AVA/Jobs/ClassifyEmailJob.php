@@ -19,6 +19,11 @@ class ClassifyEmailJob implements ShouldQueue
     public int $tries   = 3;
     public int $timeout = 90;
 
+    public function backoff(): array
+    {
+        return [30, 60, 120];
+    }
+
     public function __construct(public string $txId) {}
 
     public function handle(ClaudeService $claude): void
@@ -29,9 +34,11 @@ class ClassifyEmailJob implements ShouldQueue
 
         $readOutput = $input->stage('read');
 
-        $system = 'You are Ava, UNIT\'s Subscription & Renewal Coordinator. Return valid JSON only. No extra text.';
+        $override = UnitPlatform::getPromptOverride($input->deploymentId, 'classify') ?? [];
 
-        $prompt = <<<PROMPT
+        $system = $override['system'] ?? 'You are Ava, UNIT\'s Subscription & Renewal Coordinator. Return valid JSON only. No extra text.';
+
+        $defaultPrompt = <<<PROMPT
 Classify this transaction using the email understanding below.
 
 Available categories:
@@ -59,8 +66,13 @@ Return JSON:
 CONTEXT:
 {$this->jsonPretty($readOutput)}
 PROMPT;
+        $contextJson = $this->jsonPretty($readOutput);
+        $prompt = !empty($override['user'])
+            ? str_replace('{READ_OUTPUT}', $contextJson, $override['user'])
+            : $defaultPrompt;
 
-        $output = $claude->ask($system, $prompt, $input->maxTokens('classify'), $this->txId, 'classify');
+        $maxTokens = $override['max_tokens'] ?? $input->maxTokens('classify');
+        $output    = $claude->ask($system, $prompt, $maxTokens, $this->txId, 'classify');
 
         UnitPlatform::commitOutput($this->txId, new WorkerOutput(
             stage:    'classify',
@@ -99,6 +111,12 @@ PROMPT;
 
     public function failed(\Throwable $e): void
     {
+        if ($e instanceof \App\Platform\Exceptions\BillingException) {
+            UnitPlatform::setStatus($this->txId, 'blocked');
+            UnitPlatform::log('ava', $this->txId, 'billing_blocked', ['code' => $e->billingCode, 'reason' => $e->getMessage()], 'warning');
+            $this->delete();
+            return;
+        }
         UnitPlatform::setStatus($this->txId, 'failed');
         UnitPlatform::log('ava', $this->txId, 'job_failed', [
             'job' => 'ClassifyEmailJob', 'error' => $e->getMessage(),

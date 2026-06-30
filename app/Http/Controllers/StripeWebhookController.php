@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\AdminMessagingController;
 use App\Platform\Services\UsageGuard;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -39,14 +40,38 @@ class StripeWebhookController extends Controller
         return response('OK', 200);
     }
 
-    // ── Payment failed → mark past_due ───────────────────────────────────────
+    // ── Resolve tenant user from Stripe subscription ID ──────────────────────
+    // The unified billing model stores stripe_subscription_id on `users` (one
+    // master sub per tenant). All deployment_billing rows for that user share
+    // that subscription; individual items are tracked via stripe_subscription_item_id.
+
+    private function userBySubId(string $subId): ?object
+    {
+        return DB::table('users')->where('stripe_subscription_id', $subId)->first();
+    }
+
+    private function billingRowsByUserId(int $userId)
+    {
+        return DB::table('deployment_billing')
+            ->where('user_id', $userId)
+            ->whereNotIn('status', ['trial', 'canceled'])
+            ->get();
+    }
+
+    // ── Payment failed → mark all tenant deployments past_due ────────────────
 
     private function onPaymentFailed(object $invoice): void
     {
         $subId = $invoice->subscription ?? null;
         if (!$subId) return;
 
-        $rows = DB::table('deployment_billing')->where('stripe_subscription_id', $subId)->get();
+        $user = $this->userBySubId($subId);
+        if (!$user) {
+            Log::warning('Stripe: payment_failed — no user found for sub', ['sub_id' => $subId]);
+            return;
+        }
+
+        $rows = $this->billingRowsByUserId($user->id);
 
         foreach ($rows as $billing) {
             DB::table('deployment_billing')->where('id', $billing->id)->update([
@@ -55,8 +80,9 @@ class StripeWebhookController extends Controller
                 'updated_at'     => now(),
             ]);
             Log::warning('Stripe: payment failed → past_due', ['deployment_id' => $billing->deployment_id]);
-            $this->notifyTenant($billing->user_id, 'payment_failed');
         }
+
+        $this->notifyTenant($user->id, 'payment_failed');
     }
 
     // ── Subscription status updated ───────────────────────────────────────────
@@ -75,7 +101,13 @@ class StripeWebhookController extends Controller
         $mapped = $statusMap[$subscription->status] ?? null;
         if (!$mapped) return;
 
-        $rows = DB::table('deployment_billing')->where('stripe_subscription_id', $subscription->id)->get();
+        $user = $this->userBySubId($subscription->id);
+        if (!$user) {
+            Log::info('Stripe: subscription.updated — no user found', ['sub_id' => $subscription->id]);
+            return;
+        }
+
+        $rows = $this->billingRowsByUserId($user->id);
 
         foreach ($rows as $billing) {
             $update = ['status' => $mapped, 'updated_at' => now()];
@@ -93,10 +125,10 @@ class StripeWebhookController extends Controller
                 'deployment_id' => $billing->deployment_id,
                 'status'        => $mapped,
             ]);
+        }
 
-            if ($mapped === 'past_due') {
-                $this->notifyTenant($billing->user_id, 'payment_failed');
-            }
+        if ($mapped === 'past_due') {
+            $this->notifyTenant($user->id, 'payment_failed');
         }
     }
 
@@ -104,16 +136,35 @@ class StripeWebhookController extends Controller
 
     private function onSubscriptionDeleted(object $subscription): void
     {
-        $rows = DB::table('deployment_billing')->where('stripe_subscription_id', $subscription->id)->get();
+        $user = $this->userBySubId($subscription->id);
+        if (!$user) {
+            Log::warning('Stripe: subscription.deleted — no user found', ['sub_id' => $subscription->id]);
+            return;
+        }
+
+        // Get all active/past_due deployments for this tenant
+        $rows = DB::table('deployment_billing')
+            ->where('user_id', $user->id)
+            ->whereNotIn('status', ['trial', 'canceled'])
+            ->get();
 
         foreach ($rows as $billing) {
             DB::table('deployment_billing')->where('id', $billing->id)->update([
                 'status'     => 'canceled',
                 'updated_at' => now(),
             ]);
-            Log::warning('Stripe: subscription canceled', ['deployment_id' => $billing->deployment_id]);
-            $this->notifyTenant($billing->user_id, 'subscription_canceled');
+
+            DB::table('worker_deployments')->where('id', $billing->deployment_id)->update([
+                'status'     => 'stopped',
+                'updated_at' => now(),
+            ]);
+
+            Log::warning('Stripe: subscription canceled → deployment stopped', [
+                'deployment_id' => $billing->deployment_id,
+            ]);
         }
+
+        $this->notifyTenant($user->id, 'subscription_canceled');
     }
 
     // ── Invoice paid → restore active, auto-unblock if was PAYMENT_PAST_DUE ──
@@ -123,24 +174,29 @@ class StripeWebhookController extends Controller
         $subId = $invoice->subscription ?? null;
         if (!$subId) return;
 
-        $billing = DB::table('deployment_billing')->where('stripe_subscription_id', $subId)->first();
-        if (!$billing) return;
-
-        DB::table('deployment_billing')->where('stripe_subscription_id', $subId)->update([
-            'status'         => 'active',
-            'past_due_since' => null,
-            'updated_at'     => now(),
-        ]);
-
-        // Auto-unblock tenant if they were hard-blocked for PAYMENT_PAST_DUE
-        $user = DB::table('users')->where('id', $billing->user_id)->first();
-        if ($user?->block_policy_code === 'PAYMENT_PAST_DUE') {
-            UsageGuard::unblockUser($billing->user_id);
-            $this->notifyTenant($billing->user_id, 'payment_resolved');
-            Log::info('Stripe: invoice paid → user auto-unblocked', ['user_id' => $billing->user_id]);
+        $user = $this->userBySubId($subId);
+        if (!$user) {
+            Log::info('Stripe: invoice.paid — no user found', ['sub_id' => $subId]);
+            return;
         }
 
-        Log::info('Stripe: invoice paid → active', ['sub_id' => $subId]);
+        DB::table('deployment_billing')
+            ->where('user_id', $user->id)
+            ->where('status', 'past_due')
+            ->update([
+                'status'         => 'active',
+                'past_due_since' => null,
+                'updated_at'     => now(),
+            ]);
+
+        // Auto-unblock if hard-blocked for payment failure
+        if ($user->block_policy_code === 'PAYMENT_PAST_DUE') {
+            UsageGuard::unblockUser($user->id);
+            $this->notifyTenant($user->id, 'payment_resolved');
+            Log::info('Stripe: invoice paid → user auto-unblocked', ['user_id' => $user->id]);
+        }
+
+        Log::info('Stripe: invoice paid → active', ['sub_id' => $subId, 'user_id' => $user->id]);
     }
 
     // ── Email tenant ──────────────────────────────────────────────────────────
@@ -150,26 +206,28 @@ class StripeWebhookController extends Controller
         $user = DB::table('users')->where('id', $userId)->first();
         if (!$user) return;
 
-        $templates = [
-            'payment_failed' => [
-                'subject' => 'Action Required: Payment failed on your UNIT account',
-                'body'    => "Hi {$user->name},\n\nA payment on your UNIT account failed and your worker processing has been paused.\n\nPlease update your payment method to resume:\n" . url('/billing') . "\n\nUNIT Platform",
-            ],
-            'subscription_canceled' => [
-                'subject' => 'Your UNIT worker subscription has been canceled',
-                'body'    => "Hi {$user->name},\n\nYour subscription has been canceled and email processing has stopped.\n\nYou can reactivate anytime — all your data is preserved:\n" . url('/billing') . "\n\nUNIT Platform",
-            ],
-            'payment_resolved' => [
-                'subject' => 'Your UNIT account has been reactivated',
-                'body'    => "Hi {$user->name},\n\nYour payment was received and your account is now active again. Processing has resumed automatically.\n\nUNIT Platform",
-            ],
+        $keyMap = [
+            'payment_failed'        => 'billing_payment_failed',
+            'subscription_canceled' => 'billing_subscription_canceled',
+            'payment_resolved'      => 'billing_payment_resolved',
         ];
 
-        $tpl = $templates[$event] ?? null;
+        $key = $keyMap[$event] ?? null;
+        if (!$key) return;
+
+        $tpl = AdminMessagingController::getTemplate($key);
         if (!$tpl) return;
 
+        $appUrl  = config('app.url');
+        $subject = str_replace(['{name}', '{app_url}'], [$user->name, $appUrl], $tpl->subject);
+        $body    = str_replace(['{name}', '{app_url}'], [$user->name, $appUrl], $tpl->body);
+
         try {
-            Mail::raw($tpl['body'], fn($m) => $m->to($user->email)->subject($tpl['subject']));
+            Mail::raw($body, fn($m) => $m
+                ->to($user->email, $user->name)
+                ->subject($subject)
+                ->replyTo('hello@unit.report', $tpl->from_name)
+            );
         } catch (\Throwable $e) {
             Log::error('Stripe webhook: email failed', ['user_id' => $userId, 'error' => $e->getMessage()]);
         }

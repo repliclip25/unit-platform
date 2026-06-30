@@ -65,7 +65,11 @@
                     @endif
                 </div>
                 <h2 class="text-white text-xl font-semibold">{{ $tx->category ?? 'Processing...' }}</h2>
-                @if($memory)
+                @if($tx->worker_slug === 'nux' && $nuxRegister)
+                    <p class="text-gray-400 text-sm mt-1">
+                        {{ strtoupper($nuxRegister->source_platform ?? '') }} → {{ implode(', ', json_decode($nuxRegister->target_channels ?? '[]', true) ?: []) }} · {{ $nuxRegister->topic ?? '—' }}
+                    </p>
+                @elseif($memory)
                     <p class="text-gray-400 text-sm mt-1">
                         {{ $memory->matched_client ?? '—' }} · {{ $memory->asset ?? '—' }} · {{ $memory->primary_contact_name ?? '—' }}
                     </p>
@@ -216,10 +220,49 @@
                             <p class="text-gray-300 text-sm">{{ $memory->primary_contact_email }}</p>
                         </div>
                     </div>
+                    @if(!empty($memory->ava_rule))
                     <div>
-                        <p class="text-gray-500 text-xs mb-1">AVA Rule Applied</p>
+                        <p class="text-gray-500 text-xs mb-1">Rule Applied</p>
                         <p class="text-brand text-xs">{{ $memory->ava_rule }}</p>
                     </div>
+                    @endif
+                </div>
+            </div>
+            @endif
+
+            {{-- NUX: repurposed copies --}}
+            @if($tx->worker_slug === 'nux' && $nuxRegister)
+            @php
+                $nuxCopies = json_decode($nuxRegister->repurposed_copies ?? '[]', true) ?: [];
+                $nuxChannels = json_decode($nuxRegister->target_channels ?? '[]', true) ?: [];
+            @endphp
+            <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:12px">
+                <div style="padding:12px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px">
+                    <span style="width:20px;height:20px;background:rgba(94,234,212,.15);color:#5eead4;border-radius:4px;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center">⇄</span>
+                    <h3 style="color:var(--text-primary);font-size:13px;font-weight:500">Repurposed Content</h3>
+                </div>
+                <div style="padding:16px 20px;display:flex;flex-direction:column;gap:14px">
+                    @forelse($nuxCopies as $copy)
+                    <div>
+                        <p style="font-size:11px;font-weight:700;color:#5eead4;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">{{ strtoupper($copy['channel'] ?? '') }}</p>
+                        <p style="font-size:13px;color:var(--text-primary);white-space:pre-wrap;line-height:1.6;background:var(--bg-surface);border-radius:8px;padding:10px 12px">{{ $copy['copy'] ?? '' }}</p>
+                        <p style="font-size:11px;color:var(--text-muted);margin-top:4px">{{ $copy['char_count'] ?? 0 }} characters</p>
+                    </div>
+                    @empty
+                    <p style="font-size:13px;color:var(--text-muted)">No copies available.</p>
+                    @endforelse
+
+                    @if($nuxRegister->image_url)
+                    <div style="border-top:1px solid var(--border);padding-top:14px">
+                        <p style="font-size:11px;font-weight:700;color:#5eead4;text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">Generated Image</p>
+                        <img src="{{ $nuxRegister->image_url }}" alt="NUX generated image"
+                             style="max-width:100%;border-radius:8px;border:1px solid var(--border)">
+                    </div>
+                    @endif
+
+                    @if($nuxRegister->draft_summary)
+                    <p style="font-size:12px;color:var(--text-muted);border-top:1px solid var(--border);padding-top:10px">{{ $nuxRegister->draft_summary }}</p>
+                    @endif
                 </div>
             </div>
             @endif
@@ -275,7 +318,7 @@
                     </div>
                     @if($draft->human_review_note)
                     <div class="bg-amber-950 border border-amber-800 rounded-lg p-3">
-                        <p class="text-amber-300 text-xs font-medium mb-1">AVA Review Note</p>
+                        <p class="text-amber-300 text-xs font-medium mb-1">Review Note</p>
                         <p class="text-amber-200 text-xs">{{ $draft->human_review_note }}</p>
                     </div>
                     @endif
@@ -288,24 +331,25 @@
                     <p class="text-white text-sm font-semibold">Review &amp; Decide</p>
                     @if($tx->gmail_draft_id)
                         <p class="text-gray-500 text-xs mt-0.5">
-                            <span class="text-green-400">●</span> Draft saved in Gmail
-                            — <strong class="text-gray-300">Approve</strong> will send it now ·
-                              <strong class="text-gray-300">Reject</strong> will delete the draft
+                            <span class="text-green-400">●</span> Draft saved in your Gmail Drafts folder —
+                            open Gmail to edit and send it yourself.
+                        </p>
+                        <p class="text-gray-600 text-xs mt-1">
+                            <strong class="text-gray-400">Approve</strong> marks it as reviewed · <strong class="text-gray-400">Reject</strong> deletes the draft from Gmail.
                         </p>
                     @else
-                        <p class="text-gray-500 text-xs mt-0.5">No Gmail draft attached — decision recorded only.</p>
+                        <p class="text-gray-500 text-xs mt-0.5">No Gmail draft — decision recorded for learning only.</p>
                     @endif
                 </div>
                 <form method="POST" action="{{ route('transactions.decide', $tx->tx_id) }}" class="p-5 space-y-3">
                     @csrf
-                    <textarea name="notes" rows="2" placeholder="Optional notes (internal only)..."
-                        class="w-full bg-gray-800 text-gray-200 text-sm rounded-lg px-3 py-2 border border-gray-700 focus:outline-none focus:border-brand resize-none"></textarea>
+                    <textarea name="notes" rows="2" placeholder="Optional notes — why approved or rejected? Helps AVA improve."
+                        class="w-full bg-gray-800 text-gray-200 text-sm rounded-lg px-3 py-2 border border-gray-700 focus:outline-none focus:border-yellow-400/50 resize-none"></textarea>
                     <div class="flex gap-2">
                         <button name="decision" value="approved"
-                                onclick="return confirm('Send this email now?')"
                                 class="flex-1 py-2.5 rounded-xl text-sm font-bold text-white transition"
                                 style="background:#15803d">
-                            ✓ Approve &amp; Send
+                            ✓ Approve
                         </button>
                         <button name="decision" value="rejected"
                                 onclick="return confirm('Reject and delete the Gmail draft?')"

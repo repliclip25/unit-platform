@@ -20,7 +20,7 @@
     {{-- Nav --}}
     <nav class="flex items-center justify-between px-8 py-5 border-b border-white/5 max-w-7xl mx-auto w-full">
         <div class="flex items-center gap-3">
-            <div class="w-9 h-9 rounded flex items-center justify-center relative" style="background:#F5C100">
+            <div class="w-9 h-9 rounded flex items-center justify-center relative" style="background:var(--accent)">
                 <div class="w-4 h-4 bg-gray-900 rounded-sm"></div>
             </div>
             <span class="font-black text-xl tracking-tight text-white">UNIT</span>
@@ -32,7 +32,7 @@
         </div>
         <div class="flex items-center gap-3">
             <a href="{{ route('login') }}" class="text-sm text-gray-400 hover:text-white transition px-4 py-2">Sign in</a>
-            <a href="{{ route('register') }}" class="text-sm font-bold px-5 py-2.5 rounded-lg text-gray-900 transition" style="background:#F5C100">
+            <a href="{{ route('register') }}" class="text-sm font-bold px-5 py-2.5 rounded-lg text-gray-900 transition" style="background:var(--accent)">
                 Get Started
             </a>
         </div>
@@ -43,28 +43,28 @@
 
         {{-- Left --}}
         <div class="flex-1 max-w-xl">
-            <div class="inline-flex items-center gap-2 border rounded-full px-4 py-1.5 text-xs font-semibold mb-8 tracking-wide" style="border-color:#F5C100;color:#F5C100">
-                <span class="w-1.5 h-1.5 rounded-full inline-block" style="background:#F5C100"></span>
+            <div class="inline-flex items-center gap-2 border rounded-full px-4 py-1.5 text-xs font-semibold mb-8 tracking-wide" style="border-color:var(--accent);color:var(--accent)">
+                <span class="w-1.5 h-1.5 rounded-full inline-block" style="background:var(--accent)"></span>
                 AI WORKFORCE PLATFORM FOR CONSTRUCTION
             </div>
 
             <h1 class="text-5xl md:text-6xl font-black leading-[1.05] mb-5">
                 Deploy Digital<br>Workers.
-                <br><span style="color:#F5C100">Get Work Done.</span>
+                <br><span style="color:var(--accent)">Get Work Done.</span>
             </h1>
 
             <p class="text-gray-400 text-lg leading-relaxed mb-3">
                 UNIT deploys specialized AI workers that handle the operational work that slows construction teams down.
                 Built for construction. Trained on real workflows.
             </p>
-            <p class="font-bold mb-8" style="color:#F5C100">Always in your control.</p>
+            <p class="font-bold mb-8" style="color:var(--accent)">Always in your control.</p>
 
             <div class="flex gap-3 mb-6">
                 <div class="flex-1 flex items-center gap-3 rounded-xl px-4 py-3 border border-white/10" style="background:rgba(255,255,255,0.04)">
                     <svg class="w-4 h-4 text-gray-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
                     <span class="text-gray-500 text-sm">Enter your work email</span>
                 </div>
-                <a href="{{ route('register') }}" class="px-6 py-3 rounded-xl text-sm font-bold text-gray-900 whitespace-nowrap" style="background:#F5C100">
+                <a href="{{ route('register') }}" class="px-6 py-3 rounded-xl text-sm font-bold text-gray-900 whitespace-nowrap" style="background:var(--accent)">
                     Join the Waitlist
                 </a>
             </div>
@@ -78,9 +78,9 @@
         {{-- Right — live worker feed --}}
         <div class="hidden lg:block relative flex-1 max-w-md">
             <div class="flex flex-col gap-4">
-                <div class="glass border border-white/10 rounded-2xl px-5 py-4 float" style="border-left:3px solid #F5C100">
+                <div class="glass border border-white/10 rounded-2xl px-5 py-4 float" style="border-left:3px solid var(--accent)">
                     <div class="flex items-center gap-3">
-                        <div class="w-9 h-9 rounded-lg flex items-center justify-center font-bold text-xs shrink-0" style="background:rgba(245,193,0,0.15);color:#F5C100">RC</div>
+                        <div class="w-9 h-9 rounded-lg flex items-center justify-center font-bold text-xs shrink-0" style="background:rgba(var(--accent-rgb),0.15);color:var(--accent)">RC</div>
                         <div class="flex-1">
                             <p class="text-white text-sm font-semibold">Renewal Coordinator</p>
                             <div class="flex items-center justify-between">
@@ -91,9 +91,9 @@
                     </div>
                 </div>
 
-                <div class="glass border border-white/10 rounded-2xl px-5 py-4 float-1 ml-8" style="border-left:3px solid #F5C100">
+                <div class="glass border border-white/10 rounded-2xl px-5 py-4 float-1 ml-8" style="border-left:3px solid var(--accent)">
                     <div class="flex items-center gap-3">
-                        <div class="w-9 h-9 rounded-lg flex items-center justify-center font-bold text-xs shrink-0" style="background:rgba(245,193,0,0.15);color:#F5C100">TC</div>
+                        <div class="w-9 h-9 rounded-lg flex items-center justify-center font-bold text-xs shrink-0" style="background:rgba(var(--accent-rgb),0.15);color:var(--accent)">TC</div>
                         <div class="flex-1">
                             <p class="text-white text-sm font-semibold">Transmittal Coordinator</p>
                             <div class="flex items-center justify-between">
@@ -104,9 +104,9 @@
                     </div>
                 </div>
 
-                <div class="glass border border-white/10 rounded-2xl px-5 py-4 float-2" style="border-left:3px solid #F5C100">
+                <div class="glass border border-white/10 rounded-2xl px-5 py-4 float-2" style="border-left:3px solid var(--accent)">
                     <div class="flex items-center gap-3">
-                        <div class="w-9 h-9 rounded-lg flex items-center justify-center font-bold text-xs shrink-0" style="background:rgba(245,193,0,0.15);color:#F5C100">CO</div>
+                        <div class="w-9 h-9 rounded-lg flex items-center justify-center font-bold text-xs shrink-0" style="background:rgba(var(--accent-rgb),0.15);color:var(--accent)">CO</div>
                         <div class="flex-1">
                             <p class="text-white text-sm font-semibold">Change Order Coordinator</p>
                             <div class="flex items-center justify-between">
@@ -117,9 +117,9 @@
                     </div>
                 </div>
 
-                <div class="glass border border-white/10 rounded-2xl px-5 py-4 float-3 ml-8" style="border-left:3px solid #F5C100">
+                <div class="glass border border-white/10 rounded-2xl px-5 py-4 float-3 ml-8" style="border-left:3px solid var(--accent)">
                     <div class="flex items-center gap-3">
-                        <div class="w-9 h-9 rounded-lg flex items-center justify-center font-bold text-xs shrink-0" style="background:rgba(245,193,0,0.15);color:#F5C100">CP</div>
+                        <div class="w-9 h-9 rounded-lg flex items-center justify-center font-bold text-xs shrink-0" style="background:rgba(var(--accent-rgb),0.15);color:var(--accent)">CP</div>
                         <div class="flex-1">
                             <p class="text-white text-sm font-semibold">Certified Payroll Coordinator</p>
                             <div class="flex items-center justify-between">
@@ -131,7 +131,7 @@
                 </div>
             </div>
 
-            <div class="absolute -bottom-6 right-0 glass border border-white/10 rounded-lg px-3 py-1.5 text-xs tracking-widest" style="color:#F5C100">
+            <div class="absolute -bottom-6 right-0 glass border border-white/10 rounded-lg px-3 py-1.5 text-xs tracking-widest" style="color:var(--accent)">
                 ● ACTIVE DEPLOYMENT ZONE
             </div>
         </div>

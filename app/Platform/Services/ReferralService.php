@@ -2,7 +2,10 @@
 
 namespace App\Platform\Services;
 
+use App\Http\Controllers\AdminMessagingController;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 
 class ReferralService
 {
@@ -53,6 +56,12 @@ class ReferralService
             'created_at'   => now(),
             'updated_at'   => now(),
         ]);
+
+        // Notify referrer on their very first referral
+        $totalSignups = DB::table('referral_credits')->where('referrer_id', $referrer->id)->where('event', 'signup')->count();
+        if ($totalSignups === 1) {
+            self::sendReferrerEmail('referral_peer_first_signup', $referrer);
+        }
     }
 
     // Called when a referred user converts to paid
@@ -92,6 +101,23 @@ class ReferralService
             ->where('referee_id', $refereeId)
             ->where('event', 'signup')
             ->update(['status' => 'converted', 'converted_at' => now(), 'updated_at' => now()]);
+
+        // Notify referrer of conversion
+        self::sendReferrerEmail('referral_peer_conversion', $referrer);
+    }
+
+    private static function sendReferrerEmail(string $key, object $referrer): void
+    {
+        try {
+            $tpl = AdminMessagingController::getTemplate($key);
+            if (!$tpl) return;
+            $appUrl  = config('app.url');
+            $body    = str_replace(['{name}', '{app_url}'], [$referrer->name, $appUrl], $tpl->body);
+            $subject = str_replace(['{name}', '{app_url}'], [$referrer->name, $appUrl], $tpl->subject);
+            Mail::raw($body, fn($m) => $m->to($referrer->email, $referrer->name)->subject($subject)->replyTo('hello@unit.report', $tpl->from_name));
+        } catch (\Throwable $e) {
+            Log::error("Referral email failed [{$key}]", ['referrer_id' => $referrer->id, 'error' => $e->getMessage()]);
+        }
     }
 
     public static function getStats(int $userId): object

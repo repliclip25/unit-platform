@@ -3,7 +3,7 @@
 @php
     $pendingCount = $transactions->getCollection()->where('status', 'draft_ready')->whereNull('human_decision')->count();
     $statusMeta = [
-        'draft_ready'  => ['bg' => 'rgba(243,197,49,0.15)', 'color' => '#a78bfa', 'label' => 'Pending Review'],
+        'draft_ready'  => ['bg' => 'rgba(var(--accent-rgb),0.15)', 'color' => '#a78bfa', 'label' => 'Pending Review'],
         'approved'     => ['bg' => 'rgba(34,197,94,0.15)',  'color' => '#86efac', 'label' => 'Approved'],
         'sent'         => ['bg' => 'rgba(34,197,94,0.15)',  'color' => '#86efac', 'label' => 'Sent'],
         'failed'       => ['bg' => 'rgba(239,68,68,0.15)',  'color' => '#fca5a5', 'label' => 'Failed'],
@@ -23,9 +23,9 @@
     </div>
     @if($pendingCount > 0)
     <div class="flex items-center gap-2 px-4 py-2 rounded-xl border"
-         style="background:rgba(243,197,49,0.12);border-color:rgba(243,197,49,0.35)">
+         style="background:rgba(var(--accent-rgb),0.12);border-color:rgba(var(--accent-rgb),0.35)">
         <span class="w-2 h-2 rounded-full animate-pulse" style="background:#a78bfa"></span>
-        <span class="text-sm font-semibold" style="color:#f3c531">{{ $pendingCount }} awaiting your review</span>
+        <span class="text-sm font-semibold" style="color:var(--accent)">{{ $pendingCount }} awaiting your review</span>
     </div>
     @endif
 </div>
@@ -38,7 +38,7 @@
         {{ $label }}
         @if($val === 'draft_ready' && $pendingCount > 0)
             <span class="ml-1 px-1.5 rounded-full text-xs font-bold"
-                  style="background:rgba(243,197,49,0.35);color:#f3c531">{{ $pendingCount }}</span>
+                  style="background:rgba(var(--accent-rgb),0.35);color:var(--accent)">{{ $pendingCount }}</span>
         @endif
     </a>
     @endforeach
@@ -69,7 +69,7 @@
                 $isReview = $tx->status === 'draft_ready' && !$tx->human_decision;
             @endphp
             <tr class="hover:bg-gray-800/40 transition {{ $isReview ? '' : '' }}"
-                style="{{ $isReview ? 'border-left:2px solid #f3c531' : 'border-left:2px solid transparent' }}">
+                style="{{ $isReview ? 'border-left:2px solid var(--accent)' : 'border-left:2px solid transparent' }}">
                 <td class="px-5 py-3">
                     <span class="font-mono text-gray-400 text-xs">{{ $tx->tx_id }}</span>
                 </td>
@@ -110,7 +110,7 @@
                 <td class="px-5 py-3">
                     <a href="{{ route('transactions.show', $tx->tx_id) }}"
                        class="text-xs px-3 py-1.5 rounded-lg transition font-medium"
-                       style="{{ $isReview ? 'background:rgba(243,197,49,0.20);color:#f3c531;border:1px solid rgba(243,197,49,0.45)' : 'color:#6b7280' }}">
+                       style="{{ $isReview ? 'background:rgba(var(--accent-rgb),0.20);color:var(--accent);border:1px solid rgba(var(--accent-rgb),0.45)' : 'color:#6b7280' }}">
                         {{ $isReview ? 'Review →' : 'View →' }}
                     </a>
                 </td>

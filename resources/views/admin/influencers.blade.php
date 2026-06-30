@@ -2,12 +2,12 @@
 <div class="py-8 px-4 sm:px-6 max-w-7xl mx-auto">
 
     {{-- Header --}}
-    <div class="flex items-center justify-between mb-6">
+    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
         <div>
             <h1 class="text-2xl font-bold" style="color:var(--text-primary)">Influencer Partners</h1>
             <p class="text-sm mt-0.5" style="color:var(--text-muted)">Revenue-share partners driving growth via vanity links</p>
         </div>
-        <div class="flex gap-3">
+        <div class="flex gap-3 shrink-0">
             <a href="{{ route('influencer.apply') }}" target="_blank"
                class="px-4 py-2 rounded-lg text-sm font-medium border"
                style="border-color:var(--border-subtle);color:var(--text-secondary)">
@@ -45,7 +45,7 @@
             <div class="text-xs mt-0.5" style="color:var(--text-muted)">Active</div>
         </div>
         <div class="rounded-xl p-4" style="background:var(--bg-surface);border:1px solid var(--border-subtle)">
-            <div class="text-2xl font-bold" style="color:#f3c531">{{ $pending }}</div>
+            <div class="text-2xl font-bold" style="color:var(--text-primary)">{{ $pending }}</div>
             <div class="text-xs mt-0.5" style="color:var(--text-muted)">Pending Review</div>
         </div>
         <div class="rounded-xl p-4" style="background:var(--bg-surface);border:1px solid var(--border-subtle)">
@@ -55,8 +55,8 @@
     </div>
 
     {{-- Influencer Table --}}
-    <div class="rounded-xl overflow-hidden" style="background:var(--bg-surface);border:1px solid var(--border-subtle)">
-        <table class="w-full text-sm">
+    <div class="rounded-xl overflow-x-auto" style="background:var(--bg-surface);border:1px solid var(--border-subtle)">
+        <table class="w-full text-sm min-w-[700px]">
             <thead>
                 <tr style="border-bottom:1px solid var(--border-subtle)">
                     <th class="text-left px-4 py-3 font-medium" style="color:var(--text-muted)">Influencer</th>
@@ -73,7 +73,7 @@
             </thead>
             <tbody>
                 @forelse($stats as $inf)
-                <tr style="border-bottom:1px solid var(--border-subtle)" class="hover:bg-white/5 transition-colors">
+                <tr style="border-bottom:1px solid var(--border-subtle)" class="transition-colors" onmouseover="this.style.background='var(--bg-raised)'" onmouseout="this.style.background=''">
                     <td class="px-4 py-3">
                         <div class="font-medium" style="color:var(--text-primary)">{{ $inf->name }}</div>
                         <div class="text-xs" style="color:var(--text-muted)">{{ $inf->email }}</div>
@@ -85,7 +85,7 @@
                         @endif
                     </td>
                     <td class="px-4 py-3">
-                        <code class="text-xs px-2 py-0.5 rounded" style="background:var(--bg-raised);color:#f3c531">/r/{{ $inf->slug }}</code>
+                        <code class="text-xs px-2 py-0.5 rounded" style="background:var(--bg-raised);color:var(--text-secondary);border:1px solid var(--border)">/r/{{ $inf->slug }}</code>
                     </td>
                     <td class="px-4 py-3 text-center">
                         @php
@@ -112,7 +112,7 @@
                     <td class="px-4 py-3 text-right font-mono text-sm" style="color:var(--text-secondary)">{{ number_format($inf->clicks) }}</td>
                     <td class="px-4 py-3 text-right font-mono text-sm" style="color:var(--text-secondary)">{{ $inf->conversions }}</td>
                     <td class="px-4 py-3 text-right font-mono text-sm text-green-500">${{ number_format($inf->total_earned, 2) }}</td>
-                    <td class="px-4 py-3 text-right font-mono text-sm" style="color:#f3c531">${{ number_format($inf->pending_payout, 2) }}</td>
+                    <td class="px-4 py-3 text-right font-mono text-sm" style="color:var(--text-primary)">${{ number_format($inf->pending_payout, 2) }}</td>
                     <td class="px-4 py-3 text-right">
                         <a href="{{ route('admin.influencers.show', $inf->id) }}"
                            class="px-3 py-1 rounded text-xs font-medium"
@@ -124,7 +124,7 @@
                 @empty
                 <tr>
                     <td colspan="10" class="px-4 py-12 text-center" style="color:var(--text-muted)">
-                        No influencer partners yet. Share the <a href="{{ route('influencer.apply') }}" class="underline" style="color:#f3c531">application page</a> to get started.
+                        No influencer partners yet. Share the <a href="{{ route('influencer.apply') }}" class="underline" style="color:var(--accent)">application page</a> to get started.
                     </td>
                 </tr>
                 @endforelse

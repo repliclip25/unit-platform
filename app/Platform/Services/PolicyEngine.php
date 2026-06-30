@@ -91,9 +91,9 @@ class PolicyEngine
                 'All your memory, templates, and rules are preserved.',
                 'Drafts already created are still available for review.',
             ],
-            'cta_label'    => 'Subscribe Now',
+            'cta_label'    => 'Choose a Plan',
             'cta_url'      => null,
-            'cta_route'    => 'billing.checkout',
+            'cta_route'    => 'billing',
             'color'        => 'amber',
         ],
 
@@ -115,6 +115,24 @@ class PolicyEngine
             'color'        => 'red',
         ],
 
+        'PLAN_QUOTA_REACHED' => [
+            'level'        => 'worker',
+            'severity'     => 'soft',
+            'title'        => 'Monthly Plan Quota Reached',
+            'description'  => 'You have reached the transaction limit for your current plan this month.',
+            'blocks'       => ['pipeline_new', 'fast_track'],
+            'self_service' => true,
+            'resolution'   => [
+                'Upgrade to the Pro plan for unlimited processing.',
+                'Or wait until your billing period resets next month.',
+                'Existing drafts and approved transactions are not affected.',
+            ],
+            'cta_label'    => 'Upgrade Plan',
+            'cta_url'      => null,
+            'cta_route'    => 'billing',
+            'color'        => 'amber',
+        ],
+
         'WORKER_PAUSED' => [
             'level'        => 'worker',
             'severity'     => 'soft',
@@ -130,6 +148,23 @@ class PolicyEngine
             'cta_url'      => null,
             'cta_route'    => 'workers.show',
             'color'        => 'gray',
+        ],
+
+        'SPEND_WARNING' => [
+            'level'        => 'platform',
+            'severity'     => 'soft',
+            'title'        => 'Approaching Spend Cap',
+            'description'  => 'You have used 80% or more of your monthly AI spend cap. Processing continues, but you may want to review usage.',
+            'blocks'       => [], // warning only — never blocks pipeline
+            'self_service' => true,
+            'resolution'   => [
+                'Review your usage breakdown in the Billing section.',
+                'Increase your spend cap or reduce transaction volume to avoid a hard stop.',
+            ],
+            'cta_label'    => 'View Usage',
+            'cta_url'      => null,
+            'cta_route'    => 'billing',
+            'color'        => 'amber',
         ],
 
         'GMAIL_WATCH_EXPIRED' => [
@@ -190,6 +225,12 @@ class PolicyEngine
                     'spent'     => $spent,
                     'resets_on' => now()->endOfMonth()->addDay()->format('M j'),
                 ]);
+            } elseif ($spent / $cap >= 0.80) {
+                $violations[] = self::violation('SPEND_WARNING', [
+                    'cap'   => $cap,
+                    'spent' => $spent,
+                    'pct'   => round(($spent / $cap) * 100),
+                ]);
             }
         }
 
@@ -221,6 +262,26 @@ class PolicyEngine
                         'limit'         => $limit,
                         'deployment_id' => $deploymentId,
                     ]);
+                }
+            }
+
+            // Plan quota — only enforced on active subscriptions with a finite transaction_limit
+            if ($billing?->status === 'active' && $billing->plan_slug) {
+                $plan = DB::table('worker_pricing')
+                    ->where('worker_slug', $billing->worker_slug)
+                    ->where('plan_slug', $billing->plan_slug)
+                    ->first();
+
+                if ($plan && !is_null($plan->transaction_limit) && $plan->transaction_limit > 0) {
+                    $used = (int) ($billing->unit_count ?? 0);
+                    if ($used >= $plan->transaction_limit) {
+                        $violations[] = self::violation('PLAN_QUOTA_REACHED', [
+                            'used'          => $used,
+                            'limit'         => $plan->transaction_limit,
+                            'plan'          => $billing->plan_slug,
+                            'deployment_id' => $deploymentId,
+                        ]);
+                    }
                 }
             }
 

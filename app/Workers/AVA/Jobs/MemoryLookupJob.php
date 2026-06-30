@@ -18,6 +18,11 @@ class MemoryLookupJob implements ShouldQueue
     public int $tries   = 3;
     public int $timeout = 90;
 
+    public function backoff(): array
+    {
+        return [30, 60, 120];
+    }
+
     public function __construct(public string $txId) {}
 
     public function handle(ClaudeService $claude): void
@@ -28,12 +33,25 @@ class MemoryLookupJob implements ShouldQueue
 
         $readOutput = $input->stage('read');
 
-        // Memory is pre-loaded by UnitPlatform::getInput() — no DB calls needed here
+        // Build keyword set from the read-stage output + raw email subject/from
+        $raw         = $input->raw;
+        $questions   = $readOutput['questions_for_memory_lookup'] ?? [];
+        $summary     = ($readOutput['plain_english_summary'] ?? '') . ' ' . ($readOutput['action_needed'] ?? '');
+        $emailFrom   = $raw['fast_track_from'] ?? '';
+        $emailSubj   = $raw['fast_track_subject'] ?? '';
+
+        $keywordSource = strtolower(implode(' ', array_merge($questions, [$summary, $emailFrom, $emailSubj])));
+        // Extract meaningful words (4+ chars, not stopwords)
+        $stopwords = ['that','this','with','from','have','will','your','what','which','does','been','they','them','their','about','into','than','then','when','where','also','some','very','just','more','only','such','same','each','most'];
+        preg_match_all('/\b[a-z0-9][a-z0-9\.\-]{3,}\b/', $keywordSource, $matches);
+        $keywords = array_values(array_diff(array_unique($matches[0]), $stopwords));
+
+        // Pre-filter memory to top matches — caps prompt size regardless of tenant data volume
         $memory = [
-            'clients'  => $input->memory['clients'],
-            'contacts' => $input->memory['contacts'],
-            'assets'   => $input->memory['assets'],
-            'ava_rules'=> $input->memory['rules'],
+            'clients'  => $this->filterRecords($input->memory['clients']  ?? [], $keywords, 15),
+            'contacts' => $this->filterRecords($input->memory['contacts'] ?? [], $keywords, 20),
+            'assets'   => $this->filterRecords($input->memory['assets']   ?? [], $keywords, 20),
+            'ava_rules'=> $input->memory['rules'] ?? [],
         ];
 
         $system = 'You are Ava, UNIT\'s Subscription & Renewal Coordinator. Return valid JSON only. No extra text.';
@@ -108,10 +126,41 @@ PROMPT;
 
     public function failed(\Throwable $e): void
     {
+        if ($e instanceof \App\Platform\Exceptions\BillingException) {
+            UnitPlatform::setStatus($this->txId, 'blocked');
+            UnitPlatform::log('ava', $this->txId, 'billing_blocked', ['code' => $e->billingCode, 'reason' => $e->getMessage()], 'warning');
+            $this->delete();
+            return;
+        }
         UnitPlatform::setStatus($this->txId, 'failed');
         UnitPlatform::log('ava', $this->txId, 'job_failed', [
             'job' => 'MemoryLookupJob', 'error' => $e->getMessage(),
         ], 'error');
+    }
+
+    /**
+     * Score each record against keywords, return top $limit by score.
+     * Records with zero keyword hits are still included if total count <= $limit,
+     * ensuring small tenants always have full context.
+     */
+    private function filterRecords(array $records, array $keywords, int $limit): array
+    {
+        if (count($records) <= $limit) return $records;
+        if (empty($keywords)) return array_slice($records, 0, $limit);
+
+        $scored = [];
+        foreach ($records as $i => $rec) {
+            $haystack = strtolower(json_encode($rec));
+            $score    = 0;
+            foreach ($keywords as $kw) {
+                if (str_contains($haystack, $kw)) $score++;
+            }
+            $scored[] = ['rec' => $rec, 'score' => $score, 'i' => $i];
+        }
+
+        usort($scored, fn($a, $b) => $b['score'] <=> $a['score'] ?: $a['i'] <=> $b['i']);
+
+        return array_column(array_slice($scored, 0, $limit), 'rec');
     }
 
     private function jsonPretty(array $data): string

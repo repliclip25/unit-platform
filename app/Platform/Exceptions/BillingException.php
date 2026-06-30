@@ -4,8 +4,11 @@ namespace App\Platform\Exceptions;
 
 class BillingException extends \RuntimeException
 {
-    public function __construct(string $message, public readonly string $code = 'billing_blocked')
+    public string $billingCode;
+
+    public function __construct(string $message, string $code = 'billing_blocked')
     {
+        $this->billingCode = $code;
         parent::__construct($message);
     }
 }

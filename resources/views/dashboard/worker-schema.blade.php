@@ -96,7 +96,7 @@
     {{-- ── Pipeline ───────────────────────────────────────────────────────────── --}}
     <div class="rounded-2xl border border-gray-800 p-5 mb-4" style="background:#141414">
         <div class="flex items-center gap-2 mb-4">
-            <span class="text-xs font-bold uppercase tracking-widest" style="color:#f3c531">Pipeline</span>
+            <span class="text-xs font-bold uppercase tracking-widest" style="color:var(--accent)">Pipeline</span>
             <span class="text-gray-600 text-xs">— {{ count($pipeline) }} stages, each with typed inputs and outputs</span>
         </div>
 
@@ -109,7 +109,7 @@
                     {{-- Stage number + label --}}
                     <div class="flex items-center gap-3 shrink-0" style="min-width:170px">
                         <div class="flex items-center justify-center w-7 h-7 rounded-lg text-xs font-bold shrink-0"
-                             style="background:rgba(243,197,49,0.15);border:1px solid rgba(243,197,49,0.35);color:#f3c531">
+                             style="background:rgba(var(--accent-rgb),0.15);border:1px solid rgba(var(--accent-rgb),0.35);color:var(--accent)">
                             {{ $stage['stage'] }}
                         </div>
                         <div>
@@ -201,6 +201,136 @@
                 </div>
             </div>
             @endforeach
+        </div>
+    </div>
+
+    {{-- ── Row 4: Output ───────────────────────────────────────────────────── --}}
+    <div class="rounded-2xl border border-gray-800 p-5 mb-4" style="background:#141414">
+        <div class="flex items-center gap-2 mb-1">
+            <span class="text-xs font-bold uppercase tracking-widest" style="color:#34d399">Output</span>
+            <span class="text-gray-600 text-xs">— the final artefact this worker produces</span>
+        </div>
+        <p class="text-gray-400 text-xs mb-1">{{ $output['description'] }}</p>
+        <div class="flex items-center gap-4 mb-3 flex-wrap">
+            <span class="text-xs px-2 py-0.5 rounded-full" style="background:rgba(52,211,153,0.10);color:#34d399;border:1px solid rgba(52,211,153,0.25)">
+                format: {{ $output['format'] }}
+            </span>
+            <span class="text-xs text-gray-500">destination: <span class="text-gray-400">{{ $output['destination'] }}</span></span>
+        </div>
+        <div class="rounded-xl p-3 space-y-1.5 font-mono text-xs mb-3" style="background:#0d0d0d;border:1px solid #1e1e1e">
+            @foreach($output['fields'] as $f)
+            <div class="flex items-start gap-2">
+                <span style="color:{{ $f['nullable'] ? '#6b7280' : '#34d399' }}">{{ $f['key'] }}</span>
+                <span class="text-gray-700">:</span>
+                <span class="text-gray-500">{{ $f['type'] }}</span>
+                @if(!$f['nullable'])<span class="text-red-800 text-xs">*</span>@endif
+                <span class="text-gray-600 truncate">— {{ $f['description'] }}</span>
+            </div>
+            @endforeach
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div class="rounded-lg p-3 text-xs" style="background:#0d0d0d;border:1px solid #1e1e1e">
+                <p class="text-gray-600 uppercase tracking-wider mb-1">Human action</p>
+                <p class="text-gray-400 leading-relaxed">{{ $output['human_action'] }}</p>
+            </div>
+            @if($output['auto_action'])
+            <div class="rounded-lg p-3 text-xs" style="background:#0d0d0d;border:1px solid #1e1e1e">
+                <p class="text-gray-600 uppercase tracking-wider mb-1">Auto action</p>
+                <p class="text-gray-400 leading-relaxed">{{ $output['auto_action'] }}</p>
+            </div>
+            @endif
+        </div>
+    </div>
+
+    {{-- ── Row 5: Prompts ───────────────────────────────────────────────────── --}}
+    <div class="rounded-2xl border border-gray-800 p-5 mb-4" style="background:#141414">
+        <div class="flex items-center gap-2 mb-4">
+            <span class="text-xs font-bold uppercase tracking-widest" style="color:#a78bfa">Prompts</span>
+            <span class="text-gray-600 text-xs">— AI instructions per pipeline stage</span>
+        </div>
+        <div class="space-y-3">
+            @foreach($prompts as $p)
+            <div class="rounded-xl p-4" style="background:#0d0d0d;border:1px solid #1e1e1e">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-xs font-semibold text-gray-300">{{ $p['label'] }}</span>
+                    @if($p['uses_ai'])
+                        <span class="text-xs px-2 py-0.5 rounded-full" style="background:rgba(167,139,250,0.12);color:#a78bfa;border:1px solid rgba(167,139,250,0.25)">
+                            AI · {{ $p['output_format'] }} · {{ $p['max_tokens'] }} tokens
+                        </span>
+                    @else
+                        <span class="text-xs px-2 py-0.5 rounded-full" style="background:rgba(107,114,128,0.1);color:#6b7280;border:1px solid #252525">
+                            no AI
+                        </span>
+                    @endif
+                </div>
+                @if($p['uses_ai'])
+                <div class="space-y-2">
+                    <div>
+                        <p class="text-gray-700 text-xs uppercase tracking-wider mb-1">System</p>
+                        <p class="text-gray-500 text-xs font-mono leading-relaxed">{{ $p['system'] }}</p>
+                    </div>
+                    <div>
+                        <p class="text-gray-700 text-xs uppercase tracking-wider mb-1">User template</p>
+                        <p class="text-gray-500 text-xs font-mono leading-relaxed whitespace-pre-wrap">{{ Str::limit($p['user'], 300) }}</p>
+                    </div>
+                    @if(is_array($p['output_shape']))
+                    <div>
+                        <p class="text-gray-700 text-xs uppercase tracking-wider mb-1">Output keys</p>
+                        <div class="flex flex-wrap gap-1.5">
+                            @foreach($p['output_shape'] as $key)
+                            <code class="text-xs px-2 py-0.5 rounded" style="background:#141414;color:#a78bfa;border:1px solid #252525">{{ $key }}</code>
+                            @endforeach
+                        </div>
+                    </div>
+                    @else
+                    <div>
+                        <p class="text-gray-700 text-xs uppercase tracking-wider mb-1">Output shape</p>
+                        <p class="text-gray-500 text-xs leading-relaxed">{{ $p['output_shape'] }}</p>
+                    </div>
+                    @endif
+                </div>
+                @endif
+            </div>
+            @endforeach
+        </div>
+    </div>
+
+    {{-- ── Row 6: Owner ─────────────────────────────────────────────────────── --}}
+    <div class="rounded-2xl border border-gray-800 p-5 mb-4" style="background:#141414">
+        <div class="flex items-center gap-2 mb-4">
+            <span class="text-xs font-bold uppercase tracking-widest" style="color:#f1d362">Owner</span>
+            <span class="text-gray-600 text-xs">— who built and is responsible for this worker</span>
+        </div>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            <div>
+                <p class="text-gray-700 text-xs uppercase tracking-wider mb-1">Name</p>
+                <div class="flex items-center gap-2">
+                    <p class="text-gray-300 text-sm font-semibold">{{ $owner['name'] }}</p>
+                    @if($owner['verified'])
+                    <span class="text-xs px-1.5 py-0.5 rounded" style="background:rgba(241,211,98,0.12);color:#f1d362;border:1px solid rgba(241,211,98,0.25)">✓ verified</span>
+                    @endif
+                </div>
+            </div>
+            <div>
+                <p class="text-gray-700 text-xs uppercase tracking-wider mb-1">Type</p>
+                <p class="text-gray-400 text-sm capitalize">{{ $owner['type'] }}</p>
+            </div>
+            <div>
+                <p class="text-gray-700 text-xs uppercase tracking-wider mb-1">License</p>
+                <p class="text-gray-400 text-sm">{{ $owner['license'] }}</p>
+            </div>
+            <div>
+                <p class="text-gray-700 text-xs uppercase tracking-wider mb-1">Since</p>
+                <p class="text-gray-400 text-sm">{{ $owner['since'] }}</p>
+            </div>
+            <div class="col-span-2">
+                <p class="text-gray-700 text-xs uppercase tracking-wider mb-1">Contact</p>
+                <a href="mailto:{{ $owner['contact'] }}" class="text-gray-400 text-sm hover:text-gray-200 transition">{{ $owner['contact'] }}</a>
+            </div>
+            <div class="col-span-2">
+                <p class="text-gray-700 text-xs uppercase tracking-wider mb-1">SLA</p>
+                <p class="text-gray-400 text-sm">{{ $owner['sla'] }}</p>
+            </div>
         </div>
     </div>
 
