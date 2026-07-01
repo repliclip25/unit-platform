@@ -146,12 +146,18 @@ class ClaudeService
         }
 
         // Fall back to platform key from config
-        return match($providerKey) {
+        $key = match($providerKey) {
             'openai'    => config('services.openai.api_key', ''),
             'kimi'      => config('services.kimi.api_key', ''),
             'google'    => config('services.google.api_key', ''),
             default     => config('services.claude.api_key', ''),
         };
+
+        if (empty($key)) {
+            throw new \RuntimeException("API key for provider '{$providerKey}' is not configured. Set CLAUDE_API_KEY in your environment.");
+        }
+
+        return $key;
     }
 
     private function logUsage(array $usage, ?string $txId, ?string $stage): void
