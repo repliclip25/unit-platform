@@ -122,7 +122,7 @@ class OAuthController extends Controller
                 'updated_at'  => now(),
             ]);
 
-            Mail::to($user->email)->queue(new TenantWelcome($user->name));
+            Mail::to($user->email)->send(new TenantWelcome($user->name));
         }
 
         Auth::login($user, remember: true);
