@@ -151,7 +151,7 @@ class ProfileController extends Controller
 
         // Send confirmation email to tenant
         try {
-            Mail::to($user->email)->queue(new DeletionScheduled(
+            Mail::to($user->email)->send(new DeletionScheduled(
                 name:         $user->name,
                 deletionDate: $deletionDate,
             ));

@@ -33,7 +33,7 @@ class UnitNotifier
             $contract = \App\Platform\Services\WorkerRegistry::resolve($dep->worker_slug);
             $employee = \App\Platform\Services\WorkerRegistry::isNull($contract) ? [] : $contract->employee();
 
-            Mail::to($user->email)->queue(new WorkerDeployed(
+            Mail::to($user->email)->send(new WorkerDeployed(
                 name:           $user->name,
                 workerName:     $dep->name,
                 workerSlug:     $dep->worker_slug,
@@ -74,7 +74,7 @@ class UnitNotifier
             $user = $tx ? DB::table('users')->where('id', $tx->user_id)->first() : null;
             if (!$user || !$tx) return;
 
-            Mail::to($user->email)->queue(new DraftReady(
+            Mail::to($user->email)->send(new DraftReady(
                 name:          $user->name,
                 txId:          $txId,
                 asset:         $payload['asset']['name'] ?? 'Unknown asset',
