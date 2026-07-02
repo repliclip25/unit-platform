@@ -452,7 +452,7 @@ class AdminMessagingController extends Controller
     // ── Seed all defaults into the DB (idempotent — skips existing keys) ─
     public function seedDefaults(): void
     {
-        $all = array_merge(self::defaults(), self::transactionalDefaults());
+        $all = array_merge(self::defaults(), self::influencerDefaults(), self::transactionalDefaults());
         $existing = DB::table('platform_email_templates')->pluck('key')->flip();
         $now = now();
         foreach ($all as $row) {
@@ -483,10 +483,8 @@ class AdminMessagingController extends Controller
     {
         $tab = $request->input('tab', 'sequences');
 
-        // Auto-seed defaults if table is empty
-        if (DB::table('platform_email_templates')->count() === 0) {
-            $this->seedDefaults();
-        }
+        // Auto-seed any missing defaults (idempotent — skips existing keys)
+        $this->seedDefaults();
 
         $templates = DB::table('platform_email_templates')
             ->orderBy('sort_order')
