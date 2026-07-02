@@ -9,43 +9,84 @@
         <div class="mb-4 bg-red-900 border border-red-700 text-red-200 rounded-xl px-5 py-3 text-sm">{{ session('error') }}</div>
     @endif
 
-    {{-- Discovered assets — quiet collapsible notice --}}
+    {{-- Discovered assets — enrichment review --}}
     @if($discoveredAssets->count())
-    <div class="mb-5">
-        <button onclick="toggleDiscovered()" class="flex items-center gap-2 text-gray-500 hover:text-gray-300 text-xs transition" id="discovered-toggle">
-            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-            {{ $discoveredAssets->count() }} item{{ $discoveredAssets->count() > 1 ? 's' : '' }} auto-discovered from email — review
+    <div class="mb-6 border border-gray-700 rounded-xl overflow-hidden">
+        {{-- Header trigger --}}
+        <button onclick="toggleDiscovered()" id="discovered-toggle"
+            class="w-full flex items-center justify-between px-5 py-3.5 bg-gray-900 hover:bg-gray-800 transition text-left">
+            <div class="flex items-center gap-3">
+                {{-- Brain / enrichment icon --}}
+                <div class="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style="background:rgba(241,211,98,0.12)">
+                    <svg class="w-4 h-4" style="color:var(--accent-text)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                            d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+                    </svg>
+                </div>
+                <div>
+                    <p class="text-sm font-medium text-white">AVA discovered {{ $discoveredAssets->count() }} potential asset{{ $discoveredAssets->count() > 1 ? 's' : '' }} from your inbox</p>
+                    <p class="text-xs text-gray-500 mt-0.5">Review and confirm to enrich your platform memory</p>
+                </div>
+            </div>
+            <svg id="discovered-chevron" class="w-4 h-4 text-gray-500 transition-transform duration-200 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+            </svg>
         </button>
-        <div id="discovered-panel" class="hidden mt-3 bg-gray-900 border border-gray-800 rounded-xl divide-y divide-gray-800">
+
+        {{-- Expandable items --}}
+        <div id="discovered-panel" class="hidden divide-y divide-gray-800 bg-gray-950">
             @foreach($discoveredAssets as $da)
-            <div class="px-5 py-4">
-                <div class="flex items-center justify-between mb-2">
-                    <p class="text-gray-400 text-xs">{{ $da->name }}</p>
-                    <form method="POST" action="{{ route('workers.memory.assets.destroy', [$dep->id, $da->id]) }}">
+            <div class="px-5 py-5">
+                <div class="flex items-start justify-between gap-3 mb-4">
+                    <div>
+                        <p class="text-white text-sm font-medium leading-snug">{{ $da->name }}</p>
+                        <p class="text-gray-500 text-xs mt-0.5">Detected {{ \Carbon\Carbon::parse($da->created_at)->diffForHumans() }}</p>
+                    </div>
+                    <form method="POST" action="{{ route('workers.memory.assets.destroy', [$dep->id, $da->id]) }}" class="shrink-0">
                         @csrf @method('DELETE')
-                        <button class="text-gray-600 hover:text-red-400 text-xs">Dismiss</button>
+                        <button class="text-gray-600 hover:text-red-400 text-xs transition">Dismiss</button>
                     </form>
                 </div>
-                <form method="POST" action="{{ route('workers.memory.assets.approve', [$dep->id, $da->id]) }}" class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                <form method="POST" action="{{ route('workers.memory.assets.approve', [$dep->id, $da->id]) }}">
                     @csrf
-                    <input type="text" name="name" value="{{ $da->name }}" required placeholder="Asset name"
-                        class="bg-gray-800 text-white text-xs rounded-lg px-3 py-2 border border-gray-700 focus:outline-none focus:border-yellow-400">
-                    <input type="text" name="type" value="{{ $da->type !== 'discovered' ? $da->type : '' }}" required placeholder="Type (Domain, SSL, SaaS…)" list="da-type-list-{{ $da->id }}"
-                        class="bg-gray-800 text-white text-xs rounded-lg px-3 py-2 border border-gray-700 focus:outline-none focus:border-yellow-400">
-                    <datalist id="da-type-list-{{ $da->id }}">
-                        <option>SSL Certificate</option><option>Domain</option><option>Hosting</option>
-                        <option>Website Management</option><option>SaaS Subscription</option>
-                        <option>Insurance Policy</option><option>License</option><option>Contract</option>
-                    </datalist>
-                    <input type="text" name="vendor" value="{{ $da->vendor }}" placeholder="Vendor (optional)"
-                        class="bg-gray-800 text-white text-xs rounded-lg px-3 py-2 border border-gray-700 focus:outline-none focus:border-yellow-400">
-                    <input type="date" name="renewal_date" value="{{ $da->renewal_date }}"
-                        class="bg-gray-800 text-white text-xs rounded-lg px-3 py-2 border border-gray-700 focus:outline-none focus:border-yellow-400">
-                    <select name="client_id" class="bg-gray-800 text-white text-xs rounded-lg px-3 py-2 border border-gray-700 focus:outline-none focus:border-yellow-400">
-                        <option value="">— no client —</option>
-                        @foreach($clients as $cl)<option value="{{ $cl->id }}" {{ $da->client_id == $cl->id ? 'selected' : '' }}>{{ $cl->name }}</option>@endforeach
-                    </select>
-                    <button type="submit" class="sm:col-span-3 text-center text-xs font-medium rounded-lg py-2 transition" style="background:var(--accent);color:#000;">Confirm &amp; Add to Memory</button>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-3">
+                        <div class="sm:col-span-2">
+                            <label class="text-gray-500 text-xs block mb-1">Asset name</label>
+                            <input type="text" name="name" value="{{ $da->name }}" required
+                                class="w-full bg-gray-800 text-white text-sm rounded-lg px-3 py-2.5 border border-gray-700 focus:outline-none focus:border-yellow-500 placeholder-gray-600">
+                        </div>
+                        <div>
+                            <label class="text-gray-500 text-xs block mb-1">Type <span class="text-red-500">*</span></label>
+                            <input type="text" name="type" value="{{ $da->type !== 'discovered' ? $da->type : '' }}" required
+                                placeholder="Domain, SSL, SaaS…" list="da-type-list-{{ $da->id }}"
+                                class="w-full bg-gray-800 text-white text-sm rounded-lg px-3 py-2.5 border border-gray-700 focus:outline-none focus:border-yellow-500 placeholder-gray-600">
+                            <datalist id="da-type-list-{{ $da->id }}">
+                                <option>SSL Certificate</option><option>Domain</option><option>Hosting</option>
+                                <option>Website Management</option><option>SaaS Subscription</option>
+                                <option>Insurance Policy</option><option>License</option><option>Contract</option>
+                            </datalist>
+                        </div>
+                        <div>
+                            <label class="text-gray-500 text-xs block mb-1">Vendor</label>
+                            <input type="text" name="vendor" value="{{ $da->vendor }}" placeholder="e.g. Namecheap"
+                                class="w-full bg-gray-800 text-white text-sm rounded-lg px-3 py-2.5 border border-gray-700 focus:outline-none focus:border-yellow-500 placeholder-gray-600">
+                        </div>
+                        <div>
+                            <label class="text-gray-500 text-xs block mb-1">Renewal date</label>
+                            <input type="date" name="renewal_date" value="{{ $da->renewal_date }}"
+                                class="w-full bg-gray-800 text-white text-sm rounded-lg px-3 py-2.5 border border-gray-700 focus:outline-none focus:border-yellow-500">
+                        </div>
+                        <div>
+                            <label class="text-gray-500 text-xs block mb-1">Client</label>
+                            <select name="client_id" class="w-full bg-gray-800 text-white text-sm rounded-lg px-3 py-2.5 border border-gray-700 focus:outline-none focus:border-yellow-500">
+                                <option value="">— no client —</option>
+                                @foreach($clients as $cl)<option value="{{ $cl->id }}" {{ $da->client_id == $cl->id ? 'selected' : '' }}>{{ $cl->name }}</option>@endforeach
+                            </select>
+                        </div>
+                    </div>
+                    <button type="submit" class="w-full text-sm font-semibold rounded-lg py-2.5 transition" style="background:var(--accent);color:#000;">
+                        Confirm &amp; Add to Memory
+                    </button>
                 </form>
             </div>
             @endforeach
@@ -333,10 +374,10 @@
         btn.classList.remove('text-gray-400','border-transparent');
     }
     function toggleDiscovered() {
-        const panel = document.getElementById('discovered-panel');
-        const btn   = document.getElementById('discovered-toggle');
-        const open  = panel.classList.toggle('hidden') === false;
-        btn.querySelector('svg').style.transform = open ? 'rotate(180deg)' : '';
+        const panel   = document.getElementById('discovered-panel');
+        const chevron = document.getElementById('discovered-chevron');
+        const open    = panel.classList.toggle('hidden') === false;
+        chevron.style.transform = open ? 'rotate(180deg)' : '';
     }
     function toggleEdit(type, id) {
         const form = document.getElementById(type + '-edit-' + id);
