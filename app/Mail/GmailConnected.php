@@ -16,7 +16,7 @@ class GmailConnected extends Mailable
 
     public function envelope(): Envelope
     {
-        return new Envelope(subject: 'Gmail Connected — UNIT is now monitoring your inbox');
+        return new Envelope(subject: 'Gmail Connected — UNIT Universe is now monitoring your inbox');
     }
 
     public function content(): Content

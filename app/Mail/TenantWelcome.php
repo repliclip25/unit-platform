@@ -16,7 +16,7 @@ class TenantWelcome extends Mailable
 
     public function envelope(): Envelope
     {
-        return new Envelope(subject: 'Welcome to UNIT — Your AI Workforce Platform');
+        return new Envelope(subject: 'Welcome to UNIT Universe — Your AI Workforce Platform');
     }
 
     public function content(): Content

@@ -65,8 +65,7 @@
 
   <div class="header">
     <div class="logo">
-      <div class="logo-mark"><div class="logo-inner"></div></div>
-      <span class="logo-name">UNIT</span>
+      <span class="logo-name">UNIT Universe</span>
     </div>
   </div>
 
