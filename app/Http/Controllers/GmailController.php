@@ -179,6 +179,20 @@ class GmailController extends Controller
         $historyId = $decoded['historyId'] ?? null;
         $gmailAddr = $decoded['emailAddress'] ?? null;
 
+        // Record every authenticated Pub/Sub hit for volume analytics + future pricing
+        try {
+            DB::table('platform_events')->insert([
+                'type'       => 'gmail.pubsub.hit',
+                'payload'    => json_encode([
+                    'gmail_address' => $gmailAddr,
+                    'history_id'    => $historyId,
+                    'message_id'    => $data['message']['messageId'] ?? null,
+                ]),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        } catch (\Throwable) {}  // never block the webhook on logging failure
+
         if (!$historyId || !$gmailAddr) return response()->json(['status' => 'ok'], 200);
 
         // Rate-limit: one webhook processing per Gmail address per 30 seconds to absorb Pub/Sub redeliveries
