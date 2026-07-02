@@ -90,7 +90,9 @@ class GmailController extends Controller
             }
         }
 
-        Mail::to($user->email)->send(new GmailConnected($user->name, $email));
+        \App\Platform\Services\EmailDispatcher::send('gmail_connected', $user->email, $user->name, $user->id, [
+            '{gmail_address}' => $email,
+        ]);
 
         $message = $hasActiveDeployment
             ? "Gmail connected and inbox watch activated for {$email}. Your worker is now monitoring."

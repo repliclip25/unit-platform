@@ -150,14 +150,9 @@ class ProfileController extends Controller
         DB::table('sessions')->where('user_id', $user->id)->delete();
 
         // Send confirmation email to tenant
-        try {
-            Mail::to($user->email)->send(new DeletionScheduled(
-                name:         $user->name,
-                deletionDate: $deletionDate,
-            ));
-        } catch (\Throwable $e) {
-            Log::error('[ProfileController] DeletionScheduled email failed', ['user' => $user->id, 'error' => $e->getMessage()]);
-        }
+        \App\Platform\Services\EmailDispatcher::send('deletion_scheduled', $user->email, $user->name, $user->id, [
+            '{deletion_date}' => $deletionDate,
+        ]);
 
         // Alert admin
         \App\Platform\Services\UnitNotifier::adminAlert(
@@ -226,14 +221,7 @@ class ProfileController extends Controller
         });
 
         // Send final goodbye email
-        try {
-            Mail::to($user->email)->send(new AccountDeleted(
-                name:  $user->name,
-                email: $user->email,
-            ));
-        } catch (\Throwable $e) {
-            Log::error('[ProfileController] AccountDeleted email failed', ['user' => $userId, 'error' => $e->getMessage()]);
-        }
+        \App\Platform\Services\EmailDispatcher::send('account_deleted', $user->email, $user->name, null);
 
         Log::info('[ProfileController] Hard-deleted user', ['id' => $userId, 'email' => $user->email]);
     }

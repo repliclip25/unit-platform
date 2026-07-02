@@ -86,28 +86,11 @@ class RegisteredUserController extends Controller
         ]);
 
         // Send welcome email — referred tenants get a distinct welcome acknowledging the referral
-        try {
-            $appUrl       = config('app.url');
-            $isReferred   = DB::table('referral_credits')->where('referee_id', $user->id)->where('event', 'signup')->exists();
-            $welcomeKey   = $isReferred ? 'referral_welcome_tenant' : 'welcome_tenant';
-            $welcomeTpl   = AdminMessagingController::getTemplate($welcomeKey);
-            if ($welcomeTpl) {
-                $replacements = [
-                    '{name}'     => $user->name,
-                    '{app_url}'  => $appUrl,
-                    '{bonus_tx}' => (string) \App\Platform\Services\ReferralService::REFEREE_BONUS_TX,
-                ];
-                $subject = str_replace(array_keys($replacements), array_values($replacements), $welcomeTpl->subject);
-                $body    = str_replace(array_keys($replacements), array_values($replacements), $welcomeTpl->body);
-                Mail::raw($body, fn($m) => $m
-                    ->to($user->email, $user->name)
-                    ->subject($subject)
-                    ->replyTo('hello@unit.report', $welcomeTpl->from_name)
-                );
-            }
-        } catch (\Throwable $e) {
-            \Illuminate\Support\Facades\Log::error('Welcome email failed', ['user_id' => $user->id, 'error' => $e->getMessage()]);
-        }
+        $isReferred = DB::table('referral_credits')->where('referee_id', $user->id)->where('event', 'signup')->exists();
+        $welcomeKey = $isReferred ? 'referral_welcome_tenant' : 'welcome_tenant';
+        \App\Platform\Services\EmailDispatcher::send($welcomeKey, $user->email, $user->name, $user->id, [
+            '{bonus_tx}' => (string) \App\Platform\Services\ReferralService::REFEREE_BONUS_TX,
+        ]);
 
         // Capture worker intent from form (passed from /register?worker=ava)
         $workerIntent = $request->input('worker');

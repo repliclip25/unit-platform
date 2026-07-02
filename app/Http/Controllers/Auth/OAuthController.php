@@ -122,7 +122,7 @@ class OAuthController extends Controller
                 'updated_at'  => now(),
             ]);
 
-            Mail::to($user->email)->send(new TenantWelcome($user->name));
+            \App\Platform\Services\EmailDispatcher::send('welcome_tenant', $user->email, $user->name, $user->id ?? null);
         }
 
         Auth::login($user, remember: true);

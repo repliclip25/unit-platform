@@ -2,27 +2,12 @@
 
 namespace App\Platform\Services;
 
-use App\Mail\WorkerDeployed;
-use App\Mail\DraftReady;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
 
-/**
- * Central communication layer for the UNIT platform.
- *
- * Workers and platform events key into this service to send
- * notifications. Nothing calls Mail:: directly except this class
- * and the auth controllers (which own their own lifecycle emails).
- *
- * All methods are fire-and-forget (queued). They log on failure
- * but never throw — a notification failure must never break a pipeline.
- */
 class UnitNotifier
 {
-    /**
-     * Notify tenant that their worker has been deployed.
-     */
     public static function workerDeployed(int $deploymentId): void
     {
         try {
@@ -30,26 +15,15 @@ class UnitNotifier
             $user = $dep ? DB::table('users')->where('id', $dep->user_id)->first() : null;
             if (!$user || !$dep) return;
 
-            $contract = \App\Platform\Services\WorkerRegistry::resolve($dep->worker_slug);
-            $employee = \App\Platform\Services\WorkerRegistry::isNull($contract) ? [] : $contract->employee();
-
-            Mail::to($user->email)->send(new WorkerDeployed(
-                name:           $user->name,
-                workerName:     $dep->name,
-                workerSlug:     $dep->worker_slug,
-                workerDesc:     $employee['title'] ?? '',
-                deploymentId:   $deploymentId,
-                trialEndsAt:    now()->addDays(14)->format('F j, Y'),
-            ));
+            EmailDispatcher::send('worker_deployed', $user->email, $user->name, $user->id, [
+                '{worker_name}' => $dep->name,
+                '{worker_slug}' => $dep->worker_slug,
+            ]);
         } catch (\Throwable $e) {
             Log::error('[UnitNotifier] workerDeployed failed', ['dep' => $deploymentId, 'error' => $e->getMessage()]);
         }
     }
 
-    /**
-     * Alert admin of a platform-level error or critical event.
-     * Fire-and-forget — never throws.
-     */
     public static function adminAlert(string $subject, string $message): void
     {
         try {
@@ -62,11 +36,6 @@ class UnitNotifier
         }
     }
 
-    /**
-     * Notify tenant that AVA has a draft ready for review.
-     *
-     * Called by PushToGmailJob after renewal.draft_ready emits.
-     */
     public static function draftReady(string $txId, array $payload): void
     {
         try {
@@ -74,16 +43,19 @@ class UnitNotifier
             $user = $tx ? DB::table('users')->where('id', $tx->user_id)->first() : null;
             if (!$user || !$tx) return;
 
-            Mail::to($user->email)->send(new DraftReady(
-                name:          $user->name,
-                txId:          $txId,
-                asset:         $payload['asset']['name'] ?? 'Unknown asset',
-                client:        $payload['client']['name'] ?? 'Unknown client',
-                contactName:   $payload['contact']['name'] ?? null,
-                draftSubject:  $payload['draft']['subject'] ?? null,
-                confidence:    $payload['ava']['confidence'] ?? null,
-                fastTrack:     $payload['draft']['fast_track'] ?? false,
-            ));
+            $asset      = $payload['asset']['name']    ?? 'Unknown asset';
+            $client     = $payload['client']['name']   ?? 'Unknown client';
+            $draftSubj  = $payload['draft']['subject'] ?? 'Renewal';
+            $confidence = $payload['ava']['confidence'] ?? null;
+            $appUrl     = config('app.url');
+
+            EmailDispatcher::send('draft_ready', $user->email, $user->name, $user->id, [
+                '{draft_subject}' => $draftSubj,
+                '{client}'        => $client,
+                '{asset}'         => $asset,
+                '{confidence}'    => $confidence ?? '—',
+                '{tx_id}'         => $txId,
+            ]);
         } catch (\Throwable $e) {
             Log::error('[UnitNotifier] draftReady failed', ['tx_id' => $txId, 'error' => $e->getMessage()]);
         }
