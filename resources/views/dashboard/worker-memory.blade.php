@@ -78,10 +78,8 @@
                         </div>
                         <div>
                             <label class="text-gray-500 text-xs block mb-1">Client</label>
-                            <select name="client_id" class="w-full bg-gray-800 text-white text-sm rounded-lg px-3 py-2.5 border border-gray-700 focus:outline-none focus:border-yellow-500">
-                                <option value="">— no client —</option>
-                                @foreach($clients as $cl)<option value="{{ $cl->id }}" {{ $da->client_id == $cl->id ? 'selected' : '' }}>{{ $cl->name }}</option>@endforeach
-                            </select>
+                            @php $selClient = $clients->firstWhere('id', $da->client_id); @endphp
+                            @include('partials.client-picker', ['pickerId' => 'da-'.$da->id, 'selectedId' => $da->client_id, 'selectedName' => $selClient?->name ?? ''])
                         </div>
                     </div>
                     <button type="submit" class="w-full text-sm font-semibold rounded-lg py-2.5 transition" style="background:var(--accent);color:#000;">
@@ -225,10 +223,10 @@
                                 class="bg-gray-800 text-white text-xs rounded-lg px-3 py-2 border border-gray-700 focus:outline-none focus:border-yellow-400">
                             <input type="text" name="role" value="{{ $contact->role }}" placeholder="Role / Title"
                                 class="bg-gray-800 text-white text-xs rounded-lg px-3 py-2 border border-gray-700 focus:outline-none focus:border-yellow-400">
-                            <select name="client_id" class="sm:col-span-2 bg-gray-800 text-white text-xs rounded-lg px-3 py-2 border border-gray-700 focus:outline-none focus:border-yellow-400">
-                                <option value="">— no client —</option>
-                                @foreach($clients as $cl)<option value="{{ $cl->id }}" {{ $contact->client_id == $cl->id ? 'selected' : '' }}>{{ $cl->name }}</option>@endforeach
-                            </select>
+                            <div class="sm:col-span-2">
+                                @php $selClient = $clients->firstWhere('id', $contact->client_id); @endphp
+                                @include('partials.client-picker', ['pickerId' => 'contact-edit-'.$contact->id, 'selectedId' => $contact->client_id, 'selectedName' => $selClient?->name ?? ''])
+                            </div>
                             <div class="sm:col-span-2 flex gap-2">
                                 <button type="submit" class="text-xs font-medium rounded-lg px-4 py-1.5 transition" style="background:var(--accent);color:#000;">Save</button>
                                 <button type="button" onclick="toggleEdit('contact', {{ $contact->id }})" class="text-gray-400 hover:text-white text-xs px-2">Cancel</button>
@@ -249,10 +247,7 @@
                 <div><label class="text-gray-400 text-xs block mb-1">Phone</label><input type="text" name="phone" class="w-full bg-gray-800 text-white text-sm rounded-lg px-3 py-2 border border-gray-700 focus:outline-none focus:border-yellow-400"></div>
                 <div><label class="text-gray-400 text-xs block mb-1">Role</label><input type="text" name="role" class="w-full bg-gray-800 text-white text-sm rounded-lg px-3 py-2 border border-gray-700 focus:outline-none focus:border-yellow-400"></div>
                 <div><label class="text-gray-400 text-xs block mb-1">Client</label>
-                    <select name="client_id" class="w-full bg-gray-800 text-white text-sm rounded-lg px-3 py-2 border border-gray-700 focus:outline-none focus:border-yellow-400">
-                        <option value="">— none —</option>
-                        @foreach($clients as $cl)<option value="{{ $cl->id }}">{{ $cl->name }}</option>@endforeach
-                    </select>
+                    @include('partials.client-picker', ['pickerId' => 'contact-add', 'selectedId' => '', 'selectedName' => ''])
                 </div>
                 <button type="submit" class="w-full text-sm rounded-lg py-2 transition font-medium" style="background:var(--accent);color:#000;">Add Contact</button>
             </form>
@@ -309,10 +304,8 @@
                                 class="bg-gray-800 text-white text-xs rounded-lg px-3 py-2 border border-gray-700 focus:outline-none focus:border-yellow-400">
                             <input type="number" name="cost_per_year" value="{{ $asset->cost_per_year }}" step="0.01" placeholder="Cost / year ($)"
                                 class="bg-gray-800 text-white text-xs rounded-lg px-3 py-2 border border-gray-700 focus:outline-none focus:border-yellow-400">
-                            <select name="client_id" class="bg-gray-800 text-white text-xs rounded-lg px-3 py-2 border border-gray-700 focus:outline-none focus:border-yellow-400">
-                                <option value="">— no client —</option>
-                                @foreach($clients as $cl)<option value="{{ $cl->id }}" {{ $asset->client_id == $cl->id ? 'selected' : '' }}>{{ $cl->name }}</option>@endforeach
-                            </select>
+                            @php $selClient = $clients->firstWhere('id', $asset->client_id); @endphp
+                            @include('partials.client-picker', ['pickerId' => 'asset-edit-'.$asset->id, 'selectedId' => $asset->client_id, 'selectedName' => $selClient?->name ?? ''])
                             <div class="sm:col-span-2 flex gap-2">
                                 <button type="submit" class="text-xs font-medium rounded-lg px-4 py-1.5 transition" style="background:var(--accent);color:#000;">Save</button>
                                 <button type="button" onclick="toggleEdit('asset', {{ $asset->id }})" class="text-gray-400 hover:text-white text-xs px-2">Cancel</button>
@@ -344,10 +337,7 @@
                 <div><label class="text-gray-400 text-xs block mb-1">Vendor</label><input type="text" name="vendor" class="w-full bg-gray-800 text-white text-sm rounded-lg px-3 py-2 border border-gray-700 focus:outline-none focus:border-yellow-400"></div>
                 <div><label class="text-gray-400 text-xs block mb-1">Renewal Date</label><input type="date" name="renewal_date" class="w-full bg-gray-800 text-white text-sm rounded-lg px-3 py-2 border border-gray-700 focus:outline-none focus:border-yellow-400"></div>
                 <div><label class="text-gray-400 text-xs block mb-1">Client</label>
-                    <select name="client_id" class="w-full bg-gray-800 text-white text-sm rounded-lg px-3 py-2 border border-gray-700 focus:outline-none focus:border-yellow-400">
-                        <option value="">— none —</option>
-                        @foreach($clients as $cl)<option value="{{ $cl->id }}">{{ $cl->name }}</option>@endforeach
-                    </select>
+                    @include('partials.client-picker', ['pickerId' => 'asset-add', 'selectedId' => '', 'selectedName' => ''])
                 </div>
                 <div><label class="text-gray-400 text-xs block mb-1">Cost / Year ($)</label><input type="number" name="cost_per_year" step="0.01" class="w-full bg-gray-800 text-white text-sm rounded-lg px-3 py-2 border border-gray-700 focus:outline-none focus:border-yellow-400"></div>
                 <button type="submit" class="w-full text-sm rounded-lg py-2 transition font-medium" style="background:var(--accent);color:#000;">Add Asset</button>
@@ -379,6 +369,45 @@
         const open    = panel.classList.toggle('hidden') === false;
         chevron.style.transform = open ? 'rotate(180deg)' : '';
     }
+    // ── Searchable client picker ───────────────────────────────────────────────
+    const CLIENT_DATA = @json($clients->map(fn($c) => ['id' => $c->id, 'name' => $c->name])->values());
+
+    function initClientPickers() {
+        document.querySelectorAll('.cp-search').forEach(input => {
+            if (input.dataset.cpInit) return;
+            input.dataset.cpInit = '1';
+            const pickerId = input.dataset.picker;
+            const dropdown = document.getElementById('cp-drop-' + pickerId);
+            const hidden   = document.getElementById('cp-val-' + pickerId);
+
+            function render(q) {
+                const lower = q.toLowerCase();
+                const matches = CLIENT_DATA.filter(c => c.name.toLowerCase().includes(lower));
+                dropdown.innerHTML = '<div class="cp-opt px-3 py-2 text-gray-500 text-xs cursor-pointer hover:bg-gray-700 rounded" data-id="" data-name="">— no client —</div>'
+                    + matches.slice(0, 50).map(c =>
+                        `<div class="cp-opt px-3 py-2 text-white text-sm cursor-pointer hover:bg-gray-700 rounded" data-id="${c.id}" data-name="${c.name}">${c.name}</div>`
+                    ).join('');
+                if (!matches.length) dropdown.innerHTML += '<div class="px-3 py-2 text-gray-600 text-xs">No clients found</div>';
+                dropdown.querySelectorAll('.cp-opt').forEach(opt => {
+                    opt.addEventListener('mousedown', e => {
+                        e.preventDefault();
+                        hidden.value  = opt.dataset.id;
+                        input.value   = opt.dataset.name;
+                        dropdown.classList.add('hidden');
+                    });
+                });
+            }
+
+            input.addEventListener('focus', () => { render(input.value); dropdown.classList.remove('hidden'); });
+            input.addEventListener('input', () => render(input.value));
+            input.addEventListener('blur',  () => setTimeout(() => dropdown.classList.add('hidden'), 150));
+        });
+    }
+
+    // Init on load and whenever new edit forms appear
+    initClientPickers();
+    document.addEventListener('click', initClientPickers);
+
     function toggleEdit(type, id) {
         const form = document.getElementById(type + '-edit-' + id);
         form.classList.toggle('hidden');
