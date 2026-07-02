@@ -6,9 +6,9 @@
         <div class="mb-4 bg-green-900 border border-green-700 text-green-200 rounded-xl px-5 py-3 text-sm">{{ session('success') }}</div>
     @endif
 
-    <div class="grid grid-cols-3 gap-6">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-        <div class="col-span-2 bg-gray-900 border border-gray-800 rounded-xl">
+        <div class="lg:col-span-2 bg-gray-900 border border-gray-800 rounded-xl">
             <div class="px-5 py-4 border-b border-gray-800">
                 <h3 class="text-white text-sm font-semibold">Rules for {{ $dep->name }}</h3>
                 <p class="text-gray-500 text-xs mt-0.5">Platform default rules ship with every AVA deployment. Add custom rules below to extend behaviour.</p>

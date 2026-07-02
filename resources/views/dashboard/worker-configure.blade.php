@@ -31,10 +31,10 @@
         ];
     @endphp
 
-    <div class="grid grid-cols-3 gap-6">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
         {{-- Left: config sections --}}
-        <div class="col-span-2 space-y-6">
+        <div class="lg:col-span-2 space-y-6">
 
             {{-- Deployment Settings --}}
             <div class="bg-gray-900 border border-gray-800 rounded-xl">
@@ -69,7 +69,7 @@
                     <input type="hidden" name="name" value="{{ $dep->name }}">
                     <input type="hidden" name="ai_model" value="{{ $currentModel }}">
 
-                    <div class="grid grid-cols-2 gap-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                             <label class="text-gray-400 text-xs font-semibold uppercase tracking-wide block mb-1.5">Keywords</label>
                             <textarea name="capture_keywords" rows="4"
@@ -86,7 +86,7 @@
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-2 gap-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                             <label class="text-gray-400 text-xs font-semibold uppercase tracking-wide block mb-1.5">Allowed Senders Only</label>
                             <textarea name="capture_senders_only" rows="3"

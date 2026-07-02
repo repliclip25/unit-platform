@@ -11,12 +11,12 @@
 
     {{-- Bulk import bar --}}
     <div class="bg-gray-900 border border-gray-800 rounded-xl px-5 py-4 mb-5">
-        <div class="flex items-center gap-4">
+        <div class="flex flex-col sm:flex-row sm:items-center gap-3">
             <div class="flex-1">
                 <p class="text-white text-sm font-medium">Bulk Import</p>
                 <p class="text-gray-500 text-xs mt-0.5">Upload a CSV or Excel file to populate clients, contacts, or assets.</p>
             </div>
-            <form method="POST" action="{{ route('workers.memory.import.preview', $dep->id) }}" enctype="multipart/form-data" class="flex items-center gap-3">
+            <form method="POST" action="{{ route('workers.memory.import.preview', $dep->id) }}" enctype="multipart/form-data" class="flex flex-wrap items-center gap-2">
                 @csrf
                 <select name="type" id="import-type" onchange="updateTemplateLink(this.value)" class="bg-gray-800 text-white text-sm rounded-lg px-3 py-2 border border-gray-700 focus:outline-none focus:border-brand">
                     <option value="clients">Clients</option>
@@ -45,7 +45,7 @@
     </div>
 
     {{-- CLIENTS --}}
-    <div id="pane-clients" class="tab-pane grid grid-cols-3 gap-6">
+    <div id="pane-clients" class="tab-pane grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div class="col-span-2 bg-gray-900 border border-gray-800 rounded-xl">
             <div class="divide-y divide-gray-800">
                 @forelse($clients as $client)
@@ -83,7 +83,7 @@
     </div>
 
     {{-- CONTACTS --}}
-    <div id="pane-contacts" class="tab-pane hidden grid grid-cols-3 gap-6">
+    <div id="pane-contacts" class="tab-pane hidden grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div class="col-span-2 bg-gray-900 border border-gray-800 rounded-xl">
             <div class="divide-y divide-gray-800">
                 @forelse($contacts as $contact)
@@ -125,7 +125,7 @@
     </div>
 
     {{-- ASSETS --}}
-    <div id="pane-assets" class="tab-pane hidden grid grid-cols-3 gap-6">
+    <div id="pane-assets" class="tab-pane hidden grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div class="col-span-2 bg-gray-900 border border-gray-800 rounded-xl">
             <div class="divide-y divide-gray-800">
                 @forelse($assets as $asset)

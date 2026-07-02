@@ -46,7 +46,7 @@
                         Upgrade anytime to unlock unlimited processing and unlock full AI cost reporting.
                     @endif
                 </p>
-                <div class="mt-2 w-64 h-1.5 bg-gray-800 rounded-full overflow-hidden">
+                <div class="mt-2 w-full max-w-xs h-1.5 bg-gray-800 rounded-full overflow-hidden">
                     <div class="h-full rounded-full {{ $trialPct >= 80 ? 'bg-red-500' : 'bg-brand' }}"
                          style="width: {{ $trialPct }}%"></div>
                 </div>

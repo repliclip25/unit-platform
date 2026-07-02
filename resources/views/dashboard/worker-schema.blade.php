@@ -29,7 +29,7 @@
     </div>
 
     {{-- ── Row 1: Input + Commit ─────────────────────────────────────────────── --}}
-    <div class="grid grid-cols-2 gap-4 mb-4">
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
 
         {{-- Input --}}
         <div class="rounded-2xl border border-gray-800 p-5" style="background:#141414">
