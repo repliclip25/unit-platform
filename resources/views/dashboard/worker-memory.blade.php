@@ -9,42 +9,39 @@
         <div class="mb-4 bg-red-900 border border-red-700 text-red-200 rounded-xl px-5 py-3 text-sm">{{ session('error') }}</div>
     @endif
 
-    {{-- Discovered assets review banner --}}
+    {{-- Discovered assets — quiet collapsible notice --}}
     @if($discoveredAssets->count())
-    <div class="bg-amber-950 border border-amber-800 rounded-xl px-5 py-4 mb-5">
-        <div class="flex items-center gap-2 mb-3">
-            <svg class="w-4 h-4 text-amber-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-            <p class="text-amber-300 text-sm font-medium">{{ $discoveredAssets->count() }} item{{ $discoveredAssets->count() > 1 ? 's' : '' }} discovered from email — review before adding to memory</p>
-        </div>
-        <div class="space-y-3">
+    <div class="mb-5">
+        <button onclick="toggleDiscovered()" class="flex items-center gap-2 text-gray-500 hover:text-gray-300 text-xs transition" id="discovered-toggle">
+            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            {{ $discoveredAssets->count() }} item{{ $discoveredAssets->count() > 1 ? 's' : '' }} auto-discovered from email — review
+        </button>
+        <div id="discovered-panel" class="hidden mt-3 bg-gray-900 border border-gray-800 rounded-xl divide-y divide-gray-800">
             @foreach($discoveredAssets as $da)
-            <div class="bg-amber-900/40 border border-amber-800/60 rounded-lg px-4 py-3">
-                <div class="flex items-start justify-between gap-3 mb-3">
-                    <div>
-                        <p class="text-white text-sm font-medium">{{ $da->name }}</p>
-                        <p class="text-amber-400/70 text-xs mt-0.5">Auto-discovered · {{ \Carbon\Carbon::parse($da->created_at)->diffForHumans() }}</p>
-                    </div>
-                    <form method="POST" action="{{ route('workers.memory.assets.destroy', [$dep->id, $da->id]) }}" class="shrink-0">
+            <div class="px-5 py-4">
+                <div class="flex items-center justify-between mb-2">
+                    <p class="text-gray-400 text-xs">{{ $da->name }}</p>
+                    <form method="POST" action="{{ route('workers.memory.assets.destroy', [$dep->id, $da->id]) }}">
                         @csrf @method('DELETE')
-                        <button class="text-amber-600 hover:text-red-400 text-xs">Dismiss</button>
+                        <button class="text-gray-600 hover:text-red-400 text-xs">Dismiss</button>
                     </form>
                 </div>
                 <form method="POST" action="{{ route('workers.memory.assets.approve', [$dep->id, $da->id]) }}" class="grid grid-cols-1 sm:grid-cols-3 gap-2">
                     @csrf
                     <input type="text" name="name" value="{{ $da->name }}" required placeholder="Asset name"
-                        class="bg-amber-900/50 text-white text-xs rounded-lg px-3 py-2 border border-amber-700 focus:outline-none focus:border-amber-400">
+                        class="bg-gray-800 text-white text-xs rounded-lg px-3 py-2 border border-gray-700 focus:outline-none focus:border-yellow-400">
                     <input type="text" name="type" value="{{ $da->type !== 'discovered' ? $da->type : '' }}" required placeholder="Type (Domain, SSL, SaaS…)" list="da-type-list-{{ $da->id }}"
-                        class="bg-amber-900/50 text-white text-xs rounded-lg px-3 py-2 border border-amber-700 focus:outline-none focus:border-amber-400">
+                        class="bg-gray-800 text-white text-xs rounded-lg px-3 py-2 border border-gray-700 focus:outline-none focus:border-yellow-400">
                     <datalist id="da-type-list-{{ $da->id }}">
                         <option>SSL Certificate</option><option>Domain</option><option>Hosting</option>
                         <option>Website Management</option><option>SaaS Subscription</option>
                         <option>Insurance Policy</option><option>License</option><option>Contract</option>
                     </datalist>
                     <input type="text" name="vendor" value="{{ $da->vendor }}" placeholder="Vendor (optional)"
-                        class="bg-amber-900/50 text-white text-xs rounded-lg px-3 py-2 border border-amber-700 focus:outline-none focus:border-amber-400">
+                        class="bg-gray-800 text-white text-xs rounded-lg px-3 py-2 border border-gray-700 focus:outline-none focus:border-yellow-400">
                     <input type="date" name="renewal_date" value="{{ $da->renewal_date }}"
-                        class="bg-amber-900/50 text-white text-xs rounded-lg px-3 py-2 border border-amber-700 focus:outline-none focus:border-amber-400">
-                    <select name="client_id" class="bg-amber-900/50 text-white text-xs rounded-lg px-3 py-2 border border-amber-700 focus:outline-none focus:border-amber-400">
+                        class="bg-gray-800 text-white text-xs rounded-lg px-3 py-2 border border-gray-700 focus:outline-none focus:border-yellow-400">
+                    <select name="client_id" class="bg-gray-800 text-white text-xs rounded-lg px-3 py-2 border border-gray-700 focus:outline-none focus:border-yellow-400">
                         <option value="">— no client —</option>
                         @foreach($clients as $cl)<option value="{{ $cl->id }}" {{ $da->client_id == $cl->id ? 'selected' : '' }}>{{ $cl->name }}</option>@endforeach
                     </select>
@@ -334,6 +331,12 @@
         const btn = document.getElementById('tab-' + name);
         btn.classList.add('text-white','border-yellow-400');
         btn.classList.remove('text-gray-400','border-transparent');
+    }
+    function toggleDiscovered() {
+        const panel = document.getElementById('discovered-panel');
+        const btn   = document.getElementById('discovered-toggle');
+        const open  = panel.classList.toggle('hidden') === false;
+        btn.querySelector('svg').style.transform = open ? 'rotate(180deg)' : '';
     }
     function toggleEdit(type, id) {
         const form = document.getElementById(type + '-edit-' + id);
