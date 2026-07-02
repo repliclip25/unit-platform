@@ -3,8 +3,8 @@
     @include('partials.worker-subnav')
 
     {{-- Header --}}
-    <div class="rounded-2xl border border-gray-800 px-6 py-4 mb-6 flex items-center justify-between" style="background:#141414">
-        <div class="flex items-center gap-8">
+    <div class="rounded-2xl border border-gray-800 px-5 py-4 mb-6" style="background:#141414">
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-3">
             <div>
                 <p class="text-gray-600 text-xs uppercase tracking-widest mb-0.5">Worker</p>
                 <p class="text-white font-semibold text-sm">{{ $identity['name'] }}</p>
@@ -104,22 +104,24 @@
             @foreach($pipeline as $stage)
             @php $isTerminal = $stage['connects_to'] === null; @endphp
             <div class="rounded-xl border p-4" style="background:#1a1a1a;border-color:#252525">
-                <div class="flex items-start gap-4">
-
-                    {{-- Stage number + label --}}
-                    <div class="flex items-center gap-3 shrink-0" style="min-width:170px">
-                        <div class="flex items-center justify-center w-7 h-7 rounded-lg text-xs font-bold shrink-0"
-                             style="background:rgba(var(--accent-rgb),0.15);border:1px solid rgba(var(--accent-rgb),0.35);color:var(--accent)">
-                            {{ $stage['stage'] }}
-                        </div>
-                        <div>
-                            <p class="text-white text-sm font-medium">{{ $stage['label'] }}</p>
-                            <p class="text-gray-600 text-xs">of {{ $stage['total'] }}</p>
-                        </div>
+                {{-- Stage header --}}
+                <div class="flex items-center gap-3 mb-3">
+                    <div class="flex items-center justify-center w-7 h-7 rounded-lg text-xs font-bold shrink-0"
+                         style="background:rgba(var(--accent-rgb),0.15);border:1px solid rgba(var(--accent-rgb),0.35);color:var(--accent)">
+                        {{ $stage['stage'] }}
                     </div>
-
-                    {{-- Accepts --}}
                     <div class="flex-1 min-w-0">
+                        <p class="text-white text-sm font-medium">{{ $stage['label'] }}</p>
+                        <p class="text-gray-600 text-xs">of {{ $stage['total'] }}</p>
+                    </div>
+                    <p class="text-gray-700 text-xs shrink-0">
+                        {{ $isTerminal ? 'terminal' : '→ ' . last(explode('\\', $stage['connects_to'])) }}
+                    </p>
+                </div>
+
+                {{-- Accepts + Produces in a responsive grid --}}
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
                         <p class="text-gray-600 text-xs mb-1.5">← from <span class="text-gray-500">{{ $stage['receives_from'] }}</span></p>
                         <div class="flex flex-wrap gap-1">
                             @foreach($stage['accepts'] as $f)
@@ -129,11 +131,7 @@
                             @endforeach
                         </div>
                     </div>
-
-                    <span class="text-gray-700 shrink-0 pt-4">→</span>
-
-                    {{-- Produces --}}
-                    <div class="flex-1 min-w-0">
+                    <div>
                         <p class="text-gray-600 text-xs mb-1.5">produces</p>
                         <div class="flex flex-wrap gap-1">
                             @foreach($stage['produces'] as $f)
@@ -143,26 +141,22 @@
                             @endforeach
                         </div>
                     </div>
-
-                    {{-- Emits + connects_to --}}
-                    <div class="shrink-0 text-right" style="min-width:140px">
-                        @if(!empty($stage['can_emit']))
-                            <p class="text-gray-600 text-xs mb-1">emits</p>
-                            <div class="flex flex-col gap-1 items-end">
-                                @foreach($stage['can_emit'] as $ev)
-                                <span class="text-xs px-1.5 py-0.5 rounded font-mono"
-                                      style="background:rgba(245,158,11,0.08);color:#fbbf24;border:1px solid rgba(245,158,11,0.2)">
-                                    ↗ {{ $ev }}
-                                </span>
-                                @endforeach
-                            </div>
-                        @endif
-                        <p class="text-gray-700 text-xs mt-2">
-                            {{ $isTerminal ? 'terminal' : '→ ' . last(explode('\\', $stage['connects_to'])) }}
-                        </p>
-                    </div>
-
                 </div>
+
+                {{-- Emits --}}
+                @if(!empty($stage['can_emit']))
+                <div class="mt-3 pt-3 border-t border-gray-800">
+                    <p class="text-gray-600 text-xs mb-1">emits</p>
+                    <div class="flex flex-wrap gap-1">
+                        @foreach($stage['can_emit'] as $ev)
+                        <span class="text-xs px-1.5 py-0.5 rounded font-mono"
+                              style="background:rgba(245,158,11,0.08);color:#fbbf24;border:1px solid rgba(245,158,11,0.2)">
+                            ↗ {{ $ev }}
+                        </span>
+                        @endforeach
+                    </div>
+                </div>
+                @endif
             </div>
             @endforeach
         </div>
@@ -175,7 +169,7 @@
             <span class="text-gray-600 text-xs">— {{ count($emits) }} events available to downstream workers</span>
         </div>
 
-        <div class="grid grid-cols-2 gap-3">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
             @foreach($emits as $emit)
             <div class="rounded-xl border p-4" style="background:#1a1a1a;border-color:#252525">
                 <div class="flex items-start justify-between gap-2 mb-2">
