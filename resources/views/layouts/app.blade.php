@@ -670,5 +670,89 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     }, true);
 })();
 </script>
+
+{{-- ── Searchable select — global enhancer ─────────────────────────────────
+     Replaces every <select> (except [data-no-search] and size > 1) with a
+     text-filter dropdown. Runs on DOMContentLoaded and after any dynamic
+     content is injected (MutationObserver).
+──────────────────────────────────────────────────────────────────────────── --}}
+<script>
+(function () {
+    const SKIP_ATTR   = 'data-no-search';
+    const DONE_ATTR   = 'data-ss-done';
+    const MIN_OPTIONS = 1; // enhance even small selects for consistency
+
+    function enhance(sel) {
+        if (sel.hasAttribute(DONE_ATTR) || sel.hasAttribute(SKIP_ATTR)) return;
+        if (sel.multiple || sel.size > 1) return;
+        sel.setAttribute(DONE_ATTR, '1');
+
+        // Collect options
+        const options = Array.from(sel.options).map(o => ({ value: o.value, label: o.text.trim() }));
+        const current = options.find(o => o.value === sel.value) || options[0] || { value: '', label: '' };
+
+        // Build wrapper
+        const wrap = document.createElement('div');
+        wrap.className = 'ss-wrap relative';
+        sel.parentNode.insertBefore(wrap, sel);
+        wrap.appendChild(sel);
+        sel.style.display = 'none';
+
+        // Text input (inherits width from parent naturally)
+        const input = document.createElement('input');
+        input.type        = 'text';
+        input.value       = current.label === '— none —' || current.label === '— no client —' || current.value === '' ? '' : current.label;
+        input.placeholder = current.value === '' ? (current.label || 'Select…') : 'Select…';
+        input.autocomplete = 'off';
+        input.className   = sel.className.replace('bg-gray-800','').replace('bg-gray-900','')
+                            + ' ss-input w-full bg-gray-800 text-white rounded-lg px-3 border border-gray-700 focus:outline-none focus:border-yellow-500 placeholder-gray-600';
+        // Preserve explicit py- from original select or fallback
+        if (!input.className.includes('py-')) input.className += ' py-2';
+        wrap.insertBefore(input, sel);
+
+        // Dropdown
+        const drop = document.createElement('div');
+        drop.className = 'ss-drop hidden absolute z-50 left-0 right-0 mt-1 bg-gray-800 border border-gray-700 rounded-lg shadow-xl overflow-y-auto';
+        drop.style.maxHeight = '220px';
+        drop.style.top       = '100%';
+        wrap.appendChild(drop);
+
+        function renderDrop(q) {
+            const lower   = q.toLowerCase();
+            const matches = options.filter(o => o.label.toLowerCase().includes(lower));
+            drop.innerHTML = matches.slice(0, 80).map(o =>
+                `<div class="ss-opt px-3 py-2 text-sm cursor-pointer hover:bg-gray-700 ${o.value === sel.value ? 'text-yellow-400' : (o.value === '' ? 'text-gray-500' : 'text-white')}"
+                    data-val="${o.value}" data-lbl="${o.label.replace(/"/g,'&quot;')}">${o.label}</div>`
+            ).join('');
+            if (!matches.length) {
+                drop.innerHTML = '<div class="px-3 py-2 text-gray-600 text-xs">No results</div>';
+            }
+            drop.querySelectorAll('.ss-opt').forEach(opt => {
+                opt.addEventListener('mousedown', e => {
+                    e.preventDefault();
+                    sel.value    = opt.dataset.val;
+                    input.value  = opt.dataset.val === '' ? '' : opt.dataset.lbl;
+                    input.placeholder = opt.dataset.val === '' ? opt.dataset.lbl : 'Select…';
+                    drop.classList.add('hidden');
+                    sel.dispatchEvent(new Event('change', { bubbles: true }));
+                });
+            });
+        }
+
+        input.addEventListener('focus', () => { renderDrop(input.value); drop.classList.remove('hidden'); });
+        input.addEventListener('input', () => renderDrop(input.value));
+        input.addEventListener('blur',  () => setTimeout(() => drop.classList.add('hidden'), 160));
+    }
+
+    function enhanceAll() {
+        document.querySelectorAll('select:not([' + DONE_ATTR + '])').forEach(enhance);
+    }
+
+    document.addEventListener('DOMContentLoaded', enhanceAll);
+
+    // Pick up selects added dynamically (e.g. inline edit forms toggled in)
+    new MutationObserver(enhanceAll).observe(document.body, { childList: true, subtree: true });
+})();
+</script>
 </body>
 </html>
