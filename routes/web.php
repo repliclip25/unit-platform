@@ -170,10 +170,14 @@ Route::middleware(['auth', 'verified', 'onboarded', 'not-pending-del'])->group(f
     Route::post('/workers/{id}/memory/import/preview',               [WorkerMemoryController::class, 'importPreview'])->name('workers.memory.import.preview');
     Route::post('/workers/{id}/memory/import/commit',                [WorkerMemoryController::class, 'importCommit'])->name('workers.memory.import.commit');
     Route::post('/workers/{id}/memory/clients',                      [WorkerMemoryController::class, 'storeClient'])->name('workers.memory.clients.store');
+    Route::patch('/workers/{id}/memory/clients/{cid}',              [WorkerMemoryController::class, 'updateClient'])->name('workers.memory.clients.update');
     Route::delete('/workers/{id}/memory/clients/{cid}',              [WorkerMemoryController::class, 'destroyClient'])->name('workers.memory.clients.destroy');
     Route::post('/workers/{id}/memory/contacts',                     [WorkerMemoryController::class, 'storeContact'])->name('workers.memory.contacts.store');
+    Route::patch('/workers/{id}/memory/contacts/{cid}',             [WorkerMemoryController::class, 'updateContact'])->name('workers.memory.contacts.update');
     Route::delete('/workers/{id}/memory/contacts/{cid}',             [WorkerMemoryController::class, 'destroyContact'])->name('workers.memory.contacts.destroy');
     Route::post('/workers/{id}/memory/assets',                       [WorkerMemoryController::class, 'storeAsset'])->name('workers.memory.assets.store');
+    Route::patch('/workers/{id}/memory/assets/{aid}',               [WorkerMemoryController::class, 'updateAsset'])->name('workers.memory.assets.update');
+    Route::post('/workers/{id}/memory/assets/{aid}/approve',        [WorkerMemoryController::class, 'approveAsset'])->name('workers.memory.assets.approve');
     Route::delete('/workers/{id}/memory/assets/{aid}',               [WorkerMemoryController::class, 'destroyAsset'])->name('workers.memory.assets.destroy');
 
     // ── Worker: Templates ───────────────────────────────────────────────────
