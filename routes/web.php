@@ -312,6 +312,7 @@ Route::middleware(['auth', 'verified', 'onboarded', 'not-pending-del'])->group(f
         Route::post('/admin/messaging/{id}/rewrite',      [AdminMessagingController::class, 'rewrite'])->name('admin.messaging.rewrite');
         Route::post('/admin/messaging/{id}/accept',       [AdminMessagingController::class, 'acceptRewrite'])->name('admin.messaging.accept');
         Route::post('/admin/messaging/{id}/test-send',    [AdminMessagingController::class, 'testSend'])->name('admin.messaging.test-send');
+        Route::post('/admin/messaging/seed',               [AdminMessagingController::class, 'seed'])->name('admin.messaging.seed');
 
         Route::get('/admin/pricing',               [AdminPricingController::class, 'index'])->name('admin.pricing');
         Route::post('/admin/pricing',              [AdminPricingController::class, 'store'])->name('admin.pricing.store');

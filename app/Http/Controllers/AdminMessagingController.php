@@ -442,6 +442,29 @@ class AdminMessagingController extends Controller
         ];
     }
 
+    // ── Manual seed endpoint ──────────────────────────────────────────────
+    public function seed(): \Illuminate\Http\RedirectResponse
+    {
+        $this->seedDefaults();
+        return redirect()->route('admin.messaging')->with('success', 'Templates seeded successfully.');
+    }
+
+    // ── Seed all defaults into the DB (idempotent — skips existing keys) ─
+    public function seedDefaults(): void
+    {
+        $all = array_merge(self::defaults(), self::transactionalDefaults());
+        $existing = DB::table('platform_email_templates')->pluck('key')->flip();
+        $now = now();
+        foreach ($all as $row) {
+            if ($existing->has($row['key'])) continue;
+            DB::table('platform_email_templates')->insert(array_merge($row, [
+                'active'     => true,
+                'created_at' => $now,
+                'updated_at' => $now,
+            ]));
+        }
+    }
+
     // ── Helper: load one template by key (with fallback to hardcoded) ─────
     public static function getTemplate(string $key, array $fallback = []): ?object
     {
@@ -459,6 +482,11 @@ class AdminMessagingController extends Controller
     public function index(Request $request)
     {
         $tab = $request->input('tab', 'sequences');
+
+        // Auto-seed defaults if table is empty
+        if (DB::table('platform_email_templates')->count() === 0) {
+            $this->seedDefaults();
+        }
 
         $templates = DB::table('platform_email_templates')
             ->orderBy('sort_order')
