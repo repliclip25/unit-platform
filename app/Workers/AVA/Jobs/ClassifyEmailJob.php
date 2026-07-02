@@ -29,7 +29,8 @@ class ClassifyEmailJob implements ShouldQueue
     public function handle(ClaudeService $claude): void
     {
         $input = UnitPlatform::getInput($this->txId);
-        $claude->configure($input->aiModel, $input->userId);
+        // Use Haiku for classification — cheap, fast, sufficient for categorization
+        $claude->configure('claude-haiku-4-5-20251001', $input->userId);
         UnitPlatform::setStatus($this->txId, 'classifying');
 
         $readOutput = $input->stage('read');
@@ -83,6 +84,21 @@ PROMPT;
         ));
 
         UnitPlatform::log('ava', $this->txId, 'email_classified', $output);
+
+        // ── Early exit: stop pipeline for non-renewal categories to avoid wasting AI spend
+        $renewalCategories = [
+            'Domain Renewal', 'SSL Expiry', 'Hosting Invoice',
+            'SaaS Renewal', 'Failed Payment',
+        ];
+        $category = $output['category'] ?? 'Other';
+        if (!in_array($category, $renewalCategories)) {
+            UnitPlatform::setStatus($this->txId, 'dismissed');
+            UnitPlatform::log('ava', $this->txId, 'pipeline_skipped', [
+                'reason'   => 'non_renewal_category',
+                'category' => $category,
+            ], 'info');
+            return;
+        }
 
         // ── Break-injection: early-stage packet from read output only (memory not yet run).
         //    'renewal.draft_ready' carries the full enriched handover after memory lookup.
