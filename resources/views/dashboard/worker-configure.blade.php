@@ -10,6 +10,16 @@
         $config        = json_decode($dep->config, true) ?? [];
         $capture       = $config['capture'] ?? [];
         $currentModel  = $config['ai_model'] ?? 'claude-sonnet-4-6';
+        $summaryHour   = (int) ($config['summary_hour'] ?? 8);
+        $summaryHours  = [
+            6  => '6:00 AM — Early riser',
+            7  => '7:00 AM — Before the day starts',
+            8  => '8:00 AM — Morning briefing (recommended)',
+            9  => '9:00 AM — After standup',
+            12 => '12:00 PM — Midday check-in',
+            17 => '5:00 PM — End of day recap',
+            18 => '6:00 PM — After hours',
+        ];
         $catalog       = \App\Platform\Services\LLM\ModelCatalog::all();
 
         $kwLines  = implode("\n", $capture['capture_keywords']     ?? []);
@@ -53,6 +63,34 @@
                         <button type="submit" style="background:var(--accent);color:#000"
                                 class="text-sm font-medium rounded-lg px-5 py-2.5 transition hover:opacity-90">
                             Save Settings
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            {{-- Daily Summary Timing --}}
+            <div class="bg-gray-900 border border-gray-800 rounded-xl">
+                <div class="px-5 py-4 border-b border-gray-800">
+                    <h3 class="text-white text-sm font-semibold">Daily Summary</h3>
+                    <p class="text-gray-500 text-xs mt-0.5">Choose when AVA emails you a daily recap of what it processed. Only sent on days with activity.</p>
+                </div>
+                <form method="POST" action="{{ route('workers.config', $dep->id) }}" class="px-5 py-5 space-y-4">
+                    @csrf @method('PATCH')
+                    <input type="hidden" name="name" value="{{ $dep->name }}">
+                    <input type="hidden" name="ai_model" value="{{ $currentModel }}">
+                    <div>
+                        <label class="text-gray-400 text-xs block mb-1">Send daily summary at</label>
+                        <select name="summary_hour" class="w-full bg-gray-800 text-white text-sm rounded-lg px-3 py-2.5 border border-gray-700 focus:outline-none focus:border-brand">
+                            @foreach($summaryHours as $hour => $label)
+                                <option value="{{ $hour }}" {{ $summaryHour === $hour ? 'selected' : '' }}>{{ $label }}</option>
+                            @endforeach
+                        </select>
+                        <p class="text-gray-600 text-xs mt-1.5">Times are UTC. 8 AM UTC ≈ 4 AM ET / 1 AM PT — adjust based on your timezone.</p>
+                    </div>
+                    <div class="pt-1">
+                        <button type="submit" style="background:var(--accent);color:#000"
+                                class="text-sm font-medium rounded-lg px-5 py-2.5 transition hover:opacity-90">
+                            Save Timing
                         </button>
                     </div>
                 </form>

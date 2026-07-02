@@ -852,7 +852,7 @@ class AvaWorker implements WorkerContract
         return [
             [
                 'job'            => DailySummaryJob::class,
-                'cron'           => '0 17 * * *',
+                'cron'           => '0 * * * *',
                 'queue'          => 'ava',
                 'per_deployment' => true,
                 'name'           => 'daily_summary',

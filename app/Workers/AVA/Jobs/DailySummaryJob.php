@@ -2,15 +2,14 @@
 
 namespace App\Workers\AVA\Jobs;
 
-use App\Mail\DailySummary;
 use App\Platform\SDK\UnitPlatform;
 use App\Platform\Services\ClaudeService;
+use App\Platform\Services\EmailDispatcher;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Mail;
 
 class DailySummaryJob implements ShouldQueue
 {
@@ -23,11 +22,18 @@ class DailySummaryJob implements ShouldQueue
 
     public function handle(ClaudeService $claude): void
     {
-        // DailySummary is a scheduled job (no tx_id) — UNIT provides the deployment context
         $ctx = UnitPlatform::getDeploymentContext($this->deploymentId);
         if (!$ctx) return;
 
         [$deployment, $user] = [$ctx->deployment, $ctx->user];
+
+        // Check tenant's preferred summary hour — default 8AM
+        $config       = json_decode($deployment->config ?? '{}', true) ?: [];
+        $preferredHour = (int) ($config['summary_hour'] ?? 8);
+        $currentHour   = (int) now()->format('G');
+
+        // Only send during the tenant's chosen hour window
+        if ($currentHour !== $preferredHour) return;
 
         $today        = now()->toDateString();
         $transactions = UnitPlatform::getRegisterEntries($this->deploymentId, $today)->toArray();
@@ -68,7 +74,10 @@ PROMPT;
         $body    = $claude->askForText($system, $prompt);
         $subject = "Ava Daily Summary — {$today} — {$logged} item(s), {$urgent} urgent";
 
-        Mail::to($user->email)->send(new DailySummary($subject, $body, $today, $logged, $urgent));
+        EmailDispatcher::send('daily_summary', $user->email, $user->name, $user->id, [
+            '{date}'         => $today,
+            '{summary_body}' => $body,
+        ]);
 
         UnitPlatform::log('ava', 'daily', 'daily_summary_sent', [
             'date'          => $today,

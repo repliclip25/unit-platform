@@ -411,7 +411,8 @@ class WorkerController extends Controller
                 'exclude_senders'     => $splitTrim($request->exclude_senders ?? ''),
                 'capture_require_all' => (bool) $request->capture_require_all,
             ],
-            'ai_model' => $request->ai_model ?: ($existing['ai_model'] ?? 'claude-sonnet-4-6'),
+            'ai_model'     => $request->ai_model ?: ($existing['ai_model'] ?? 'claude-sonnet-4-6'),
+            'summary_hour' => (int) ($request->summary_hour ?? $existing['summary_hour'] ?? 8),
         ]);
 
         DB::table('worker_deployments')->where('id', $id)->where('user_id', auth()->id())->update([

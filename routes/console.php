@@ -159,9 +159,12 @@ Schedule::call(function () {
                     ->where('id', $credential->user_id)->first();
 
                 if ($user) {
-                    \Illuminate\Support\Facades\Mail::raw(
-                        "Hi {$user->name},\n\nYour Gmail connection for {$credential->gmail_address} has been disconnected — AVA is no longer monitoring that inbox.\n\nTo reconnect, log in to your UNIT dashboard and visit the Worker → Connect Inbox page.\n\nUNIT Platform",
-                        fn($m) => $m->to($user->email)->subject('Action needed: Reconnect your Gmail inbox')
+                    \App\Platform\Services\EmailDispatcher::send(
+                        'gmail_token_expired',
+                        $user->email,
+                        $user->name,
+                        $user->id,
+                        ['{gmail_address}' => $credential->gmail_address]
                     );
                 }
 
