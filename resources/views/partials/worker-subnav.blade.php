@@ -7,6 +7,7 @@
         ['label' => 'Connect',    'route' => 'workers.connect',    'match' => 'workers.connect'],
         ['label' => 'Configure',  'route' => 'workers.configure',  'match' => 'workers.configure'],
         ['label' => 'Log',        'route' => 'workers.log',        'match' => 'workers.log'],
+        ['label' => 'Observe',    'route' => 'workers.observe',    'match' => 'workers.observe'],
         ['label' => 'Schema',     'route' => 'workers.schema',     'match' => 'workers.schema'],
         ['label' => 'Billing',    'route' => 'workers.billing',    'match' => 'workers.billing'],
     ];

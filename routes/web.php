@@ -159,6 +159,7 @@ Route::middleware(['auth', 'verified', 'onboarded', 'not-pending-del'])->group(f
     Route::post('/workers/{id}/prompt-overrides',                    [WorkerController::class, 'savePromptOverride'])->name('workers.prompt-overrides');
     Route::post('/workers/{id}/prompt-test',                         [WorkerController::class, 'testPrompt'])->name('workers.prompt-test');
     Route::get('/workers/{slug}/log',                                [WorkerController::class, 'log'])->name('workers.log');
+    Route::get('/workers/{slug}/observe',                            [WorkerController::class, 'observe'])->name('workers.observe');
     Route::get('/workers/{slug}/schema',                             [WorkerController::class, 'schema'])->name('workers.schema');
     Route::get('/workers/{slug}/billing',                            [WorkerController::class, 'billing'])->name('workers.billing');
     Route::post('/workers/{id}/fast-track',                          [WorkerController::class, 'fastTrack'])->name('workers.fast-track');
