@@ -482,14 +482,14 @@ class AdminPlatformController extends Controller
             ->leftJoin('deployment_credentials as dc', 'dc.credential_id', '=', 'gc.id')
             ->leftJoin('worker_deployments as wd', 'wd.id', '=', 'dc.deployment_id')
             ->select(
-                'gc.id', 'gc.gmail_address', 'gc.watch_active', 'gc.watch_expires_at', 'gc.watch_expiry',
+                'gc.id', 'gc.gmail_address', 'gc.watch_active', 'gc.watch_expires_at', 'gc.watch_expires_at',
                 'users.name as tenant_name', 'users.id as user_id',
                 'wd.name as deployment_name', 'wd.status as deployment_status'
             )
             ->orderBy('gc.watch_expires_at')
             ->get()
             ->map(function ($w) {
-                $expiresAt = $w->watch_expires_at ?? $w->watch_expiry;
+                $expiresAt = $w->watch_expires_at ?? $w->watch_expires_at;
                 $w->expires_at     = $expiresAt;
                 $w->is_expired     = $expiresAt && now()->isAfter($expiresAt);
                 $w->expires_soon   = $expiresAt && !$w->is_expired && now()->diffInHours($expiresAt) < 24;

@@ -138,7 +138,7 @@
                         @endforeach
                     </div>
                 </div>
-                <div class="grid grid-cols-2 divide-x divide-y divide-gray-800">
+                <div class="grid grid-cols-1 sm:grid-cols-2 divide-y sm:divide-x sm:divide-y divide-gray-800">
                     @foreach($grouped as $s)
                         @php $sc = match($s['status']) { 'ok' => ['dot' => 'bg-green-400', 'text' => 'text-green-400', 'badge' => 'OK'], 'warn' => ['dot' => 'bg-yellow-400', 'text' => 'text-yellow-400', 'badge' => 'WARN'], default => ['dot' => 'bg-red-500', 'text' => 'text-red-400', 'badge' => 'FAIL'] }; @endphp
                         <div class="px-5 py-4 flex items-center gap-3">
@@ -197,7 +197,7 @@
                     </div>
                 </div>
 
-                <div class="px-5 py-5 grid grid-cols-2 gap-5">
+                <div class="px-5 py-5 grid grid-cols-1 sm:grid-cols-2 gap-5">
 
                     {{-- Lifecycle progress --}}
                     <div>
@@ -394,7 +394,7 @@
                         @endif
 
                         {{-- Memory + Config side by side --}}
-                        <div class="grid grid-cols-2 gap-4">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
 
                             {{-- Memory Schema --}}
                             @php
@@ -470,7 +470,7 @@
                         </div>
 
                         {{-- Queue + Platform requirements --}}
-                        <div class="grid grid-cols-2 gap-4">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
 
                             @if(!empty($bp['queue']))
                             <div class="bg-gray-950 border border-gray-800 rounded-xl px-4 py-4">
@@ -671,7 +671,7 @@
                     </div>
                     @endif
 
-                    <div class="grid grid-cols-2 gap-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div class="bg-gray-900 border border-gray-800 rounded-xl overflow-hidden">
                             <div class="px-4 py-3 border-b border-gray-800">
                                 <p class="text-white text-xs font-semibold">Identity & Connection</p>
@@ -952,7 +952,7 @@
                         <div class="hidden border-t border-gray-800 px-5 py-5">
                             <form method="POST" action="{{ route('qa.scenario-update', $w->dep->id) }}" class="space-y-4">
                                 @csrf
-                                <div class="grid grid-cols-2 gap-4">
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     @php
                                         $fields = [
                                             ['scenario_title',    'Scenario Title',       $sc->scenario_title    ?? 'Domain Renewal Test'],
@@ -1075,7 +1075,7 @@
         </div>
 
         {{-- Three shared table cards --}}
-        <div class="grid grid-cols-3 divide-x divide-gray-800">
+        <div class="grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-gray-800">
             @foreach($memoryMap as $tbl => $info)
             @php $meta = $tableLabels[$tbl]; @endphp
             <div class="p-5">

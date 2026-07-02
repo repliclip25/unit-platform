@@ -533,7 +533,7 @@ MD;
             $expiry       = now()->addDays(7);
 
             DB::table('user_gmail_credentials')->where('id', $credential->id)
-                ->update(['watch_expiry' => $expiry, 'updated_at' => now()]);
+                ->update(['watch_expires_at' => $expiry, 'updated_at' => now()]);
 
             return response()->json([
                 'status'  => 'renewed',
@@ -864,13 +864,13 @@ MD;
 
         // Gmail watch
         if ($cred) {
-            $watchOk = $cred->watch_expiry && now()->lt($cred->watch_expiry);
+            $watchOk = $cred->watch_expires_at && now()->lt($cred->watch_expires_at);
             $checks['watch'] = [
                 'category' => 'Credentials',
                 'label'    => 'Gmail Push Watch',
                 'status'   => $watchOk ? 'ok' : 'warn',
                 'detail'   => $watchOk
-                    ? 'Active · expires ' . \Carbon\Carbon::parse($cred->watch_expiry)->diffForHumans()
+                    ? 'Active · expires ' . \Carbon\Carbon::parse($cred->watch_expires_at)->diffForHumans()
                     : 'Expired — renew from Settings to resume inbound processing',
             ];
         }
@@ -951,12 +951,12 @@ MD;
 
         // Watch expiry
         if ($cred) {
-            $watchOk = $cred->watch_expiry && now()->lt($cred->watch_expiry);
+            $watchOk = $cred->watch_expires_at && now()->lt($cred->watch_expires_at);
             $checks['watch'] = [
                 'label'  => 'Gmail Watch',
                 'status' => $watchOk ? 'ok' : 'warn',
                 'detail' => $watchOk
-                    ? 'Active · expires ' . \Carbon\Carbon::parse($cred->watch_expiry)->diffForHumans()
+                    ? 'Active · expires ' . \Carbon\Carbon::parse($cred->watch_expires_at)->diffForHumans()
                     : 'Expired or inactive',
             ];
         }
@@ -1007,12 +1007,12 @@ MD;
             $workerDef = DB::table('workers')->where('slug', $dep->worker_slug)->first();
 
             // ── Identity
-            $watchOk = $credential && $credential->watch_expiry && now()->lt($credential->watch_expiry);
+            $watchOk = $credential && $credential->watch_expires_at && now()->lt($credential->watch_expires_at);
             $identity = [
                 ['label' => 'Status',     'value' => ucfirst($dep->status),               'ok' => in_array($dep->status, ['active'])],
                 ['label' => 'Worker',     'value' => $dep->worker_slug,                   'ok' => true],
                 ['label' => 'Gmail',      'value' => $credential?->gmail_address ?? '—',  'ok' => (bool) $credential],
-                ['label' => 'Watch',      'value' => $watchOk ? 'Active · expires ' . \Carbon\Carbon::parse($credential->watch_expiry)->diffForHumans() : 'Inactive', 'ok' => $watchOk],
+                ['label' => 'Watch',      'value' => $watchOk ? 'Active · expires ' . \Carbon\Carbon::parse($credential->watch_expires_at)->diffForHumans() : 'Inactive', 'ok' => $watchOk],
                 ['label' => 'Deployed',   'value' => \Carbon\Carbon::parse($dep->created_at)->diffForHumans(), 'ok' => true],
             ];
 
@@ -1043,7 +1043,7 @@ MD;
             if (isset($jobMap['gmail_watch'])) {
                 $jobMap['gmail_watch']['status'] = $watchOk ? 'ok' : 'fail';
                 $jobMap['gmail_watch']['detail'] = $watchOk
-                    ? 'Expires ' . \Carbon\Carbon::parse($credential->watch_expiry)->diffForHumans()
+                    ? 'Expires ' . \Carbon\Carbon::parse($credential->watch_expires_at)->diffForHumans()
                     : 'Expired or not activated';
             }
             if (isset($jobMap['webhook'])) {
