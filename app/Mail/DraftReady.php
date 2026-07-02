@@ -16,7 +16,7 @@ class DraftReady extends Mailable
         public string  $asset,
         public string  $client,
         public ?string $contactName,
-        public ?string $subject,
+        public ?string $draftSubject,
         public ?int    $confidence,
         public bool    $fastTrack,
     ) {}

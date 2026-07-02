@@ -80,7 +80,7 @@ class UnitNotifier
                 asset:         $payload['asset']['name'] ?? 'Unknown asset',
                 client:        $payload['client']['name'] ?? 'Unknown client',
                 contactName:   $payload['contact']['name'] ?? null,
-                subject:       $payload['draft']['subject'] ?? null,
+                draftSubject:  $payload['draft']['subject'] ?? null,
                 confidence:    $payload['ava']['confidence'] ?? null,
                 fastTrack:     $payload['draft']['fast_track'] ?? false,
             ));

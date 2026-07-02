@@ -21,10 +21,10 @@
     <td>{{ $contactName }}</td>
   </tr>
   @endif
-  @if($subject)
+  @if($draftSubject)
   <tr>
     <td>Draft subject</td>
-    <td>{{ $subject }}</td>
+    <td>{{ $draftSubject }}</td>
   </tr>
   @endif
   @if($confidence !== null)
