@@ -249,7 +249,7 @@
 
     {{-- ── OVERVIEW — plain list, part of the page ───────────────────── --}}
     <div class="mb-6">
-        <p class="text-xs font-bold uppercase tracking-widest mb-3" style="color:var(--text-muted)">Overview</p>
+        <p class="text-xs font-medium mb-3" style="color:var(--text-muted)">{{ now()->format('l, F j · g:i A') }}</p>
         <div class="divide-y" style="border-top:1px solid var(--border-subtle);border-bottom:1px solid var(--border-subtle)">
 
             {{-- Emails processed --}}
