@@ -766,4 +766,117 @@ function messagingPanel() {
     };
 }
 </script>
+
+{{-- ── Account Flush Tool ──────────────────────────────────────────────── --}}
+<div class="mt-8 rounded-2xl overflow-hidden" style="border:1px solid rgba(239,68,68,0.3);background:rgba(239,68,68,0.03)">
+    <div class="px-6 py-4 flex items-center gap-3" style="border-bottom:1px solid rgba(239,68,68,0.15)">
+        <div class="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style="background:rgba(239,68,68,0.1)">
+            <svg class="w-4 h-4" fill="none" stroke="#ef4444" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+        </div>
+        <div>
+            <h3 class="text-sm font-semibold" style="color:#f87171">Account Flush</h3>
+            <p class="text-xs" style="color:var(--text-muted)">Selectively wipe data for testing or onboarding resets. Irreversible — choose scopes carefully.</p>
+        </div>
+    </div>
+
+    <form method="POST" action="{{ route('admin.tenants.flush', $tenant->id) }}"
+          onsubmit="return confirmFlush(this)"
+          class="px-6 py-5 space-y-5">
+        @csrf
+
+        {{-- Scope checkboxes --}}
+        @php
+        $scopes = [
+            'transactions' => ['label' => 'Transactions', 'desc' => 'All pipeline transactions, processed messages, and renewal register entries', 'color' => '#f87171'],
+            'memory'       => ['label' => 'Memory',        'desc' => 'Clients, contacts, assets, AVA rules, and email templates', 'color' => '#fb923c'],
+            'billing'      => ['label' => 'Billing / Trial','desc' => 'Reset all deployments to trial (0 used), clear usage events, unblock account', 'color' => '#fbbf24'],
+            'desk'         => ['label' => 'Desk Cards',    'desc' => 'Clear desk card preferences — will re-seed from defaults on next load', 'color' => '#a3e635'],
+            'onboarding'   => ['label' => 'Onboarding',   'desc' => 'Reset onboarding_completed_at and all platform verifications', 'color' => '#34d399'],
+            'gmail'        => ['label' => 'Gmail / Credentials', 'desc' => 'Disconnect all Gmail accounts and deployment credential links', 'color' => '#60a5fa'],
+            'deployments'  => ['label' => 'Worker Deployments', 'desc' => 'Remove all deployed workers (destructive — tenant must redeploy)', 'color' => '#c084fc'],
+            'referral'     => ['label' => 'Referral',     'desc' => 'Clear referral credits and reset referral code', 'color' => '#f472b6'],
+        ];
+        @endphp
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            @foreach($scopes as $key => $scope)
+            <label class="flush-scope-card flex items-start gap-3 rounded-xl px-4 py-3 cursor-pointer transition select-none"
+                   style="border:1px solid var(--border);background:var(--bg-raised)"
+                   data-color="{{ $scope['color'] }}">
+                <input type="checkbox" name="scopes[]" value="{{ $key }}"
+                       class="flush-check mt-0.5 shrink-0"
+                       onchange="styleFlushCard(this)"
+                       style="accent-color:{{ $scope['color'] }};width:14px;height:14px">
+                <div class="min-w-0">
+                    <p class="text-xs font-semibold" style="color:var(--text-primary)">{{ $scope['label'] }}</p>
+                    <p class="text-xs mt-0.5" style="color:var(--text-muted)">{{ $scope['desc'] }}</p>
+                </div>
+            </label>
+            @endforeach
+        </div>
+
+        {{-- Quick presets --}}
+        <div class="flex flex-wrap gap-2">
+            <span class="text-xs" style="color:var(--text-faint)">Quick select:</span>
+            <button type="button" onclick="selectFlushPreset(['transactions','billing','desk'])"
+                    class="text-xs px-2.5 py-1 rounded-lg transition hover:opacity-80"
+                    style="background:var(--bg-raised);color:var(--text-muted);border:1px solid var(--border)">
+                Fresh start (keep workers + memory)
+            </button>
+            <button type="button" onclick="selectFlushPreset(['transactions','memory','billing','desk','onboarding'])"
+                    class="text-xs px-2.5 py-1 rounded-lg transition hover:opacity-80"
+                    style="background:rgba(251,191,36,0.08);color:#fbbf24;border:1px solid rgba(251,191,36,0.25)">
+                Full reset (keep Gmail + workers)
+            </button>
+            <button type="button" onclick="selectFlushPreset(Object.keys({{ json_encode(array_keys($scopes)) }}))"
+                    class="text-xs px-2.5 py-1 rounded-lg transition hover:opacity-80"
+                    style="background:rgba(239,68,68,0.08);color:#f87171;border:1px solid rgba(239,68,68,0.25)">
+                Nuke everything
+            </button>
+            <button type="button" onclick="selectFlushPreset([])"
+                    class="text-xs px-2.5 py-1 rounded-lg transition hover:opacity-80"
+                    style="background:var(--bg-raised);color:var(--text-faint);border:1px solid var(--border)">
+                Clear all
+            </button>
+        </div>
+
+        {{-- Confirm + submit --}}
+        <div class="flex items-center gap-3 pt-1">
+            <button type="submit"
+                    class="text-sm px-5 py-2.5 rounded-xl font-bold transition hover:opacity-90"
+                    style="background:#b91c1c;color:#fff">
+                Flush Selected Scopes
+            </button>
+            <p class="text-xs" style="color:var(--text-faint)">All actions are logged to platform_events.</p>
+        </div>
+    </form>
+</div>
+
+<script>
+function styleFlushCard(checkbox) {
+    const card  = checkbox.closest('.flush-scope-card');
+    const color = card.dataset.color;
+    if (checkbox.checked) {
+        card.style.borderColor = color;
+        card.style.background  = color + '12';
+    } else {
+        card.style.borderColor = 'var(--border)';
+        card.style.background  = 'var(--bg-raised)';
+    }
+}
+
+function selectFlushPreset(keys) {
+    document.querySelectorAll('.flush-check').forEach(cb => {
+        cb.checked = keys.includes(cb.value);
+        styleFlushCard(cb);
+    });
+}
+
+function confirmFlush(form) {
+    const selected = [...form.querySelectorAll('.flush-check:checked')].map(c => c.value);
+    if (selected.length === 0) { alert('Select at least one scope.'); return false; }
+    const name = '{{ addslashes($tenant->name) }}';
+    return confirm(`Flush ${selected.length} scope(s) for ${name}?\n\n${selected.join(', ')}\n\nThis cannot be undone.`);
+}
+</script>
 </x-app-layout>

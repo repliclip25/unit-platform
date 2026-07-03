@@ -344,6 +344,7 @@ Route::middleware(['auth', 'verified', 'onboarded', 'not-pending-del'])->group(f
         Route::post('/admin/tenants/{id}/message',                       [AdminTenantController::class, 'sendMessage'])->name('admin.tenants.message');
         Route::post('/admin/tenants/{id}/ai-message',                    [AdminTenantController::class, 'sendAiMessage'])->name('admin.tenants.ai-message');
         Route::post('/admin/tenants/{id}/toggle-block',                  [AdminTenantController::class, 'toggleBlock'])->name('admin.tenants.toggle-block');
+        Route::post('/admin/tenants/{id}/flush',                          [AdminTenantController::class, 'flush'])->name('admin.tenants.flush');
         Route::post('/admin/deployments/{id}/backfill-billing',          [AdminTenantController::class, 'backfillBilling'])->name('admin.deployments.backfill-billing');
         Route::post('/admin/deployments/{id}/set-billing-status',        [AdminTenantController::class, 'setBillingStatus'])->name('admin.deployments.set-billing-status');
         Route::post('/admin/invoices/{invoiceId}/void',                  [AdminTenantController::class, 'voidInvoice'])->name('admin.invoices.void');

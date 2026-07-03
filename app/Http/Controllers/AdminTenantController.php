@@ -502,4 +502,96 @@ class AdminTenantController extends Controller
         ]);
         return back()->with('success', 'Fast Track counter reset.');
     }
+
+    public function flush(int $id, Request $request)
+    {
+        $tenant = \App\Models\User::findOrFail($id);
+        $scopes = $request->input('scopes', []);
+
+        $log = [];
+
+        if (in_array('transactions', $scopes)) {
+            $n = DB::table('transactions')->where('user_id', $id)->count();
+            DB::table('transactions')->where('user_id', $id)->delete();
+            DB::table('processed_messages')->where('user_id', $id)->delete();
+            DB::table('renewal_register')->where('user_id', $id)->delete();
+            $log[] = "Deleted {$n} transactions + processed messages + renewal register";
+        }
+
+        if (in_array('memory', $scopes)) {
+            $clients  = DB::table('clients')->where('user_id', $id)->count();
+            $contacts = DB::table('contacts')->where('user_id', $id)->count();
+            $assets   = DB::table('assets')->where('user_id', $id)->count();
+            DB::table('clients')->where('user_id', $id)->delete();
+            DB::table('contacts')->where('user_id', $id)->delete();
+            DB::table('assets')->where('user_id', $id)->delete();
+            DB::table('ava_rules')->where('user_id', $id)->delete();
+            DB::table('email_templates')->where('user_id', $id)->delete();
+            $log[] = "Deleted {$clients} clients, {$contacts} contacts, {$assets} assets, all rules & templates";
+        }
+
+        if (in_array('billing', $scopes)) {
+            // Reset all deployment_billing rows back to trial
+            $deps = DB::table('worker_deployments')->where('user_id', $id)->pluck('id');
+            foreach ($deps as $depId) {
+                DB::table('deployment_billing')->where('deployment_id', $depId)->update([
+                    'status'                   => 'trial',
+                    'trial_transactions_used'  => 0,
+                    'trial_transactions_limit' => 6,
+                    'stripe_subscription_id'   => null,
+                    'stripe_customer_id'       => null,
+                    'updated_at'               => now(),
+                ]);
+            }
+            DB::table('usage_events')->where('user_id', $id)->delete();
+            DB::table('users')->where('id', $id)->update(['monthly_spend_cap' => null, 'blocked_at' => null, 'block_reason' => null]);
+            $log[] = "Reset {$deps->count()} deployment billing to trial (0/{$deps->count()*6} used), cleared usage events, unblocked";
+        }
+
+        if (in_array('desk', $scopes)) {
+            DB::table('user_desk_cards')->where('user_id', $id)->delete();
+            $log[] = "Cleared desk card preferences (will re-seed on next dashboard load)";
+        }
+
+        if (in_array('onboarding', $scopes)) {
+            DB::table('users')->where('id', $id)->update([
+                'onboarding_completed_at' => null,
+                'onboarding_skipped'      => false,
+            ]);
+            DB::table('platform_verifications')->where('user_id', $id)->delete();
+            $log[] = "Reset onboarding state and platform verifications";
+        }
+
+        if (in_array('gmail', $scopes)) {
+            DB::table('deployment_credentials')->whereIn(
+                'deployment_id',
+                DB::table('worker_deployments')->where('user_id', $id)->pluck('id')
+            )->delete();
+            DB::table('user_gmail_credentials')->where('user_id', $id)->delete();
+            $log[] = "Disconnected all Gmail accounts and credentials";
+        }
+
+        if (in_array('deployments', $scopes)) {
+            DB::table('worker_deployments')->where('user_id', $id)->delete();
+            $log[] = "Removed all worker deployments";
+        }
+
+        if (in_array('referral', $scopes)) {
+            DB::table('referral_credits')->where('referrer_id', $id)->delete();
+            DB::table('users')->where('id', $id)->update(['referral_code' => null]);
+            $log[] = "Cleared referral credits and referral code";
+        }
+
+        // Log the admin action
+        DB::table('platform_events')->insert([
+            'user_id'    => $id,
+            'event_type' => 'admin_flush',
+            'payload'    => json_encode(['scopes' => $scopes, 'log' => $log, 'admin_id' => auth()->id()]),
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $summary = empty($log) ? 'No scopes selected.' : implode("\n", $log);
+        return back()->with('success', "Account flushed:\n" . $summary);
+    }
 }
