@@ -595,6 +595,23 @@ class AdminTenantController extends Controller
 
                 $log[] = "Reset onboarding state and platform verifications";
             });
+
+            // Auto-reset trial when onboarding is reset (unless billing scope already handled it)
+            // A user re-entering onboarding should never be blocked by an exhausted trial
+            if (!in_array('billing', $scopes) && $request->input('reset_trial_with_onboarding') !== '0') {
+                $run('trial-auto-reset', function () use ($id, &$log) {
+                    $deps = DB::table('worker_deployments')->where('user_id', $id)->pluck('id');
+                    if ($deps->isNotEmpty()) {
+                        DB::table('deployment_billing')
+                            ->whereIn('deployment_id', $deps)
+                            ->update([
+                                'trial_transactions_used' => 0,
+                                'updated_at'              => now(),
+                            ]);
+                        $log[] = "Auto-reset trial counters on {$deps->count()} deployment(s) (onboarding reset implies fresh trial)";
+                    }
+                });
+            }
         }
 
         if (in_array('gmail', $scopes)) {

@@ -791,7 +791,7 @@ function messagingPanel() {
             'memory'       => ['label' => 'Memory',        'desc' => 'Clients, contacts, assets, AVA rules, and email templates', 'color' => '#fb923c'],
             'billing'      => ['label' => 'Billing / Trial','desc' => 'Reset all deployments to trial (0 used), clear usage events, unblock account', 'color' => '#fbbf24'],
             'desk'         => ['label' => 'Desk Cards',    'desc' => 'Clear desk card preferences — will re-seed from defaults on next load', 'color' => '#a3e635'],
-            'onboarding'   => ['label' => 'Onboarding',   'desc' => 'Reset onboarding_completed_at and all platform verifications', 'color' => '#34d399'],
+            'onboarding'   => ['label' => 'Onboarding',   'desc' => 'Reset onboarding_completed_at and all platform verifications. Trial counters also reset by default.', 'color' => '#34d399'],
             'gmail'        => ['label' => 'Gmail / Credentials', 'desc' => 'Disconnect all Gmail accounts and deployment credential links', 'color' => '#60a5fa'],
             'deployments'  => ['label' => 'Worker Deployments', 'desc' => 'Remove all deployed workers (destructive — tenant must redeploy)', 'color' => '#c084fc'],
             'referral'     => ['label' => 'Referral',     'desc' => 'Clear referral credits and reset referral code', 'color' => '#f472b6'],
@@ -814,6 +814,23 @@ function messagingPanel() {
                 </div>
             </label>
             @endforeach
+        </div>
+
+        {{-- Onboarding → trial reset toggle (shown only when onboarding is checked) --}}
+        <div id="onboarding-trial-banner" style="display:none;background:rgba(52,211,153,.08);border:1px solid rgba(52,211,153,.3);border-radius:10px;padding:10px 14px">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+                <div>
+                    <p style="font-size:12px;font-weight:700;color:#34d399;margin-bottom:2px">Trial will also be reset</p>
+                    <p style="font-size:11px;color:var(--text-muted)">Resetting onboarding without replenishing the trial leaves the user blocked. Auto-reset is on by default.</p>
+                </div>
+                <label style="display:flex;align-items:center;gap:7px;cursor:pointer;flex-shrink:0">
+                    <input type="hidden" name="reset_trial_with_onboarding" value="0" id="reset-trial-hidden">
+                    <input type="checkbox" id="reset-trial-toggle" checked
+                           onchange="document.getElementById('reset-trial-hidden').value = this.checked ? '1' : '0'"
+                           style="accent-color:#34d399;width:14px;height:14px">
+                    <span style="font-size:11px;font-weight:600;color:#34d399">Reset trial</span>
+                </label>
+            </div>
         </div>
 
         {{-- Quick presets --}}
@@ -863,6 +880,10 @@ function styleFlushCard(checkbox) {
     } else {
         card.style.borderColor = 'var(--border)';
         card.style.background  = 'var(--bg-raised)';
+    }
+    if (checkbox.value === 'onboarding') {
+        const banner = document.getElementById('onboarding-trial-banner');
+        if (banner) banner.style.display = checkbox.checked ? 'block' : 'none';
     }
 }
 
