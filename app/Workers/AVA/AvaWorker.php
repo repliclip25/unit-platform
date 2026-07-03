@@ -686,6 +686,13 @@ class AvaWorker implements WorkerContract
                 'default_pos' => 40,
                 'dismissible' => false,
             ],
+            'trial' => [
+                'label'       => 'Free Credits',
+                'description' => 'How many free trial transactions you\'ve used',
+                'default'     => true,
+                'default_pos' => 5,
+                'dismissible' => false,
+            ],
         ];
     }
 

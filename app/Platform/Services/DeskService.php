@@ -257,6 +257,39 @@ class DeskService
                         'always' => false,
                     ] : null;
                 })(),
+                'trial' => (function() use ($dep, $name) {
+                    $billing = DB::table('deployment_billing')
+                        ->where('deployment_id', $dep->id)
+                        ->first(['status', 'trial_transactions_used', 'trial_transactions_limit']);
+
+                    // Only show during trial — hide once on a paid plan
+                    if (!$billing || $billing->status !== 'trial') return null;
+
+                    $used  = (int) $billing->trial_transactions_used;
+                    $limit = (int) ($billing->trial_transactions_limit ?: 25);
+                    $left  = max(0, $limit - $used);
+                    $pct   = $limit > 0 ? round(($used / $limit) * 100) : 0;
+
+                    if ($left === 0) {
+                        $text = "🎁 <strong>{$name}</strong> — free trial exhausted ({$used}/{$limit} used)";
+                        $dot  = 'red';
+                    } elseif ($left <= 3) {
+                        $text = "🎁 <strong>{$name}</strong> — <strong>{$left}</strong> free " . ($left === 1 ? 'credit' : 'credits') . " left ({$used}/{$limit} used)";
+                        $dot  = 'amber';
+                    } else {
+                        $text = "🎁 <strong>{$name}</strong> — <strong>{$used}/{$limit}</strong> free transactions used";
+                        $dot  = 'green';
+                    }
+
+                    return [
+                        'text'   => $text,
+                        'dot'    => $dot,
+                        'action' => $left === 0
+                            ? ['label' => 'Upgrade', 'url' => route('billing')]
+                            : null,
+                        'always' => true,
+                    ];
+                })(),
                 default => null,
             };
         }
