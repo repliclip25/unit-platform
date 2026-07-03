@@ -67,6 +67,40 @@ class AdminPlatformUsageController extends Controller
                 DB::raw('SUM(cost_usd) as total_cost'))
             ->first();
 
-        return view('admin.platform-usage', compact('byKey', 'totals', 'recent', 'byTenant', 'byWorker', 'tenantTotals'));
+        // Per-stage breakdown — microscopic spend by worker+stage
+        $byStage = DB::table('usage_events')
+            ->select(
+                'worker_slug',
+                'stage',
+                DB::raw('COUNT(*) as calls'),
+                DB::raw('SUM(tokens_input) as tokens_in'),
+                DB::raw('SUM(tokens_output) as tokens_out'),
+                DB::raw('SUM(cost_usd) as total_cost'),
+                DB::raw('AVG(cost_usd) as avg_cost'),
+                DB::raw('MAX(created_at) as last_used'))
+            ->groupBy('worker_slug', 'stage')
+            ->orderByDesc('total_cost')
+            ->get();
+
+        // Individual call log — atom-level, last 100 calls
+        $callLog = DB::table('usage_events')
+            ->join('users', 'usage_events.user_id', '=', 'users.id')
+            ->select(
+                'usage_events.worker_slug',
+                'usage_events.stage',
+                'usage_events.tx_id',
+                'usage_events.tokens_input',
+                'usage_events.tokens_output',
+                'usage_events.cost_usd',
+                'usage_events.created_at',
+                'users.name as tenant_name')
+            ->orderByDesc('usage_events.created_at')
+            ->limit(100)
+            ->get();
+
+        return view('admin.platform-usage', compact(
+            'byKey', 'totals', 'recent', 'byTenant', 'byWorker', 'tenantTotals',
+            'byStage', 'callLog'
+        ));
     }
 }
