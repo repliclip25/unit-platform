@@ -108,6 +108,8 @@ Route::middleware(['auth', 'verified', 'onboarded', 'not-pending-del'])->group(f
 
     // ── Command Center ──────────────────────────────────────────────────────
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::post('/dashboard/desk/save',    [DashboardController::class, 'deskSave'])->name('dashboard.desk.save');
+    Route::post('/dashboard/desk/dismiss', [DashboardController::class, 'deskDismiss'])->name('dashboard.desk.dismiss');
 
     // ── Transactions ────────────────────────────────────────────────────────
     Route::get('/transactions',              [TransactionController::class, 'index'])->name('transactions');

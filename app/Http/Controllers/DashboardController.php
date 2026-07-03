@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Platform\Services\ClockResolver;
+use App\Platform\Services\DeskService;
+use App\Platform\Services\DeskCardRegistry;
 
 class DashboardController extends Controller
 {
@@ -11,47 +14,55 @@ class DashboardController extends Controller
     {
         $userId = auth()->id();
 
-        // ── Overview list data ────────────────────────────────────────────────
-        $weekStart    = now()->startOfWeek();
-        $ovProcessed  = DB::table('transactions')->where('user_id', $userId)->where('created_at', '>=', $weekStart)->count();
-        $ovDrafts     = DB::table('transactions')->where('user_id', $userId)->where('status', 'draft_ready')->whereNull('human_decision')->count();
-        $ovUrgent     = DB::table('transactions')->where('user_id', $userId)->where('status', 'draft_ready')->whereIn('priority', ['High','Critical'])->count();
-        $ovFailed     = DB::table('transactions')->where('user_id', $userId)->where('status', 'failed')->where('created_at', '>=', $weekStart)->count();
-        $ovStuck      = DB::table('transactions')->where('user_id', $userId)
+        // ── Raw pipeline counts (fed into DeskService context) ────────────────
+        $weekStart   = now()->startOfWeek();
+        $ovProcessed = DB::table('transactions')->where('user_id', $userId)->where('created_at', '>=', $weekStart)->count();
+        $ovDrafts    = DB::table('transactions')->where('user_id', $userId)->where('status', 'draft_ready')->whereNull('human_decision')->count();
+        $ovUrgent    = DB::table('transactions')->where('user_id', $userId)->where('status', 'draft_ready')->whereIn('priority', ['High','Critical'])->count();
+        $ovFailed    = DB::table('transactions')->where('user_id', $userId)->where('status', 'failed')->where('created_at', '>=', $weekStart)->count();
+        $ovStuck     = DB::table('transactions')->where('user_id', $userId)
             ->whereNotIn('status', ['draft_ready','approved','sent','failed','dismissed','filtered_out'])
             ->where('updated_at', '<', now()->subMinutes(5))->count();
 
-        // ── Platform Value Clock — aggregated from each worker's contract ────
-        // Resolved after $deployments is built below; placeholder until then.
-        $clockValue = 0;
+        // ── Gmail URL for drafts deep-link ────────────────────────────────────
+        $primaryCred = DB::table('user_gmail_credentials')->where('user_id', $userId)->where('watch_active', true)->first()
+            ?? DB::table('user_gmail_credentials')->where('user_id', $userId)->first();
+        $gmailUrl = $primaryCred
+            ? 'https://mail.google.com/mail/u/' . urlencode($primaryCred->gmail_address) . '/#drafts'
+            : 'https://mail.google.com/mail/#drafts';
 
-        // ── Pipeline-level stats (kept for worker cards) ──────────────────────
-        $pipelineActive = ['received','ingesting','reading','classifying','memory_lookup','logging','templating','drafting','pushing'];
-        $pipeline = [
-            'total'       => DB::table('transactions')->where('user_id', $userId)->count(),
-            'in_pipeline' => DB::table('transactions')->where('user_id', $userId)->whereIn('status', $pipelineActive)->count(),
-            'needs_review'=> $ovDrafts,
-            'failed'      => $ovFailed,
-        ];
-
-        // ── Worker cards ──
+        // ── Deployments ───────────────────────────────────────────────────────
         $deployments = DB::table('worker_deployments')
             ->where('user_id', $userId)
             ->whereIn('status', ['active', 'paused'])
             ->orderBy('created_at')
             ->get();
 
-        // Aggregate Value Clock across all deployed workers using their contracts
+        // ── Platform Value Clock — aggregated from each worker's contract ─────
         $clockRaw = 0;
         foreach ($deployments as $dep) {
             $c = \App\Platform\Services\WorkerRegistry::resolve($dep->worker_slug);
             if (\App\Platform\Services\WorkerRegistry::isNull($c)) continue;
             $def = $c->valueClock();
             if (empty($def)) continue;
-            $clockRaw += \App\Platform\Services\ClockResolver::resolveWorker($dep->id, $def)['raw'];
+            $clockRaw += ClockResolver::resolveWorker($dep->id, $def)['raw'];
         }
         $clockValue = is_float($clockRaw) ? round($clockRaw, 1) : (int) $clockRaw;
 
+        // ── Your Desk ─────────────────────────────────────────────────────────
+        $deskCards = DeskService::resolve($userId, [
+            'ovProcessed' => $ovProcessed,
+            'ovDrafts'    => $ovDrafts,
+            'ovUrgent'    => $ovUrgent,
+            'ovFailed'    => $ovFailed,
+            'ovStuck'     => $ovStuck,
+            'gmailUrl'    => $gmailUrl,
+        ]);
+
+        // All cards (for customize drawer)
+        $deskAllCards = DeskService::allForUser($userId);
+
+        // ── Worker cards ──────────────────────────────────────────────────────
         $workerCards = $deployments->map(function ($dep) use ($userId) {
             $contract = \App\Platform\Services\WorkerRegistry::resolve($dep->worker_slug);
             if (!$contract) return null;
@@ -59,7 +70,6 @@ class DashboardController extends Controller
             $dash  = $contract->dashboard();
             $depId = $dep->id;
 
-            // Worker-specific stats
             $stats = collect($dash['stats'])->map(function ($stat) use ($depId) {
                 $value = match ($stat['key']) {
                     'tx_draft_ready' => DB::table('transactions')->where('deployment_id', $depId)->where('status', 'draft_ready')->count(),
@@ -73,17 +83,16 @@ class DashboardController extends Controller
                 return array_merge($stat, ['value' => $value]);
             });
 
-            $drafts   = (int) ($stats->firstWhere('key', 'tx_draft_ready')['value'] ?? 0);
-            $approved = (int) ($stats->firstWhere('key', 'tx_approved')['value']    ?? 0);
-            $total    = (int) ($stats->firstWhere('key', 'tx_total')['value']       ?? 0);
-            $failed   = (int) ($stats->firstWhere('key', 'tx_failed')['value']      ?? 0);
+            $drafts    = (int) ($stats->firstWhere('key', 'tx_draft_ready')['value'] ?? 0);
+            $approved  = (int) ($stats->firstWhere('key', 'tx_approved')['value']    ?? 0);
+            $total     = (int) ($stats->firstWhere('key', 'tx_total')['value']       ?? 0);
+            $failed    = (int) ($stats->firstWhere('key', 'tx_failed')['value']      ?? 0);
 
-            // Personal morning quote — worker speaks in first person
-            $overview  = method_exists($contract, 'overview') ? $contract->overview() : [];
-            $verbs     = $overview['briefing_verbs'] ?? [];
-            $verbProc  = $verbs['processed'] ?? 'processed';
-            $unit      = $verbs['unit']      ?? 'items';
-            $outputWord= $verbs['output']    ?? 'drafts';
+            $overview   = method_exists($contract, 'overview') ? $contract->overview() : [];
+            $verbs      = $overview['briefing_verbs'] ?? [];
+            $verbProc   = $verbs['processed'] ?? 'processed';
+            $unit       = $verbs['unit']      ?? 'items';
+            $outputWord = $verbs['output']    ?? 'drafts';
 
             if ($total === 0) {
                 $quote = "Ready and standing by — send me something to work on.";
@@ -102,45 +111,25 @@ class DashboardController extends Controller
                 $cta   = ['label' => 'Open workspace', 'url' => route('workers.show', $dep->worker_slug)];
             }
 
-            // Last run
-            $lastTx = DB::table('transactions')->where('deployment_id', $depId)->orderByDesc('id')->first();
-
-            // Connection health
-            $inboxes = DB::table('deployment_credentials')
+            $lastTx      = DB::table('transactions')->where('deployment_id', $depId)->orderByDesc('id')->first();
+            $inboxes     = DB::table('deployment_credentials')
                 ->join('user_gmail_credentials', 'user_gmail_credentials.id', '=', 'deployment_credentials.credential_id')
                 ->where('deployment_credentials.deployment_id', $depId)
                 ->select('user_gmail_credentials.gmail_address', 'user_gmail_credentials.watch_active', 'deployment_credentials.is_primary')
                 ->get();
-
             $billing     = DB::table('deployment_billing')->where('deployment_id', $depId)->first();
             $registryRow = DB::table('worker_registry')->where('slug', $dep->worker_slug)->first();
             $employee    = method_exists($contract, 'employee') ? $contract->employee() : [];
 
-            return [
-                'dep'         => $dep,
-                'contract'    => $contract,
-                'dash'        => $dash,
-                'stats'       => $stats,
-                'lastTx'      => $lastTx,
-                'inboxes'     => $inboxes,
-                'billing'     => $billing,
-                'registryRow' => $registryRow,
-                'employee'    => $employee,
-                'quote'       => $quote,
-                'cta'         => $cta,
-                'drafts'      => $drafts,
-            ];
+            return compact('dep', 'contract', 'dash', 'stats', 'lastTx', 'inboxes', 'billing', 'registryRow', 'employee', 'quote', 'cta', 'drafts');
         })->filter()->values();
 
-        // ── Notifications — delegated to NotificationEngine ──
+        // ── Notifications ─────────────────────────────────────────────────────
         $notifications = \App\Platform\Services\NotificationEngine::evaluate($userId, auth()->user()->role ?? 'tenant');
 
-        // ── Referral ──
-        $referralCode = \App\Platform\Services\ReferralService::ensureCode($userId);
-        $referralUrl  = url('/register?ref=' . $referralCode);
-
-        // Engagement gate: show referral banner only once the user has genuinely used the product.
-        // Threshold: 5+ real (non-fast-track) transactions processed. Until then, show a small chip.
+        // ── Referral ──────────────────────────────────────────────────────────
+        $referralCode     = \App\Platform\Services\ReferralService::ensureCode($userId);
+        $referralUrl      = url('/register?ref=' . $referralCode);
         $realTxCount      = DB::table('transactions')
             ->where('user_id', $userId)
             ->whereNotIn('status', ['received', 'failed'])
@@ -149,8 +138,51 @@ class DashboardController extends Controller
         $referralEligible = $realTxCount >= 5;
 
         return view('dashboard.index', compact(
-            'pipeline', 'workerCards', 'notifications', 'referralCode', 'referralUrl', 'referralEligible',
-            'ovProcessed', 'ovDrafts', 'ovUrgent', 'ovFailed', 'ovStuck', 'clockValue'
+            'workerCards', 'notifications', 'referralCode', 'referralUrl', 'referralEligible',
+            'clockValue', 'deskCards', 'deskAllCards',
+            'ovProcessed', 'ovDrafts', 'ovUrgent', 'ovFailed', 'ovStuck'
         ));
+    }
+
+    // ── Save desk card preferences ─────────────────────────────────────────────
+    public function deskSave(Request $request)
+    {
+        $userId = auth()->id();
+        $cards  = $request->input('cards', []); // [['key'=>..,'visible'=>bool,'position'=>int]]
+
+        foreach ($cards as $card) {
+            $key = $card['key'] ?? null;
+            if (!$key || !DeskCardRegistry::get($key)) continue;
+
+            DB::table('user_desk_cards')->updateOrInsert(
+                ['user_id' => $userId, 'card_key' => $key],
+                [
+                    'visible'    => (bool) ($card['visible'] ?? true),
+                    'position'   => (int)  ($card['position'] ?? 50),
+                    'updated_at' => now(),
+                    'created_at' => now(),
+                ]
+            );
+        }
+
+        return response()->json(['ok' => true]);
+    }
+
+    // ── Dismiss a one-time card ────────────────────────────────────────────────
+    public function deskDismiss(Request $request)
+    {
+        $userId = auth()->id();
+        $key    = $request->input('key');
+
+        if (!$key || !DeskCardRegistry::get($key)) {
+            return response()->json(['ok' => false], 422);
+        }
+
+        DB::table('user_desk_cards')->updateOrInsert(
+            ['user_id' => $userId, 'card_key' => $key],
+            ['last_dismissed_at' => now(), 'updated_at' => now(), 'created_at' => now()]
+        );
+
+        return response()->json(['ok' => true]);
     }
 }

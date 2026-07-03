@@ -57,100 +57,151 @@
 @endif
 
 {{-- ── Body: overview + worker cards (left) + value clock + notifications (right) ── --}}
-@php
-    $primaryInbox = null;
-    foreach($workerCards as $wc) {
-        $pi = $wc['inboxes']->firstWhere('is_primary', true) ?? $wc['inboxes']->first();
-        if ($pi) { $primaryInbox = $pi; break; }
-    }
-    $gmailUrl    = $primaryInbox
-        ? 'https://mail.google.com/mail/u/' . urlencode($primaryInbox->gmail_address) . '/#drafts'
-        : 'https://mail.google.com/mail/#drafts';
-    $problemCount = $ovFailed + $ovStuck;
-@endphp
+
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
     {{-- Left: overview list + worker cards --}}
     <div class="lg:col-span-2 space-y-4">
 
-        {{-- Date/time + overview rows --}}
-        <div>
-            <p class="text-xs font-medium mb-3" style="color:var(--text-muted)">{{ now()->format('l, F j · g:i A') }}</p>
-            <div class="divide-y" style="border-top:1px solid var(--border-subtle);border-bottom:1px solid var(--border-subtle)">
+        {{-- Your Desk header --}}
+        <div class="flex items-center justify-between mb-1">
+            <p class="text-xs font-medium" style="color:var(--text-muted)">{{ now()->format('l, F j · g:i A') }}</p>
+            <button onclick="toggleDeskDrawer()"
+                    class="text-xs font-medium transition hover:opacity-80"
+                    style="color:var(--text-faint)">
+                Customize Desk ↗
+            </button>
+        </div>
 
-                <div class="flex items-center justify-between py-3">
-                    <div class="flex items-center gap-3">
-                        <span class="w-1.5 h-1.5 rounded-full shrink-0" style="background:var(--text-faint)"></span>
-                        <span class="text-sm" style="color:var(--text-secondary)">
-                            @if($ovProcessed > 0)
-                                <strong style="color:var(--text-primary)">{{ number_format($ovProcessed) }}</strong> emails processed this week across all workers
-                            @else
-                                No emails processed this week
-                            @endif
-                        </span>
-                    </div>
+        {{-- Your Desk feed --}}
+        @if($deskCards->isEmpty())
+        <div class="rounded-xl px-5 py-4 text-sm" style="color:var(--text-faint);border:1px solid var(--border-subtle)">
+            Everything's quiet — nothing needs your attention right now.
+        </div>
+        @else
+        <div id="desk-feed" class="divide-y" style="border-top:1px solid var(--border-subtle);border-bottom:1px solid var(--border-subtle)">
+            @foreach($deskCards as $card)
+            @php
+                $dotColors = [
+                    'accent' => 'var(--accent)',
+                    'green'  => '#4ade80',
+                    'amber'  => '#fbbf24',
+                    'red'    => '#f87171',
+                    'grey'   => 'var(--text-faint)',
+                ];
+                $dot = $dotColors[$card['dot'] ?? 'grey'] ?? 'var(--text-faint)';
+            @endphp
+            <div class="flex items-center justify-between py-3 gap-3 desk-card-row"
+                 data-key="{{ $card['key'] }}"
+                 @if($card['dismissible'] ?? false) data-dismissible="1" @endif>
+                <div class="flex items-center gap-3 min-w-0">
+                    <span class="w-1.5 h-1.5 rounded-full shrink-0" style="background:{{ $dot }}"></span>
+                    <span class="text-sm leading-snug" style="color:var(--text-secondary)">{!! $card['text'] !!}</span>
                 </div>
-
-                <div class="flex items-center justify-between py-3">
-                    <div class="flex items-center gap-3">
-                        <span class="w-1.5 h-1.5 rounded-full shrink-0"
-                              style="background:{{ $ovDrafts > 0 ? 'var(--accent)' : 'var(--text-faint)' }}"></span>
-                        <span class="text-sm" style="color:var(--text-secondary)">
-                            @if($ovDrafts > 0)
-                                <strong style="color:var(--text-primary)">{{ $ovDrafts }}</strong> {{ $ovDrafts === 1 ? 'draft' : 'drafts' }} ready for your review
-                            @else
-                                No drafts waiting for review
-                            @endif
-                        </span>
-                    </div>
-                    @if($ovDrafts > 0)
-                    <a href="{{ $gmailUrl }}" target="_blank" rel="noopener"
-                       class="text-xs font-semibold flex items-center gap-1 shrink-0 ml-4 transition hover:opacity-80"
+                <div class="flex items-center gap-2 shrink-0 ml-2">
+                    @if($card['action'] ?? null)
+                    <a href="{{ $card['action']['url'] }}"
+                       @if($card['action']['external'] ?? false) target="_blank" rel="noopener" @endif
+                       class="text-xs font-semibold whitespace-nowrap transition hover:opacity-80"
                        style="color:var(--accent-text)">
-                        Open Gmail
-                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                        {{ $card['action']['label'] }} →
                     </a>
                     @endif
-                </div>
-
-                <div class="flex items-center justify-between py-3">
-                    <div class="flex items-center gap-3">
-                        <span class="w-1.5 h-1.5 rounded-full shrink-0"
-                              style="background:{{ $ovUrgent > 0 ? '#fbbf24' : 'var(--text-faint)' }}"></span>
-                        <span class="text-sm" style="color:var(--text-secondary)">
-                            @if($ovUrgent > 0)
-                                <strong style="color:#fbbf24">{{ $ovUrgent }}</strong> {{ $ovUrgent === 1 ? 'item' : 'items' }} marked urgent — needs your attention
-                            @else
-                                No urgent items
-                            @endif
-                        </span>
-                    </div>
-                    @if($ovUrgent > 0)
-                    <a href="{{ route('transactions', ['filter' => 'draft_ready', 'priority' => 'high']) }}"
-                       class="text-xs font-semibold shrink-0 ml-4 transition hover:opacity-80" style="color:#fbbf24">Review →</a>
+                    @if($card['dismissible'] ?? false)
+                    <button onclick="deskDismiss('{{ $card['dismiss_key'] ?? $card['key'] }}', this)"
+                            class="text-xs transition hover:opacity-60"
+                            style="color:var(--text-faint)" title="Dismiss">✕</button>
                     @endif
                 </div>
+            </div>
+            @endforeach
+        </div>
+        @endif
 
-                <div class="flex items-center justify-between py-3">
-                    <div class="flex items-center gap-3">
-                        <span class="w-1.5 h-1.5 rounded-full shrink-0"
-                              style="background:{{ $problemCount > 0 ? '#f87171' : 'var(--text-faint)' }}"></span>
-                        <span class="text-sm" style="color:var(--text-secondary)">
-                            @if($problemCount > 0)
-                                <strong style="color:#f87171">{{ $problemCount }}</strong> {{ $problemCount === 1 ? 'item' : 'items' }} failed or stuck in pipeline
-                            @else
-                                Pipeline running clean — no failures this week
-                            @endif
-                        </span>
-                    </div>
-                    @if($problemCount > 0)
-                    <a href="{{ route('transactions', ['filter' => 'failed']) }}"
-                       class="text-xs font-semibold shrink-0 ml-4 transition hover:opacity-80" style="color:#f87171">View →</a>
-                    @endif
+        {{-- Customize Desk drawer --}}
+        <div id="desk-drawer" style="display:none" class="mt-2 rounded-xl overflow-hidden"
+             style="border:1px solid var(--border);background:var(--bg-card)">
+            <div class="px-5 py-4 flex items-center justify-between"
+                 style="border-bottom:1px solid var(--border-subtle)">
+                <p class="text-sm font-semibold" style="color:var(--text-primary)">Your Desk</p>
+                <button onclick="toggleDeskDrawer()" class="text-xs transition hover:opacity-60"
+                        style="color:var(--text-faint)">✕ Close</button>
+            </div>
+            @php
+                $tierLabels = ['operational' => 'Pipeline', 'growth' => 'Growth', 'platform' => 'Platform'];
+                $grouped = collect($deskAllCards)->groupBy('tier');
+            @endphp
+            @foreach(['operational','growth','platform'] as $tier)
+            @if($grouped->has($tier))
+            <div class="px-5 py-3" style="border-bottom:1px solid var(--border-subtle)">
+                <p class="text-xs font-bold uppercase tracking-widest mb-2" style="color:var(--text-muted)">
+                    {{ $tierLabels[$tier] }}
+                </p>
+                <div class="space-y-2">
+                    @foreach($grouped[$tier] as $item)
+                    <label class="flex items-center gap-3 cursor-pointer select-none">
+                        <input type="checkbox"
+                               class="desk-toggle"
+                               data-key="{{ $item['key'] }}"
+                               @if($item['visible']) checked @endif
+                               onchange="deskSaveToggle(this)"
+                               style="accent-color:var(--accent);width:14px;height:14px">
+                        <div class="flex-1 min-w-0">
+                            <p class="text-xs font-medium" style="color:var(--text-primary)">{{ $item['label'] }}</p>
+                            <p class="text-xs" style="color:var(--text-faint)">{{ $item['description'] }}</p>
+                        </div>
+                    </label>
+                    @endforeach
                 </div>
-
+            </div>
+            @endif
+            @endforeach
+            <div class="px-5 py-3">
+                <p class="text-xs" style="color:var(--text-faint)">
+                    Cards only appear when there's something to show. Toggle off to permanently hide a card type.
+                </p>
             </div>
         </div>
+
+        <script>
+        function toggleDeskDrawer() {
+            var d = document.getElementById('desk-drawer');
+            d.style.display = d.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function deskSaveToggle(checkbox) {
+            var key     = checkbox.dataset.key;
+            var visible = checkbox.checked;
+
+            // Optimistically hide/show in feed
+            var row = document.querySelector('.desk-card-row[data-key="' + key + '"]');
+            if (row) row.style.display = visible ? '' : 'none';
+
+            fetch('{{ route('dashboard.desk.save') }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                },
+                body: JSON.stringify({ cards: [{ key: key, visible: visible, position: 50 }] }),
+            });
+        }
+
+        function deskDismiss(key, btn) {
+            // Remove from DOM immediately
+            var row = btn.closest('.desk-card-row');
+            if (row) row.remove();
+
+            fetch('{{ route('dashboard.desk.dismiss') }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                },
+                body: JSON.stringify({ key: key }),
+            });
+        }
+        </script>
 
         @forelse($workerCards as $card)
         @php
