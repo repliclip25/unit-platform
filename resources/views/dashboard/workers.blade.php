@@ -160,29 +160,25 @@ $depBySlug = $deployments->groupBy('worker_slug');
                 </div>
             </div>
 
-            {{-- Status badge --}}
+            {{-- Status ticker — inline, no badge box --}}
             @if($hasDeployment && $isActive)
-            <div style="display:flex;align-items:center;gap:5px;background:rgba(0,0,0,.55);backdrop-filter:blur(6px);border:1px solid rgba(74,222,128,.3);border-radius:20px;padding:4px 10px">
-                <span style="width:6px;height:6px;border-radius:50%;background:#4ade80;display:block;animation:pulse-dot 2s infinite"></span>
-                <span style="font-size:10px;font-weight:700;color:#4ade80">On duty</span>
+            <div style="display:flex;align-items:center;gap:6px">
+                <span style="width:6px;height:6px;border-radius:50%;background:#4ade80;display:block;flex-shrink:0;animation:pulse-dot 2s infinite"></span>
+                <span style="font-size:10px;font-weight:700;color:#4ade80;text-shadow:0 0 8px rgba(74,222,128,.5)">On duty</span>
             </div>
             @elseif($hasDeployment && $isPaused)
-            <div style="display:flex;align-items:center;gap:5px;background:rgba(0,0,0,.55);backdrop-filter:blur(6px);border:1px solid rgba(251,191,36,.3);border-radius:20px;padding:4px 10px">
-                <span style="font-size:10px">⏸</span>
-                <span style="font-size:10px;font-weight:700;color:#fbbf24">Paused</span>
+            <div style="display:flex;align-items:center;gap:6px">
+                <span style="font-size:10px;font-weight:700;color:#fbbf24">⏸ Paused</span>
             </div>
             @elseif($isTesting)
-            <div style="background:rgba(0,0,0,.55);backdrop-filter:blur(6px);border:1px solid rgba(251,191,36,.3);border-radius:20px;padding:4px 10px">
-                <span style="font-size:10px;font-weight:700;color:#fbbf24">⚗ Testing</span>
-            </div>
+            <span style="font-size:10px;font-weight:700;color:#fbbf24">⚗ Testing</span>
             @elseif($isLive)
-            <div style="background:rgba(0,0,0,.55);backdrop-filter:blur(6px);border:1px solid rgba(74,222,128,.25);border-radius:20px;padding:4px 10px">
-                <span style="font-size:10px;font-weight:700;color:#4ade80">● Live</span>
+            <div style="display:flex;align-items:center;gap:6px">
+                <span style="width:6px;height:6px;border-radius:50%;background:#4ade80;display:block;flex-shrink:0"></span>
+                <span style="font-size:10px;font-weight:700;color:#4ade80">Available</span>
             </div>
             @else
-            <div style="background:rgba(0,0,0,.55);backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:4px 10px">
-                <span style="font-size:10px;font-weight:700;color:rgba(255,255,255,.4)">Coming Soon</span>
-            </div>
+            <span style="font-size:10px;font-weight:600;color:rgba(255,255,255,.35)">Coming Soon</span>
             @endif
         </div>
 
@@ -276,7 +272,7 @@ $depBySlug = $deployments->groupBy('worker_slug');
                 data-rgb="{{ $m['rgb'] }}"
                 style="width:100%;padding:12px;border-radius:12px;border:none;background:{{ $color }};color:#12100a;font-size:13px;font-weight:800;cursor:pointer;transition:opacity .15s"
                 onmouseover="this.style.opacity='.88'" onmouseout="this.style.opacity='1'">
-            Hire {{ $worker->name }} →
+            Hire Now →
         </button>
 
         <div id="deploy-form-{{ $worker->slug }}" style="display:none;margin-top:14px">
@@ -433,7 +429,7 @@ function toggleDeploy(slug) {
         btn.style.color = color;
         btn.style.border = '1px solid rgba(' + rgb + ',.25)';
     } else {
-        btn.textContent = 'Hire ' + slug.charAt(0).toUpperCase() + slug.slice(1) + ' →';
+        btn.textContent = 'Hire Now →';
         btn.style.background = color;
         btn.style.color = '#12100a';
         btn.style.border = 'none';
