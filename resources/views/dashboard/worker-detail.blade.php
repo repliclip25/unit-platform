@@ -165,42 +165,65 @@
     </div>
     @endif
 
-    {{-- ── Operational Alerts ──────────────────────────────────────────────── --}}
-    @if($pendingReview > 0 || $stuckCount > 0)
+    {{-- ── System Notices — disconnected inbox, billing, stopped worker ────── --}}
+    @php
+        $watchInactiveInboxes = $connectedInboxes->where('watch_active', false);
+        $billingRow   = \Illuminate\Support\Facades\DB::table('deployment_billing')->where('deployment_id', $dep->id)->first();
+        $billingAlert = $billingRow && $billingRow->status === 'past_due';
+        $workerStopped = in_array($dep->status, ['stopped', 'decommissioned']);
+    @endphp
+    @if($watchInactiveInboxes->isNotEmpty() || $billingAlert || $workerStopped)
     <div class="space-y-2 mb-4">
-        @if($pendingReview > 0)
+
+        @if($workerStopped)
         <div class="flex items-center justify-between px-4 py-3 rounded-xl border"
-             style="background:rgba(var(--accent-rgb),0.08);border-color:rgba(var(--accent-rgb),0.35)">
+             style="background:rgba(239,68,68,0.07);border-color:rgba(239,68,68,0.28)">
             <div class="flex items-center gap-3">
-                <span class="w-2 h-2 rounded-full animate-pulse" style="background:var(--accent)"></span>
-                <span class="text-sm font-medium" style="color:var(--text-primary)">
-                    <strong>{{ $pendingReview }}</strong> draft{{ $pendingReview !== 1 ? 's' : '' }} awaiting your review
+                <span class="w-2 h-2 rounded-full bg-red-500 shrink-0"></span>
+                <span class="text-sm" style="color:#fca5a5">Worker is <strong>{{ $dep->status }}</strong> — not processing any emails</span>
+            </div>
+            <form method="POST" action="{{ route('workers.status', $dep->id) }}" class="shrink-0">
+                @csrf @method('PATCH')
+                <input type="hidden" name="status" value="active">
+                <button class="text-xs px-3 py-1.5 rounded-lg font-medium transition" style="background:rgba(239,68,68,0.15);color:#fca5a5;border:1px solid rgba(239,68,68,0.35)">
+                    Resume →
+                </button>
+            </form>
+        </div>
+        @endif
+
+        @foreach($watchInactiveInboxes as $inactiveInbox)
+        <div class="flex items-center justify-between px-4 py-3 rounded-xl border"
+             style="background:rgba(239,68,68,0.07);border-color:rgba(239,68,68,0.28)">
+            <div class="flex items-center gap-3">
+                <span class="w-2 h-2 rounded-full bg-red-500 shrink-0"></span>
+                <span class="text-sm" style="color:#fca5a5">
+                    Gmail disconnected — <strong>{{ $inactiveInbox->gmail_address }}</strong> is not watching
                 </span>
             </div>
-            <a href="{{ route('transactions', ['filter' => 'draft_ready']) }}"
-               class="text-xs px-3 py-1.5 rounded-lg font-medium transition"
-               style="background:var(--accent);color:#000000;border:1px solid var(--accent-dark)">
-                Review Now →
+            <a href="{{ route('workers.connect', $dep->id) }}"
+               class="text-xs px-3 py-1.5 rounded-lg font-medium shrink-0 transition"
+               style="background:rgba(239,68,68,0.15);color:#fca5a5;border:1px solid rgba(239,68,68,0.35)">
+                Reconnect →
+            </a>
+        </div>
+        @endforeach
+
+        @if($billingAlert)
+        <div class="flex items-center justify-between px-4 py-3 rounded-xl border"
+             style="background:rgba(239,68,68,0.07);border-color:rgba(239,68,68,0.28)">
+            <div class="flex items-center gap-3">
+                <span class="w-2 h-2 rounded-full bg-red-500 shrink-0"></span>
+                <span class="text-sm" style="color:#fca5a5">Payment past due — worker may be suspended soon</span>
+            </div>
+            <a href="{{ route('workers.billing', $dep->worker_slug) }}"
+               class="text-xs px-3 py-1.5 rounded-lg font-medium shrink-0 transition"
+               style="background:rgba(239,68,68,0.15);color:#fca5a5;border:1px solid rgba(239,68,68,0.35)">
+                Fix billing →
             </a>
         </div>
         @endif
 
-        @if($stuckCount > 0)
-        <div class="flex items-center justify-between px-4 py-3 rounded-xl border"
-             style="background:rgba(245,158,11,0.08);border-color:rgba(245,158,11,0.3)">
-            <div class="flex items-center gap-3">
-                <span style="color:#f59e0b">⚠</span>
-                <span class="text-sm" style="color:#fcd34d">
-                    <strong>{{ $stuckCount }}</strong> transaction{{ $stuckCount !== 1 ? 's' : '' }} stuck mid-pipeline for &gt;5 min
-                </span>
-            </div>
-            <button id="recover-btn" onclick="recoverStuck()"
-                class="text-xs px-3 py-1.5 rounded-lg font-medium transition"
-                style="background:rgba(245,158,11,0.2);color:#fcd34d;border:1px solid rgba(245,158,11,0.4)">
-                ↺ Recover All
-            </button>
-        </div>
-        @endif
     </div>
     @endif
 
