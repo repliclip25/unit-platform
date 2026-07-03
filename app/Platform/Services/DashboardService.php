@@ -3,6 +3,7 @@
 namespace App\Platform\Services;
 
 use Illuminate\Support\Facades\DB;
+use App\Platform\Services\ClockResolver;
 
 /**
  * Resolves data for each overview panel type declared in a WorkerContract's overview() method.
@@ -11,7 +12,7 @@ use Illuminate\Support\Facades\DB;
  */
 class DashboardService
 {
-    public static function resolve(object $dep, array $overview): array
+    public static function resolve(object $dep, array $overview, ?\App\Platform\Contracts\WorkerContract $contract = null): array
     {
         $panels = $overview['panels'] ?? [];
         $userId = $dep->user_id;
@@ -26,14 +27,14 @@ class DashboardService
         ), $panels);
 
         // Build enriched meta for the briefing UI
-        $meta = self::buildMeta($dep, $overview, $resolvedPanels);
+        $meta = self::buildMeta($dep, $overview, $resolvedPanels, $contract);
 
         return ['panels' => $resolvedPanels, 'meta' => $meta];
     }
 
     // ── Meta: emotional state, value clock, briefing narrative ───────────────
 
-    private static function buildMeta(object $dep, array $overview, array $resolvedPanels): array
+    private static function buildMeta(object $dep, array $overview, array $resolvedPanels, ?\App\Platform\Contracts\WorkerContract $contract = null): array
     {
         $depId  = $dep->id;
         $userId = $dep->user_id;
@@ -87,8 +88,22 @@ class DashboardService
         // Emotional state
         $state = self::emotionalState($totalEver, $alerts, $queueCount, $processed, $failed);
 
-        // Value clock
-        $clock = self::resolveClock($depId, $userId, $overview['value_clock'] ?? null);
+        // Value clock — use contract::valueClock() if available, fall back to overview config
+        if ($contract && method_exists($contract, 'valueClock') && !empty($contract->valueClock())) {
+            $clockDef = $contract->valueClock();
+            $resolved = ClockResolver::resolveWorker($depId, $clockDef);
+            $clock = [
+                'value'   => $resolved['raw'],
+                'display' => $resolved['display'],
+                'label'   => $clockDef['label'],
+                'subtitle'=> $resolved['subtitle'],
+                'formula' => $clockDef['formula'],
+                'source'  => $clockDef['source'],
+                'unit'    => $clockDef['unit'] ?? '',
+            ];
+        } else {
+            $clock = self::resolveClock($depId, $userId, $overview['value_clock'] ?? null);
+        }
 
         // User first name
         $user      = DB::table('users')->where('id', $userId)->first();

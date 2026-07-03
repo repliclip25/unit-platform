@@ -111,7 +111,7 @@ class WorkerController extends Controller
         $overviewPanels = [];
         $overviewMeta   = [];
         if ($contract && method_exists($contract, 'overview')) {
-            $resolved       = \App\Platform\Services\DashboardService::resolve($dep, $contract->overview());
+            $resolved       = \App\Platform\Services\DashboardService::resolve($dep, $contract->overview(), $contract);
             $overviewPanels = $resolved['panels'] ?? [];
             $overviewMeta   = $resolved['meta']   ?? [];
         }

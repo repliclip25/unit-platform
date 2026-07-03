@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\DB;
+use App\Platform\Services\ClockResolver;
 
 class DashboardController extends Controller
 {
@@ -20,8 +21,9 @@ class DashboardController extends Controller
             ->whereNotIn('status', ['draft_ready','approved','sent','failed','dismissed','filtered_out'])
             ->where('updated_at', '<', now()->subMinutes(5))->count();
 
-        // ── Platform Value Clock — total hours returned this week ─────────────
-        $clockValue = round($ovProcessed * 0.25, 1);
+        // ── Platform Value Clock — aggregated from each worker's contract ────
+        // Resolved after $deployments is built below; placeholder until then.
+        $clockValue = 0;
 
         // ── Pipeline-level stats (kept for worker cards) ──────────────────────
         $pipelineActive = ['received','ingesting','reading','classifying','memory_lookup','logging','templating','drafting','pushing'];
@@ -38,6 +40,17 @@ class DashboardController extends Controller
             ->whereIn('status', ['active', 'paused'])
             ->orderBy('created_at')
             ->get();
+
+        // Aggregate Value Clock across all deployed workers using their contracts
+        $clockRaw = 0;
+        foreach ($deployments as $dep) {
+            $c = \App\Platform\Services\WorkerRegistry::resolve($dep->worker_slug);
+            if (\App\Platform\Services\WorkerRegistry::isNull($c)) continue;
+            $def = $c->valueClock();
+            if (empty($def)) continue;
+            $clockRaw += \App\Platform\Services\ClockResolver::resolveWorker($dep->id, $def)['raw'];
+        }
+        $clockValue = is_float($clockRaw) ? round($clockRaw, 1) : (int) $clockRaw;
 
         $workerCards = $deployments->map(function ($dep) use ($userId) {
             $contract = \App\Platform\Services\WorkerRegistry::resolve($dep->worker_slug);
