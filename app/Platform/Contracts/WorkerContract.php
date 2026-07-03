@@ -427,6 +427,21 @@ interface WorkerContract
      */
     public function overview(): array;
 
+    /**
+     * Declares the primary value metric this worker surfaces on the profile
+     * stat strip and any Value Clock display.
+     *
+     * Returns:
+     *   label    Short metric name shown above the number  e.g. 'Hours Saved, All Time'
+     *   metric   Resolver key used by ClockResolver        e.g. 'hours_saved_alltime'
+     *   unit     Optional suffix after the number          e.g. 'hrs'
+     *   subtitle Template for the sub-line. Use {count} for the raw DB count.
+     *   formula  One-line derivation shown in the (!) tooltip  e.g. 'emails × 0.25h'
+     *   source   One sentence explaining the assumption    e.g. 'Each email saves ~15 min of manual work.'
+     *   scope    'deployment' | 'user' | 'platform'
+     */
+    public function valueClock(): array;
+
     // ── Block 3d: Dashboard Surface ─────────────────────────────────────────
 
     /**

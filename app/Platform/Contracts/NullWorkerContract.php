@@ -63,6 +63,7 @@ class NullWorkerContract implements WorkerContract
     public function prompts(): array          { return []; }
     public function notifications(): array    { return []; }
     public function overview(): array         { return ['panels' => []]; }
+    public function valueClock(): array       { return []; }
     public function dashboard(): array        { return []; }
     public function owner(): array            { return []; }
     public function versionChangelog(): array { return []; }

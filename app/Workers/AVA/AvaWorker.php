@@ -655,6 +655,19 @@ class AvaWorker implements WorkerContract
 
     // ── Block 3d: Dashboard Surface ─────────────────────────────────────────
 
+    public function valueClock(): array
+    {
+        return [
+            'label'   => 'Hours Saved, All Time',
+            'metric'  => 'hours_saved_alltime',
+            'unit'    => 'hrs',
+            'subtitle'=> '{count} emails processed',
+            'formula' => 'emails processed × 0.25 hrs',
+            'source'  => 'Each email AVA handles saves an estimated 15 minutes of manual follow-up, drafting, and tracking.',
+            'scope'   => 'deployment',
+        ];
+    }
+
     public function overview(): array
     {
         return [

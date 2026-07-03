@@ -551,6 +551,19 @@ class NuxWorker implements WorkerContract
 
     // ── Block 3d: Dashboard Surface ─────────────────────────────────────────
 
+    public function valueClock(): array
+    {
+        return [
+            'label'   => 'Posts Drafted, All Time',
+            'metric'  => 'posts_drafted_alltime',
+            'unit'    => '',
+            'subtitle'=> '{count} pieces of content created',
+            'formula' => 'count of drafted & published posts',
+            'source'  => 'Every post NUX drafts replaces 30–60 minutes of writing, editing, and scheduling.',
+            'scope'   => 'deployment',
+        ];
+    }
+
     public function overview(): array
     {
         return [

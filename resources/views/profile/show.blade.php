@@ -123,30 +123,58 @@ $initials    = collect(explode(' ', $user->name))->map(fn($w) => strtoupper($w[0
     @endif
 </div>
 
-{{-- ── Worker stat cards ── --}}
-<div class="pf-stats-strip">
-    @foreach($workerStats as $stat)
+{{-- ── Value Clock strip ── --}}
+<div class="pf-stats-strip" id="clock-strip">
+    @foreach($clockCards as $i => $card)
+    @php $tipId = 'clock-tip-' . $i; $iconId = 'clock-icon-' . $i; @endphp
     <div class="pf-stat-card">
-        <p style="font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text-faint);margin-bottom:4px">{{ $stat['label'] }}</p>
-        <p style="font-size:30px;font-weight:900;line-height:1;letter-spacing:-.03em;color:var(--accent-text)">{{ $stat['value'] }}</p>
-        <p style="font-size:11px;color:var(--text-faint);margin-top:3px">{{ $stat['subtitle'] }}</p>
+        {{-- Header: OWNER · LABEL + (!) --}}
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:6px;margin-bottom:4px">
+            <p style="font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text-faint);line-height:1.3">
+                {{ $card['owner'] }} · {{ $card['label'] }}
+            </p>
+            <button id="{{ $iconId }}" style="flex-shrink:0;background:none;border:none;cursor:pointer;padding:0;color:var(--text-faint);font-size:11px;line-height:1;margin-top:1px" title="How this is calculated">ⓘ</button>
+        </div>
+        <p style="font-size:30px;font-weight:900;line-height:1;letter-spacing:-.03em;color:var(--accent-text)">{{ $card['value'] }}</p>
+        <p style="font-size:11px;color:var(--text-faint);margin-top:3px">{{ $card['subtitle'] }}</p>
+
+        {{-- Fixed tooltip --}}
+        <div id="{{ $tipId }}"
+             style="display:none;position:fixed;z-index:9999;width:240px;pointer-events:none"
+             class="shadow-2xl">
+            <div style="background:var(--bg-raised);border:1px solid var(--border);border-radius:12px;padding:12px">
+                <p style="font-size:11px;font-weight:700;color:var(--text-primary);margin-bottom:4px">How this is calculated</p>
+                <p style="font-size:11px;font-family:monospace;color:var(--accent-text);margin-bottom:6px">{{ $card['formula'] }}</p>
+                <p style="font-size:11px;color:var(--text-muted);line-height:1.5">{{ $card['source'] }}</p>
+            </div>
+        </div>
     </div>
     @endforeach
-
-    {{-- Referral earnings card --}}
-    <div class="pf-stat-card">
-        <p style="font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text-faint);margin-bottom:4px">YOU · REFERRAL EARNINGS</p>
-        <p style="font-size:30px;font-weight:900;line-height:1;letter-spacing:-.03em;color:var(--accent-text)">${{ number_format($referralEarnings, 2) }}</p>
-        <p style="font-size:11px;color:var(--text-faint);margin-top:3px">{{ $referralCount }} paid {{ $referralCount === 1 ? 'conversion' : 'conversions' }}</p>
-    </div>
-
-    {{-- Team enrichments card --}}
-    <div class="pf-stat-card">
-        <p style="font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text-faint);margin-bottom:4px">TEAM · MEMORY ENTRIES</p>
-        <p style="font-size:30px;font-weight:900;line-height:1;letter-spacing:-.03em;color:var(--accent-text)">{{ number_format($contactsAdded) }}</p>
-        <p style="font-size:11px;color:var(--text-faint);margin-top:3px">Clients & contacts in memory</p>
-    </div>
 </div>
+
+<script>
+(function(){
+    @foreach($clockCards as $i => $card)
+    (function(){
+        var icon = document.getElementById('clock-icon-{{ $i }}');
+        var tip  = document.getElementById('clock-tip-{{ $i }}');
+        if (!icon || !tip) return;
+        icon.addEventListener('mouseenter', function(){
+            var r = icon.getBoundingClientRect();
+            tip.style.display = 'block';
+            tip.style.left = Math.max(8, r.left) + 'px';
+            tip.style.top  = (r.bottom + 8) + 'px';
+            // keep within viewport right edge
+            var tw = 240;
+            if (r.left + tw > window.innerWidth - 8) {
+                tip.style.left = Math.max(8, window.innerWidth - tw - 8) + 'px';
+            }
+        });
+        icon.addEventListener('mouseleave', function(){ tip.style.display = 'none'; });
+    })();
+    @endforeach
+})();
+</script>
 
 {{-- ── Main grid: Team + Connected (left), Collapsible settings (right) ── --}}
 <div class="pf-grid">

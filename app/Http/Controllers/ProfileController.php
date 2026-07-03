@@ -58,49 +58,45 @@ class ProfileController extends Controller
         $depCounts = $deployments->groupBy('worker_slug')
             ->map(fn($g) => $g->count());
 
-        // Worker stat cards — one per deployed worker
-        $workerStats = $deployments->map(function ($dep) use ($contracts) {
+        // ── Value Clock cards ─────────────────────────────────────────────────
+        // Worker clocks — one per deployment, driven by WorkerContract::valueClock()
+        $clockCards = $deployments->map(function ($dep) use ($contracts) {
             $contract = $contracts->get($dep->worker_slug);
-            $employee = $contract ? $contract->employee() : [];
-            $slug     = $dep->worker_slug;
+            if (!$contract || \App\Platform\Services\WorkerRegistry::isNull($contract)) return null;
 
-            $processed = DB::table('transactions')
-                ->where('deployment_id', $dep->id)
-                ->whereNotIn('status', ['received', 'failed', 'filtered_out', 'dismissed'])
-                ->count();
+            $clock = $contract->valueClock();
+            if (empty($clock)) return null;
 
-            return match ($slug) {
-                'ava' => [
-                    'label'    => 'AVA · HOURS SAVED, ALL TIME',
-                    'value'    => number_format($processed * 0.25, 1),
-                    'subtitle' => number_format($processed) . ' emails processed',
-                ],
-                'nux' => [
-                    'label'    => 'NUX · POSTS DRAFTED, ALL TIME',
-                    'value'    => number_format($processed),
-                    'subtitle' => 'Across LinkedIn & X',
-                ],
-                default => [
-                    'label'    => strtoupper($slug) . ' · TASKS COMPLETED',
-                    'value'    => number_format($processed),
-                    'subtitle' => 'All time',
-                ],
-            };
-        })->values();
+            $employee = $contract->employee();
+            $owner    = strtoupper($employee['name'] ?? $dep->worker_slug);
+            $resolved = \App\Platform\Services\ClockResolver::resolveWorker($dep->id, $clock);
 
-        // Referral earnings card
-        $referralEarnings = DB::table('referral_credits')
-            ->where('referrer_id', $user->id)
-            ->where('status', 'applied')
-            ->sum('credit_usd');
-        $referralCount = DB::table('referral_credits')
-            ->where('referrer_id', $user->id)
-            ->where('event', 'paid_conversion')
-            ->count();
+            return [
+                'owner'   => $owner,
+                'label'   => $clock['label'],
+                'value'   => $resolved['display'],
+                'subtitle'=> $resolved['subtitle'],
+                'formula' => $clock['formula'],
+                'source'  => $clock['source'],
+            ];
+        })->filter()->values();
 
-        // Team memory enrichments
-        $contactsAdded = DB::table('contacts')->where('user_id', $user->id)->count()
-            + DB::table('clients')->where('user_id', $user->id)->count();
+        // Platform clocks — referral, memory, etc.
+        foreach (\App\Platform\Services\PlatformClockRegistry::all() as $key => $module) {
+            $resolved  = ($module['resolver'])($user->id);
+            $prefix    = $module['prefix'] ?? '';
+            $display   = $prefix . $resolved['value'];
+            $subtitle  = str_replace('{count}', number_format($resolved['count']), $module['subtitle']);
+
+            $clockCards->push([
+                'owner'   => $module['owner'],
+                'label'   => $module['label'],
+                'value'   => $display,
+                'subtitle'=> $subtitle,
+                'formula' => $module['formula'],
+                'source'  => $module['source'],
+            ]);
+        }
 
         // Referral URL
         $referralUrl = $user->referral_code ? url('/register?ref=' . $user->referral_code) : null;
@@ -108,7 +104,7 @@ class ProfileController extends Controller
         return view('profile.show', compact(
             'user', 'deployments', 'contracts', 'gmailCredentials',
             'deploymentCredentials', 'sessions', 'depCounts',
-            'workerStats', 'referralEarnings', 'referralCount', 'contactsAdded', 'referralUrl'
+            'clockCards', 'referralUrl'
         ));
     }
 
