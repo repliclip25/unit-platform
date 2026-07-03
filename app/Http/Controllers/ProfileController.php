@@ -58,9 +58,16 @@ class ProfileController extends Controller
         $depCounts = $deployments->groupBy('worker_slug')
             ->map(fn($g) => $g->count());
 
+        // All-time Value Clock — total hours saved since account creation
+        $totalProcessed = DB::table('transactions')
+            ->where('user_id', $user->id)
+            ->whereNotIn('status', ['received', 'failed', 'filtered_out', 'dismissed'])
+            ->count();
+        $clockValue = round($totalProcessed * 0.25, 1);
+
         return view('profile.show', compact(
             'user', 'deployments', 'contracts', 'gmailCredentials',
-            'deploymentCredentials', 'sessions', 'depCounts'
+            'deploymentCredentials', 'sessions', 'depCounts', 'clockValue', 'totalProcessed'
         ));
     }
 
