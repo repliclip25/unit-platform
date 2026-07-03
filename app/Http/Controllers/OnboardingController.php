@@ -456,12 +456,22 @@ class OnboardingController extends Controller
                     return redirect()->route('onboarding.verify')
                         ->with('info', 'Please verify your email before selecting a worker.');
                 }
+                $contracts = collect(WorkerRegistry::all())->keyBy(fn($c) => $c->identity()['slug']);
+                // Build $workers from live contracts — never from the stale `workers` table
+                $workers = $contracts->map(function ($contract) {
+                    $id = $contract->identity();
+                    return (object) [
+                        'slug'        => $id['slug']        ?? '',
+                        'name'        => $id['name']        ?? $id['slug'],
+                        'description' => $id['description'] ?? '',
+                    ];
+                })->values();
                 return view('onboarding.steps.select-worker', [
                     'stepName'  => 'select-worker',
                     'sequence'  => [],
                     'stepIndex' => -1,
-                    'workers'   => DB::table('workers')->get(),
-                    'contracts' => collect(WorkerRegistry::all())->keyBy(fn($c) => $c->identity()['slug']),
+                    'workers'   => $workers,
+                    'contracts' => $contracts,
                 ]);
             })(),
             default => redirect()->route('onboarding'),

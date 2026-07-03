@@ -577,6 +577,22 @@ class AdminTenantController extends Controller
                     'onboarding_skipped'      => false,
                 ]);
                 DB::table('platform_verifications')->where('user_id', $id)->delete();
+
+                // Re-seed email verification if the user's email is already verified
+                // (OAuth sign-ups have email_verified_at set — don't gate them again)
+                $emailVerifiedAt = DB::table('users')->where('id', $id)->value('email_verified_at');
+                if ($emailVerifiedAt) {
+                    DB::table('platform_verifications')->insert([
+                        'user_id'     => $id,
+                        'type'        => 'email',
+                        'verified_at' => $emailVerifiedAt,
+                        'data'        => json_encode([]),
+                        'verified_by' => 'system',
+                        'created_at'  => now(),
+                        'updated_at'  => now(),
+                    ]);
+                }
+
                 $log[] = "Reset onboarding state and platform verifications";
             });
         }
