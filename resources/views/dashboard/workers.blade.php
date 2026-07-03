@@ -1,18 +1,16 @@
-<x-app-layout title="Employee Roster">
-
+<x-app-layout title="Your Team">
 
 @php
 $totalInboxes = DB::table('user_gmail_credentials')->where('user_id', auth()->id())->count();
 
-// Worker visual identity — color/icon/bullets per slug
-// New workers added via builder inherit defaults until added here
-$workerVisuals = [
+$workerMeta = [
     'ava' => [
-        'color'  => '#f1d362',
-        'rgb'    => '241,211,98',
-        'icon'   => '✉',
-        'badge'  => 'Live',
-        'bullets'=> [
+        'color'    => '#f1d362',
+        'rgb'      => '241,211,98',
+        'icon'     => '✉',
+        'badge'    => 'Live',
+        'category' => 'RENEWALS',
+        'bullets'  => [
             'Reads and classifies every inbound renewal email',
             'Drafts tailored responses using your contacts and templates',
             'Flags urgent or at-risk accounts for immediate review',
@@ -20,11 +18,12 @@ $workerVisuals = [
         ],
     ],
     'nux' => [
-        'color'  => '#5eead4',
-        'rgb'    => '94,234,212',
-        'icon'   => '⇄',
-        'badge'  => 'Live',
-        'bullets'=> [
+        'color'    => '#a78bfa',
+        'rgb'      => '167,139,250',
+        'icon'     => '⇄',
+        'badge'    => 'Live',
+        'category' => 'CONTENT',
+        'bullets'  => [
             'Watches LinkedIn and X for new posts',
             'Repurposes content for each target platform natively',
             'Generates custom images with AI',
@@ -33,7 +32,7 @@ $workerVisuals = [
     ],
 ];
 
-$defaultVisual = ['color'=>'var(--accent)','rgb'=>'241,211,98','icon'=>'⚙','badge'=>'Live','bullets'=>[]];
+$defaultMeta = ['color'=>'var(--accent)','rgb'=>'241,211,98','icon'=>'⚙','badge'=>'Live','category'=>'AUTOMATION','bullets'=>[]];
 
 $deployableWorkers = collect($catalog)->filter(function($worker) use ($contracts, $deploymentCounts, $totalInboxes) {
     $count    = $deploymentCounts->get($worker->slug, 0);
@@ -45,283 +44,245 @@ $deployableWorkers = collect($catalog)->filter(function($worker) use ($contracts
     return $inst['multiple'] ?? false;
 })->keyBy('slug');
 
-// Only show non-decommissioned workers in catalog
 $visibleCatalog = collect($catalog)->filter(fn($w) =>
     !\App\Platform\Services\WorkerRegistry::isDecommissioned($w->slug) &&
     !\App\Platform\Services\WorkerRegistry::isRemoved($w->slug) &&
     !\App\Platform\Services\WorkerRegistry::isRemoving($w->slug)
 );
-@endphp
 
-{{-- ── Your Workers strip (all workers, deployment status inline) ─────────── --}}
-@php
 $depBySlug = $deployments->groupBy('worker_slug');
 @endphp
-<div style="margin-bottom:36px">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
-        <h2 style="font-size:11px;font-weight:700;color:var(--text-muted);letter-spacing:.08em;text-transform:uppercase">Your Team</h2>
-        @if($deployments->count())
-        <span style="font-size:11px;color:var(--text-muted)">{{ $deployments->count() }} hired</span>
-        @endif
-    </div>
-    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px">
-    @foreach($visibleCatalog as $worker)
-    @php
-        $v        = $workerVisuals[$worker->slug] ?? $defaultVisual;
-        $reg      = $registryRows[$worker->slug] ?? null;
-        $thumbImg = $reg?->profile_image ? asset('storage/' . $reg->profile_image) : null;
-        $coverThumb = $reg?->cover_image ? asset('storage/' . $reg->cover_image) : null;
-        $accentColor = $reg ? (json_decode($reg->media ?? '{}', true)['color'] ?? $v['color']) : $v['color'];
-        $slugDeps = $depBySlug->get($worker->slug, collect());
-        $firstDep = $slugDeps->first();
-        $depCount = $slugDeps->count();
-        $isActive = $firstDep?->status === 'active';
-        $isPaused = $firstDep?->status === 'paused';
-        $hasDeployment = $firstDep !== null;
-    @endphp
-    <div style="background:var(--bg-card);border:1px solid {{ $hasDeployment ? 'var(--border)' : 'var(--border-subtle)' }};border-radius:14px;overflow:hidden;{{ $hasDeployment ? '' : 'opacity:.65' }}">
-        {{-- Mini cover strip --}}
-        @if($coverThumb && $hasDeployment)
-        <div style="height:44px;overflow:hidden;position:relative">
-            <img src="{{ $coverThumb }}" alt="" style="width:100%;height:100%;object-fit:cover;object-position:center 30%;display:block">
-            <div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,.1),rgba(0,0,0,.5))"></div>
-        </div>
-        @elseif($hasDeployment)
-        <div style="height:4px;background:{{ $accentColor }}"></div>
-        @else
-        <div style="height:3px;background:var(--border)"></div>
-        @endif
 
-        <div style="padding:12px 14px;display:flex;align-items:center;gap:11px">
-            {{-- Avatar --}}
-            <div style="width:38px;height:38px;border-radius:10px;flex-shrink:0;overflow:hidden;border:2px solid {{ $hasDeployment ? "rgba(255,255,255,.1)" : 'var(--border)' }};
-                        {{ $thumbImg ? '' : 'display:flex;align-items:center;justify-content:center;font-size:16px;background:rgba(241,211,98,.08)' }}">
-                @if($thumbImg)
-                <img src="{{ $thumbImg }}" alt="{{ $worker->name }}" style="width:100%;height:100%;object-fit:cover;display:block">
-                @else
-                {{ $v['icon'] }}
-                @endif
-            </div>
-
-            {{-- Name + status --}}
-            <div style="flex:1;min-width:0">
-                <p style="font-size:13px;font-weight:700;color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ $worker->name }}</p>
-                <p style="font-size:10px;color:var(--text-muted);margin-top:1px">
-                    @if($isActive)
-                    <span style="color:#4ade80;font-weight:600">● Active</span> · {{ $depCount }} instance{{ $depCount > 1 ? 's' : '' }}
-                    @elseif($isPaused)
-                    <span style="color:#fbbf24;font-weight:600">⏸ Paused</span>
-                    @else
-                    Not hired
-                    @endif
-                </p>
-            </div>
-
-            {{-- Action --}}
-            @if($hasDeployment)
-            <a href="{{ route('workers.show', $worker->slug) }}"
-               style="font-size:11px;font-weight:700;padding:5px 11px;border-radius:8px;background:var(--accent);color:#12100a;text-decoration:none;flex-shrink:0;white-space:nowrap">
-                Open →
-            </a>
-            @else
-            <a href="#catalog-{{ $worker->slug }}"
-               style="font-size:11px;font-weight:600;padding:5px 11px;border-radius:8px;border:1px solid var(--border);color:var(--text-muted);text-decoration:none;flex-shrink:0;white-space:nowrap">
-                Hire
-            </a>
-            @endif
-        </div>
-    </div>
-    @endforeach
-    </div>
-</div>
-
-{{-- ── Worker Catalog ────────────────────────────────────────────────────── --}}
-<div style="margin-bottom:16px;display:flex;align-items:baseline;justify-content:space-between">
+{{-- ── Page header ──────────────────────────────────────────────────────────── --}}
+<div style="margin-bottom:32px;display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:12px">
     <div>
-        <h2 style="font-size:18px;font-weight:800;color:var(--text-primary)">Employee Roster</h2>
-        <p style="font-size:12px;color:var(--text-muted);margin-top:3px">Hire an AI employee for your team. Each employee runs independently on the UNIT platform.</p>
+        <p style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted);margin-bottom:6px">Your Team at Work</p>
+        <h1 style="font-size:26px;font-weight:900;color:var(--text-primary);line-height:1.1">Meet your AI employees.</h1>
+        <p style="font-size:13px;color:var(--text-muted);margin-top:5px">Each worker runs independently on the UNIT platform, 24/7.</p>
     </div>
-    <span style="font-size:11px;color:var(--text-muted)">{{ $visibleCatalog->count() }} available</span>
+    <span style="font-size:11px;color:var(--text-muted);padding:5px 12px;border:1px solid var(--border);border-radius:20px">{{ $visibleCatalog->count() }} available</span>
 </div>
 
-<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:16px;margin-bottom:32px">
+{{-- ── Worker Cards ─────────────────────────────────────────────────────────── --}}
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:20px;margin-bottom:40px">
+
 @foreach($visibleCatalog as $worker)
 @php
-    $v         = $workerVisuals[$worker->slug] ?? $defaultVisual;
-    $reg       = $registryRows[$worker->slug] ?? null;
+    $m          = $workerMeta[$worker->slug] ?? $defaultMeta;
+    $reg        = $registryRows[$worker->slug] ?? null;
     $profileImg = $reg?->profile_image ? asset('storage/' . $reg->profile_image) : null;
     $coverImg   = $reg?->cover_image   ? asset('storage/' . $reg->cover_image)   : null;
-    $mediaColor = $reg ? (json_decode($reg->media ?? '{}', true)['color'] ?? $v['color']) : $v['color'];
-    $mediaQuote = $reg ? (json_decode($reg->media ?? '{}', true)['quote'] ?? '') : '';
+    $mediaData  = json_decode($reg->media ?? '{}', true);
+    $color      = $mediaData['color'] ?? $m['color'];
+    $mediaQuote = $mediaData['quote'] ?? '';
+
     $rawGallery   = json_decode($reg->gallery ?? '[]', true) ?? [];
     $galleryItems = array_values(array_filter($rawGallery, fn($g) => !in_array($g['type']??'', ['profile','cover'])));
+
     $catalogContract = $contracts->get($worker->slug);
-    $workerEmployee = $catalogContract ? $catalogContract->employee() : [];
-    $p         = array_merge($v, [
-        'color'   => $mediaColor,
-        'role'    => $workerEmployee['title'] ?? $worker->category ?? '',
-        'tagline' => $worker->description ?? '',
-        'org'     => $worker->org ?? '',
-    ]);
-    $canDeploy = $deployableWorkers->has($worker->slug);
-    $isLive    = $p['badge'] === 'Live';
+    $workerEmployee  = $catalogContract ? $catalogContract->employee() : [];
+    $role            = $workerEmployee['title'] ?? $worker->category ?? '';
+
+    $slugDeps = $depBySlug->get($worker->slug, collect());
+    $firstDep = $slugDeps->first();
+    $depCount = $slugDeps->count();
+    $isActive = $firstDep?->status === 'active';
+    $isPaused = $firstDep?->status === 'paused';
+    $hasDeployment = $firstDep !== null;
+    $isLive    = $m['badge'] === 'Live';
     $isTesting = \App\Platform\Services\WorkerRegistry::isTesting($worker->slug);
-    $count     = $deploymentCounts->get($worker->slug, 0);
+    $canDeploy = $deployableWorkers->has($worker->slug);
+
+    // Live status message for hired workers
+    $statusQuote = null;
+    $statusCta   = null;
+    if ($hasDeployment && $firstDep) {
+        $pendingDrafts = DB::table('transactions')
+            ->where('deployment_id', $firstDep->id)
+            ->where('status', 'draft_ready')
+            ->count();
+        $recentCount = DB::table('transactions')
+            ->where('deployment_id', $firstDep->id)
+            ->where('created_at', '>=', now()->subDays(7))
+            ->count();
+
+        if ($pendingDrafts > 0) {
+            $statusQuote = "I've prepared " . $pendingDrafts . " " . ($pendingDrafts === 1 ? 'draft' : 'drafts') . ". " . ($pendingDrafts === 1 ? 'It\'s' : 'One is') . " waiting for your approval.";
+            $statusCta   = ['label' => 'Review now →', 'url' => route('transactions.index')];
+        } elseif ($recentCount > 0) {
+            $statusQuote = "Processed {$recentCount} " . ($recentCount === 1 ? 'email' : 'emails') . " this week. Everything's up to date.";
+            $statusCta   = ['label' => 'View activity →', 'url' => route('transactions.index')];
+        } else {
+            $statusQuote = "Watching your inbox. Ready to act the moment something comes in.";
+            $statusCta   = ['label' => 'Open workspace →', 'url' => route('workers.show', $worker->slug)];
+        }
+    }
 @endphp
 
-<div id="catalog-{{ $worker->slug }}" style="background:var(--bg-card);border:1px solid var(--border);border-radius:16px;overflow:hidden;display:flex;flex-direction:column;{{ $isLive ? '' : 'opacity:0.55' }}">
+<div id="catalog-{{ $worker->slug }}"
+     style="background:var(--bg-card);border:1px solid {{ $hasDeployment ? 'var(--border)' : 'var(--border-subtle)' }};border-radius:20px;overflow:hidden;display:flex;flex-direction:column;{{ (!$isLive && !$isTesting) ? 'opacity:.45' : '' }}">
 
-    {{-- Cover image / hero --}}
-    @if($coverImg)
-    <div style="position:relative;height:160px;overflow:hidden">
-        <img src="{{ $coverImg }}" alt="{{ $worker->name }} cover"
+    {{-- ── Portrait area ──────────────────────────────────────────────────── --}}
+    <div style="position:relative;height:300px;overflow:hidden;background:#0d0d0d">
+        @if($coverImg)
+        <img src="{{ $coverImg }}" alt="{{ $worker->name }}"
              style="width:100%;height:100%;object-fit:cover;object-position:center top;display:block">
-        <div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,0) 40%,rgba(0,0,0,.75) 100%)"></div>
-        {{-- Status badge overlaid on cover --}}
-        <div style="position:absolute;top:10px;right:12px">
-            @if($isTesting)
-            <span style="font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;background:rgba(0,0,0,.6);color:#fbbf24;border:1px solid rgba(251,191,36,.4);backdrop-filter:blur(4px)">⚗ Testing</span>
-            @elseif($isLive)
-            <span style="font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;background:rgba(0,0,0,.6);color:#4ade80;border:1px solid rgba(74,222,128,.4);backdrop-filter:blur(4px)">● Live</span>
-            @else
-            <span style="font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;background:rgba(0,0,0,.5);color:#94a3b8;border:1px solid rgba(148,163,184,.3)">Coming Soon</span>
-            @endif
-        </div>
-        {{-- Profile image pinned to bottom-left of cover --}}
-        @if($profileImg)
-        <div style="position:absolute;bottom:-24px;left:20px">
-            <img src="{{ $profileImg }}" alt="{{ $worker->name }}"
-                 style="width:52px;height:52px;border-radius:14px;object-fit:cover;border:3px solid var(--bg-card);box-shadow:0 4px 16px rgba(0,0,0,.4)">
+        @elseif($profileImg)
+        <img src="{{ $profileImg }}" alt="{{ $worker->name }}"
+             style="width:100%;height:100%;object-fit:cover;object-position:center top;display:block">
+        @else
+        {{-- Fallback gradient --}}
+        <div style="width:100%;height:100%;background:linear-gradient(160deg,rgba({{ $m['rgb'] }},.12) 0%,#0d0d0d 100%);display:flex;align-items:center;justify-content:center">
+            <span style="font-size:72px;opacity:.25">{{ $m['icon'] }}</span>
         </div>
         @endif
-    </div>
-    @else
-    {{-- Fallback: colored accent bar + icon --}}
-    <div style="height:4px;background:{{ $p['color'] }}"></div>
-    @endif
 
-    <div style="padding:{{ $coverImg && $profileImg ? '32px' : '20px' }} 22px 0">
+        {{-- Gradient fade to card bg --}}
+        <div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,0) 40%,rgba(13,13,13,.85) 100%)"></div>
 
-        {{-- Header (no cover) or post-cover name row --}}
-        <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px">
+        {{-- Top row: icon + name + role + status --}}
+        <div style="position:absolute;top:0;left:0;right:0;padding:16px 18px;display:flex;align-items:flex-start;justify-content:space-between">
             <div style="display:flex;align-items:center;gap:10px">
-                @if(!$coverImg)
-                <div style="width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;background:rgba(241,211,98,.1);border:1px solid rgba(241,211,98,.2)">
-                    @if($profileImg)
-                    <img src="{{ $profileImg }}" alt="" style="width:44px;height:44px;border-radius:11px;object-fit:cover">
+                <div style="width:38px;height:38px;border-radius:10px;background:rgba(0,0,0,.55);border:1px solid rgba(255,255,255,.12);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                    @if($profileImg && $coverImg)
+                    <img src="{{ $profileImg }}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:10px">
                     @else
-                    {{ $p['icon'] }}
+                    <span style="font-size:16px">{{ $m['icon'] }}</span>
                     @endif
                 </div>
-                @endif
                 <div>
-                    <p style="font-size:17px;font-weight:800;color:var(--text-primary);line-height:1.2">{{ $worker->name }}</p>
-                    <p style="font-size:11px;color:var(--text-muted);margin-top:2px">{{ $p['role'] }}</p>
+                    <p style="font-size:15px;font-weight:900;color:#fff;line-height:1.1;text-shadow:0 1px 4px rgba(0,0,0,.6)">{{ $worker->name }}</p>
+                    <p style="font-size:10px;color:rgba(255,255,255,.6);margin-top:1px">{{ $role }}</p>
                 </div>
             </div>
-            @if(!$coverImg)
-            <div>
-                @if($isTesting)
-                <span style="font-size:10px;font-weight:700;padding:2px 9px;border-radius:20px;background:rgba(251,191,36,.12);color:#fbbf24;border:1px solid rgba(251,191,36,.2)">⚗ Testing</span>
-                @elseif($isLive)
-                <span style="font-size:10px;font-weight:700;padding:2px 9px;border-radius:20px;background:rgba(74,222,128,.1);color:#4ade80;border:1px solid rgba(74,222,128,.2)">● Live</span>
-                @else
-                <span style="font-size:10px;font-weight:700;padding:2px 9px;border-radius:20px;background:var(--bg-raised);color:var(--text-muted);border:1px solid var(--border)">Soon</span>
-                @endif
+
+            {{-- Status badge --}}
+            @if($hasDeployment && $isActive)
+            <div style="display:flex;align-items:center;gap:5px;background:rgba(0,0,0,.55);backdrop-filter:blur(6px);border:1px solid rgba(74,222,128,.3);border-radius:20px;padding:4px 10px">
+                <span style="width:6px;height:6px;border-radius:50%;background:#4ade80;display:block;animation:pulse-dot 2s infinite"></span>
+                <span style="font-size:10px;font-weight:700;color:#4ade80">On duty</span>
             </div>
-            @endif
-        </div>
-
-        {{-- Worker quote if set --}}
-        @if($mediaQuote)
-        <p style="font-size:12px;color:{{ $p['color'] }};font-style:italic;margin-bottom:8px;opacity:.85">"{{ $mediaQuote }}"</p>
-        @endif
-
-        {{-- Tagline --}}
-        <p style="font-size:13px;color:var(--text-secondary);line-height:1.6;margin-bottom:14px">{{ $p['tagline'] }}</p>
-
-        {{-- Feature bullets --}}
-        @if(!empty($p['bullets']))
-        <ul style="margin-bottom:18px;list-style:none;padding:0;display:flex;flex-direction:column;gap:6px">
-            @foreach($p['bullets'] as $b)
-            <li style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-muted)">
-                <span style="width:5px;height:5px;border-radius:50%;flex-shrink:0;background:{{ $p['color'] }}"></span>
-                {{ $b }}
-            </li>
-            @endforeach
-        </ul>
-        @endif
-    </div>
-
-    {{-- Gallery strip --}}
-    @if(!empty($galleryItems))
-    <div style="padding:0 22px 18px">
-        <p style="font-size:10px;font-weight:700;letter-spacing:.07em;color:var(--text-muted);text-transform:uppercase;margin-bottom:10px">See it in action</p>
-        <div style="display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none">
-        @foreach($galleryItems as $gi => $gitem)
-        @php
-            $gKind = $gitem['kind'] ?? 'file';
-            $gIsYt = str_starts_with($gitem['type'] ?? '', 'youtube');
-            $gIsVid = $gKind === 'url' ? false : str_starts_with(\Illuminate\Support\Str::lower(pathinfo($gitem['path'] ?? '', PATHINFO_EXTENSION)), 'mp4');
-            $gUrl = $gKind === 'url' ? null : asset('storage/' . ($gitem['path'] ?? ''));
-            $ytId = null;
-            if ($gIsYt && !empty($gitem['url'])) {
-                preg_match('/(?:v=|\/embed\/|youtu\.be\/)([a-zA-Z0-9_-]{11})/', $gitem['url'], $ytm);
-                $ytId = $ytm[1] ?? null;
-            }
-        @endphp
-        <div style="flex-shrink:0;border-radius:10px;overflow:hidden;position:relative;width:200px;height:130px;cursor:pointer;border:1px solid var(--border)" onclick="openGallery('{{ $worker->slug }}', {{ $gi }})">
-            @if($ytId)
-            <img src="https://img.youtube.com/vi/{{ $ytId }}/mqdefault.jpg" alt="{{ $gitem['caption'] ?? '' }}" style="width:100%;height:100%;object-fit:cover;display:block">
-            <div style="position:absolute;inset:0;background:rgba(0,0,0,.35);display:flex;align-items:center;justify-content:center">
-                <div style="width:44px;height:44px;background:rgba(255,0,0,.85);border-radius:50%;display:flex;align-items:center;justify-content:center">
-                    <span style="font-size:18px;color:#fff;margin-left:3px">▶</span>
-                </div>
+            @elseif($hasDeployment && $isPaused)
+            <div style="display:flex;align-items:center;gap:5px;background:rgba(0,0,0,.55);backdrop-filter:blur(6px);border:1px solid rgba(251,191,36,.3);border-radius:20px;padding:4px 10px">
+                <span style="font-size:10px">⏸</span>
+                <span style="font-size:10px;font-weight:700;color:#fbbf24">Paused</span>
             </div>
-            @elseif($gIsVid)
-            <video src="{{ $gUrl }}" style="width:100%;height:100%;object-fit:cover;display:block" muted preload="metadata"></video>
-            <div style="position:absolute;inset:0;background:rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center">
-                <span style="font-size:28px;opacity:.9">▶</span>
+            @elseif($isTesting)
+            <div style="background:rgba(0,0,0,.55);backdrop-filter:blur(6px);border:1px solid rgba(251,191,36,.3);border-radius:20px;padding:4px 10px">
+                <span style="font-size:10px;font-weight:700;color:#fbbf24">⚗ Testing</span>
+            </div>
+            @elseif($isLive)
+            <div style="background:rgba(0,0,0,.55);backdrop-filter:blur(6px);border:1px solid rgba(74,222,128,.25);border-radius:20px;padding:4px 10px">
+                <span style="font-size:10px;font-weight:700;color:#4ade80">● Live</span>
             </div>
             @else
-            <img src="{{ $gUrl }}" alt="{{ $gitem['caption'] ?? '' }}" style="width:100%;height:100%;object-fit:cover;display:block">
-            @endif
-            @if(!empty($gitem['caption']))
-            <div style="position:absolute;bottom:0;left:0;right:0;background:linear-gradient(to top,rgba(0,0,0,.8),transparent);padding:8px 10px 6px">
-                <p style="font-size:10px;color:#fff;margin:0">{{ $gitem['caption'] }}</p>
+            <div style="background:rgba(0,0,0,.55);backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:4px 10px">
+                <span style="font-size:10px;font-weight:700;color:rgba(255,255,255,.4)">Coming Soon</span>
             </div>
             @endif
         </div>
-        @endforeach
+
+        {{-- Category label — bottom of portrait --}}
+        <div style="position:absolute;bottom:16px;left:18px">
+            <span style="font-size:9px;font-weight:900;letter-spacing:.14em;padding:4px 12px;border-radius:4px;background:{{ $color }};color:#12100a;text-transform:uppercase">{{ $m['category'] }}</span>
         </div>
     </div>
-    {{-- Gallery lightbox data --}}
-    <script>
-    window['gallery_{{ $worker->slug }}'] = @json($galleryItems);
-    </script>
-    @endif
 
-    {{-- Deploy section --}}
-    <div style="border-top:1px solid var(--border);padding:16px 22px;margin-top:auto">
+    {{-- ── Status / Quote area ─────────────────────────────────────────────── --}}
+    <div style="padding:18px 20px;flex:1;display:flex;flex-direction:column">
+
+        @if($hasDeployment && $statusQuote)
+        {{-- Live status for hired worker --}}
+        <div style="display:flex;gap:10px;flex:1">
+            <span style="font-size:22px;color:{{ $color }};opacity:.7;line-height:1;flex-shrink:0;margin-top:-2px">"</span>
+            <div>
+                <p style="font-size:13px;color:var(--text-secondary);line-height:1.6;margin-bottom:12px">{{ $statusQuote }}</p>
+                @if($statusCta)
+                <a href="{{ $statusCta['url'] }}"
+                   style="font-size:12px;font-weight:700;color:{{ $color }};text-decoration:none;transition:opacity .15s"
+                   onmouseover="this.style.opacity='.7'" onmouseout="this.style.opacity='1'">
+                    {{ $statusCta['label'] }}
+                </a>
+                @endif
+            </div>
+        </div>
+
+        @elseif($hasDeployment)
+        {{-- Hired but no activity yet --}}
+        <div style="display:flex;gap:10px;flex:1">
+            <span style="font-size:22px;color:{{ $color }};opacity:.7;line-height:1;flex-shrink:0;margin-top:-2px">"</span>
+            <div>
+                <p style="font-size:13px;color:var(--text-secondary);line-height:1.6;margin-bottom:12px">Ready and watching. Connect an inbox to get started.</p>
+                <a href="{{ route('workers.show', $worker->slug) }}"
+                   style="font-size:12px;font-weight:700;color:{{ $color }};text-decoration:none">
+                    Set up →
+                </a>
+            </div>
+        </div>
+
+        @elseif($worker->description)
+        {{-- Not hired — show tagline --}}
+        <p style="font-size:13px;color:var(--text-muted);line-height:1.6;margin-bottom:16px;flex:1">{{ $worker->description }}</p>
+
+        @else
+        <div style="flex:1"></div>
+        @endif
+
+        {{-- ── Gallery strip (if media exists) ───────────────────────────── --}}
+        @if(!empty($galleryItems))
+        <div style="margin-bottom:14px;margin-top:4px">
+            <div style="display:flex;gap:6px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none">
+            @foreach(array_slice($galleryItems, 0, 3) as $gi => $gitem)
+            @php
+                $gIsYt  = str_starts_with($gitem['type'] ?? '', 'youtube');
+                $gIsVid = !$gIsYt && str_ends_with(strtolower($gitem['path'] ?? ''), 'mp4');
+                $gUrl   = $gitem['kind'] === 'url' ? null : asset('storage/' . ($gitem['path'] ?? ''));
+                $ytId   = null;
+                if ($gIsYt && !empty($gitem['url'])) {
+                    preg_match('/(?:v=|\/embed\/|youtu\.be\/)([a-zA-Z0-9_-]{11})/', $gitem['url'], $ytm);
+                    $ytId = $ytm[1] ?? null;
+                }
+            @endphp
+            <div style="flex-shrink:0;border-radius:8px;overflow:hidden;width:80px;height:54px;cursor:pointer;border:1px solid var(--border)"
+                 onclick="openGallery('{{ $worker->slug }}', {{ $gi }})">
+                @if($ytId)
+                <img src="https://img.youtube.com/vi/{{ $ytId }}/mqdefault.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block">
+                @elseif($gUrl)
+                <img src="{{ $gUrl }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block">
+                @endif
+            </div>
+            @endforeach
+            </div>
+        </div>
+        <script>window['gallery_{{ $worker->slug }}'] = @json($galleryItems);</script>
+        @endif
+
+        {{-- ── Deploy / Action area ───────────────────────────────────────── --}}
+        <div style="margin-top:auto">
 
         @if(!$isLive && !$isTesting)
-        {{-- Coming soon --}}
         <button disabled style="width:100%;padding:11px;border-radius:10px;border:1px solid var(--border);color:var(--text-muted);background:transparent;font-size:13px;font-weight:600;cursor:not-allowed">
             Coming Soon
         </button>
 
-        @elseif($isTesting)
-        {{-- Testing mode — no public deploy --}}
-        <div style="text-align:center;padding:8px 0">
-            <p style="font-size:12px;color:#fbbf24;font-weight:600">This worker is in testing mode</p>
-            <p style="font-size:11px;color:var(--text-muted);margin-top:2px">Available to testing-access users only via Fast Track</p>
+        @elseif($isTesting && !$hasDeployment)
+        <div style="text-align:center;padding:10px 0">
+            <p style="font-size:12px;color:#fbbf24;font-weight:600">⚗ In testing — invite only</p>
         </div>
 
+        @elseif($hasDeployment)
+        <a href="{{ route('workers.show', $worker->slug) }}"
+           style="display:block;text-align:center;width:100%;box-sizing:border-box;padding:12px;border-radius:12px;background:rgba({{ $m['rgb'] }},.12);border:1px solid rgba({{ $m['rgb'] }},.25);color:{{ $color }};font-size:13px;font-weight:700;text-decoration:none;transition:background .15s"
+           onmouseover="this.style.background='rgba({{ $m['rgb'] }},.2)'" onmouseout="this.style.background='rgba({{ $m['rgb'] }},.12)'">
+            Open workspace →
+        </a>
+
         @elseif($canDeploy)
-        {{-- Deployable --}}
         <button onclick="toggleDeploy('{{ $worker->slug }}')"
                 id="deploy-btn-{{ $worker->slug }}"
-                style="width:100%;padding:11px;border-radius:10px;border:none;background:{{ $p['color'] }};color:#12100a;font-size:13px;font-weight:700;cursor:pointer;transition:opacity .15s"
+                data-color="{{ $color }}"
+                data-rgb="{{ $m['rgb'] }}"
+                style="width:100%;padding:12px;border-radius:12px;border:none;background:{{ $color }};color:#12100a;font-size:13px;font-weight:800;cursor:pointer;transition:opacity .15s"
                 onmouseover="this.style.opacity='.88'" onmouseout="this.style.opacity='1'">
             Hire {{ $worker->name }} →
         </button>
@@ -349,11 +310,11 @@ $depBySlug = $deployments->groupBy('worker_slug');
                 @endif
                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
                     <button type="button" onclick="toggleDeploy('{{ $worker->slug }}')"
-                        style="padding:9px;border-radius:8px;border:1px solid var(--border);color:var(--text-muted);background:transparent;font-size:12px;font-weight:600;cursor:pointer">
+                        style="padding:10px;border-radius:8px;border:1px solid var(--border);color:var(--text-muted);background:transparent;font-size:12px;font-weight:600;cursor:pointer">
                         Cancel
                     </button>
                     <button type="submit"
-                        style="padding:9px;border-radius:8px;border:none;background:{{ $p['color'] }};color:#12100a;font-size:12px;font-weight:700;cursor:pointer">
+                        style="padding:10px;border-radius:8px;border:none;background:{{ $color }};color:#12100a;font-size:12px;font-weight:800;cursor:pointer">
                         Confirm Hire
                     </button>
                 </div>
@@ -361,33 +322,36 @@ $depBySlug = $deployments->groupBy('worker_slug');
         </div>
 
         @else
-        {{-- Max instances reached --}}
-        <div style="display:flex;align-items:center;justify-content:space-between">
+        {{-- Max instances --}}
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
             <div>
-                <p style="font-size:12px;font-weight:600;color:var(--text-secondary)">{{ $count }} deployment{{ $count !== 1 ? 's' : '' }} running</p>
-                <p style="font-size:11px;color:var(--text-muted);margin-top:2px">Add another Gmail inbox to deploy a second instance</p>
+                <p style="font-size:12px;font-weight:600;color:var(--text-secondary)">{{ $depCount }} instance{{ $depCount !== 1 ? 's' : '' }} running</p>
+                <p style="font-size:11px;color:var(--text-muted);margin-top:2px">Connect another inbox to add more</p>
             </div>
             @php $connectRoute = $worker->slug === 'nux' ? route('nux.connect.linkedin') : route('ava.gmail.authorize'); @endphp
             <a href="{{ $connectRoute }}"
-               style="font-size:11px;font-weight:700;padding:7px 12px;border-radius:8px;background:var(--accent);color:#12100a;text-decoration:none;white-space:nowrap;flex-shrink:0;margin-left:12px">
+               style="font-size:11px;font-weight:700;padding:8px 14px;border-radius:8px;background:{{ $color }};color:#12100a;text-decoration:none;white-space:nowrap;flex-shrink:0">
                 + Connect
             </a>
         </div>
         @endif
+
+        </div>
     </div>
 </div>
 @endforeach
+
 </div>
 
-{{-- Free trial note --}}
-<div style="background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:14px 18px;display:flex;align-items:center;gap:10px;max-width:480px">
-    <span style="font-size:18px">🎁</span>
-    <p style="font-size:12px;color:var(--text-muted);line-height:1.5">
+{{-- ── Free trial note ──────────────────────────────────────────────────────── --}}
+<div style="background:var(--bg-card);border:1px solid var(--border);border-radius:14px;padding:14px 20px;display:flex;align-items:center;gap:12px;max-width:520px">
+    <span style="font-size:20px">🎁</span>
+    <p style="font-size:12px;color:var(--text-muted);line-height:1.6">
         <strong style="color:var(--text-secondary)">25 free transactions</strong> on every worker. No credit card required until you scale.
     </p>
 </div>
 
-{{-- Lightbox overlay --}}
+{{-- ── Gallery lightbox ─────────────────────────────────────────────────────── --}}
 <div id="gallery-lightbox" onclick="if(event.target===this)closeGallery()"
      style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:9999;align-items:center;justify-content:center;flex-direction:column">
     <button onclick="closeGallery()" style="position:absolute;top:16px;right:20px;background:none;border:none;color:#fff;font-size:28px;cursor:pointer;opacity:.7">×</button>
@@ -397,6 +361,13 @@ $depBySlug = $deployments->groupBy('worker_slug');
     <p id="gallery-lb-caption" style="color:rgba(255,255,255,.65);font-size:13px;margin-top:14px;text-align:center"></p>
     <div id="gallery-lb-dots" style="display:flex;gap:6px;margin-top:12px"></div>
 </div>
+
+<style>
+@keyframes pulse-dot {
+    0%,100% { opacity:1; }
+    50%      { opacity:.4; }
+}
+</style>
 
 <script>
 let _lbSlug = null, _lbIdx = 0;
@@ -418,7 +389,6 @@ function renderLb() {
     const items = window['gallery_' + _lbSlug] || [];
     if (!items.length) return;
     const item = items[_lbIdx];
-    const url = '/storage/' + item.path;
     const mediaEl = document.getElementById('gallery-lb-media');
     mediaEl.innerHTML = '';
     const ytMatch = (item.url||'').match(/(?:v=|\/embed\/|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
@@ -430,12 +400,13 @@ function renderLb() {
         mediaEl.appendChild(iframe);
     } else if (item.kind === 'file' && (item.path||'').match(/\.(mp4|mov|webm)$/i)) {
         const v = document.createElement('video');
-        v.src = '/storage/' + item.path; v.controls = true; v.autoplay = true; v.muted = false;
+        v.src = '/storage/' + item.path; v.controls = true; v.autoplay = true;
         v.style.cssText = 'max-width:90vw;max-height:78vh;border-radius:12px';
         mediaEl.appendChild(v);
     } else {
         const img = document.createElement('img');
-        img.src = url; img.style.cssText = 'max-width:90vw;max-height:78vh;border-radius:12px;object-fit:contain';
+        img.src = '/storage/' + item.path;
+        img.style.cssText = 'max-width:90vw;max-height:78vh;border-radius:12px;object-fit:contain';
         mediaEl.appendChild(img);
     }
     document.getElementById('gallery-lb-caption').textContent = item.caption || '';
@@ -459,26 +430,23 @@ document.addEventListener('keydown', e => {
 function toggleDeploy(slug) {
     const form = document.getElementById('deploy-form-' + slug);
     const btn  = document.getElementById('deploy-btn-' + slug);
+    if (!form || !btn) return;
     const open = form.style.display === 'none';
     form.style.display = open ? 'block' : 'none';
+    const color = btn.getAttribute('data-color') || 'var(--accent)';
+    const rgb   = btn.getAttribute('data-rgb')   || '241,211,98';
     if (open) {
         btn.textContent = '✕ Cancel';
-        btn.style.background = 'transparent';
-        btn.style.color = 'var(--text-muted)';
-        btn.style.border = '1px solid var(--border)';
+        btn.style.background = 'rgba(' + rgb + ',.12)';
+        btn.style.color = color;
+        btn.style.border = '1px solid rgba(' + rgb + ',.25)';
     } else {
         btn.textContent = 'Hire ' + slug.charAt(0).toUpperCase() + slug.slice(1) + ' →';
-        btn.style.background = btn.getAttribute('data-color') || 'var(--accent)';
+        btn.style.background = color;
         btn.style.color = '#12100a';
         btn.style.border = 'none';
     }
 }
-// Store original colors
-document.addEventListener('DOMContentLoaded', () => {
-    document.querySelectorAll('[id^="deploy-btn-"]').forEach(btn => {
-        btn.setAttribute('data-color', btn.style.background);
-    });
-});
 </script>
 
 </x-app-layout>
