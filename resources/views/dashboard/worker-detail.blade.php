@@ -204,6 +204,177 @@
     </div>
     @endif
 
+    {{-- ── Employer Overview — contract-driven panels ─────────────────────── --}}
+    @if(!empty($overviewPanels))
+    <div class="space-y-5">
+        @foreach($overviewPanels as $panel)
+            @php $data = $panel['data'] ?? []; @endphp
+
+            {{-- ── action_queue ─────────────────────────────────────────── --}}
+            @if($panel['type'] === 'action_queue')
+            <div style="background:var(--bg-card);border:1px solid var(--border)" class="rounded-xl overflow-hidden">
+                <div class="flex items-center justify-between px-5 py-4 border-b" style="border-color:var(--border)">
+                    <div class="flex items-center gap-2">
+                        <p class="text-white font-semibold text-sm">{{ $panel['title'] }}</p>
+                        @if(($data['count'] ?? 0) > 0)
+                        <span class="text-xs font-bold px-2 py-0.5 rounded-full" style="background:rgba(var(--accent-rgb),.15);color:var(--accent-text)">{{ $data['count'] }}</span>
+                        @endif
+                    </div>
+                    @if(($data['count'] ?? 0) > 0)
+                    <a href="{{ route('transactions.index', ['filter' => 'draft_ready']) }}" class="text-xs font-medium transition" style="color:var(--accent-text)">Review all →</a>
+                    @endif
+                </div>
+                @if(empty($data['items']))
+                    <div class="px-5 py-8 text-center">
+                        <p class="text-sm" style="color:var(--text-muted)">{{ $panel['empty'] ?? 'Nothing awaiting review.' }}</p>
+                    </div>
+                @else
+                    <div class="divide-y" style="border-color:var(--border-subtle)">
+                        @foreach($data['items'] as $item)
+                        <a href="{{ route('transactions.show', $item['tx_id']) }}" class="flex items-start justify-between px-5 py-4 hover:bg-white/5 transition group">
+                            <div class="flex-1 min-w-0 pr-4">
+                                <p class="text-white text-sm font-medium truncate">{{ $item['client'] ?? 'Unknown sender' }}</p>
+                                <p class="text-xs mt-0.5 truncate" style="color:var(--text-muted)">{{ $item['asset'] }}</p>
+                                @if($item['days_left'] !== null && $item['days_left'] <= 30)
+                                <p class="text-xs mt-1 {{ $item['days_left'] <= 7 ? 'text-red-400' : 'text-amber-400' }}">
+                                    {{ $item['days_left'] <= 0 ? 'Expired' : 'Renews in ' . $item['days_left'] . ' days' }}
+                                </p>
+                                @endif
+                            </div>
+                            <div class="text-right shrink-0">
+                                <span class="text-xs px-2 py-1 rounded-lg font-medium" style="background:rgba(var(--accent-rgb),.12);color:var(--accent-text)">Draft ready</span>
+                                <p class="text-xs mt-1" style="color:var(--text-faint)">{{ \Carbon\Carbon::parse($item['created_at'])->diffForHumans() }}</p>
+                            </div>
+                        </a>
+                        @endforeach
+                    </div>
+                @endif
+            </div>
+            @endif
+
+            {{-- ── horizon ──────────────────────────────────────────────── --}}
+            @if($panel['type'] === 'horizon')
+            <div style="background:var(--bg-card);border:1px solid var(--border)" class="rounded-xl overflow-hidden">
+                <div class="px-5 py-4 border-b" style="border-color:var(--border)">
+                    <p class="text-white font-semibold text-sm">{{ $panel['title'] }}</p>
+                    @if(($data['total'] ?? 0) === 0)
+                    <p class="text-xs mt-0.5" style="color:var(--text-muted)">No assets with renewal dates set — add them in Memory.</p>
+                    @endif
+                </div>
+                @if(($data['total'] ?? 0) > 0)
+                <div class="grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x" style="border-color:var(--border-subtle)">
+                    @foreach($data['buckets'] as $bucket)
+                    <div class="px-5 py-4">
+                        <p class="text-xs font-semibold mb-3" style="color:var(--text-muted)">
+                            {{ $bucket['prev'] === 0 ? 'Within ' . $bucket['window'] . ' days' : ($bucket['prev'] + 1) . '–' . $bucket['window'] . ' days' }}
+                        </p>
+                        @if(empty($bucket['items']))
+                            <p class="text-xs" style="color:var(--text-faint)">None</p>
+                        @else
+                            <div class="space-y-2">
+                            @foreach($bucket['items'] as $asset)
+                            <div>
+                                <p class="text-white text-xs font-medium leading-snug">{{ $asset['name'] }}</p>
+                                <p class="text-xs" style="color:var(--text-muted)">
+                                    {{ $asset['client'] ? $asset['client'] . ' · ' : '' }}{{ $asset['days_left'] }}d
+                                </p>
+                            </div>
+                            @endforeach
+                            </div>
+                        @endif
+                    </div>
+                    @endforeach
+                </div>
+                @endif
+            </div>
+            @endif
+
+            {{-- ── metric_strip ─────────────────────────────────────────── --}}
+            @if($panel['type'] === 'metric_strip')
+            @php $metrics = $data['metrics'] ?? []; @endphp
+            @if(!empty($metrics))
+            <div style="background:var(--bg-card);border:1px solid var(--border)" class="rounded-xl overflow-hidden">
+                <div class="px-5 py-4 border-b" style="border-color:var(--border)">
+                    <p class="text-white font-semibold text-sm">{{ $panel['title'] }}</p>
+                    <p class="text-xs mt-0.5" style="color:var(--text-muted)">Since {{ \Carbon\Carbon::parse($data['since'])->format('M j') }}</p>
+                </div>
+                <div class="grid grid-cols-2 sm:grid-cols-{{ count($metrics) }} divide-y sm:divide-y-0 sm:divide-x" style="border-color:var(--border-subtle)">
+                    @foreach($metrics as $m)
+                    <div class="px-5 py-4">
+                        <p class="text-2xl font-bold text-white">{{ $m['value'] !== null ? $m['value'] . $m['suffix'] : '—' }}</p>
+                        <p class="text-xs mt-1" style="color:var(--text-muted)">{{ $m['label'] }}</p>
+                    </div>
+                    @endforeach
+                </div>
+            </div>
+            @endif
+            @endif
+
+            {{-- ── alert_feed ───────────────────────────────────────────── --}}
+            @if($panel['type'] === 'alert_feed')
+            @if(($data['count'] ?? 0) > 0)
+            <div style="background:var(--bg-card);border:1px solid var(--border)" class="rounded-xl overflow-hidden">
+                <div class="px-5 py-4 border-b" style="border-color:var(--border)">
+                    <p class="text-white font-semibold text-sm">{{ $panel['title'] }}</p>
+                </div>
+                <div class="divide-y" style="border-color:var(--border-subtle)">
+                    @foreach($data['alerts'] as $alert)
+                    <div class="flex items-start gap-3 px-5 py-4">
+                        <div class="mt-0.5 shrink-0">
+                            @if($alert['severity'] === 'error')
+                                <span class="w-2 h-2 rounded-full bg-red-500 inline-block mt-1"></span>
+                            @else
+                                <span class="w-2 h-2 rounded-full bg-amber-400 inline-block mt-1"></span>
+                            @endif
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-sm" style="color:var(--text-primary)">{{ $alert['message'] }}</p>
+                        </div>
+                        @if(!empty($alert['action']) && !empty($alert['route']))
+                        <a href="{{ route($alert['route'], $alert['params'] ?? []) }}"
+                           class="text-xs font-medium shrink-0 transition" style="color:var(--accent-text)">
+                            {{ $alert['action'] }} →
+                        </a>
+                        @endif
+                    </div>
+                    @endforeach
+                </div>
+            </div>
+            @endif
+            @endif
+
+            {{-- ── activity_feed ────────────────────────────────────────── --}}
+            @if($panel['type'] === 'activity_feed')
+            @php $items = $data['items'] ?? []; @endphp
+            @if(!empty($items))
+            <div style="background:var(--bg-card);border:1px solid var(--border)" class="rounded-xl overflow-hidden">
+                <div class="flex items-center justify-between px-5 py-4 border-b" style="border-color:var(--border)">
+                    <p class="text-white font-semibold text-sm">{{ $panel['title'] }}</p>
+                    <a href="{{ route('transactions.index') }}" class="text-xs transition" style="color:var(--text-muted)">View all →</a>
+                </div>
+                <div class="divide-y" style="border-color:var(--border-subtle)">
+                    @foreach($items as $item)
+                    <a href="{{ route('transactions.show', $item['tx_id']) }}"
+                       class="flex items-center gap-3 px-5 py-3.5 hover:bg-white/5 transition">
+                        <div class="w-1.5 h-1.5 rounded-full shrink-0
+                            {{ $item['status'] === 'draft_ready'  ? 'bg-yellow-400' :
+                               ($item['status'] === 'approved' || $item['status'] === 'sent' ? 'bg-green-500' :
+                               ($item['status'] === 'failed'   ? 'bg-red-500' : 'bg-gray-600')) }}">
+                        </div>
+                        <p class="text-sm flex-1 min-w-0 truncate" style="color:var(--text-secondary)">{{ $item['sentence'] }}</p>
+                        <p class="text-xs shrink-0" style="color:var(--text-faint)">{{ \Carbon\Carbon::parse($item['created_at'])->diffForHumans(null, true) }}</p>
+                    </a>
+                    @endforeach
+                </div>
+            </div>
+            @endif
+            @endif
+
+        @endforeach
+    </div>
+
+    @else
+    {{-- Fallback: no overview contract declared — show legacy layout --}}
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
         {{-- Left: stats + recent activity --}}
@@ -664,6 +835,7 @@
         </div>
 
     </div>
+    @endif {{-- end legacy fallback --}}
 
     <script>
     const CSRF = document.querySelector('meta[name="csrf-token"]')?.content;

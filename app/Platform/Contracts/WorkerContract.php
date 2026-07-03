@@ -399,6 +399,34 @@ interface WorkerContract
      */
     public function notifications(): array;
 
+    // ── Block 3c: Employer Overview ──────────────────────────────────────────
+
+    /**
+     * Declares the employer-facing overview dashboard for this worker.
+     * A generic renderer loops these panels in priority order.
+     * Tenants can reorder or hide panels via deployment config — no code change.
+     *
+     * Panel types (registered library — only use these):
+     *   action_queue   Items needing a human decision right now
+     *   horizon        Upcoming deadlines bucketed by time window
+     *   metric_strip   3-4 KPI numbers at a glance
+     *   proof_of_work  What the worker accomplished this period
+     *   alert_feed     Issues needing awareness but not immediate action
+     *   activity_feed  Human-readable chronological log
+     *   insight        AI-generated natural language briefing (optional)
+     *   status_map     Visual state breakdown (optional)
+     *
+     * Each panel entry:
+     *   type      Panel type from the registered library above
+     *   title     Section heading shown to the employer
+     *   priority  Rendering order (1 = top)
+     *   + any panel-type-specific keys (windows, metrics, period, limit, empty, etc.)
+     *
+     * Returns:
+     *   panels    Ordered array of panel declarations
+     */
+    public function overview(): array;
+
     // ── Block 3d: Dashboard Surface ─────────────────────────────────────────
 
     /**

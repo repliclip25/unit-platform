@@ -549,6 +549,39 @@ class NuxWorker implements WorkerContract
 
     // ── Block 3d: Dashboard Surface ─────────────────────────────────────────
 
+    public function overview(): array
+    {
+        return [
+            'panels' => [
+                [
+                    'type'     => 'action_queue',
+                    'title'    => 'Awaiting Your Review',
+                    'empty'    => 'NUX is on top of everything — no drafts waiting.',
+                    'priority' => 1,
+                ],
+                [
+                    'type'     => 'metric_strip',
+                    'title'    => 'This Month',
+                    'period'   => 'month',
+                    'metrics'  => ['emails_processed', 'drafts_ready', 'approved_sent', 'hours_saved'],
+                    'priority' => 2,
+                ],
+                [
+                    'type'     => 'alert_feed',
+                    'title'    => 'Needs Attention',
+                    'empty'    => 'No issues detected.',
+                    'priority' => 3,
+                ],
+                [
+                    'type'     => 'activity_feed',
+                    'title'    => 'Recent Activity',
+                    'limit'    => 8,
+                    'priority' => 4,
+                ],
+            ],
+        ];
+    }
+
     public function dashboard(): array
     {
         return [
