@@ -523,29 +523,41 @@
                         <p class="text-gray-500 text-xs">{{ $dep->worker_slug }}</p>
                     </div>
                 </div>
-                <div class="flex items-center gap-2">
+                <div class="flex items-center gap-2 flex-wrap">
                     @if($dep->status === 'active')
-                        <span class="flex items-center gap-1.5 text-xs font-medium px-2 py-1 rounded" style="background:rgba(34,197,94,0.15);color:#16a34a;border:1px solid rgba(34,197,94,0.35)">
-                            <span class="w-1.5 h-1.5 rounded-full animate-pulse" style="background:#16a34a"></span> Active
+                        <span class="flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg" style="background:rgba(34,197,94,0.12);color:#4ade80;border:1px solid rgba(34,197,94,0.3)">
+                            <span class="w-1.5 h-1.5 rounded-full animate-pulse" style="background:#4ade80"></span> Active
                         </span>
                         <form method="POST" action="{{ route('workers.status', $dep->id) }}">
                             @csrf @method('PATCH')
                             <input type="hidden" name="status" value="paused">
-                            <button class="text-xs px-3 py-1 rounded" style="color:var(--accent-text);border:1px solid rgba(var(--accent-rgb),0.4)">Pause</button>
+                            <button class="text-sm font-semibold px-4 py-1.5 rounded-lg transition-all"
+                                    style="color:var(--text-secondary);border:1px solid var(--border);background:var(--bg-raised)"
+                                    onmouseover="this.style.color='var(--text-primary)'" onmouseout="this.style.color='var(--text-secondary)'">
+                                ⏸ Pause worker
+                            </button>
                         </form>
                     @elseif($dep->status === 'paused')
-                        <span class="flex items-center gap-1.5 text-xs font-medium px-2 py-1 rounded" style="background:var(--badge-balanced-bg);color:var(--badge-balanced-text);border:1px solid rgba(var(--accent-rgb),0.35)">
-                            <span class="w-1.5 h-1.5 rounded-full" style="background:var(--badge-balanced-text)"></span> Paused
+                        <span class="flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg" style="background:rgba(251,191,36,0.1);color:#fbbf24;border:1px solid rgba(251,191,36,0.3)">
+                            <span class="w-1.5 h-1.5 rounded-full" style="background:#fbbf24"></span> Paused
                         </span>
                         <form method="POST" action="{{ route('workers.status', $dep->id) }}">
                             @csrf @method('PATCH')
                             <input type="hidden" name="status" value="active">
-                            <button class="text-xs px-3 py-1 rounded" style="color:#16a34a;border:1px solid rgba(34,197,94,0.35)">Resume</button>
+                            <button class="text-sm font-semibold px-4 py-1.5 rounded-lg"
+                                    style="color:#4ade80;border:1px solid rgba(74,222,128,0.35);background:rgba(74,222,128,0.08)">
+                                ▶ Resume worker
+                            </button>
                         </form>
                     @endif
-                    <form method="POST" action="{{ route('workers.destroy', $dep->id) }}" onsubmit="return confirm('Remove this worker?')">
+                    <form method="POST" action="{{ route('workers.destroy', $dep->id) }}"
+                          onsubmit="return confirm('Remove {{ $dep->name }}? All configuration will be lost and this cannot be undone.')">
                         @csrf @method('DELETE')
-                        <button class="text-xs px-3 py-1 rounded transition" style="color:var(--text-muted);border:1px solid var(--border)">Remove</button>
+                        <button class="text-sm font-semibold px-4 py-1.5 rounded-lg transition-all"
+                                style="color:#f87171;border:1px solid rgba(239,68,68,0.3);background:rgba(239,68,68,0.06)"
+                                onmouseover="this.style.background='rgba(239,68,68,0.14)'" onmouseout="this.style.background='rgba(239,68,68,0.06)'">
+                            Remove worker
+                        </button>
                     </form>
                 </div>
             </div>

@@ -259,40 +259,11 @@ $depBySlug = $deployments->groupBy('worker_slug');
         </div>
 
         @elseif($hasDeployment)
-        {{-- Primary CTA --}}
         <a href="{{ route('workers.show', $worker->slug) }}"
-           style="display:block;text-align:center;width:100%;box-sizing:border-box;padding:12px;border-radius:12px;background:rgba({{ $m['rgb'] }},.12);border:1px solid rgba({{ $m['rgb'] }},.25);color:{{ $color }};font-size:13px;font-weight:700;text-decoration:none;transition:background .15s;margin-bottom:10px"
+           style="display:block;text-align:center;width:100%;box-sizing:border-box;padding:12px;border-radius:12px;background:rgba({{ $m['rgb'] }},.12);border:1px solid rgba({{ $m['rgb'] }},.25);color:{{ $color }};font-size:13px;font-weight:700;text-decoration:none;transition:background .15s"
            onmouseover="this.style.background='rgba({{ $m['rgb'] }},.2)'" onmouseout="this.style.background='rgba({{ $m['rgb'] }},.12)'">
             Open workspace →
         </a>
-        {{-- Secondary actions: Pause/Resume + Remove --}}
-        <div style="display:flex;gap:8px">
-            @if($isActive)
-            <form method="POST" action="{{ route('workers.status', $firstDep->id) }}" style="flex:1">
-                @csrf @method('PATCH')
-                <input type="hidden" name="status" value="paused">
-                <button style="width:100%;padding:8px;border-radius:10px;border:1px solid var(--border);background:transparent;color:var(--text-muted);font-size:12px;font-weight:600;cursor:pointer" onmouseover="this.style.color='var(--text-primary)'" onmouseout="this.style.color='var(--text-muted)'">
-                    ⏸ Pause
-                </button>
-            </form>
-            @elseif($isPaused)
-            <form method="POST" action="{{ route('workers.status', $firstDep->id) }}" style="flex:1">
-                @csrf @method('PATCH')
-                <input type="hidden" name="status" value="active">
-                <button style="width:100%;padding:8px;border-radius:10px;border:1px solid rgba(74,222,128,.3);background:transparent;color:#4ade80;font-size:12px;font-weight:600;cursor:pointer">
-                    ▶ Resume
-                </button>
-            </form>
-            @endif
-            <form method="POST" action="{{ route('workers.destroy', $firstDep->id) }}"
-                  onsubmit="return confirm('Remove {{ $worker->name }}? This cannot be undone.')"
-                  style="{{ ($isActive || $isPaused) ? 'flex:1' : 'width:100%' }}">
-                @csrf @method('DELETE')
-                <button style="width:100%;padding:8px;border-radius:10px;border:1px solid rgba(239,68,68,.25);background:transparent;color:#f87171;font-size:12px;font-weight:600;cursor:pointer" onmouseover="this.style.borderColor='rgba(239,68,68,.5)'" onmouseout="this.style.borderColor='rgba(239,68,68,.25)'">
-                    Remove
-                </button>
-            </form>
-        </div>
 
         @elseif($canDeploy)
         <button onclick="toggleDeploy('{{ $worker->slug }}')"
