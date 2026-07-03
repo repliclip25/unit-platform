@@ -545,7 +545,9 @@ class AdminTenantController extends Controller
             }
             DB::table('usage_events')->where('user_id', $id)->delete();
             DB::table('users')->where('id', $id)->update(['monthly_spend_cap' => null, 'blocked_at' => null, 'block_reason' => null]);
-            $log[] = "Reset {$deps->count()} deployment billing to trial (0/{$deps->count()*6} used), cleared usage events, unblocked";
+            $depCount  = $deps->count();
+            $trialLimit = $depCount * 6;
+            $log[] = "Reset {$depCount} deployment billing to trial (0/{$trialLimit} used), cleared usage events, unblocked";
         }
 
         if (in_array('desk', $scopes)) {
@@ -590,6 +592,57 @@ class AdminTenantController extends Controller
             'created_at' => now(),
             'updated_at' => now(),
         ]);
+
+        // Send flush notice to the tenant if anything was actually cleared
+        if (!empty($log)) {
+            $scopeLabels = [
+                'transactions' => 'Pipeline transactions & renewal register',
+                'memory'       => 'Memory (clients, contacts, assets, rules, templates)',
+                'billing'      => 'Billing reset to trial',
+                'desk'         => 'Desk card preferences',
+                'onboarding'   => 'Onboarding state',
+                'gmail'        => 'Gmail connections',
+                'deployments'  => 'Worker deployments',
+                'referral'     => 'Referral credits & code',
+            ];
+            $flushedLabels = collect($scopes)
+                ->filter(fn($s) => isset($scopeLabels[$s]))
+                ->map(fn($s) => $scopeLabels[$s])
+                ->values();
+
+            Mail::send([], [], function ($m) use ($tenant, $flushedLabels) {
+                $listHtml = $flushedLabels->map(fn($l) => "<li style='margin:4px 0;'>{$l}</li>")->implode('');
+                $html = "
+                    <div style='font-family:Inter,Arial,sans-serif;max-width:580px;margin:0 auto;color:#1a1a1a;'>
+                        <div style='background:#f1d362;padding:28px 32px 20px;border-radius:12px 12px 0 0;'>
+                            <span style='font-size:22px;font-weight:700;color:#1a1404;letter-spacing:-0.5px;'>UNIT</span>
+                        </div>
+                        <div style='background:#ffffff;padding:32px;border-radius:0 0 12px 12px;border:1px solid #e8e8e6;border-top:none;'>
+                            <p style='margin:0 0 16px;font-size:16px;'>Hi {$tenant->name},</p>
+                            <p style='margin:0 0 16px;font-size:15px;line-height:1.6;color:#444;'>
+                                Our team performed a fresh-start reset on your UNIT account. This is typically done to clear test data or give you a clean slate during onboarding.
+                            </p>
+                            <p style='margin:0 0 8px;font-size:14px;font-weight:600;color:#111;'>The following was cleared:</p>
+                            <ul style='margin:0 0 20px;padding-left:20px;font-size:14px;line-height:1.7;color:#555;'>
+                                {$listHtml}
+                            </ul>
+                            <p style='margin:0 0 16px;font-size:14px;line-height:1.6;color:#444;'>
+                                Everything else on your account remains intact — your login, settings, and anything not listed above are untouched.
+                            </p>
+                            <p style='margin:0 0 24px;font-size:14px;line-height:1.6;color:#444;'>
+                                If you didn't expect this, or have any questions at all, just reply to this email and we'll sort it out right away.
+                            </p>
+                            <a href='https://unit.report/dashboard' style='display:inline-block;background:#f1d362;color:#1a1404;font-weight:700;padding:12px 28px;border-radius:8px;text-decoration:none;font-size:14px;'>Go to your dashboard →</a>
+                            <p style='margin:28px 0 0;font-size:13px;color:#888;'>— The UNIT Team</p>
+                        </div>
+                    </div>
+                ";
+                $m->to($tenant->email, $tenant->name)
+                  ->from(config('mail.from.address'), 'UNIT')
+                  ->subject('Your UNIT account has been reset')
+                  ->html($html);
+            });
+        }
 
         $summary = empty($log) ? 'No scopes selected.' : implode("\n", $log);
         return back()->with('success', "Account flushed:\n" . $summary);
