@@ -6,9 +6,11 @@ class ModelCatalog
     // provider_key => [label, driver_class, base_url, models => [id => [name, tier, cost_in, cost_out, recommended?]]]
     public const PROVIDERS = [
         'anthropic' => [
-            'label'    => 'Anthropic',
-            'driver'   => 'anthropic',
-            'base_url' => 'https://api.anthropic.com/v1',
+            'label'       => 'Anthropic',
+            'driver'      => 'anthropic',
+            'base_url'    => 'https://api.anthropic.com/v1',
+            'dashboard'   => 'https://console.anthropic.com',
+            'credits_url' => 'https://console.anthropic.com/settings/billing',
             'models'   => [
                 'claude-haiku-4-5-20251001' => ['name' => 'Claude Haiku 4.5',  'tier' => 'Fast',      'cost_in' => 0.80,  'cost_out' => 4.00],
                 'claude-sonnet-4-6'         => ['name' => 'Claude Sonnet 4.6', 'tier' => 'Balanced',  'cost_in' => 3.00,  'cost_out' => 15.00, 'recommended' => true],
@@ -16,9 +18,11 @@ class ModelCatalog
             ],
         ],
         'openai' => [
-            'label'    => 'OpenAI',
-            'driver'   => 'openai',
-            'base_url' => 'https://api.openai.com/v1',
+            'label'       => 'OpenAI',
+            'driver'      => 'openai',
+            'base_url'    => 'https://api.openai.com/v1',
+            'dashboard'   => 'https://platform.openai.com',
+            'credits_url' => 'https://platform.openai.com/account/billing',
             'models'   => [
                 'gpt-4o-mini' => ['name' => 'GPT-4o mini', 'tier' => 'Fast',      'cost_in' => 0.15,  'cost_out' => 0.60],
                 'gpt-4o'      => ['name' => 'GPT-4o',      'tier' => 'Balanced',  'cost_in' => 2.50,  'cost_out' => 10.00, 'recommended' => true],
@@ -27,9 +31,11 @@ class ModelCatalog
             ],
         ],
         'kimi' => [
-            'label'    => 'KIMI (Moonshot)',
-            'driver'   => 'openai',
-            'base_url' => 'https://api.moonshot.cn/v1',
+            'label'       => 'KIMI (Moonshot)',
+            'driver'      => 'openai',
+            'base_url'    => 'https://api.moonshot.cn/v1',
+            'dashboard'   => 'https://platform.moonshot.cn/console',
+            'credits_url' => 'https://platform.moonshot.cn/console/recharge',
             'models'   => [
                 'moonshot-v1-8k'   => ['name' => 'Moonshot 8K',   'tier' => 'Fast',     'cost_in' => 0.15, 'cost_out' => 0.15],
                 'moonshot-v1-32k'  => ['name' => 'Moonshot 32K',  'tier' => 'Balanced', 'cost_in' => 0.60, 'cost_out' => 0.60, 'recommended' => true],
@@ -37,9 +43,11 @@ class ModelCatalog
             ],
         ],
         'google' => [
-            'label'    => 'Google Gemini',
-            'driver'   => 'openai',
-            'base_url' => 'https://generativelanguage.googleapis.com/v1beta/openai',
+            'label'       => 'Google Gemini',
+            'driver'      => 'openai',
+            'base_url'    => 'https://generativelanguage.googleapis.com/v1beta/openai',
+            'dashboard'   => 'https://aistudio.google.com',
+            'credits_url' => 'https://console.cloud.google.com/billing',
             'models'   => [
                 'gemini-2.0-flash'       => ['name' => 'Gemini 2.0 Flash',       'tier' => 'Fast',     'cost_in' => 0.10, 'cost_out' => 0.40, 'recommended' => true],
                 'gemini-1.5-flash'       => ['name' => 'Gemini 1.5 Flash',       'tier' => 'Fast',     'cost_in' => 0.075,'cost_out' => 0.30],
@@ -71,6 +79,16 @@ class ModelCatalog
     public static function all(): array
     {
         return self::PROVIDERS;
+    }
+
+    public static function providerForModelFull(string $modelId): ?array
+    {
+        foreach (self::PROVIDERS as $key => $provider) {
+            if (isset($provider['models'][$modelId])) {
+                return array_merge($provider, ['key' => $key]);
+            }
+        }
+        return null;
     }
 
     public static function allModelIds(): array

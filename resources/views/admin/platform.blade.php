@@ -132,10 +132,15 @@ details summary::-webkit-details-marker { display:none; }
     <div class="ct-row ct-row-3 ct-section" id="ai">
 
         {{-- AI Health --}}
+        @php
+            $activeProviderInfo = \App\Platform\Services\LLM\ModelCatalog::providerForModelFull(
+                \Illuminate\Support\Facades\DB::table('platform_configs')->where('key','default_ai_model')->value('value') ?? 'claude-sonnet-4-6'
+            ) ?? \App\Platform\Services\LLM\ModelCatalog::providerForModelFull('claude-sonnet-4-6');
+        @endphp
         <div class="ct-card p-5 section-anchor">
             <div class="flex items-center justify-between mb-4">
                 <p class="ct-section-title" style="margin:0"><span class="ct-dot {{ $aiHealth['credit_usd'] !== null && $aiHealth['credit_usd'] < 10 ? 'dot-red' : 'dot-green' }}"></span> AI Engine</p>
-                <a href="https://console.anthropic.com" target="_blank" class="ct-pill pill-gray" style="text-decoration:none;font-size:10px">Console →</a>
+                <a href="{{ $activeProviderInfo['dashboard'] ?? 'https://console.anthropic.com' }}" target="_blank" class="ct-pill pill-gray" style="text-decoration:none;font-size:10px">{{ $activeProviderInfo['label'] ?? 'Console' }} →</a>
             </div>
             <div class="space-y-3">
                 <div class="flex justify-between items-center">
@@ -195,7 +200,7 @@ details summary::-webkit-details-marker { display:none; }
                     <button type="submit" style="background:var(--accent);color:#000;font-size:11px;font-weight:700;padding:6px 12px;border-radius:8px;border:none;cursor:pointer">Switch</button>
                 </form>
                 <p class="mt-2" style="font-size:10px;color:var(--text-faint)">Applies to all deployments that haven't set their own model. Tenants override per-deployment in their Configure tab.</p>
-                <a href="https://console.anthropic.com/settings/billing" target="_blank" class="ct-pill pill-yellow mt-2" style="text-decoration:none;display:inline-block">+ Add Credits</a>
+                <a href="{{ $activeProviderInfo['credits_url'] ?? 'https://console.anthropic.com/settings/billing' }}" target="_blank" class="ct-pill pill-yellow mt-2" style="text-decoration:none;display:inline-block">+ Add Credits — {{ $activeProviderInfo['label'] ?? 'Anthropic' }}</a>
             </div>
         </div>
 
