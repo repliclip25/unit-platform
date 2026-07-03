@@ -742,7 +742,8 @@
     @php
         $ftUses      = (int) ($config['fast_track_uses'] ?? 0);
         $ftBilling   = \Illuminate\Support\Facades\DB::table('deployment_billing')->where('deployment_id', $dep->id)->first();
-        $ftMax       = (int) ($ftBilling?->trial_transactions_limit ?: 10);
+        $ftPricing   = \Illuminate\Support\Facades\DB::table('worker_pricing')->where('worker_slug', $dep->worker_slug)->orderByDesc('id')->first();
+        $ftMax       = (int) ($ftBilling?->trial_transactions_limit ?: ($ftPricing?->free_transactions ?: 25));
         $ftLeft      = max(0, $ftMax - $ftUses);
         $ftSubscribed = $ftBilling && $ftBilling->status === 'active';
         $watchTxId   = request('watch');
@@ -758,7 +759,7 @@
         ];
     @endphp
 
-    <div id="fast-track" class="rounded-xl overflow-hidden" style="background:var(--bg-card);border:1px solid var(--border)">
+    <div id="fast-track" class="rounded-xl overflow-hidden mt-6" style="background:var(--bg-card);border:1px solid var(--border)">
 
         {{-- Header --}}
         <div class="px-5 pt-5 pb-4 border-b" style="border-color:var(--border)">

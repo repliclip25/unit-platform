@@ -69,6 +69,26 @@ class WorkerController extends Controller
         $pendingReview    = DB::table('transactions')->where('deployment_id', $id)->where('status', 'draft_ready')->whereNull('human_decision')->count();
         $stuckCount       = DB::table('transactions')->where('deployment_id', $id)->whereNotIn('status', ['draft_ready','approved','sent','failed'])->where('updated_at', '<', now()->subMinutes(5))->count();
         $customModels     = DB::table('tenant_custom_models')->where('user_id', auth()->id())->where('active', true)->get();
+        // Self-heal: create missing billing record if store() failed silently
+        $hasBilling = DB::table('deployment_billing')->where('deployment_id', $id)->exists();
+        if (!$hasBilling) {
+            try {
+                $pricing_  = DB::table('worker_pricing')->where('worker_slug', $dep->worker_slug)->first();
+                $trialDays = (int) (DB::table('platform_configs')->where('key', 'trial_days')->value('value') ?? 14);
+                DB::table('deployment_billing')->insert([
+                    'user_id'                  => auth()->id(),
+                    'deployment_id'            => $id,
+                    'worker_slug'              => $dep->worker_slug,
+                    'status'                   => 'trial',
+                    'trial_transactions_used'  => 0,
+                    'trial_transactions_limit' => $pricing_?->free_transactions ?? 25,
+                    'trial_ends_at'            => now()->addDays($trialDays),
+                    'created_at'               => now(),
+                    'updated_at'               => now(),
+                ]);
+            } catch (\Throwable) {}
+        }
+
         $policyViolations = \App\Platform\Services\PolicyEngine::evaluate(auth()->id(), $id);
         $registryRow      = DB::table('worker_registry')->where('slug', $dep->worker_slug)->first();
 
