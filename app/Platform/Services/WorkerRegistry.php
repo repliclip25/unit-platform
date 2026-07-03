@@ -157,7 +157,11 @@ class WorkerRegistry
      */
     public static function status(string $slug): string
     {
-        return DB::table('worker_registry')->where('slug', $slug)->value('lifecycle_status') ?? 'active';
+        try {
+            return DB::table('worker_registry')->where('slug', $slug)->value('lifecycle_status') ?? 'active';
+        } catch (\Throwable) {
+            return 'active';
+        }
     }
 
     public static function isActive(string $slug): bool        { return in_array(self::status($slug), ['active', 'testing']); }
