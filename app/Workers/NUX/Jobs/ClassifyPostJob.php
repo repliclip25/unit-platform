@@ -28,7 +28,7 @@ class ClassifyPostJob implements ShouldQueue
     public function handle(ClaudeService $claude): void
     {
         $input = UnitPlatform::getInput($this->txId);
-        $claude->configure($input->aiModel, $input->userId);
+        $claude->configure($input->aiModel, $input->userId, $input->workerSlug);
         UnitPlatform::setStatus($this->txId, 'classifying');
 
         $read     = $input->stage('read_post');

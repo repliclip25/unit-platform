@@ -67,18 +67,19 @@ class AdminPlatformUsageController extends Controller
                 DB::raw('SUM(cost_usd) as total_cost'))
             ->first();
 
-        // Per-stage breakdown — microscopic spend by worker+stage
+        // Per-stage breakdown — microscopic spend by worker+stage+model
         $byStage = DB::table('usage_events')
             ->select(
                 'worker_slug',
                 'stage',
+                'model',
                 DB::raw('COUNT(*) as calls'),
                 DB::raw('SUM(tokens_input) as tokens_in'),
                 DB::raw('SUM(tokens_output) as tokens_out'),
                 DB::raw('SUM(cost_usd) as total_cost'),
                 DB::raw('AVG(cost_usd) as avg_cost'),
                 DB::raw('MAX(created_at) as last_used'))
-            ->groupBy('worker_slug', 'stage')
+            ->groupBy('worker_slug', 'stage', 'model')
             ->orderByDesc('total_cost')
             ->get();
 
@@ -88,6 +89,7 @@ class AdminPlatformUsageController extends Controller
             ->select(
                 'usage_events.worker_slug',
                 'usage_events.stage',
+                'usage_events.model',
                 'usage_events.tx_id',
                 'usage_events.tokens_input',
                 'usage_events.tokens_output',

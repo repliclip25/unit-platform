@@ -12,15 +12,27 @@ use Illuminate\Support\Facades\Log;
 
 class ClaudeService
 {
-    private string $model   = 'claude-sonnet-4-6';
-    private int    $userId  = 0;
+    private string $model      = '';
+    private int    $userId     = 0;
+    private string $workerSlug = 'unknown';
     private ?LLMDriverInterface $driver = null;
 
-    public function configure(string $model, int $userId): void
+    public static function platformDefaultModel(): string
     {
-        $this->model  = $model;
-        $this->userId = $userId;
-        $this->driver = null; // reset — rebuilt lazily on next call
+        try {
+            $row = DB::table('platform_configs')->where('key', 'default_ai_model')->first();
+            return $row?->value ?: 'claude-sonnet-4-6';
+        } catch (\Throwable) {
+            return 'claude-sonnet-4-6';
+        }
+    }
+
+    public function configure(string $model, int $userId, string $workerSlug = 'unknown'): void
+    {
+        $this->model      = $model;
+        $this->userId     = $userId;
+        $this->workerSlug = $workerSlug;
+        $this->driver     = null; // reset — rebuilt lazily on next call
     }
 
     // Legacy shim so existing jobs using setModel() still work
@@ -99,6 +111,11 @@ class ClaudeService
     private function resolveDriver(): LLMDriverInterface
     {
         if ($this->driver) return $this->driver;
+
+        // Fall back to platform default when no model explicitly configured
+        if (empty($this->model)) {
+            $this->model = self::platformDefaultModel();
+        }
 
         // Check tenant custom models first (model_id not in catalog)
         $providerKey = ModelCatalog::providerForModel($this->model);
@@ -189,9 +206,10 @@ class ClaudeService
             DB::table('usage_events')->insert([
                 'user_id'       => $userId,
                 'deployment_id' => $deploymentId,
-                'worker_slug'   => 'ava',
+                'worker_slug'   => $this->workerSlug,
                 'tx_id'         => $txId,
                 'stage'         => $stage,
+                'model'         => $this->model,
                 'tokens_input'  => $tokensIn,
                 'tokens_output' => $tokensOut,
                 'cost_usd'      => $cost,

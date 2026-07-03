@@ -192,6 +192,7 @@
             <tr class="text-xs uppercase tracking-wider" style="color:var(--text-faint);border-bottom:1px solid var(--border)">
               <th class="text-left px-5 py-3 font-semibold">Worker</th>
               <th class="text-left px-5 py-3 font-semibold">Stage</th>
+              <th class="text-left px-5 py-3 font-semibold">Model</th>
               <th class="text-right px-5 py-3 font-semibold">Calls</th>
               <th class="text-right px-5 py-3 font-semibold">Tokens In</th>
               <th class="text-right px-5 py-3 font-semibold">Tokens Out</th>
@@ -207,6 +208,7 @@
                 <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-bold uppercase" style="background:rgba(241,211,98,0.12);color:#f1d362">{{ $row->worker_slug }}</span>
               </td>
               <td class="px-5 py-2.5 font-mono text-xs" style="color:var(--text-secondary)">{{ $row->stage ?? '—' }}</td>
+              <td class="px-5 py-2.5 font-mono text-xs" style="color:var(--text-faint)">{{ $row->model ? \App\Platform\Services\LLM\ModelCatalog::modelName($row->model) : '—' }}</td>
               <td class="px-5 py-2.5 text-right text-xs" style="color:var(--text-muted)">{{ number_format($row->calls) }}</td>
               <td class="px-5 py-2.5 text-right font-mono text-xs" style="color:var(--text-faint)">{{ number_format($row->tokens_in) }}</td>
               <td class="px-5 py-2.5 text-right font-mono text-xs" style="color:var(--text-faint)">{{ number_format($row->tokens_out) }}</td>
@@ -242,6 +244,7 @@
               <th class="text-left px-5 py-3 font-semibold">Tenant</th>
               <th class="text-left px-5 py-3 font-semibold">Worker</th>
               <th class="text-left px-5 py-3 font-semibold">Stage</th>
+              <th class="text-left px-5 py-3 font-semibold">Model</th>
               <th class="text-left px-5 py-3 font-semibold">TX</th>
               <th class="text-right px-5 py-3 font-semibold">In</th>
               <th class="text-right px-5 py-3 font-semibold">Out</th>
@@ -257,6 +260,7 @@
                 <span class="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-bold uppercase" style="background:rgba(241,211,98,0.10);color:#f1d362">{{ $e->worker_slug }}</span>
               </td>
               <td class="px-5 py-2 font-mono text-xs" style="color:var(--text-secondary)">{{ $e->stage ?? '—' }}</td>
+              <td class="px-5 py-2 font-mono text-xs" style="color:var(--text-faint)">{{ $e->model ? \App\Platform\Services\LLM\ModelCatalog::modelName($e->model) : '—' }}</td>
               <td class="px-5 py-2 font-mono text-xs truncate max-w-[80px]" style="color:var(--text-faint)" title="{{ $e->tx_id }}">{{ $e->tx_id ? substr($e->tx_id, 0, 8) . '…' : '—' }}</td>
               <td class="px-5 py-2 text-right font-mono text-xs" style="color:var(--text-faint)">{{ number_format($e->tokens_input) }}</td>
               <td class="px-5 py-2 text-right font-mono text-xs" style="color:var(--text-faint)">{{ number_format($e->tokens_output) }}</td>

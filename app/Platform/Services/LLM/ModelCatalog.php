@@ -72,4 +72,23 @@ class ModelCatalog
     {
         return self::PROVIDERS;
     }
+
+    public static function allModelIds(): array
+    {
+        $ids = [];
+        foreach (self::PROVIDERS as $provider) {
+            $ids = array_merge($ids, array_keys($provider['models']));
+        }
+        return $ids;
+    }
+
+    public static function modelName(string $modelId): string
+    {
+        foreach (self::PROVIDERS as $provider) {
+            if (isset($provider['models'][$modelId])) {
+                return $provider['models'][$modelId]['name'];
+            }
+        }
+        return $modelId;
+    }
 }

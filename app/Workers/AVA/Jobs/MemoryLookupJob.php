@@ -28,7 +28,7 @@ class MemoryLookupJob implements ShouldQueue
     public function handle(ClaudeService $claude): void
     {
         $input = UnitPlatform::getInput($this->txId);
-        $claude->configure($input->aiModel, $input->userId);
+        $claude->configure($input->aiModel, $input->userId, $input->workerSlug);
         UnitPlatform::setStatus($this->txId, 'memory_lookup');
 
         $readOutput = $input->stage('read');

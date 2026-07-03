@@ -169,18 +169,32 @@ details summary::-webkit-details-marker { display:none; }
                     <span style="font-size:13px;font-weight:700;color:var(--text-primary)">${{ number_format($aiHealth['month_cost'], 4) }}</span>
                 </div>
             </div>
-            {{-- Switch Model --}}
+            {{-- Switch Platform Default Model --}}
+            @php
+                $currentDefault = \Illuminate\Support\Facades\DB::table('platform_configs')->where('key','default_ai_model')->value('value') ?? 'claude-sonnet-4-6';
+                $catalog = \App\Platform\Services\LLM\ModelCatalog::PROVIDERS;
+            @endphp
             <div class="mt-4 pt-4" style="border-top:1px solid var(--border-soft)">
-                <p class="ct-label mb-2">Switch Active Model</p>
+                <div class="flex items-center justify-between mb-2">
+                    <p class="ct-label">Platform Default Model</p>
+                    <span style="font-size:10px;font-family:monospace;color:var(--text-faint)">{{ $currentDefault }}</span>
+                </div>
                 <form method="POST" action="{{ route('admin.platform.ai.switch-model') }}" class="flex gap-2">
                     @csrf
-                    <select name="model" style="flex:1;background:var(--bg-raised);border:1px solid var(--border);border-radius:8px;padding:6px 10px;font-size:12px;color:var(--text-primary)">
-                        @foreach(['claude-haiku-4-5-20251001' => 'Haiku 4.5 — Fast · Cheap', 'claude-sonnet-4-6' => 'Sonnet 4.6 — Balanced ✓', 'claude-opus-4-8' => 'Opus 4.8 — Powerful'] as $val => $label)
-                        <option value="{{ $val }}" {{ config('services.claude.model') === $val ? 'selected' : '' }}>{{ $label }}</option>
+                    <select name="model" data-no-search style="flex:1;background:var(--bg-raised);border:1px solid var(--border);border-radius:8px;padding:6px 10px;font-size:12px;color:var(--text-primary)">
+                        @foreach($catalog as $providerKey => $provider)
+                            <optgroup label="{{ $provider['label'] }}">
+                                @foreach($provider['models'] as $modelId => $meta)
+                                <option value="{{ $modelId }}" {{ $currentDefault === $modelId ? 'selected' : '' }}>
+                                    {{ $meta['name'] }} — {{ $meta['tier'] }}{{ isset($meta['recommended']) ? ' ✓' : '' }}
+                                </option>
+                                @endforeach
+                            </optgroup>
                         @endforeach
                     </select>
                     <button type="submit" style="background:var(--accent);color:#000;font-size:11px;font-weight:700;padding:6px 12px;border-radius:8px;border:none;cursor:pointer">Switch</button>
                 </form>
+                <p class="mt-2" style="font-size:10px;color:var(--text-faint)">Applies to all deployments that haven't set their own model. Tenants override per-deployment in their Configure tab.</p>
                 <a href="https://console.anthropic.com/settings/billing" target="_blank" class="ct-pill pill-yellow mt-2" style="text-decoration:none;display:inline-block">+ Add Credits</a>
             </div>
         </div>

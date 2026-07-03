@@ -529,7 +529,7 @@ class WorkerController extends Controller
 
         try {
             $claude = app(\App\Platform\Services\ClaudeService::class);
-            $claude->configure($model, $userId);
+            $claude->configure($model, $userId, $dep->worker_slug);
 
             // Pass a synthetic txId that carries deployment context for usage logging.
             // ClaudeService resolves deployment_id via transactions table, so we pass

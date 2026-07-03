@@ -708,19 +708,17 @@ class AdminPlatformController extends Controller
 
     public function switchModel(Request $request)
     {
-        $allowed = ['claude-haiku-4-5-20251001', 'claude-sonnet-4-6', 'claude-opus-4-8'];
         $model   = $request->input('model');
+        $allowed = \App\Platform\Services\LLM\ModelCatalog::allModelIds();
         if (!in_array($model, $allowed)) return back()->with('ct_error', 'Invalid model selection.');
 
-        $envPath = base_path('.env');
-        $content = file_get_contents($envPath);
-        $content = preg_replace('/^CLAUDE_MODEL=.*/m', 'CLAUDE_MODEL=' . $model, $content);
-        file_put_contents($envPath, $content);
+        DB::table('platform_configs')->updateOrInsert(
+            ['key' => 'default_ai_model'],
+            ['group' => 'ai', 'value' => $model, 'type' => 'string',
+             'label' => 'Default AI Model', 'updated_at' => now(), 'created_at' => now()]
+        );
 
-        // Clear config cache so new model takes effect
-        \Artisan::call('config:clear');
-
-        return back()->with('ct_success', "AI model switched to {$model}. Config cache cleared.");
+        return back()->with('ct_success', "Platform default model switched to {$model}. All new tenant calls will use this model.");
     }
 
     // ── Gmail Watch Actions ──────────────────────────────────────────────────
