@@ -215,7 +215,7 @@ class DashboardService
                 'severity' => 'warning',
                 'message'  => "{$staleDrafts} draft" . ($staleDrafts > 1 ? 's have' : ' has') . " been waiting for review for more than 3 days.",
                 'action'   => 'Review',
-                'route'    => 'transactions.index',
+                'route'    => 'transactions',
                 'params'   => ['filter' => 'draft_ready'],
             ];
         }
@@ -231,7 +231,7 @@ class DashboardService
                 'severity' => 'error',
                 'message'  => "{$stuck} transaction" . ($stuck > 1 ? 's are' : ' is') . " stuck mid-pipeline and may need recovery.",
                 'action'   => 'Recover',
-                'route'    => 'qa.index',
+                'route'    => 'qa.recover-stuck',
                 'params'   => [],
             ];
         }

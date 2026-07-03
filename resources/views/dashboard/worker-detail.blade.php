@@ -221,7 +221,7 @@
                         @endif
                     </div>
                     @if(($data['count'] ?? 0) > 0)
-                    <a href="{{ route('transactions.index', ['filter' => 'draft_ready']) }}" class="text-xs font-medium transition" style="color:var(--accent-text)">Review all →</a>
+                    <a href="{{ route('transactions', ['filter' => 'draft_ready']) }}" class="text-xs font-medium transition" style="color:var(--accent-text)">Review all →</a>
                     @endif
                 </div>
                 @if(empty($data['items']))
@@ -350,7 +350,7 @@
             <div style="background:var(--bg-card);border:1px solid var(--border)" class="rounded-xl overflow-hidden">
                 <div class="flex items-center justify-between px-5 py-4 border-b" style="border-color:var(--border)">
                     <p class="text-white font-semibold text-sm">{{ $panel['title'] }}</p>
-                    <a href="{{ route('transactions.index') }}" class="text-xs transition" style="color:var(--text-muted)">View all →</a>
+                    <a href="{{ route('transactions') }}" class="text-xs transition" style="color:var(--text-muted)">View all →</a>
                 </div>
                 <div class="divide-y" style="border-color:var(--border-subtle)">
                     @foreach($items as $item)
