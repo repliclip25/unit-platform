@@ -56,117 +56,101 @@
 </div>
 @endif
 
-{{-- ── Overview list ── --}}
+{{-- ── Body: overview + worker cards (left) + value clock + notifications (right) ── --}}
 @php
     $primaryInbox = null;
     foreach($workerCards as $wc) {
         $pi = $wc['inboxes']->firstWhere('is_primary', true) ?? $wc['inboxes']->first();
         if ($pi) { $primaryInbox = $pi; break; }
     }
-    $gmailUrl = $primaryInbox
+    $gmailUrl    = $primaryInbox
         ? 'https://mail.google.com/mail/u/' . urlencode($primaryInbox->gmail_address) . '/#drafts'
         : 'https://mail.google.com/mail/#drafts';
+    $problemCount = $ovFailed + $ovStuck;
 @endphp
-<div class="mb-6">
-    <p class="text-xs font-medium mb-3" style="color:var(--text-muted)">{{ now()->format('l, F j · g:i A') }}</p>
-    <div class="divide-y" style="border-top:1px solid var(--border-subtle);border-bottom:1px solid var(--border-subtle)">
-
-        <div class="flex items-center justify-between py-3">
-            <div class="flex items-center gap-3">
-                <span class="w-1.5 h-1.5 rounded-full shrink-0" style="background:var(--text-faint)"></span>
-                <span class="text-sm" style="color:var(--text-secondary)">
-                    @if($ovProcessed > 0)
-                        <strong style="color:var(--text-primary)">{{ number_format($ovProcessed) }}</strong> emails processed this week
-                    @else
-                        No emails processed this week
-                    @endif
-                </span>
-            </div>
-        </div>
-
-        <div class="flex items-center justify-between py-3">
-            <div class="flex items-center gap-3">
-                <span class="w-1.5 h-1.5 rounded-full shrink-0"
-                      style="background:{{ $ovDrafts > 0 ? 'var(--accent)' : 'var(--text-faint)' }}"></span>
-                <span class="text-sm" style="color:var(--text-secondary)">
-                    @if($ovDrafts > 0)
-                        <strong style="color:var(--text-primary)">{{ $ovDrafts }}</strong> {{ $ovDrafts === 1 ? 'draft' : 'drafts' }} ready for your review
-                    @else
-                        No drafts waiting for review
-                    @endif
-                </span>
-            </div>
-            @if($ovDrafts > 0)
-            <a href="{{ $gmailUrl }}" target="_blank" rel="noopener"
-               class="text-xs font-semibold flex items-center gap-1 shrink-0 ml-4 transition hover:opacity-80"
-               style="color:var(--accent-text)">
-                Open Gmail
-                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
-            </a>
-            @endif
-        </div>
-
-        <div class="flex items-center justify-between py-3">
-            <div class="flex items-center gap-3">
-                <span class="w-1.5 h-1.5 rounded-full shrink-0"
-                      style="background:{{ $ovUrgent > 0 ? '#fbbf24' : 'var(--text-faint)' }}"></span>
-                <span class="text-sm" style="color:var(--text-secondary)">
-                    @if($ovUrgent > 0)
-                        <strong style="color:#fbbf24">{{ $ovUrgent }}</strong> {{ $ovUrgent === 1 ? 'item' : 'items' }} marked urgent — needs your attention
-                    @else
-                        No urgent items
-                    @endif
-                </span>
-            </div>
-            @if($ovUrgent > 0)
-            <a href="{{ route('transactions', ['filter' => 'draft_ready', 'priority' => 'high']) }}"
-               class="text-xs font-semibold shrink-0 ml-4 transition hover:opacity-80" style="color:#fbbf24">Review →</a>
-            @endif
-        </div>
-
-        <div class="flex items-center justify-between py-3">
-            @php $problemCount = $ovFailed + $ovStuck; @endphp
-            <div class="flex items-center gap-3">
-                <span class="w-1.5 h-1.5 rounded-full shrink-0"
-                      style="background:{{ $problemCount > 0 ? '#f87171' : 'var(--text-faint)' }}"></span>
-                <span class="text-sm" style="color:var(--text-secondary)">
-                    @if($problemCount > 0)
-                        <strong style="color:#f87171">{{ $problemCount }}</strong> {{ $problemCount === 1 ? 'item' : 'items' }} failed or stuck in pipeline
-                    @else
-                        Pipeline running clean — no failures this week
-                    @endif
-                </span>
-            </div>
-            @if($problemCount > 0)
-            <a href="{{ route('transactions', ['filter' => 'failed']) }}"
-               class="text-xs font-semibold shrink-0 ml-4 transition hover:opacity-80" style="color:#f87171">View →</a>
-            @endif
-        </div>
-
-    </div>
-</div>
-
-{{-- ── Value Clock ── --}}
-@if($clockValue > 0)
-<div class="mb-8 rounded-2xl px-6 py-8 text-center relative overflow-hidden"
-     style="background:var(--bg-card);border:1px solid var(--border)">
-    <div style="position:absolute;inset:0;background:radial-gradient(ellipse at 50% 120%, rgba(var(--accent-rgb),0.07) 0%, transparent 70%);pointer-events:none"></div>
-    <p class="text-xs font-bold uppercase tracking-widest mb-3" style="color:var(--text-muted)">This week's value</p>
-    <p class="font-black leading-none mb-2"
-       style="font-size:clamp(56px,12vw,96px);color:var(--accent-text);letter-spacing:-0.03em">
-        {{ number_format($clockValue, 1) }}
-    </p>
-    <p class="text-base" style="color:var(--text-secondary)">hours returned to your team</p>
-</div>
-@endif
-
-{{-- ── Body: worker cards + notifications ── --}}
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-    {{-- Worker cards --}}
+    {{-- Left: overview list + worker cards --}}
     <div class="lg:col-span-2 space-y-4">
 
-        <h2 class="text-gray-500 text-xs uppercase tracking-wide px-1">Your Team</h2>
+        {{-- Date/time + overview rows --}}
+        <div>
+            <p class="text-xs font-medium mb-3" style="color:var(--text-muted)">{{ now()->format('l, F j · g:i A') }}</p>
+            <div class="divide-y" style="border-top:1px solid var(--border-subtle);border-bottom:1px solid var(--border-subtle)">
+
+                <div class="flex items-center justify-between py-3">
+                    <div class="flex items-center gap-3">
+                        <span class="w-1.5 h-1.5 rounded-full shrink-0" style="background:var(--text-faint)"></span>
+                        <span class="text-sm" style="color:var(--text-secondary)">
+                            @if($ovProcessed > 0)
+                                <strong style="color:var(--text-primary)">{{ number_format($ovProcessed) }}</strong> emails processed this week across all workers
+                            @else
+                                No emails processed this week
+                            @endif
+                        </span>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-between py-3">
+                    <div class="flex items-center gap-3">
+                        <span class="w-1.5 h-1.5 rounded-full shrink-0"
+                              style="background:{{ $ovDrafts > 0 ? 'var(--accent)' : 'var(--text-faint)' }}"></span>
+                        <span class="text-sm" style="color:var(--text-secondary)">
+                            @if($ovDrafts > 0)
+                                <strong style="color:var(--text-primary)">{{ $ovDrafts }}</strong> {{ $ovDrafts === 1 ? 'draft' : 'drafts' }} ready for your review
+                            @else
+                                No drafts waiting for review
+                            @endif
+                        </span>
+                    </div>
+                    @if($ovDrafts > 0)
+                    <a href="{{ $gmailUrl }}" target="_blank" rel="noopener"
+                       class="text-xs font-semibold flex items-center gap-1 shrink-0 ml-4 transition hover:opacity-80"
+                       style="color:var(--accent-text)">
+                        Open Gmail
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                    </a>
+                    @endif
+                </div>
+
+                <div class="flex items-center justify-between py-3">
+                    <div class="flex items-center gap-3">
+                        <span class="w-1.5 h-1.5 rounded-full shrink-0"
+                              style="background:{{ $ovUrgent > 0 ? '#fbbf24' : 'var(--text-faint)' }}"></span>
+                        <span class="text-sm" style="color:var(--text-secondary)">
+                            @if($ovUrgent > 0)
+                                <strong style="color:#fbbf24">{{ $ovUrgent }}</strong> {{ $ovUrgent === 1 ? 'item' : 'items' }} marked urgent — needs your attention
+                            @else
+                                No urgent items
+                            @endif
+                        </span>
+                    </div>
+                    @if($ovUrgent > 0)
+                    <a href="{{ route('transactions', ['filter' => 'draft_ready', 'priority' => 'high']) }}"
+                       class="text-xs font-semibold shrink-0 ml-4 transition hover:opacity-80" style="color:#fbbf24">Review →</a>
+                    @endif
+                </div>
+
+                <div class="flex items-center justify-between py-3">
+                    <div class="flex items-center gap-3">
+                        <span class="w-1.5 h-1.5 rounded-full shrink-0"
+                              style="background:{{ $problemCount > 0 ? '#f87171' : 'var(--text-faint)' }}"></span>
+                        <span class="text-sm" style="color:var(--text-secondary)">
+                            @if($problemCount > 0)
+                                <strong style="color:#f87171">{{ $problemCount }}</strong> {{ $problemCount === 1 ? 'item' : 'items' }} failed or stuck in pipeline
+                            @else
+                                Pipeline running clean — no failures this week
+                            @endif
+                        </span>
+                    </div>
+                    @if($problemCount > 0)
+                    <a href="{{ route('transactions', ['filter' => 'failed']) }}"
+                       class="text-xs font-semibold shrink-0 ml-4 transition hover:opacity-80" style="color:#f87171">View →</a>
+                    @endif
+                </div>
+
+            </div>
+        </div>
 
         @forelse($workerCards as $card)
         @php
@@ -283,9 +267,38 @@
 
     </div>
 
-    {{-- Notifications --}}
-    <div>
-        <h2 class="text-gray-500 text-xs uppercase tracking-wide px-1 mb-4">Notifications</h2>
+    {{-- Right: value clock + notifications --}}
+    <div class="space-y-4">
+
+        {{-- Value Clock --}}
+        <div class="rounded-2xl px-5 py-6 text-center relative overflow-hidden"
+             style="background:var(--bg-card);border:1px solid var(--border)">
+            <div style="position:absolute;inset:0;background:radial-gradient(ellipse at 50% 120%, rgba(var(--accent-rgb),0.07) 0%, transparent 70%);pointer-events:none"></div>
+            <div class="flex items-center justify-center gap-1.5 mb-3">
+                <p class="text-xs font-bold uppercase tracking-widest" style="color:var(--text-muted)">This week's value</p>
+                {{-- Tooltip --}}
+                <div class="relative group">
+                    <svg class="w-3.5 h-3.5 cursor-pointer" style="color:var(--text-faint)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <div class="absolute bottom-full right-0 mb-2 w-52 p-3 rounded-xl text-left opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-10"
+                         style="background:var(--bg-raised);border:1px solid var(--border);box-shadow:0 8px 24px rgba(0,0,0,.4)">
+                        <p class="text-xs font-semibold mb-1" style="color:var(--text-primary)">How this is calculated</p>
+                        <p class="text-xs leading-relaxed" style="color:var(--text-muted)">Each email processed by your workers saves an estimated <strong style="color:var(--text-secondary)">15 minutes</strong> of manual work. Total hours = emails × 0.25h, aggregated across all deployed workers.</p>
+                    </div>
+                </div>
+            </div>
+            <p class="font-black leading-none mb-1"
+               style="font-size:clamp(48px,8vw,80px);color:var(--accent-text);letter-spacing:-0.03em">
+                {{ $clockValue > 0 ? number_format($clockValue, 1) : '—' }}
+            </p>
+            <p class="text-sm" style="color:var(--text-secondary)">hours returned to your team</p>
+            <p class="text-xs mt-1" style="color:var(--text-faint)">{{ number_format($ovProcessed) }} emails · {{ $workerCards->count() }} {{ $workerCards->count() === 1 ? 'worker' : 'workers' }}</p>
+        </div>
+
+        {{-- Notifications --}}
+        <div>
+        <h2 class="text-gray-500 text-xs uppercase tracking-wide px-1 mb-3">Notifications</h2>
 
         <div class="bg-gray-900 border border-gray-800 rounded-2xl overflow-hidden">
             @if($notifications->isEmpty())
@@ -321,8 +334,10 @@
             </div>
             @endif
         </div>
-    </div>
+        </div>{{-- end notifications --}}
 
-</div>
+    </div>{{-- end right column --}}
+
+</div>{{-- end grid --}}
 
 </x-app-layout>
