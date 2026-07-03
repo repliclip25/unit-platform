@@ -61,13 +61,13 @@
         <div class="bg-gray-900 border border-gray-800 rounded-xl divide-y divide-gray-800">
 
             @forelse($connectedInboxes as $inbox)
-            <div class="px-5 py-4 flex items-center gap-4">
+            <div class="px-5 py-4 flex items-start gap-4">
                 {{-- Avatar --}}
-                <div class="w-9 h-9 bg-gray-700 rounded-full flex items-center justify-center text-white text-sm font-bold shrink-0">
+                <div class="w-9 h-9 bg-gray-700 rounded-full flex items-center justify-center text-white text-sm font-bold shrink-0 mt-0.5">
                     {{ strtoupper(substr($inbox->gmail_address, 0, 1)) }}
                 </div>
 
-                {{-- Info --}}
+                {{-- Info + Actions stacked --}}
                 <div class="flex-1 min-w-0">
                     <div class="flex items-center gap-2 flex-wrap">
                         <p class="text-white text-sm font-medium truncate">{{ $inbox->gmail_address }}</p>
@@ -90,35 +90,35 @@
                             <span class="text-green-600 text-xs">inbox injection enabled</span>
                         @endif
                     </p>
-                </div>
 
-                {{-- Actions --}}
-                <div class="flex items-center gap-2 shrink-0">
-                    @if(!$inbox->watch_active)
-                        <form method="POST" action="{{ route('workers.inboxes.rewatch', [$dep->id, $inbox->id]) }}">
-                            @csrf
-                            <button type="submit"
-                                    class="text-xs px-3 py-1.5 rounded-lg font-medium border border-yellow-800 text-yellow-400 bg-yellow-900/20 hover:bg-yellow-900/40 transition">
-                                ↺ Rewatch
+                    {{-- Actions --}}
+                    <div class="flex items-center gap-2 mt-3 flex-wrap">
+                        @if(!$inbox->watch_active)
+                            <form method="POST" action="{{ route('workers.inboxes.rewatch', [$dep->id, $inbox->id]) }}">
+                                @csrf
+                                <button type="submit"
+                                        class="text-xs px-3 py-1.5 rounded-lg font-medium border border-yellow-800 text-yellow-400 bg-yellow-900/20 hover:bg-yellow-900/40 transition">
+                                    ↺ Rewatch
+                                </button>
+                            </form>
+                        @else
+                            <form method="POST" action="{{ route('workers.inboxes.rewatch', [$dep->id, $inbox->id]) }}">
+                                @csrf
+                                <button type="submit"
+                                        class="text-xs px-3 py-1.5 rounded-lg font-medium border border-gray-700 text-gray-500 hover:text-green-400 hover:border-green-800 transition">
+                                    ↺ Renew watch
+                                </button>
+                            </form>
+                        @endif
+
+                        <form method="POST" action="{{ route('workers.inboxes.disconnect', [$dep->id, $inbox->pivot_id]) }}"
+                              onsubmit="return confirm('Disconnect {{ $inbox->gmail_address }}?')">
+                            @csrf @method('DELETE')
+                            <button type="submit" class="text-xs text-gray-600 hover:text-red-400 transition px-2 py-1.5">
+                                Disconnect
                             </button>
                         </form>
-                    @else
-                        <form method="POST" action="{{ route('workers.inboxes.rewatch', [$dep->id, $inbox->id]) }}">
-                            @csrf
-                            <button type="submit"
-                                    class="text-xs px-3 py-1.5 rounded-lg font-medium border border-gray-700 text-gray-500 hover:text-green-400 hover:border-green-800 transition">
-                                ↺ Renew watch
-                            </button>
-                        </form>
-                    @endif
-
-                    <form method="POST" action="{{ route('workers.inboxes.disconnect', [$dep->id, $inbox->pivot_id]) }}"
-                          onsubmit="return confirm('Disconnect {{ $inbox->gmail_address }}?')">
-                        @csrf @method('DELETE')
-                        <button type="submit" class="text-xs text-gray-600 hover:text-red-400 transition px-2 py-1.5">
-                            Disconnect
-                        </button>
-                    </form>
+                    </div>
                 </div>
             </div>
             @empty

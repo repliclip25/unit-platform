@@ -321,10 +321,10 @@
 
 {{-- Mobile top bar --}}
 <div id="mob-bar" class="lg:hidden fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-4 py-3" style="backdrop-filter:blur(14px)">
-    <div class="flex items-center gap-2.5">
+    <a href="{{ route('dashboard') }}" class="flex items-center gap-2.5">
         <img src="/logo.png" alt="UNIT" class="w-7 h-7 rounded-md">
         <span class="font-display font-bold text-base">UNIT</span>
-    </div>
+    </a>
     <button id="mob-toggle" class="p-1.5 rounded-md" style="background:rgba(128,128,128,0.1)">
         <svg id="mob-icon-open" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
         <svg id="mob-icon-close" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
@@ -337,13 +337,13 @@
     <aside id="sidebar" class="fixed lg:static inset-y-0 left-0 z-40 w-64 flex flex-col transition-transform -translate-x-full lg:translate-x-0">
 
         <div class="px-5 py-5 shrink-0" style="border-bottom:1px solid var(--border)">
-            <div class="flex items-center gap-3">
+            <a href="{{ route('dashboard') }}" class="flex items-center gap-3">
                 <img src="/logo.png" alt="UNIT" class="w-8 h-8 rounded-md">
                 <div>
                     <p class="font-display font-bold text-sm leading-tight" style="color:var(--text-primary)">UNIT Platform</p>
                     <p class="text-xs mt-0.5" style="color:var(--text-faint)">Employee OS</p>
                 </div>
-            </div>
+            </a>
         </div>
 
         <nav class="flex-1 px-3 py-4 overflow-y-auto space-y-5">
@@ -372,6 +372,34 @@
                     System QA
                 </a>
                 @endif
+            </div>
+
+            <div>
+                <div class="px-3 mb-1.5 flex items-center justify-between">
+                    <p class="nav-section-label text-xs uppercase tracking-widest font-semibold">My Team</p>
+                    <a href="{{ route('workers.deploy') }}" class="text-xs font-semibold" style="color:var(--accent)">+ Hire</a>
+                </div>
+                @forelse($deployments as $dep)
+                    @php $isActive = request()->segment(2) == $dep->id; @endphp
+                    <a href="{{ route('workers.show', $dep->worker_slug) }}"
+                       class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition {{ $isActive ? '' : 'nav-link' }}"
+                       style="{{ $isActive ? 'background:var(--accent);color:#000000' : '' }}">
+                        <div class="relative shrink-0">
+                            <div class="worker-avatar w-6 h-6 rounded-md flex items-center justify-center text-xs font-bold"
+                                 style="{{ $isActive ? 'background:rgba(26,20,4,0.2);color:#1a1404' : '' }}">
+                                {{ strtoupper(substr($dep->worker_slug, 0, 1)) }}
+                            </div>
+                            <span class="absolute -bottom-0.5 -right-0.5 w-2 h-2 rounded-full"
+                                  style="background:{{ $dep->status === 'active' ? '#4ade80' : '#facc15' }};border:2px solid var(--bg-surface)"></span>
+                        </div>
+                        <span class="truncate flex-1">{{ $dep->name }}</span>
+                    </a>
+                @empty
+                    <div class="mx-1 px-3 py-4 rounded-lg text-center" style="border:1px dashed var(--border)">
+                        <p class="text-xs mb-1" style="color:var(--text-faint)">No employees hired yet</p>
+                        <a href="{{ route('workers.deploy') }}" class="text-xs font-semibold" style="color:var(--accent)">Hire your first →</a>
+                    </div>
+                @endforelse
             </div>
 
             <div>
@@ -436,34 +464,6 @@
                     AI Spend
                 </a>
                 @endif
-            </div>
-
-            <div>
-                <div class="px-3 mb-1.5 flex items-center justify-between">
-                    <p class="nav-section-label text-xs uppercase tracking-widest font-semibold">My Team</p>
-                    <a href="{{ route('workers.deploy') }}" class="text-xs font-semibold" style="color:var(--accent)">+ Hire</a>
-                </div>
-                @forelse($deployments as $dep)
-                    @php $isActive = request()->segment(2) == $dep->id; @endphp
-                    <a href="{{ route('workers.show', $dep->worker_slug) }}"
-                       class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition {{ $isActive ? '' : 'nav-link' }}"
-                       style="{{ $isActive ? 'background:var(--accent);color:#000000' : '' }}">
-                        <div class="relative shrink-0">
-                            <div class="worker-avatar w-6 h-6 rounded-md flex items-center justify-center text-xs font-bold"
-                                 style="{{ $isActive ? 'background:rgba(26,20,4,0.2);color:#1a1404' : '' }}">
-                                {{ strtoupper(substr($dep->worker_slug, 0, 1)) }}
-                            </div>
-                            <span class="absolute -bottom-0.5 -right-0.5 w-2 h-2 rounded-full"
-                                  style="background:{{ $dep->status === 'active' ? '#4ade80' : '#facc15' }};border:2px solid var(--bg-surface)"></span>
-                        </div>
-                        <span class="truncate flex-1">{{ $dep->name }}</span>
-                    </a>
-                @empty
-                    <div class="mx-1 px-3 py-4 rounded-lg text-center" style="border:1px dashed var(--border)">
-                        <p class="text-xs mb-1" style="color:var(--text-faint)">No employees hired yet</p>
-                        <a href="{{ route('workers.deploy') }}" class="text-xs font-semibold" style="color:var(--accent)">Hire your first →</a>
-                    </div>
-                @endforelse
             </div>
 
         </nav>

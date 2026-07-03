@@ -228,8 +228,8 @@
                     <div class="stage-prompt-block" data-stage="{{ $stageKey }}">
 
                         {{-- Stage header --}}
-                        <div class="flex items-center justify-between mb-3">
-                            <div class="flex items-center gap-2">
+                        <div class="flex flex-wrap items-start justify-between gap-2 mb-3">
+                            <div class="flex flex-wrap items-center gap-2">
                                 <span class="text-sm font-semibold text-white">{{ $stage['label'] }}</span>
                                 <span class="text-xs text-gray-600 font-mono">{{ $stageKey }}</span>
                                 @if($isOverridden)
@@ -273,7 +273,7 @@
                         <div class="mb-3">
                             <label class="text-gray-600 text-xs uppercase tracking-wide block mb-1">
                                 User Prompt
-                                <span class="text-gray-700 normal-case">— placeholders:
+                                <span class="text-gray-700 normal-case break-words">— placeholders:
                                     <code class="bg-gray-800 px-1 rounded">{RAW_EMAIL}</code>
                                     <code class="bg-gray-800 px-1 rounded">{READ_OUTPUT}</code>
                                 </span>
@@ -353,7 +353,7 @@
                     <h3 class="text-red-400 text-sm font-semibold">Danger Zone</h3>
                     <p class="text-gray-500 text-xs mt-0.5">These actions are permanent and cannot be undone.</p>
                 </div>
-                <div class="px-5 py-4 flex items-center justify-between">
+                <div class="px-5 py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                     <div>
                         <p class="text-white text-sm font-medium">Remove this worker</p>
                         <p class="text-gray-500 text-xs mt-0.5">Deletes the deployment and all associated configuration. Transaction history is preserved.</p>
@@ -362,7 +362,7 @@
                           onsubmit="return confirm('Permanently remove {{ addslashes($dep->name) }}? This cannot be undone.')">
                         @csrf @method('DELETE')
                         <button type="submit"
-                                class="text-xs text-red-400 border border-red-800 rounded-lg px-4 py-2 hover:bg-red-900/30 transition">
+                                class="text-xs text-red-400 border border-red-800 rounded-lg px-4 py-2 hover:bg-red-900/30 transition shrink-0">
                             Remove Worker
                         </button>
                     </form>

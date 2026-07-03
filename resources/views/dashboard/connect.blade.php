@@ -15,25 +15,25 @@
 
         {{-- Step 1: Connect Gmail --}}
         <div class="bg-gray-900 border border-gray-800 rounded-xl mb-4">
-            <div class="px-6 py-5 border-b border-gray-800 flex items-center justify-between">
+            <div class="px-6 py-5 border-b border-gray-800 flex items-center justify-between gap-3 flex-wrap">
                 <div class="flex items-center gap-3">
-                    <div class="w-7 h-7 rounded-full flex items-center justify-center text-sm font-bold {{ $credential ? 'bg-green-600 text-white' : 'bg-gray-700 text-gray-300' }}">
+                    <div class="w-7 h-7 rounded-full flex items-center justify-center text-sm font-bold shrink-0 {{ $credential ? 'bg-green-600 text-white' : 'bg-gray-700 text-gray-300' }}">
                         {{ $credential ? '✓' : '1' }}
                     </div>
                     <h2 class="text-white font-semibold">Connect Gmail Account</h2>
                 </div>
                 @if($credential)
-                    <span class="text-green-400 text-xs">Connected</span>
+                    <span class="text-green-400 text-xs shrink-0">Connected</span>
                 @endif
             </div>
             <div class="px-6 py-5">
                 @if($credential)
-                    <div class="flex items-center gap-3 mb-4">
-                        <div class="w-8 h-8 bg-gray-700 rounded-full flex items-center justify-center">
+                    <div class="flex items-center gap-3 mb-4 min-w-0">
+                        <div class="w-8 h-8 bg-gray-700 rounded-full flex items-center justify-center shrink-0">
                             <span class="text-white text-xs">@</span>
                         </div>
-                        <div>
-                            <p class="text-white text-sm font-medium">{{ $credential->gmail_address }}</p>
+                        <div class="min-w-0">
+                            <p class="text-white text-sm font-medium truncate">{{ $credential->gmail_address }}</p>
                             <p class="text-gray-500 text-xs">Gmail account connected</p>
                         </div>
                     </div>
@@ -52,15 +52,15 @@
 
         {{-- Step 2: Activate Watch --}}
         <div class="bg-gray-900 border border-gray-800 rounded-xl mb-4">
-            <div class="px-6 py-5 border-b border-gray-800 flex items-center justify-between">
+            <div class="px-6 py-5 border-b border-gray-800 flex items-center justify-between gap-3 flex-wrap">
                 <div class="flex items-center gap-3">
-                    <div class="w-7 h-7 rounded-full flex items-center justify-center text-sm font-bold {{ $credential?->watch_active ? 'bg-green-600 text-white' : 'bg-gray-700 text-gray-300' }}">
+                    <div class="w-7 h-7 rounded-full flex items-center justify-center text-sm font-bold shrink-0 {{ $credential?->watch_active ? 'bg-green-600 text-white' : 'bg-gray-700 text-gray-300' }}">
                         {{ $credential?->watch_active ? '✓' : '2' }}
                     </div>
                     <h2 class="text-white font-semibold">Activate Inbox Monitoring</h2>
                 </div>
                 @if($credential?->watch_active)
-                    <span class="text-green-400 text-xs">Active · expires {{ \Carbon\Carbon::parse($credential->watch_expires_at)->format('M d') }}</span>
+                    <span class="text-green-400 text-xs shrink-0">Active · expires {{ \Carbon\Carbon::parse($credential->watch_expires_at)->format('M d') }}</span>
                 @endif
             </div>
             <div class="px-6 py-5">
