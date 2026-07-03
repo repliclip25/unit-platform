@@ -218,10 +218,12 @@
                     array_map('strtolower', $connectsTo),
                     ['rules', 'prompts']
                 );
+
             @endphp
             <div class="px-5 py-3" style="border-top:1px solid var(--border-subtle)">
-                <p class="text-xs" style="color:var(--text-muted)">
-                    You control: {{ implode(' · ', $controls) }}
+                <p class="text-xs">
+                    <span style="color:var(--text-faint)">You control:</span>
+                    <span style="color:var(--text-secondary)">{{ implode(' · ', array_map('strtoupper', $controls)) }}</span>
                 </p>
             </div>
 
