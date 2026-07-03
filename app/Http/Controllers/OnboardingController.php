@@ -296,6 +296,21 @@ class OnboardingController extends Controller
             return redirect()->route('onboarding.step', 'select-worker');
         }
 
+        // Resolve contract first — was previously used before being assigned (fatal bug)
+        $contract = WorkerRegistry::resolveActive($dep->worker_slug);
+
+        if (WorkerRegistry::isNull($contract)) {
+            return redirect()->route('onboarding.step', 'fast-track')
+                ->with('fast_track_error', 'Worker is unavailable. Please contact support.');
+        }
+
+        // Gate: Gmail must be connected before we can run the pipeline
+        $hasGmail = DB::table('user_gmail_credentials')->where('user_id', auth()->id())->exists();
+        if (!$hasGmail) {
+            return redirect()->route('onboarding.step', 'fast-track')
+                ->with('fast_track_error', 'Connect your Gmail inbox first — Fast Track needs it to read and draft emails.');
+        }
+
         $txId    = 'onb-' . auth()->id() . '-' . now()->timestamp;
         $payload = array_merge($contract->fastTrack(), [
             'fast_track' => true,
@@ -313,9 +328,7 @@ class OnboardingController extends Controller
             'updated_at'    => now(),
         ]);
 
-        // Fast-track goes to a dedicated queue that's always running, not the per-deployment queue
-        $contract     = WorkerRegistry::resolveActive($dep->worker_slug);
-        $ingestJob    = $contract->ingestJobClass();
+        $ingestJob = $contract->ingestJobClass();
         $ingestJob::dispatch($txId)->onQueue('fast-track');
 
         session(['onboarding_fast_track_tx' => $txId]);
@@ -332,11 +345,19 @@ class OnboardingController extends Controller
      */
     private function bootSessionAndDeploy(int $userId, string $workerSlug)
     {
-        $worker = DB::table('workers')->where('slug', $workerSlug)->firstOrFail();
+        // Resolve name from live registry — never from the stale `workers` table
+        $contract   = WorkerRegistry::resolve($workerSlug);
+        $workerName = $contract->identity()['name'] ?? strtoupper($workerSlug);
+
+        if (WorkerRegistry::isNull($contract)) {
+            return redirect()->route('onboarding.step', 'select-worker')
+                ->with('error', 'That worker is no longer available.');
+        }
 
         $existing = DB::table('worker_deployments')
             ->where('user_id', $userId)
             ->where('worker_slug', $workerSlug)
+            ->whereIn('status', ['active', 'paused'])
             ->first();
 
         if ($existing) {
@@ -345,7 +366,7 @@ class OnboardingController extends Controller
             $depId = DB::table('worker_deployments')->insertGetId([
                 'user_id'     => $userId,
                 'worker_slug' => $workerSlug,
-                'name'        => $worker->name,
+                'name'        => $workerName,
                 'status'      => 'active',
                 'config'      => json_encode(['capture_scope' => 'All incoming emails', 'capture_keywords' => []]),
                 'created_at'  => now(),

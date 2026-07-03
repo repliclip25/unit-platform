@@ -131,11 +131,19 @@
     <p class="text-gray-400 text-sm">Fire a sample renewal email through your worker and watch it classify, match, and draft a response in real time.</p>
 </div>
 
+@if(session('fast_track_error'))
+<div class="bg-red-500/10 border border-red-500/30 rounded-xl px-5 py-4 mb-5">
+    <p class="text-red-400 text-sm font-semibold mb-1">&#9888; Can't run Fast Track</p>
+    <p class="text-gray-400 text-xs">{{ session('fast_track_error') }}</p>
+</div>
+@endif
+
 @if(!$hasCredential)
 <div class="bg-yellow-400/10 border border-yellow-400/20 rounded-xl px-5 py-4 mb-5">
     <p class="text-yellow-400 text-sm font-semibold mb-1">&#9888; Gmail not connected</p>
-    <p class="text-gray-400 text-xs">The test will still run but the draft delivery step will be skipped.
-        <a href="{{ route('onboarding.step', 'credential') }}" class="text-yellow-400 underline">Connect Gmail first</a> for a full pipeline run.
+    <p class="text-gray-400 text-xs">
+        <a href="{{ route('onboarding.step', 'credential') }}" class="text-yellow-400 underline font-semibold">Connect Gmail first</a>
+        — Fast Track needs it to read the sample email and push the draft.
     </p>
 </div>
 @endif

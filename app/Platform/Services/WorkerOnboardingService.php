@@ -40,6 +40,14 @@ class WorkerOnboardingService
     public static function resolveStepSequence(int $userId, string $workerSlug): array
     {
         $contract = WorkerRegistry::resolve($workerSlug);
+
+        // Auto-seed email verification for users already verified at the Laravel level
+        // (Google OAuth users have email_verified_at set but may lack the platform row)
+        $user = DB::table('users')->where('id', $userId)->first();
+        if ($user?->email_verified_at) {
+            PlatformVerificationService::markVerified($userId, 'email', [], 'system');
+        }
+
         $verified = PlatformVerificationService::completedTypes($userId);
 
         $steps = [];
@@ -117,8 +125,23 @@ class WorkerOnboardingService
         $existing = self::activeSession($userId);
 
         if ($existing && $existing->worker_slug === $workerSlug) {
-            self::syncToSession($existing);
-            return $existing;
+            // Validate that the attached deployment still exists — if the account
+            // was flushed, the deployment is gone and we must start a fresh session.
+            $depStillExists = $existing->deployment_id
+                && DB::table('worker_deployments')
+                    ->where('id', $existing->deployment_id)
+                    ->whereIn('status', ['active', 'paused'])
+                    ->exists();
+
+            if ($depStillExists || !$existing->deployment_id) {
+                self::syncToSession($existing);
+                return $existing;
+            }
+
+            // Stale session — abandon it and start fresh
+            DB::table('worker_onboarding_sessions')
+                ->where('id', $existing->id)
+                ->update(['status' => self::STATUS_ABANDONED, 'abandoned_at' => now(), 'updated_at' => now()]);
         }
 
         $session = self::start($userId, $workerSlug);
