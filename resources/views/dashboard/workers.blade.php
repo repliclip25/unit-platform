@@ -10,6 +10,8 @@ $workerMeta = [
         'icon'     => '✉',
         'badge'    => 'Live',
         'category' => 'RENEWALS',
+        'pitch'    => 'I make sure you never miss an important renewal.',
+        'about'    => 'I watch your inbox, understand each renewal request, use what I know about your customers and business, prepare the reply, and leave it in Gmail for your approval.',
         'bullets'  => [
             'Reads and classifies every inbound renewal email',
             'Drafts tailored responses using your contacts and templates',
@@ -23,6 +25,8 @@ $workerMeta = [
         'icon'     => '⇄',
         'badge'    => 'Live',
         'category' => 'CONTENT',
+        'pitch'    => 'I turn one idea into content everywhere.',
+        'about'    => 'I listen for new content, understand your voice and patterns, then create platform-native posts and newsletters — ready to review or publish automatically.',
         'bullets'  => [
             'Watches LinkedIn and X for new posts',
             'Repurposes content for each target platform natively',
@@ -32,7 +36,7 @@ $workerMeta = [
     ],
 ];
 
-$defaultMeta = ['color'=>'var(--accent)','rgb'=>'241,211,98','icon'=>'⚙','badge'=>'Live','category'=>'AUTOMATION','bullets'=>[]];
+$defaultMeta = ['color'=>'var(--accent)','rgb'=>'241,211,98','icon'=>'⚙','badge'=>'Live','category'=>'AUTOMATION','pitch'=>'','about'=>'','bullets'=>[]];
 
 $deployableWorkers = collect($catalog)->filter(function($worker) use ($contracts, $deploymentCounts, $totalInboxes) {
     $count    = $deploymentCounts->get($worker->slug, 0);
@@ -188,44 +192,32 @@ $depBySlug = $deployments->groupBy('worker_slug');
         </div>
     </div>
 
-    {{-- ── Status / Quote area ─────────────────────────────────────────────── --}}
+    {{-- ── Pitch + About ────────────────────────────────────────────────────── --}}
     <div style="padding:18px 20px;flex:1;display:flex;flex-direction:column">
 
-        @if($hasDeployment && $statusQuote)
-        {{-- Live status for hired worker --}}
-        <div style="display:flex;gap:10px;flex:1">
-            <span style="font-size:22px;color:{{ $color }};opacity:.7;line-height:1;flex-shrink:0;margin-top:-2px">"</span>
-            <div>
-                <p style="font-size:13px;color:var(--text-secondary);line-height:1.6;margin-bottom:12px">{{ $statusQuote }}</p>
-                @if($statusCta)
-                <a href="{{ $statusCta['url'] }}"
-                   style="font-size:12px;font-weight:700;color:{{ $color }};text-decoration:none;transition:opacity .15s"
-                   onmouseover="this.style.opacity='.7'" onmouseout="this.style.opacity='1'">
-                    {{ $statusCta['label'] }}
-                </a>
-                @endif
-            </div>
-        </div>
-
-        @elseif($hasDeployment)
-        {{-- Hired but no activity yet --}}
-        <div style="display:flex;gap:10px;flex:1">
-            <span style="font-size:22px;color:{{ $color }};opacity:.7;line-height:1;flex-shrink:0;margin-top:-2px">"</span>
-            <div>
-                <p style="font-size:13px;color:var(--text-secondary);line-height:1.6;margin-bottom:12px">Ready and watching. Connect an inbox to get started.</p>
-                <a href="{{ route('workers.show', $worker->slug) }}"
-                   style="font-size:12px;font-weight:700;color:{{ $color }};text-decoration:none">
-                    Set up →
-                </a>
-            </div>
-        </div>
-
+        {{-- Worker self-pitch — always shown --}}
+        @if($m['pitch'])
+        <p style="font-size:15px;font-weight:800;color:var(--text-primary);line-height:1.4;margin-bottom:8px">{{ $m['pitch'] }}</p>
+        @endif
+        @if($m['about'])
+        <p style="font-size:12px;color:var(--text-muted);line-height:1.7;margin-bottom:14px">{{ $m['about'] }}</p>
         @elseif($worker->description)
-        {{-- Not hired — show tagline --}}
-        <p style="font-size:13px;color:var(--text-muted);line-height:1.6;margin-bottom:16px;flex:1">{{ $worker->description }}</p>
+        <p style="font-size:12px;color:var(--text-muted);line-height:1.7;margin-bottom:14px">{{ $worker->description }}</p>
+        @endif
 
-        @else
-        <div style="flex:1"></div>
+        {{-- Live status update for hired workers --}}
+        @if($hasDeployment && $statusQuote)
+        <div style="background:var(--bg-raised);border:1px solid var(--border);border-radius:10px;padding:11px 14px;margin-bottom:14px">
+            <p style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text-muted);margin-bottom:4px">Latest update</p>
+            <p style="font-size:12px;color:var(--text-secondary);line-height:1.6;margin-bottom:8px">{{ $statusQuote }}</p>
+            @if($statusCta)
+            <a href="{{ $statusCta['url'] }}"
+               style="font-size:11px;font-weight:700;color:{{ $color }};text-decoration:none"
+               onmouseover="this.style.opacity='.7'" onmouseout="this.style.opacity='1'">
+                {{ $statusCta['label'] }}
+            </a>
+            @endif
+        </div>
         @endif
 
         {{-- ── Gallery strip (if media exists) ───────────────────────────── --}}
