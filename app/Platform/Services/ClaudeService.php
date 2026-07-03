@@ -166,7 +166,7 @@ class ClaudeService
         $key = match($providerKey) {
             'openai'    => config('services.openai.api_key', ''),
             'kimi'      => config('services.kimi.api_key', ''),
-            'google'    => config('services.google.api_key', ''),
+            'google'    => config('services.google_ai.api_key', ''),
             default     => config('services.claude.api_key', ''),
         };
 

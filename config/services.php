@@ -52,7 +52,18 @@ return [
 
     'claude' => [
         'api_key' => env('CLAUDE_API_KEY'),
-        'model'   => env('CLAUDE_MODEL', 'claude-sonnet-4-6'),
+    ],
+
+    'openai' => [
+        'api_key' => env('OPENAI_API_KEY'),
+    ],
+
+    'kimi' => [
+        'api_key' => env('KIMI_API_KEY'),
+    ],
+
+    'google_ai' => [
+        'api_key' => env('GOOGLE_AI_API_KEY'),
     ],
 
     'gmail' => [
