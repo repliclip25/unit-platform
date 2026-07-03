@@ -551,6 +551,26 @@ class NuxWorker implements WorkerContract
 
     // ── Block 3d: Dashboard Surface ─────────────────────────────────────────
 
+    public function deskCards(): array
+    {
+        return [
+            'drafted' => [
+                'label'       => 'Posts Drafted',
+                'description' => 'Pieces of content NUX drafted this week',
+                'default'     => true,
+                'default_pos' => 10,
+                'dismissible' => false,
+            ],
+            'published' => [
+                'label'       => 'Posts Published',
+                'description' => 'Content approved and pushed to your channels',
+                'default'     => true,
+                'default_pos' => 20,
+                'dismissible' => false,
+            ],
+        ];
+    }
+
     public function valueClock(): array
     {
         return [

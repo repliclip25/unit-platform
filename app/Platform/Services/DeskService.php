@@ -7,17 +7,16 @@ use Illuminate\Support\Facades\DB;
 /**
  * DeskService — resolves "Your Desk" card data for a user.
  *
- * Responsibilities:
- *   - Seed default card config for new users
- *   - Return the user's ordered, visible card definitions
- *   - Resolve live data for each visible card
+ * Card key namespaces:
+ *   worker.{slug}.{metric}  Pipeline cards declared by each WorkerContract::deskCards()
+ *   memory.*                Memory-level cards (asset expiry, enrichments, top queried)
+ *   referral.*              Growth / referral event cards
+ *   marketing.* / milestone.* Platform and milestone cards
  */
 class DeskService
 {
-    /**
-     * Ensure a user has desk card rows seeded.
-     * Called on first dashboard load — safe to call repeatedly (upsert).
-     */
+    // ── Seeding ───────────────────────────────────────────────────────────────
+
     public static function seedDefaults(int $userId): void
     {
         $existing = DB::table('user_desk_cards')
@@ -25,8 +24,8 @@ class DeskService
             ->pluck('card_key')
             ->flip();
 
+        // Seed static (non-worker) default cards
         $defaults = DeskCardRegistry::defaults();
-
         foreach ($defaults as $pos => $key) {
             if ($existing->has($key)) continue;
             DB::table('user_desk_cards')->insert([
@@ -38,12 +37,34 @@ class DeskService
                 'updated_at' => now(),
             ]);
         }
+
+        // Seed per-worker pipeline cards for this user's deployments
+        $deployments = DB::table('worker_deployments')
+            ->where('user_id', $userId)
+            ->whereIn('status', ['active', 'paused'])
+            ->get();
+
+        foreach ($deployments as $dep) {
+            $contract = WorkerRegistry::resolve($dep->worker_slug);
+            if (WorkerRegistry::isNull($contract)) continue;
+            $cards = $contract->deskCards();
+            foreach ($cards as $metric => $def) {
+                $key = "worker.{$dep->worker_slug}.{$metric}";
+                if ($existing->has($key)) continue;
+                DB::table('user_desk_cards')->insert([
+                    'user_id'    => $userId,
+                    'card_key'   => $key,
+                    'visible'    => $def['default'] ?? true,
+                    'position'   => $def['default_pos'] ?? 50,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            }
+        }
     }
 
-    /**
-     * Resolve the user's desk — visible cards in order, with live data.
-     * Returns a collection of resolved card arrays ready for the view.
-     */
+    // ── Resolve visible desk feed ─────────────────────────────────────────────
+
     public static function resolve(int $userId, array $context): \Illuminate\Support\Collection
     {
         self::seedDefaults($userId);
@@ -55,26 +76,27 @@ class DeskService
             ->get()
             ->keyBy('card_key');
 
-        $pool = DeskCardRegistry::all();
+        $staticPool = DeskCardRegistry::all();
+        $workerPool = self::buildWorkerPool($userId);
 
-        return $rows->map(function ($row) use ($pool, $context, $userId) {
-            $def = $pool[$row->card_key] ?? null;
+        return $rows->map(function ($row) use ($staticPool, $workerPool, $context, $userId) {
+            $key = $row->card_key;
+            $def = $staticPool[$key] ?? $workerPool[$key] ?? null;
             if (!$def) return null;
 
-            $data = self::resolveCard($row->card_key, $userId, $context, $row);
-            if ($data === null) return null; // card has nothing to show right now
+            $data = self::resolveCard($key, $userId, $context, $row, $workerPool);
+            if ($data === null) return null;
 
             return array_merge($def, [
-                'key'              => $row->card_key,
-                'position'         => $row->position,
-                'last_dismissed_at'=> $row->last_dismissed_at,
+                'key'               => $key,
+                'position'          => $row->position,
+                'last_dismissed_at' => $row->last_dismissed_at,
             ], $data);
         })->filter()->values();
     }
 
-    /**
-     * All card configs (visible + hidden) for the Customize Desk drawer.
-     */
+    // ── All cards for Customize Desk drawer ──────────────────────────────────
+
     public static function allForUser(int $userId): \Illuminate\Support\Collection
     {
         self::seedDefaults($userId);
@@ -85,142 +107,273 @@ class DeskService
             ->get()
             ->keyBy('card_key');
 
-        $pool = DeskCardRegistry::all();
+        $staticPool = DeskCardRegistry::all();
+        $workerPool = self::buildWorkerPool($userId);
+        $allPool    = array_merge($workerPool, $staticPool); // workers first in drawer
 
-        // Include pool cards not yet in user rows (newly added to registry)
         $cards = collect();
-        foreach ($pool as $key => $def) {
+        foreach ($allPool as $key => $def) {
             $row = $rows->get($key);
             $cards->push(array_merge($def, [
                 'key'      => $key,
-                'visible'  => $row ? (bool) $row->visible : $def['default'],
-                'position' => $row ? $row->position : $def['default_pos'],
+                'visible'  => $row ? (bool) $row->visible : ($def['default'] ?? true),
+                'position' => $row ? $row->position : ($def['default_pos'] ?? 50),
             ]));
         }
 
         return $cards->sortBy('position')->values();
     }
 
-    // ── Card resolvers ────────────────────────────────────────────────────────
+    // ── Build worker card pool dynamically ────────────────────────────────────
 
-    private static function resolveCard(string $key, int $userId, array $ctx, object $row): ?array
+    private static function buildWorkerPool(int $userId): array
+    {
+        $pool        = [];
+        $deployments = DB::table('worker_deployments')
+            ->where('user_id', $userId)
+            ->whereIn('status', ['active', 'paused'])
+            ->get();
+
+        foreach ($deployments as $dep) {
+            $contract = WorkerRegistry::resolve($dep->worker_slug);
+            if (WorkerRegistry::isNull($contract)) continue;
+            $name  = $contract->employee()['name'] ?? strtoupper($dep->worker_slug);
+            $cards = $contract->deskCards();
+            foreach ($cards as $metric => $def) {
+                $key = "worker.{$dep->worker_slug}.{$metric}";
+                $pool[$key] = array_merge($def, [
+                    'tier'        => 'pipeline',
+                    'worker_slug' => $dep->worker_slug,
+                    'worker_name' => $name,
+                    'deployment'  => $dep,
+                    'label'       => $name . ' · ' . ($def['label'] ?? ucfirst($metric)),
+                ]);
+            }
+        }
+
+        return $pool;
+    }
+
+    // ── Card data resolvers ───────────────────────────────────────────────────
+
+    private static function resolveCard(string $key, int $userId, array $ctx, object $row, array $workerPool): ?array
     {
         $weekStart = now()->startOfWeek();
 
-        return match($key) {
+        // ── Worker-specific pipeline cards ────────────────────────────────────
+        if (str_starts_with($key, 'worker.')) {
+            $def = $workerPool[$key] ?? null;
+            if (!$def) return null;
 
-            'pipeline.processed' => [
-                'text'   => $ctx['ovProcessed'] > 0
-                    ? '<strong>' . number_format($ctx['ovProcessed']) . '</strong> emails processed this week across all workers'
-                    : 'No emails processed this week',
-                'dot'    => 'grey',
-                'action' => null,
+            $dep    = $def['deployment'];
+            $metric = explode('.', $key)[2] ?? '';
+            $name   = $def['worker_name'];
+            $slug   = $def['worker_slug'];
+
+            return match($metric) {
+                'processed' => [
+                    'text'   => self::count(
+                        DB::table('transactions')->where('deployment_id', $dep->id)->where('created_at', '>=', $weekStart)->count(),
+                        fn($n) => "<strong>{$n}</strong> emails processed this week",
+                        'No emails processed this week'
+                    ),
+                    'dot'    => 'grey',
+                    'action' => null,
+                    'always' => true,
+                ],
+                'drafts' => (function() use ($dep, $ctx, $slug) {
+                    $n = DB::table('transactions')->where('deployment_id', $dep->id)->where('status', 'draft_ready')->whereNull('human_decision')->count();
+                    return $n > 0 ? [
+                        'text'   => "<strong>{$n}</strong> " . ($n === 1 ? 'draft' : 'drafts') . ' ready for your review',
+                        'dot'    => 'accent',
+                        'action' => ['label' => 'Open Gmail', 'url' => $ctx['gmailUrl'] ?? '#', 'external' => true],
+                        'always' => false,
+                    ] : null;
+                })(),
+                'urgent' => (function() use ($dep) {
+                    $n = DB::table('transactions')->where('deployment_id', $dep->id)->where('status', 'draft_ready')->whereIn('priority', ['High','Critical'])->count();
+                    return $n > 0 ? [
+                        'text'   => "<strong>{$n}</strong> " . ($n === 1 ? 'item' : 'items') . ' marked urgent',
+                        'dot'    => 'amber',
+                        'action' => ['label' => 'Review', 'url' => route('transactions', ['filter' => 'draft_ready', 'priority' => 'high'])],
+                        'always' => false,
+                    ] : null;
+                })(),
+                'stuck' => (function() use ($dep) {
+                    $failed = DB::table('transactions')->where('deployment_id', $dep->id)->where('status', 'failed')->count();
+                    $stuck  = DB::table('transactions')->where('deployment_id', $dep->id)->whereNotIn('status', ['draft_ready','approved','sent','failed','dismissed','filtered_out'])->where('updated_at', '<', now()->subMinutes(5))->count();
+                    $n = $failed + $stuck;
+                    return $n > 0 ? [
+                        'text'   => "<strong>{$n}</strong> " . ($n === 1 ? 'item' : 'items') . ' failed or stuck in pipeline',
+                        'dot'    => 'red',
+                        'action' => ['label' => 'View', 'url' => route('transactions', ['filter' => 'failed'])],
+                        'always' => false,
+                    ] : null;
+                })(),
+                'drafted' => (function() use ($dep, $weekStart) {
+                    $n = DB::table('transactions')->where('deployment_id', $dep->id)->where('status', 'draft_ready')->where('created_at', '>=', $weekStart)->count();
+                    return $n > 0 ? [
+                        'text'   => "<strong>{$n}</strong> " . ($n === 1 ? 'post' : 'posts') . ' drafted this week',
+                        'dot'    => 'accent',
+                        'action' => null,
+                        'always' => false,
+                    ] : null;
+                })(),
+                'published' => (function() use ($dep, $weekStart) {
+                    $n = DB::table('transactions')->where('deployment_id', $dep->id)->whereIn('status', ['approved','sent'])->where('updated_at', '>=', $weekStart)->count();
+                    return $n > 0 ? [
+                        'text'   => "<strong>{$n}</strong> " . ($n === 1 ? 'post' : 'posts') . ' published this week',
+                        'dot'    => 'green',
+                        'action' => null,
+                        'always' => false,
+                    ] : null;
+                })(),
+                default => null,
+            };
+        }
+
+        // ── Memory cards ──────────────────────────────────────────────────────
+
+        if ($key === 'memory.asset_expiry') {
+            $expiring = DB::table('assets')
+                ->where('user_id', $userId)
+                ->whereNotNull('renewal_date')
+                ->whereDate('renewal_date', '<=', now()->addDays(30))
+                ->whereDate('renewal_date', '>=', today())
+                ->orderBy('renewal_date')
+                ->limit(3)
+                ->get(['name', 'type', 'renewal_date']);
+
+            if ($expiring->isEmpty()) return null;
+
+            $n = $expiring->count();
+            $first = $expiring->first();
+            $days  = (int) now()->diffInDays($first->renewal_date, false);
+            $label = $days === 0 ? 'today' : ($days === 1 ? 'tomorrow' : "in {$days} days");
+
+            $text = $n === 1
+                ? "<strong>{$first->name}</strong> ({$first->type}) renews {$label}"
+                : "<strong>{$n}</strong> assets renewing soon — <strong>{$first->name}</strong> is next ({$label})";
+
+            return [
+                'text'   => $text,
+                'dot'    => $days <= 7 ? 'amber' : 'grey',
+                'action' => ['label' => 'View assets', 'url' => route('memory')],
+                'always' => false,
+            ];
+        }
+
+        if ($key === 'memory.enrichments') {
+            $clients  = DB::table('clients')->where('user_id', $userId)->where('created_at', '>=', $weekStart)->count();
+            $contacts = DB::table('contacts')->where('user_id', $userId)->where('created_at', '>=', $weekStart)->count();
+            $assets   = DB::table('assets')->where('user_id', $userId)->where('created_at', '>=', $weekStart)->count();
+            $n = $clients + $contacts + $assets;
+
+            return [
+                'text'   => $n > 0
+                    ? "<strong>{$n}</strong> memory " . ($n === 1 ? 'enrichment' : 'enrichments') . " added this week"
+                    : 'No new memory enrichments this week',
+                'dot'    => $n > 0 ? 'green' : 'grey',
+                'action' => $n > 0 ? ['label' => 'View memory', 'url' => route('memory')] : null,
                 'always' => true,
-            ],
+            ];
+        }
 
-            'pipeline.drafts' => $ctx['ovDrafts'] > 0 ? [
-                'text'      => '<strong>' . $ctx['ovDrafts'] . '</strong> ' . ($ctx['ovDrafts'] === 1 ? 'draft' : 'drafts') . ' ready for your review',
-                'dot'       => 'accent',
-                'action'    => ['label' => 'Open Gmail', 'url' => $ctx['gmailUrl'], 'external' => true],
-                'always'    => false,
-            ] : null,
+        if ($key === 'memory.top_queried') {
+            // Top-queried based on how many transactions reference a client_id
+            $top = DB::table('transactions')
+                ->where('user_id', $userId)
+                ->whereNotNull('client_id')
+                ->select('client_id', DB::raw('count(*) as hits'))
+                ->groupBy('client_id')
+                ->orderByDesc('hits')
+                ->limit(1)
+                ->first();
 
-            'pipeline.urgent' => $ctx['ovUrgent'] > 0 ? [
-                'text'   => '<strong>' . $ctx['ovUrgent'] . '</strong> ' . ($ctx['ovUrgent'] === 1 ? 'item' : 'items') . ' marked urgent — needs your attention',
-                'dot'    => 'amber',
-                'action' => ['label' => 'Review', 'url' => route('transactions', ['filter' => 'draft_ready', 'priority' => 'high'])],
+            if (!$top) return null;
+
+            $client = DB::table('clients')->where('id', $top->client_id)->first();
+            if (!$client) return null;
+
+            return [
+                'text'   => "<strong>{$client->name}</strong> is your most-referenced memory — looked up <strong>{$top->hits}</strong> " . ($top->hits === 1 ? 'time' : 'times'),
+                'dot'    => 'grey',
+                'action' => ['label' => 'View', 'url' => route('memory')],
                 'always' => false,
-            ] : null,
+            ];
+        }
 
-            'pipeline.stuck' => ($ctx['ovFailed'] + $ctx['ovStuck']) > 0 ? [
-                'text'   => '<strong>' . ($ctx['ovFailed'] + $ctx['ovStuck']) . '</strong> ' . (($ctx['ovFailed'] + $ctx['ovStuck']) === 1 ? 'item' : 'items') . ' failed or stuck in pipeline',
-                'dot'    => 'red',
-                'action' => ['label' => 'View', 'url' => route('transactions', ['filter' => 'failed'])],
+        // ── Referral cards ────────────────────────────────────────────────────
+
+        if ($key === 'referral.conversions') {
+            $count = DB::table('referral_credits')->where('referrer_id', $userId)->where('event', 'paid_conversion')->where('created_at', '>=', $weekStart)->count();
+            return $count > 0 ? [
+                'text'   => "<strong>{$count}</strong> " . ($count === 1 ? 'referral' : 'referrals') . ' converted to paid this week',
+                'dot'    => 'green',
+                'action' => ['label' => 'View earnings', 'url' => route('referral.index')],
                 'always' => false,
-            ] : null,
+            ] : null;
+        }
 
-            'referral.conversions' => (function() use ($userId, $weekStart) {
-                $count = DB::table('referral_credits')
-                    ->where('referrer_id', $userId)
-                    ->where('event', 'paid_conversion')
-                    ->where('created_at', '>=', $weekStart)
-                    ->count();
-                return $count > 0 ? [
-                    'text'   => '<strong>' . $count . '</strong> ' . ($count === 1 ? 'referral' : 'referrals') . ' converted to paid this week',
-                    'dot'    => 'green',
-                    'action' => ['label' => 'View earnings', 'url' => route('referral.index')],
-                    'always' => false,
-                ] : null;
-            })(),
+        if ($key === 'referral.signups') {
+            $count = DB::table('referral_credits')->where('referrer_id', $userId)->where('event', 'signup')->where('created_at', '>=', $weekStart)->count();
+            return $count > 0 ? [
+                'text'   => $count === 1
+                    ? 'Someone just joined UNIT with your referral link'
+                    : "<strong>{$count}</strong> people joined UNIT with your referral link this week",
+                'dot'    => 'green',
+                'action' => ['label' => 'View referrals', 'url' => route('referral.index')],
+                'always' => false,
+            ] : null;
+        }
 
-            'referral.signups' => (function() use ($userId, $weekStart) {
-                $count = DB::table('referral_credits')
-                    ->where('referrer_id', $userId)
-                    ->where('event', 'signup')
-                    ->where('created_at', '>=', $weekStart)
-                    ->count();
-                $latest = DB::table('referral_credits')
-                    ->where('referrer_id', $userId)
-                    ->where('event', 'signup')
-                    ->where('created_at', '>=', $weekStart)
-                    ->orderByDesc('created_at')
-                    ->first();
-                return $count > 0 ? [
-                    'text'   => $count === 1
-                        ? 'Someone just joined UNIT with your referral link'
-                        : '<strong>' . $count . '</strong> people joined UNIT with your referral link this week',
-                    'dot'    => 'green',
-                    'action' => ['label' => 'View referrals', 'url' => route('referral.index')],
-                    'always' => false,
-                ] : null;
-            })(),
+        // ── Platform / milestone cards ─────────────────────────────────────────
 
-            'marketing.new_worker' => (function() use ($userId, $row) {
-                // Show if a worker exists in the registry that the user hasn't deployed
-                $deployed = DB::table('worker_deployments')->where('user_id', $userId)->pluck('worker_slug')->unique();
-                $available = collect(WorkerRegistry::all())->filter(fn($c) => !$deployed->contains($c->identity()['slug']));
-                if ($available->isEmpty()) return null;
-                if ($row->last_dismissed_at) return null; // dismissed
-                $worker = $available->first();
-                $name = $worker->identity()['name'] ?? 'A new worker';
-                return [
-                    'text'        => 'New! <strong>' . $name . '</strong> is available — expand your team',
-                    'dot'         => 'accent',
-                    'action'      => ['label' => 'See worker', 'url' => route('workers.deploy')],
-                    'always'      => false,
-                    'dismissible' => true,
-                    'dismiss_key' => 'marketing.new_worker',
-                ];
-            })(),
+        if ($key === 'marketing.new_worker') {
+            if ($row->last_dismissed_at) return null;
+            $deployed  = DB::table('worker_deployments')->where('user_id', $userId)->pluck('worker_slug')->unique();
+            $available = collect(WorkerRegistry::all())->filter(fn($c) => !$deployed->contains($c->identity()['slug'] ?? ''));
+            if ($available->isEmpty()) return null;
+            $worker = $available->first();
+            $name   = $worker->identity()['name'] ?? 'A new worker';
+            return [
+                'text'        => "New! <strong>{$name}</strong> is available — expand your team",
+                'dot'         => 'accent',
+                'action'      => ['label' => 'See worker', 'url' => route('workers.deploy')],
+                'always'      => false,
+                'dismissible' => true,
+                'dismiss_key' => 'marketing.new_worker',
+            ];
+        }
 
-            'marketing.worker_reviews' => (function() use ($userId, $row, $weekStart) {
-                if ($row->last_dismissed_at && $row->last_dismissed_at >= $weekStart) return null;
-                // Placeholder — when marketplace reviews are wired, query here
-                return null;
-            })(),
+        if ($key === 'marketing.worker_reviews') {
+            if ($row->last_dismissed_at && $row->last_dismissed_at >= $weekStart) return null;
+            return null; // wired when marketplace reviews land
+        }
 
-            'milestone.hours_saved' => (function() use ($userId, $row) {
-                $total = DB::table('transactions')
-                    ->where('user_id', $userId)
-                    ->whereNotIn('status', ['received','failed','filtered_out','dismissed'])
-                    ->count();
-                $hours = round($total * 0.25);
-                $milestones = [10, 25, 50, 100, 250, 500, 1000];
-                $hit = collect($milestones)->last(fn($m) => $hours >= $m);
-                if (!$hit) return null;
-                // Only show if not dismissed after hitting this milestone
-                if ($row->last_dismissed_at) return null;
-                return [
-                    'text'        => '🎉 You\'ve saved over <strong>' . $hit . ' hours</strong> with UNIT — keep going',
-                    'dot'         => 'accent',
-                    'action'      => ['label' => 'Share', 'url' => route('referral.index')],
-                    'always'      => false,
-                    'dismissible' => true,
-                    'dismiss_key' => 'milestone.hours_saved',
-                ];
-            })(),
+        if ($key === 'milestone.hours_saved') {
+            if ($row->last_dismissed_at) return null;
+            $total = DB::table('transactions')->where('user_id', $userId)->whereNotIn('status', ['received','failed','filtered_out','dismissed'])->count();
+            $hours = round($total * 0.25);
+            $hit   = collect([10, 25, 50, 100, 250, 500, 1000])->last(fn($m) => $hours >= $m);
+            if (!$hit) return null;
+            return [
+                'text'        => "🎉 You've saved over <strong>{$hit} hours</strong> with UNIT — keep going",
+                'dot'         => 'accent',
+                'action'      => ['label' => 'Share', 'url' => route('referral.index')],
+                'always'      => false,
+                'dismissible' => true,
+                'dismiss_key' => 'milestone.hours_saved',
+            ];
+        }
 
-            default => null,
-        };
+        return null;
+    }
+
+    // ── Helpers ───────────────────────────────────────────────────────────────
+
+    private static function count(int $n, callable $some, string $none): string
+    {
+        return $n > 0 ? $some($n) : $none;
     }
 }

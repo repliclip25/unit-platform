@@ -3,59 +3,48 @@
 namespace App\Platform\Services;
 
 /**
- * DeskCardRegistry — the full pool of available Desk card types.
+ * DeskCardRegistry — static pool of non-worker Desk card types.
  *
- * Each entry declares:
- *   key         Unique identifier stored in user_desk_cards.card_key
- *   tier        'operational' | 'growth' | 'platform'
- *   label       Short display name shown in the Customize Desk drawer
- *   description One line explaining what the card shows
- *   default     Whether the card is visible by default for new users
- *   default_pos Default sort position (lower = higher on desk)
- *   dismissible Whether the card can be hidden after showing (milestone cards)
+ * Worker pipeline cards are NOT stored here — they are declared by each
+ * WorkerContract::deskCards() and keyed dynamically as `worker.{slug}.{metric}`.
  *
- * Card data is resolved at runtime by DeskService::resolve().
+ * This registry covers:
+ *   memory.*   — memory-level cards (asset expiry, enrichments, top queried)
+ *   referral.* — growth / referral events
+ *   platform.* / milestone.* — marketing and milestone cards
  */
 class DeskCardRegistry
 {
     public static function all(): array
     {
         return [
-            // ── Tier 1: Operational ──────────────────────────────────────────
-            'pipeline.processed' => [
-                'tier'        => 'operational',
-                'label'       => 'Emails Processed',
-                'description' => 'How many emails your workers handled this week',
+            // ── Memory tier ──────────────────────────────────────────────────
+            'memory.asset_expiry' => [
+                'tier'        => 'memory',
+                'label'       => 'Asset Expiry',
+                'description' => 'Assets with renewal dates coming up in the next 30 days',
                 'default'     => true,
-                'default_pos' => 10,
+                'default_pos' => 5,
                 'dismissible' => false,
             ],
-            'pipeline.drafts' => [
-                'tier'        => 'operational',
-                'label'       => 'Drafts Ready',
-                'description' => 'Drafts waiting for your review in Gmail',
+            'memory.enrichments' => [
+                'tier'        => 'memory',
+                'label'       => 'Memory Enrichments',
+                'description' => 'New entries added to your team memory this week',
                 'default'     => true,
-                'default_pos' => 20,
+                'default_pos' => 6,
                 'dismissible' => false,
             ],
-            'pipeline.urgent' => [
-                'tier'        => 'operational',
-                'label'       => 'Urgent Items',
-                'description' => 'High-priority items needing your attention',
-                'default'     => true,
-                'default_pos' => 30,
-                'dismissible' => false,
-            ],
-            'pipeline.stuck' => [
-                'tier'        => 'operational',
-                'label'       => 'Failed / Stuck',
-                'description' => 'Items that failed or are stuck in the pipeline',
-                'default'     => true,
-                'default_pos' => 40,
+            'memory.top_queried' => [
+                'tier'        => 'memory',
+                'label'       => 'Top Queried Memory',
+                'description' => 'The memory records your workers look up most often',
+                'default'     => false,
+                'default_pos' => 7,
                 'dismissible' => false,
             ],
 
-            // ── Tier 2: Growth ───────────────────────────────────────────────
+            // ── Growth tier ──────────────────────────────────────────────────
             'referral.conversions' => [
                 'tier'        => 'growth',
                 'label'       => 'Referral Conversions',
@@ -73,7 +62,7 @@ class DeskCardRegistry
                 'dismissible' => false,
             ],
 
-            // ── Tier 3: Platform / Marketing ─────────────────────────────────
+            // ── Platform / Marketing tier ────────────────────────────────────
             'marketing.new_worker' => [
                 'tier'        => 'platform',
                 'label'       => 'New Worker Available',
@@ -103,6 +92,8 @@ class DeskCardRegistry
 
     public static function get(string $key): ?array
     {
+        // Worker-keyed cards are valid even though they're not in this static pool
+        if (str_starts_with($key, 'worker.')) return ['dynamic' => true];
         return self::all()[$key] ?? null;
     }
 

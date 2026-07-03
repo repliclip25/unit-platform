@@ -655,6 +655,40 @@ class AvaWorker implements WorkerContract
 
     // ── Block 3d: Dashboard Surface ─────────────────────────────────────────
 
+    public function deskCards(): array
+    {
+        return [
+            'processed' => [
+                'label'       => 'Emails Processed',
+                'description' => 'How many emails AVA handled this week',
+                'default'     => true,
+                'default_pos' => 10,
+                'dismissible' => false,
+            ],
+            'drafts' => [
+                'label'       => 'Drafts Ready',
+                'description' => 'Drafts waiting for your review in Gmail',
+                'default'     => true,
+                'default_pos' => 20,
+                'dismissible' => false,
+            ],
+            'urgent' => [
+                'label'       => 'Urgent Items',
+                'description' => 'High-priority renewals needing your attention',
+                'default'     => true,
+                'default_pos' => 30,
+                'dismissible' => false,
+            ],
+            'stuck' => [
+                'label'       => 'Failed / Stuck',
+                'description' => 'Emails AVA couldn\'t process or that got stuck',
+                'default'     => true,
+                'default_pos' => 40,
+                'dismissible' => false,
+            ],
+        ];
+    }
+
     public function valueClock(): array
     {
         return [

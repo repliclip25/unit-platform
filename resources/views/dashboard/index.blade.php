@@ -79,6 +79,7 @@
             Everything's quiet — nothing needs your attention right now.
         </div>
         @else
+        <style>#desk-feed strong { color:var(--text-primary); font-size:1.05em; }</style>
         <div id="desk-feed" class="divide-y" style="border-top:1px solid var(--border-subtle);border-bottom:1px solid var(--border-subtle)">
             @foreach($deskCards as $card)
             @php
@@ -96,7 +97,7 @@
                  @if($card['dismissible'] ?? false) data-dismissible="1" @endif>
                 <div class="flex items-center gap-3 min-w-0">
                     <span class="w-1.5 h-1.5 rounded-full shrink-0" style="background:{{ $dot }}"></span>
-                    <span class="text-sm leading-snug" style="color:var(--text-secondary)">{!! $card['text'] !!}</span>
+                    <span class="leading-snug" style="color:var(--text-secondary);font-size:0.9rem">{!! $card['text'] !!}</span>
                 </div>
                 <div class="flex items-center gap-2 shrink-0 ml-2">
                     @if($card['action'] ?? null)
@@ -128,10 +129,10 @@
                         style="color:var(--text-faint)">✕ Close</button>
             </div>
             @php
-                $tierLabels = ['operational' => 'Pipeline', 'growth' => 'Growth', 'platform' => 'Platform'];
+                $tierLabels = ['pipeline' => 'Pipeline', 'memory' => 'Memory', 'growth' => 'Growth', 'platform' => 'Platform'];
                 $grouped = collect($deskAllCards)->groupBy('tier');
             @endphp
-            @foreach(['operational','growth','platform'] as $tier)
+            @foreach(['pipeline','memory','growth','platform'] as $tier)
             @if($grouped->has($tier))
             <div class="px-5 py-3" style="border-bottom:1px solid var(--border-subtle)">
                 <p class="text-xs font-bold uppercase tracking-widest mb-2" style="color:var(--text-muted)">

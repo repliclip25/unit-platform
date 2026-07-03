@@ -442,6 +442,17 @@ interface WorkerContract
      */
     public function valueClock(): array;
 
+    /**
+     * Declares this worker's pipeline cards for the "Your Desk" feed.
+     *
+     * Returns an array keyed by metric slug (e.g. 'processed', 'drafts'),
+     * each with: label, description, default, default_pos, dismissible.
+     * Keys are stored as `worker.{slug}.{metric}` in user_desk_cards.
+     *
+     * Return [] to contribute no desk cards (e.g. non-pipeline workers).
+     */
+    public function deskCards(): array;
+
     // ── Block 3d: Dashboard Surface ─────────────────────────────────────────
 
     /**
