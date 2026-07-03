@@ -58,16 +58,57 @@ class ProfileController extends Controller
         $depCounts = $deployments->groupBy('worker_slug')
             ->map(fn($g) => $g->count());
 
-        // All-time Value Clock — total hours saved since account creation
-        $totalProcessed = DB::table('transactions')
-            ->where('user_id', $user->id)
-            ->whereNotIn('status', ['received', 'failed', 'filtered_out', 'dismissed'])
+        // Worker stat cards — one per deployed worker
+        $workerStats = $deployments->map(function ($dep) use ($contracts) {
+            $contract = $contracts->get($dep->worker_slug);
+            $employee = $contract ? $contract->employee() : [];
+            $slug     = $dep->worker_slug;
+
+            $processed = DB::table('transactions')
+                ->where('deployment_id', $dep->id)
+                ->whereNotIn('status', ['received', 'failed', 'filtered_out', 'dismissed'])
+                ->count();
+
+            return match ($slug) {
+                'ava' => [
+                    'label'    => 'AVA · HOURS SAVED, ALL TIME',
+                    'value'    => number_format($processed * 0.25, 1),
+                    'subtitle' => number_format($processed) . ' emails processed',
+                ],
+                'nux' => [
+                    'label'    => 'NUX · POSTS DRAFTED, ALL TIME',
+                    'value'    => number_format($processed),
+                    'subtitle' => 'Across LinkedIn & X',
+                ],
+                default => [
+                    'label'    => strtoupper($slug) . ' · TASKS COMPLETED',
+                    'value'    => number_format($processed),
+                    'subtitle' => 'All time',
+                ],
+            };
+        })->values();
+
+        // Referral earnings card
+        $referralEarnings = DB::table('referral_credits')
+            ->where('referrer_id', $user->id)
+            ->where('status', 'applied')
+            ->sum('credit_usd');
+        $referralCount = DB::table('referral_credits')
+            ->where('referrer_id', $user->id)
+            ->where('event', 'paid_conversion')
             ->count();
-        $clockValue = round($totalProcessed * 0.25, 1);
+
+        // Team memory enrichments
+        $contactsAdded = DB::table('contacts')->where('user_id', $user->id)->count()
+            + DB::table('clients')->where('user_id', $user->id)->count();
+
+        // Referral URL
+        $referralUrl = $user->referral_code ? url('/register?ref=' . $user->referral_code) : null;
 
         return view('profile.show', compact(
             'user', 'deployments', 'contracts', 'gmailCredentials',
-            'deploymentCredentials', 'sessions', 'depCounts', 'clockValue', 'totalProcessed'
+            'deploymentCredentials', 'sessions', 'depCounts',
+            'workerStats', 'referralEarnings', 'referralCount', 'contactsAdded', 'referralUrl'
         ));
     }
 
