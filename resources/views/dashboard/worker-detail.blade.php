@@ -523,42 +523,16 @@
                         <p class="text-gray-500 text-xs">{{ $dep->worker_slug }}</p>
                     </div>
                 </div>
-                <div class="flex items-center gap-2 flex-wrap">
+                <div class="flex items-center gap-2">
                     @if($dep->status === 'active')
-                        <span class="flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg" style="background:rgba(34,197,94,0.12);color:#4ade80;border:1px solid rgba(34,197,94,0.3)">
+                        <span class="flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg" style="background:rgba(74,222,128,0.1);color:#4ade80;border:1px solid rgba(74,222,128,0.25)">
                             <span class="w-1.5 h-1.5 rounded-full animate-pulse" style="background:#4ade80"></span> Active
                         </span>
-                        <form method="POST" action="{{ route('workers.status', $dep->id) }}">
-                            @csrf @method('PATCH')
-                            <input type="hidden" name="status" value="paused">
-                            <button class="text-sm font-semibold px-4 py-1.5 rounded-lg transition-all"
-                                    style="color:var(--text-secondary);border:1px solid var(--border);background:var(--bg-raised)"
-                                    onmouseover="this.style.color='var(--text-primary)'" onmouseout="this.style.color='var(--text-secondary)'">
-                                ⏸ Pause worker
-                            </button>
-                        </form>
                     @elseif($dep->status === 'paused')
-                        <span class="flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg" style="background:rgba(251,191,36,0.1);color:#fbbf24;border:1px solid rgba(251,191,36,0.3)">
+                        <span class="flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg" style="background:rgba(251,191,36,0.1);color:#fbbf24;border:1px solid rgba(251,191,36,0.25)">
                             <span class="w-1.5 h-1.5 rounded-full" style="background:#fbbf24"></span> Paused
                         </span>
-                        <form method="POST" action="{{ route('workers.status', $dep->id) }}">
-                            @csrf @method('PATCH')
-                            <input type="hidden" name="status" value="active">
-                            <button class="text-sm font-semibold px-4 py-1.5 rounded-lg"
-                                    style="color:#4ade80;border:1px solid rgba(74,222,128,0.35);background:rgba(74,222,128,0.08)">
-                                ▶ Resume worker
-                            </button>
-                        </form>
                     @endif
-                    <form method="POST" action="{{ route('workers.destroy', $dep->id) }}"
-                          onsubmit="return confirm('Remove {{ $dep->name }}? All configuration will be lost and this cannot be undone.')">
-                        @csrf @method('DELETE')
-                        <button class="text-sm font-semibold px-4 py-1.5 rounded-lg transition-all"
-                                style="color:#f87171;border:1px solid rgba(239,68,68,0.3);background:rgba(239,68,68,0.06)"
-                                onmouseover="this.style.background='rgba(239,68,68,0.14)'" onmouseout="this.style.background='rgba(239,68,68,0.06)'">
-                            Remove worker
-                        </button>
-                    </form>
                 </div>
             </div>
 
@@ -772,54 +746,90 @@
         $ftLeft      = max(0, $ftMax - $ftUses);
         $ftSubscribed = $ftBilling && $ftBilling->status === 'active';
         $watchTxId   = request('watch');
-        // Multi-credential workers (NUX) always have a demo payload — no Gmail inbox needed for Fast Track
         $ftInbox     = $isMultiCredential ? null : ($connectedInboxes->firstWhere('is_primary', true) ?? $connectedInboxes->first());
         $ftFallback  = (!$isMultiCredential && $ftInbox === null && $credential) ? $credential : null;
         $ftCanRun    = $isMultiCredential || $ftInbox !== null || $ftFallback !== null;
+        $ftPipelineSteps = [
+            'read'     => ['label'=>'Read Email',     'sub'=>'Parse & extract',      'icon'=>'M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z'],
+            'classify' => ['label'=>'Classify',       'sub'=>'Priority & category',  'icon'=>'M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z'],
+            'memory'   => ['label'=>'Memory Lookup',  'sub'=>'Match contacts',       'icon'=>'M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18'],
+            'draft'    => ['label'=>'Draft Reply',    'sub'=>'AI-personalised',      'icon'=>'M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z'],
+            'push'     => ['label'=>'Push to Gmail',  'sub'=>'Lands in Drafts',      'icon'=>'M12 19l9 2-9-18-9 18 9-2zm0 0v-8'],
+        ];
     @endphp
 
-    <div id="fast-track" class="rounded-xl p-4 sm:p-5" style="background:var(--bg-card);border:1px solid var(--border)">
+    <div id="fast-track" class="rounded-xl overflow-hidden" style="background:var(--bg-card);border:1px solid var(--border)">
 
-        {{-- Header row --}}
-        <div class="flex items-center justify-between mb-3 gap-3">
-            <div>
-                <h3 class="text-sm font-semibold" style="color:var(--text-primary)">Fast Track Test</h3>
-                <p class="text-xs mt-0.5" style="color:var(--text-muted)">{{ $productionReadiness['fast_track_desc'] }}</p>
-            </div>
-            <div class="shrink-0 text-right">
-                @if($ftSubscribed)
-                    <span class="text-xs text-green-400 font-medium">Unlimited · Active</span>
-                @else
-                    <span class="text-xs font-mono {{ $ftLeft > 2 ? '' : ($ftLeft > 0 ? 'text-amber-400' : 'text-red-400') }}" style="{{ $ftLeft > 2 ? 'color:var(--text-muted)' : '' }}">
-                        {{ $ftLeft }}/{{ $ftMax }} trial left
-                    </span>
-                    <div class="mt-1 h-1 w-20 ml-auto rounded-full overflow-hidden" style="background:var(--border)">
-                        <div class="h-full rounded-full transition-all"
-                             style="width:{{ $ftMax > 0 ? ($ftUses / $ftMax) * 100 : 0 }}%;background:{{ $ftLeft > 3 ? '#a78bfa' : ($ftLeft > 0 ? '#f59e0b' : '#ef4444') }}"></div>
-                    </div>
-                @endif
+        {{-- Header --}}
+        <div class="px-5 pt-5 pb-4 border-b" style="border-color:var(--border)">
+            <div class="flex items-center justify-between gap-3">
+                <div>
+                    <h3 class="text-base font-bold" style="color:var(--text-primary)">Pipeline</h3>
+                    <p class="text-xs mt-0.5" style="color:var(--text-muted)">How {{ $dep->name }} processes every email — step by step</p>
+                </div>
+                <div class="shrink-0 text-right">
+                    @if($ftSubscribed)
+                        <span class="text-xs font-semibold text-green-400">Unlimited</span>
+                    @elseif($ftLeft > 0)
+                        <span class="text-xs font-mono" style="color:{{ $ftLeft <= 2 ? '#f59e0b' : 'var(--text-muted)' }}">{{ $ftLeft }}/{{ $ftMax }} runs left</span>
+                        <div class="mt-1.5 h-1 w-20 ml-auto rounded-full overflow-hidden" style="background:var(--border)">
+                            <div class="h-full rounded-full" style="width:{{ $ftMax > 0 ? ($ftUses / $ftMax) * 100 : 0 }}%;background:{{ $ftLeft > 3 ? 'var(--accent)' : ($ftLeft > 0 ? '#f59e0b' : '#ef4444') }}"></div>
+                        </div>
+                    @else
+                        <span class="text-xs font-mono text-red-400">Trial exhausted</span>
+                    @endif
+                </div>
             </div>
         </div>
 
-        {{-- Inbox hint / selector (Gmail workers only) --}}
+        {{-- Pipeline stage flow --}}
+        <div class="px-4 py-5" id="ft-pipeline-display">
+            <div class="flex items-start justify-between gap-1">
+                @foreach($ftPipelineSteps as $key => $step)
+                <div id="ftstage-{{ $key }}" class="flex flex-col items-center flex-1 min-w-0">
+                    {{-- Bubble --}}
+                    <div class="ftstage-bubble w-11 h-11 rounded-2xl border-2 flex items-center justify-center relative transition-all duration-400 mb-2"
+                         style="border-color:var(--border);background:var(--bg-raised)">
+                        <svg class="ftstage-icon w-5 h-5 transition-colors duration-300" style="color:var(--text-muted)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="{{ $step['icon'] }}"/>
+                        </svg>
+                        <svg class="ftstage-check w-5 h-5 hidden absolute" style="color:#4ade80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+                        </svg>
+                        <svg class="ftstage-spin w-5 h-5 hidden absolute animate-spin" style="color:var(--accent)" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3"/>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+                        </svg>
+                    </div>
+                    <p class="ftstage-label text-xs font-semibold text-center leading-tight" style="color:var(--text-muted)">{{ $step['label'] }}</p>
+                    <p class="text-center text-xs mt-0.5 leading-tight hidden sm:block" style="color:var(--text-faint)">{{ $step['sub'] }}</p>
+                </div>
+                @if(!$loop->last)
+                <div class="flex items-start pt-4 shrink-0" style="width:20px">
+                    <svg viewBox="0 0 20 8" fill="none" class="w-full ftstage-arrow" style="opacity:.3">
+                        <path d="M0 4 H14 M10 1 L16 4 L10 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                @endif
+                @endforeach
+            </div>
+            {{-- Running status line --}}
+            <div id="ft-status-line" class="hidden mt-4 text-center">
+                <p class="text-xs font-mono" style="color:var(--text-muted)" id="ft-status-text">Running…</p>
+            </div>
+        </div>
+
+        {{-- Inbox selector form --}}
+        <div class="px-5 pb-2">
         @if($isMultiCredential)
-            {{-- Multi-credential workers use a demo payload — no inbox selector needed --}}
-            <form method="POST" action="{{ route('workers.fast-track', $dep->id) }}" id="ft-form">
-                @csrf
-                <p class="text-xs mb-3" style="color:var(--text-muted)">
-                    Uses the built-in demo post — no social account needed to test.
-                </p>
-            </form>
+        <form method="POST" action="{{ route('workers.fast-track', $dep->id) }}" id="ft-form">@csrf</form>
         @elseif($connectedInboxes->count() > 1)
-        <form method="POST" action="{{ route('workers.fast-track', $dep->id) }}" id="ft-form" class="mb-3">
+        <form method="POST" action="{{ route('workers.fast-track', $dep->id) }}" id="ft-form">
             @csrf
-            <select name="credential_id"
-                    class="w-full text-xs rounded-lg px-3 py-2 border focus:outline-none"
+            <select name="credential_id" class="w-full text-xs rounded-lg px-3 py-2 border mb-3 focus:outline-none"
                     style="background:var(--bg-surface);color:var(--text-primary);border-color:var(--border)">
                 @foreach($connectedInboxes as $inbox)
-                    <option value="{{ $inbox->id }}" {{ $inbox->is_primary ? 'selected' : '' }}>
-                        {{ $inbox->gmail_address }}{{ $inbox->is_primary ? ' · Primary' : '' }}
-                    </option>
+                <option value="{{ $inbox->id }}" {{ $inbox->is_primary ? 'selected' : '' }}>{{ $inbox->gmail_address }}{{ $inbox->is_primary ? ' · Primary' : '' }}</option>
                 @endforeach
             </select>
         </form>
@@ -827,63 +837,96 @@
         <form method="POST" action="{{ route('workers.fast-track', $dep->id) }}" id="ft-form">
             @csrf
             <input type="hidden" name="credential_id" value="{{ $ftInbox->id }}">
-            <p class="text-xs mb-3" style="color:var(--text-muted)">Will run on <span style="color:var(--text-secondary)">{{ $ftInbox->gmail_address }}</span></p>
         </form>
         @elseif($ftFallback)
-        <form method="POST" action="{{ route('workers.fast-track', $dep->id) }}" id="ft-form">
-            @csrf
-            <div class="mb-3 px-3 py-2 rounded-lg border border-amber-800/50 text-xs" style="background:rgba(120,53,15,0.15)">
-                <p class="text-amber-400 font-medium mb-0.5">Using fallback inbox</p>
-                <p class="text-amber-200/60">{{ $ftFallback->gmail_address }} — <a href="{{ route('workers.connect', $dep->id) }}" class="underline">connect it properly</a> for live monitoring.</p>
-            </div>
-        </form>
+        <form method="POST" action="{{ route('workers.fast-track', $dep->id) }}" id="ft-form">@csrf</form>
         @else
         <div id="ft-form"></div>
         @endif
+        </div>
 
+        {{-- Action row --}}
+        <div class="px-5 pb-5">
         @if($ftLeft > 0 || $ftSubscribed)
-            {{-- Split: Fast Track + Subscribe side by side --}}
-            <div class="{{ $ftSubscribed ? '' : 'grid grid-cols-1 sm:grid-cols-2 gap-3' }}">
-
-                {{-- Fast Track button --}}
+            <div class="flex gap-3 {{ $ftSubscribed ? '' : '' }}">
                 @if($ftCanRun)
                 <button type="submit" form="ft-form" id="ft-submit-btn"
-                        onclick="this.disabled=true;this.innerHTML='<span style=\'opacity:0.6\'>Running…</span>';document.getElementById(\'ft-form\').submit();"
-                        class="w-full text-sm font-bold px-4 py-3 rounded-xl hover:opacity-90 flex items-center justify-center gap-2 transition"
+                        onclick="startFtAnimation();this.disabled=true;this.innerHTML='<span style=\'opacity:.6\'>Running…</span>';document.getElementById(\'ft-form\').submit();"
+                        class="flex-1 text-sm font-bold px-4 py-3 rounded-xl hover:opacity-90 flex items-center justify-center gap-2 transition"
                         style="background:var(--accent);color:#1a1404">
                     <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-                    Run Fast Track
+                    Run pipeline test
                 </button>
                 @else
-                <div class="w-full text-center text-xs py-3 rounded-xl border" style="color:var(--text-faint);border-color:var(--border)">
+                <div class="flex-1 text-center text-xs py-3 rounded-xl border" style="color:var(--text-faint);border-color:var(--border)">
                     <a href="{{ route('workers.connect', $dep->id) }}" style="color:var(--text-muted)" class="hover:underline">{{ $productionReadiness['no_credential_msg'] }}</a>
                 </div>
                 @endif
-
-                {{-- Subscribe CTA — only while on trial --}}
                 @if(!$ftSubscribed)
                 <a href="{{ route('workers.billing', $dep->worker_slug) }}"
-                   class="w-full flex flex-col items-center justify-center gap-0.5 px-4 py-3 rounded-xl border transition hover:border-yellow-400/40 group"
+                   class="flex flex-col items-center justify-center gap-0.5 px-4 py-3 rounded-xl border transition hover:border-yellow-400/40 group shrink-0"
                    style="border-color:var(--border);background:var(--bg-surface)">
                     <span class="text-sm font-bold group-hover:text-yellow-300 transition" style="color:var(--text-primary)">Subscribe →</span>
-                    <span class="text-xs" style="color:var(--text-muted)">Unlock unlimited runs</span>
+                    <span class="text-xs" style="color:var(--text-muted)">Unlimited runs</span>
                 </a>
                 @endif
-
             </div>
         @else
-            {{-- Trial exhausted --}}
             <div class="rounded-xl border border-red-900/40 px-4 py-4 text-center space-y-3" style="background:rgba(127,29,29,0.08)">
                 <p class="text-sm font-semibold text-red-400">Trial runs used up</p>
-                <p class="text-xs" style="color:var(--text-muted)">Subscribe to unlock unlimited Fast Track runs and live email processing.</p>
                 <a href="{{ route('workers.billing', $dep->worker_slug) }}"
                    class="inline-block text-sm font-bold px-5 py-2 rounded-xl hover:opacity-90 transition"
-                   style="background:var(--accent);color:#1a1404">
-                    Choose a plan →
-                </a>
+                   style="background:var(--accent);color:#1a1404">Choose a plan →</a>
             </div>
         @endif
+        </div>
     </div>
+
+    <script>
+    function startFtAnimation() {
+        const stages = @json(array_keys($ftPipelineSteps));
+        let i = 0;
+        const statusLine = document.getElementById('ft-status-line');
+        const statusText = document.getElementById('ft-status-text');
+        if (statusLine) statusLine.classList.remove('hidden');
+        function activateNext() {
+            if (i >= stages.length) return;
+            const key = stages[i];
+            const el  = document.getElementById('ftstage-' + key);
+            if (!el) { i++; activateNext(); return; }
+            // Activate current
+            const bubble = el.querySelector('.ftstage-bubble');
+            const icon   = el.querySelector('.ftstage-icon');
+            const spin   = el.querySelector('.ftstage-spin');
+            const label  = el.querySelector('.ftstage-label');
+            if (bubble) { bubble.style.borderColor = 'var(--accent)'; bubble.style.background = 'rgba(var(--accent-rgb),.08)'; }
+            if (icon)   icon.classList.add('hidden');
+            if (spin)   spin.classList.remove('hidden');
+            if (label)  label.style.color = 'var(--accent-text)';
+            if (statusText) statusText.textContent = el.querySelector('.ftstage-label')?.textContent?.trim() + '…';
+            // Light up arrow
+            const arrows = document.querySelectorAll('.ftstage-arrow');
+            if (arrows[i - 1]) arrows[i - 1].style.opacity = '1';
+            // Mark previous done
+            if (i > 0) markDone(stages[i - 1]);
+            i++;
+            setTimeout(activateNext, 900);
+        }
+        function markDone(key) {
+            const el = document.getElementById('ftstage-' + key);
+            if (!el) return;
+            const bubble = el.querySelector('.ftstage-bubble');
+            const spin   = el.querySelector('.ftstage-spin');
+            const check  = el.querySelector('.ftstage-check');
+            const label  = el.querySelector('.ftstage-label');
+            if (bubble) { bubble.style.borderColor = '#4ade80'; bubble.style.background = 'rgba(74,222,128,.08)'; }
+            if (spin)   spin.classList.add('hidden');
+            if (check)  check.classList.remove('hidden');
+            if (label)  label.style.color = '#4ade80';
+        }
+        activateNext();
+    }
+    </script>
 
     {{-- Pipeline modal (auto-opens when ?watch= is present) --}}
     <div id="pipeline-modal" class="fixed inset-0 z-50 flex items-center justify-center {{ $watchTxId ? '' : 'hidden' }}"
@@ -1224,5 +1267,69 @@
     }
     </script>
     @endif
+
+    {{-- ── Manage Worker ────────────────────────────────────────────────────── --}}
+    <div class="rounded-xl overflow-hidden mt-2" style="border:1px solid var(--border)">
+        <div class="px-5 py-4 border-b" style="border-color:var(--border);background:var(--bg-card)">
+            <h3 class="text-sm font-bold" style="color:var(--text-primary)">Manage worker</h3>
+            <p class="text-xs mt-0.5" style="color:var(--text-muted)">Pause to stop email processing temporarily. Remove to permanently delete this deployment.</p>
+        </div>
+        <div class="px-5 py-4 flex flex-col gap-3" style="background:var(--bg-surface)">
+
+            {{-- Pause / Resume --}}
+            @if($dep->status === 'active')
+            <div class="flex items-center justify-between gap-4 py-1">
+                <div>
+                    <p class="text-sm font-semibold" style="color:var(--text-primary)">⏸ Pause {{ $dep->name }}</p>
+                    <p class="text-xs mt-0.5" style="color:var(--text-muted)">Stops inbox monitoring. Memory and settings are kept.</p>
+                </div>
+                <form method="POST" action="{{ route('workers.status', $dep->id) }}" class="shrink-0">
+                    @csrf @method('PATCH')
+                    <input type="hidden" name="status" value="paused">
+                    <button class="text-sm font-bold px-5 py-2 rounded-xl transition-all"
+                            style="border:1px solid var(--border);background:var(--bg-raised);color:var(--text-secondary)"
+                            onmouseover="this.style.color='var(--text-primary)'" onmouseout="this.style.color='var(--text-secondary)'">
+                        Pause
+                    </button>
+                </form>
+            </div>
+            @elseif($dep->status === 'paused')
+            <div class="flex items-center justify-between gap-4 py-1">
+                <div>
+                    <p class="text-sm font-semibold" style="color:#4ade80">▶ Resume {{ $dep->name }}</p>
+                    <p class="text-xs mt-0.5" style="color:var(--text-muted)">Resumes inbox monitoring. Email processing will restart.</p>
+                </div>
+                <form method="POST" action="{{ route('workers.status', $dep->id) }}" class="shrink-0">
+                    @csrf @method('PATCH')
+                    <input type="hidden" name="status" value="active">
+                    <button class="text-sm font-bold px-5 py-2 rounded-xl"
+                            style="border:1px solid rgba(74,222,128,0.35);background:rgba(74,222,128,0.08);color:#4ade80">
+                        Resume
+                    </button>
+                </form>
+            </div>
+            @endif
+
+            <div style="height:1px;background:var(--border)"></div>
+
+            {{-- Remove --}}
+            <div class="flex items-center justify-between gap-4 py-1">
+                <div>
+                    <p class="text-sm font-semibold text-red-400">Remove {{ $dep->name }}</p>
+                    <p class="text-xs mt-0.5" style="color:var(--text-muted)">Permanently deletes this deployment and all its configuration. Cannot be undone.</p>
+                </div>
+                <form method="POST" action="{{ route('workers.destroy', $dep->id) }}" class="shrink-0"
+                      onsubmit="return confirm('Remove {{ addslashes($dep->name) }}? All configuration will be permanently deleted.')">
+                    @csrf @method('DELETE')
+                    <button class="text-sm font-bold px-5 py-2 rounded-xl transition-all"
+                            style="border:1px solid rgba(239,68,68,0.3);background:rgba(239,68,68,0.06);color:#f87171"
+                            onmouseover="this.style.background='rgba(239,68,68,0.15)'" onmouseout="this.style.background='rgba(239,68,68,0.06)'">
+                        Remove
+                    </button>
+                </form>
+            </div>
+
+        </div>
+    </div>
 
 </x-app-layout>
