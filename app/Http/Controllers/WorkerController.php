@@ -51,6 +51,7 @@ class WorkerController extends Controller
         $dep = DB::table('worker_deployments')
             ->where('user_id', auth()->id())
             ->where(fn($q) => $q->where('worker_slug', $slug)->when(is_numeric($slug), fn($q2) => $q2->orWhere('id', (int)$slug)))
+            ->orderByDesc('id')
             ->firstOrFail();
         $id               = $dep->id;
         $contract         = \App\Platform\Services\WorkerRegistry::resolve($dep->worker_slug);
@@ -279,7 +280,7 @@ class WorkerController extends Controller
                 ->with('info', 'Your trial starts free. Choose a plan — your card will not be charged until the trial ends.');
         }
 
-        return redirect()->route('workers.show', $request->worker_slug)->with('success', 'Worker deployed. AVA is now monitoring.');
+        return redirect()->route('workers.show', $depId)->with('success', 'Worker deployed. AVA is now monitoring.');
     }
 
     public function destroy(int $id)
