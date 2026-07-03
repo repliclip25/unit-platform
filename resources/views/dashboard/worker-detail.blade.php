@@ -750,13 +750,26 @@
         $ftInbox     = $isMultiCredential ? null : ($connectedInboxes->firstWhere('is_primary', true) ?? $connectedInboxes->first());
         $ftFallback  = (!$isMultiCredential && $ftInbox === null && $credential) ? $credential : null;
         $ftCanRun    = $isMultiCredential || $ftInbox !== null || $ftFallback !== null;
-        $ftPipelineSteps = [
-            'read'     => ['label'=>'Read Email',     'sub'=>'Parse & extract',      'icon'=>'M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z'],
-            'classify' => ['label'=>'Classify',       'sub'=>'Priority & category',  'icon'=>'M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z'],
-            'memory'   => ['label'=>'Memory Lookup',  'sub'=>'Match contacts',       'icon'=>'M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18'],
-            'draft'    => ['label'=>'Draft Reply',    'sub'=>'AI-personalised',      'icon'=>'M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z'],
-            'push'     => ['label'=>'Push to Gmail',  'sub'=>'Lands in Drafts',      'icon'=>'M12 19l9 2-9-18-9 18 9-2zm0 0v-8'],
+        // Build pipeline stages from contract — never hardcoded
+        $iconPaths = [
+            'bolt'     => 'M13 10V3L4 14h7v7l9-11h-7z',
+            'mail'     => 'M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z',
+            'tag'      => 'M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z',
+            'brain'    => 'M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18',
+            'log'      => 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2',
+            'template' => 'M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zm0 8a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zm12-1a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z',
+            'draft'    => 'M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z',
+            'send'     => 'M12 19l9 2-9-18-9 18 9-2zm0 0v-8',
+            'default'  => 'M13 10V3L4 14h7v7l9-11h-7z',
         ];
+        $contractStages  = $contract ? $contract->pipelineStages() : [];
+        $ftPipelineSteps = collect($contractStages)->mapWithKeys(fn($s) => [
+            $s['key'] => [
+                'label' => $s['label'],
+                'sub'   => $s['sub'],
+                'icon'  => $iconPaths[$s['icon']] ?? $iconPaths['default'],
+            ]
+        ])->all();
     @endphp
 
     <div id="fast-track" class="rounded-xl overflow-hidden mt-6" style="background:var(--bg-card);border:1px solid var(--border)">
@@ -856,7 +869,7 @@
                         class="flex-1 text-sm font-bold px-4 py-3 rounded-xl hover:opacity-90 flex items-center justify-center gap-2 transition"
                         style="background:var(--accent);color:#1a1404">
                     <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-                    Run pipeline test
+                    ⚡ Run Fast Track
                 </button>
                 @else
                 <div class="flex-1 text-center text-xs py-3 rounded-xl border" style="color:var(--text-faint);border-color:var(--border)">
@@ -865,7 +878,7 @@
                 @endif
                 @if(!$ftSubscribed)
                 <a href="{{ route('workers.billing', $dep->worker_slug) }}"
-                   class="flex flex-col items-center justify-center gap-0.5 px-4 py-3 rounded-xl border transition hover:border-yellow-400/40 group shrink-0"
+                   class="flex-1 flex flex-col items-center justify-center gap-0.5 px-4 py-3 rounded-xl border transition hover:border-yellow-400/40 group"
                    style="border-color:var(--border);background:var(--bg-surface)">
                     <span class="text-sm font-bold group-hover:text-yellow-300 transition" style="color:var(--text-primary)">Subscribe →</span>
                     <span class="text-xs" style="color:var(--text-muted)">Unlimited runs</span>
