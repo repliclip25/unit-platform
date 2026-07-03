@@ -452,6 +452,15 @@ class {$className} implements WorkerContract
         return [];
     }
 
+    public function overview(): array
+    {
+        return ['panels' => [
+            ['type' => 'action_queue',  'title' => 'Awaiting Your Review', 'empty' => 'Nothing awaiting review.', 'priority' => 1],
+            ['type' => 'metric_strip',  'title' => 'This Month', 'period' => 'month', 'metrics' => ['emails_processed','drafts_ready','approved_sent','hours_saved'], 'priority' => 2],
+            ['type' => 'activity_feed', 'title' => 'Recent Activity', 'limit' => 8, 'priority' => 3],
+        ]];
+    }
+
     // ── Block 3d: Dashboard Surface ─────────────────────────────────────────
 
     public function dashboard(): array
