@@ -204,8 +204,60 @@
     </div>
     @endif
 
-    {{-- ── Employer Overview — contract-driven panels ─────────────────────── --}}
+    {{-- ── Worker Briefing — contract-driven morning report ──────────────── --}}
     @if(!empty($overviewPanels))
+    @php
+        $eState      = $overviewMeta['emotional_state'] ?? 'active';
+        $stateIcons  = ['thriving' => '🌟', 'active' => '⚡', 'attention' => '👀', 'struggling' => '🔧', 'new' => '👋'];
+        $stateColors = [
+            'thriving'  => ['bg' => 'rgba(34,197,94,0.10)',   'border' => 'rgba(34,197,94,0.30)',   'text' => '#4ade80'],
+            'active'    => ['bg' => 'rgba(var(--accent-rgb),0.08)', 'border' => 'rgba(var(--accent-rgb),0.28)', 'text' => 'var(--accent-text)'],
+            'attention' => ['bg' => 'rgba(245,158,11,0.08)',  'border' => 'rgba(245,158,11,0.28)',  'text' => '#fbbf24'],
+            'struggling'=> ['bg' => 'rgba(239,68,68,0.08)',   'border' => 'rgba(239,68,68,0.28)',   'text' => '#f87171'],
+            'new'       => ['bg' => 'rgba(139,92,246,0.08)',  'border' => 'rgba(139,92,246,0.28)',  'text' => '#a78bfa'],
+        ];
+        $sc          = $stateColors[$eState] ?? $stateColors['active'];
+        $icon        = $stateIcons[$eState] ?? '⚡';
+        $workerName  = $overviewMeta['worker_name'] ?? strtoupper($dep->worker_slug);
+        $workerRole  = $overviewMeta['worker_role'] ?? 'AI Worker';
+        $firstName   = $overviewMeta['first_name']  ?? 'there';
+        $briefing    = $overviewMeta['briefing']     ?? [];
+        $clock       = $overviewMeta['value_clock']  ?? [];
+    @endphp
+
+    {{-- ── Greeting Header ─────────────────────────────────────────────── --}}
+    <div class="rounded-xl px-5 py-5 mb-5 flex items-start gap-4"
+         style="background:{{ $sc['bg'] }};border:1px solid {{ $sc['border'] }}">
+        {{-- Dynamic state icon --}}
+        <div class="w-12 h-12 rounded-xl flex items-center justify-center text-2xl shrink-0 flex-none"
+             style="background:rgba(0,0,0,0.25);border:1px solid {{ $sc['border'] }}">
+            {{ $icon }}
+        </div>
+        <div class="flex-1 min-w-0">
+            <p class="text-xs font-semibold uppercase tracking-widest mb-1" style="color:{{ $sc['text'] }}">
+                {{ $workerName }} · {{ $workerRole }}
+            </p>
+            <p class="text-lg font-bold leading-snug" style="color:var(--text-primary)">
+                Good morning, {{ $firstName }}.
+            </p>
+            @if(!empty($briefing))
+            <div class="mt-2 space-y-1">
+                @foreach($briefing as $line)
+                <p class="text-sm leading-relaxed" style="color:var(--text-secondary)">{{ $line }}</p>
+                @endforeach
+            </div>
+            @endif
+        </div>
+        {{-- Status badge --}}
+        <div class="shrink-0 hidden sm:block">
+            <span class="text-xs font-bold px-3 py-1.5 rounded-lg"
+                  style="background:rgba(0,0,0,0.3);color:{{ $sc['text'] }};border:1px solid {{ $sc['border'] }}">
+                {{ ucfirst($eState) }}
+            </span>
+        </div>
+    </div>
+
+    {{-- ── Panels ───────────────────────────────────────────────────────── --}}
     <div class="space-y-5">
         @foreach($overviewPanels as $panel)
             @php $data = $panel['data'] ?? []; @endphp
@@ -215,7 +267,7 @@
             <div style="background:var(--bg-card);border:1px solid var(--border)" class="rounded-xl overflow-hidden">
                 <div class="flex items-center justify-between px-5 py-4 border-b" style="border-color:var(--border)">
                     <div class="flex items-center gap-2">
-                        <p class="text-white font-semibold text-sm">{{ $panel['title'] }}</p>
+                        <p class="font-semibold text-sm" style="color:var(--text-primary)">{{ $panel['title'] }}</p>
                         @if(($data['count'] ?? 0) > 0)
                         <span class="text-xs font-bold px-2 py-0.5 rounded-full" style="background:rgba(var(--accent-rgb),.15);color:var(--accent-text)">{{ $data['count'] }}</span>
                         @endif
@@ -233,7 +285,7 @@
                         @foreach($data['items'] as $item)
                         <a href="{{ route('transactions.show', $item['tx_id']) }}" class="flex items-start justify-between px-5 py-4 hover:bg-white/5 transition group">
                             <div class="flex-1 min-w-0 pr-4">
-                                <p class="text-white text-sm font-medium truncate">{{ $item['client'] ?? 'Unknown sender' }}</p>
+                                <p class="text-sm font-medium truncate" style="color:var(--text-primary)">{{ $item['client'] ?? 'Unknown sender' }}</p>
                                 <p class="text-xs mt-0.5 truncate" style="color:var(--text-muted)">{{ $item['asset'] }}</p>
                                 @if($item['days_left'] !== null && $item['days_left'] <= 30)
                                 <p class="text-xs mt-1 {{ $item['days_left'] <= 7 ? 'text-red-400' : 'text-amber-400' }}">
@@ -256,7 +308,7 @@
             @if($panel['type'] === 'horizon')
             <div style="background:var(--bg-card);border:1px solid var(--border)" class="rounded-xl overflow-hidden">
                 <div class="px-5 py-4 border-b" style="border-color:var(--border)">
-                    <p class="text-white font-semibold text-sm">{{ $panel['title'] }}</p>
+                    <p class="font-semibold text-sm" style="color:var(--text-primary)">{{ $panel['title'] }}</p>
                     @if(($data['total'] ?? 0) === 0)
                     <p class="text-xs mt-0.5" style="color:var(--text-muted)">No assets with renewal dates set — add them in Memory.</p>
                     @endif
@@ -274,7 +326,7 @@
                             <div class="space-y-2">
                             @foreach($bucket['items'] as $asset)
                             <div>
-                                <p class="text-white text-xs font-medium leading-snug">{{ $asset['name'] }}</p>
+                                <p class="text-xs font-medium leading-snug" style="color:var(--text-primary)">{{ $asset['name'] }}</p>
                                 <p class="text-xs" style="color:var(--text-muted)">
                                     {{ $asset['client'] ? $asset['client'] . ' · ' : '' }}{{ $asset['days_left'] }}d
                                 </p>
@@ -295,13 +347,13 @@
             @if(!empty($metrics))
             <div style="background:var(--bg-card);border:1px solid var(--border)" class="rounded-xl overflow-hidden">
                 <div class="px-5 py-4 border-b" style="border-color:var(--border)">
-                    <p class="text-white font-semibold text-sm">{{ $panel['title'] }}</p>
+                    <p class="font-semibold text-sm" style="color:var(--text-primary)">{{ $panel['title'] }}</p>
                     <p class="text-xs mt-0.5" style="color:var(--text-muted)">Since {{ \Carbon\Carbon::parse($data['since'])->format('M j') }}</p>
                 </div>
                 <div class="grid grid-cols-2 sm:grid-cols-{{ count($metrics) }} divide-y sm:divide-y-0 sm:divide-x" style="border-color:var(--border-subtle)">
                     @foreach($metrics as $m)
                     <div class="px-5 py-4">
-                        <p class="text-2xl font-bold text-white">{{ $m['value'] !== null ? $m['value'] . $m['suffix'] : '—' }}</p>
+                        <p class="text-2xl font-bold" style="color:var(--text-primary)">{{ $m['value'] !== null ? $m['value'] . $m['suffix'] : '—' }}</p>
                         <p class="text-xs mt-1" style="color:var(--text-muted)">{{ $m['label'] }}</p>
                     </div>
                     @endforeach
@@ -315,7 +367,7 @@
             @if(($data['count'] ?? 0) > 0)
             <div style="background:var(--bg-card);border:1px solid var(--border)" class="rounded-xl overflow-hidden">
                 <div class="px-5 py-4 border-b" style="border-color:var(--border)">
-                    <p class="text-white font-semibold text-sm">{{ $panel['title'] }}</p>
+                    <p class="font-semibold text-sm" style="color:var(--text-primary)">{{ $panel['title'] }}</p>
                 </div>
                 <div class="divide-y" style="border-color:var(--border-subtle)">
                     @foreach($data['alerts'] as $alert)
@@ -349,7 +401,7 @@
             @if(!empty($items))
             <div style="background:var(--bg-card);border:1px solid var(--border)" class="rounded-xl overflow-hidden">
                 <div class="flex items-center justify-between px-5 py-4 border-b" style="border-color:var(--border)">
-                    <p class="text-white font-semibold text-sm">{{ $panel['title'] }}</p>
+                    <p class="font-semibold text-sm" style="color:var(--text-primary)">{{ $panel['title'] }}</p>
                     <a href="{{ route('transactions') }}" class="text-xs transition" style="color:var(--text-muted)">View all →</a>
                 </div>
                 <div class="divide-y" style="border-color:var(--border-subtle)">
@@ -372,6 +424,77 @@
 
         @endforeach
     </div>
+
+    {{-- ── Value Clock ──────────────────────────────────────────────────── --}}
+    @if(!empty($clock['value']) || $clock['value'] === 0)
+    <div class="mt-6 rounded-2xl px-6 py-8 text-center relative overflow-hidden"
+         style="background:var(--bg-card);border:1px solid var(--border)">
+        {{-- Subtle glow behind the number --}}
+        <div style="position:absolute;inset:0;background:radial-gradient(ellipse at 50% 120%, rgba(var(--accent-rgb),0.08) 0%, transparent 70%);pointer-events:none"></div>
+        <p class="text-xs font-semibold uppercase tracking-widest mb-3" style="color:var(--text-muted)">
+            {{ strtoupper($clock['period'] ?? 'week') }} VALUE
+        </p>
+        <p class="font-black leading-none mb-2"
+           style="font-size:clamp(56px,12vw,96px);color:var(--accent-text);letter-spacing:-0.03em">
+            {{ is_float($clock['value']) ? number_format($clock['value'], 1) : number_format($clock['value']) }}
+        </p>
+        <p class="text-base" style="color:var(--text-secondary)">{{ $clock['label'] ?? '' }}</p>
+
+        {{-- Value Card — shareable artifact --}}
+        <div class="mt-6 flex justify-center">
+            <button onclick="shareValueCard()"
+                    class="inline-flex items-center gap-2 text-xs font-semibold px-4 py-2 rounded-xl transition hover:opacity-80"
+                    style="background:rgba(var(--accent-rgb),0.12);color:var(--accent-text);border:1px solid rgba(var(--accent-rgb),0.25)">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/>
+                </svg>
+                Share this win
+            </button>
+        </div>
+    </div>
+
+    {{-- Value Card modal --}}
+    <div id="value-card-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:9998;align-items:center;justify-content:center"
+         onclick="if(event.target===this)document.getElementById('value-card-modal').style.display='none'">
+        <div style="max-width:420px;width:90vw">
+            {{-- The shareable card --}}
+            <div id="value-card" class="rounded-2xl p-8 text-center"
+                 style="background:linear-gradient(135deg,#1a1404 0%,#2a1f08 50%,#1a1404 100%);border:2px solid rgba(var(--accent-rgb),0.4);box-shadow:0 0 60px rgba(var(--accent-rgb),0.15)">
+                <p style="font-size:11px;font-weight:700;letter-spacing:.12em;color:rgba(241,211,98,.5);text-transform:uppercase;margin-bottom:16px">UNIT Platform · {{ $workerName }}</p>
+                <p style="font-size:72px;font-weight:900;line-height:1;color:#f1d362;letter-spacing:-0.03em;margin-bottom:8px">
+                    {{ is_float($clock['value']) ? number_format($clock['value'], 1) : number_format($clock['value']) }}
+                </p>
+                <p style="font-size:16px;color:rgba(255,255,255,.8);margin-bottom:20px">{{ $clock['label'] ?? '' }}</p>
+                <div style="height:1px;background:rgba(241,211,98,.15);margin-bottom:16px"></div>
+                <p style="font-size:11px;color:rgba(255,255,255,.35)">{{ now()->format('F Y') }} · Automated by {{ $workerName }}</p>
+            </div>
+            <div class="flex justify-center gap-3 mt-4">
+                <button onclick="copyValueCard()" class="text-xs px-4 py-2 rounded-xl font-semibold transition"
+                        style="background:var(--accent);color:#1a1404">Copy image</button>
+                <button onclick="document.getElementById('value-card-modal').style.display='none'"
+                        class="text-xs px-4 py-2 rounded-xl font-medium transition"
+                        style="background:var(--bg-raised);color:var(--text-muted);border:1px solid var(--border)">Close</button>
+            </div>
+        </div>
+    </div>
+    <script>
+    function shareValueCard() {
+        document.getElementById('value-card-modal').style.display = 'flex';
+    }
+    function copyValueCard() {
+        // Copy text fallback (real screenshot requires html2canvas — notify user)
+        const val = {{ $clock['value'] ?? 0 }};
+        const label = @json($clock['label'] ?? '');
+        const name  = @json($workerName);
+        const text  = `${val} ${label} — automated by ${name} on UNIT Platform`;
+        navigator.clipboard?.writeText(text).then(() => {
+            const btn = event.target;
+            btn.textContent = 'Copied!';
+            setTimeout(() => btn.textContent = 'Copy image', 2000);
+        });
+    }
+    </script>
+    @endif
 
     @else
     {{-- Fallback: no overview contract declared — show legacy layout --}}

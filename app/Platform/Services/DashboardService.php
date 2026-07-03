@@ -13,18 +13,140 @@ class DashboardService
 {
     public static function resolve(object $dep, array $overview): array
     {
-        $panels   = $overview['panels'] ?? [];
-        $userId   = $dep->user_id;
-        $depId    = $dep->id;
+        $panels = $overview['panels'] ?? [];
+        $userId = $dep->user_id;
+        $depId  = $dep->id;
+        $slug   = $dep->worker_slug;
 
         usort($panels, fn($a, $b) => ($a['priority'] ?? 99) <=> ($b['priority'] ?? 99));
 
-        $slug = $dep->worker_slug;
-
-        return array_map(fn($panel) => array_merge(
+        $resolvedPanels = array_map(fn($panel) => array_merge(
             $panel,
             ['data' => self::resolvePanel($panel, $depId, $userId, $slug)]
         ), $panels);
+
+        // Build enriched meta for the briefing UI
+        $meta = self::buildMeta($dep, $overview, $resolvedPanels);
+
+        return ['panels' => $resolvedPanels, 'meta' => $meta];
+    }
+
+    // ── Meta: emotional state, value clock, briefing narrative ───────────────
+
+    private static function buildMeta(object $dep, array $overview, array $resolvedPanels): array
+    {
+        $depId  = $dep->id;
+        $userId = $dep->user_id;
+
+        // Pull panel data by type for quick reference
+        $byType = [];
+        foreach ($resolvedPanels as $p) {
+            $byType[$p['type']] = $p['data'] ?? [];
+        }
+
+        $alerts       = $byType['alert_feed']['count']  ?? 0;
+        $queueCount   = $byType['action_queue']['count'] ?? 0;
+        $metrics      = collect($byType['metric_strip']['metrics'] ?? []);
+        $processed    = $metrics->firstWhere('key', 'emails_processed')['value'] ?? 0;
+        $sent         = $metrics->firstWhere('key', 'approved_sent')['value']    ?? 0;
+        $failed       = $metrics->firstWhere('key', 'failed')['value']           ?? 0;
+        $hoursSaved   = $metrics->firstWhere('key', 'hours_saved')['value']      ?? 0;
+
+        // Total transactions ever (for new/onboarding state)
+        $totalEver = DB::table('transactions')->where('deployment_id', $depId)->count();
+
+        // Emotional state
+        $state = self::emotionalState($totalEver, $alerts, $queueCount, $processed, $failed);
+
+        // Yesterday's briefing sentences
+        $briefing = self::buildBriefing($dep, $overview, $processed, $sent, $failed, $hoursSaved, $queueCount);
+
+        // Value clock
+        $clock = self::resolveClock($depId, $userId, $overview['value_clock'] ?? null);
+
+        // User first name
+        $user      = DB::table('users')->where('id', $userId)->first();
+        $firstName = $user ? explode(' ', trim($user->name))[0] : 'there';
+
+        return [
+            'worker_name'     => $overview['worker_name'] ?? strtoupper($dep->worker_slug),
+            'worker_role'     => $overview['worker_role'] ?? 'AI Worker',
+            'emotional_state' => $state,
+            'briefing'        => $briefing,
+            'value_clock'     => $clock,
+            'first_name'      => $firstName,
+            'queue_count'     => $queueCount,
+            'alert_count'     => $alerts,
+        ];
+    }
+
+    private static function emotionalState(int $totalEver, int $alerts, int $queue, int $processed, int $failed): string
+    {
+        if ($totalEver < 5)  return 'new';
+        if ($failed > 0 && $processed > 0 && ($failed / $processed) > 0.20) return 'struggling';
+        if ($alerts > 0)     return 'attention';
+        if ($queue > 0)      return 'active';
+        return 'thriving';
+    }
+
+    private static function buildBriefing(object $dep, array $overview, int $processed, int $sent, int $failed, float $hoursSaved, int $queueCount): array
+    {
+        $verbs   = $overview['briefing_verbs'] ?? [];
+        $verb    = $verbs['processed'] ?? 'processed';
+        $unit    = $verbs['unit']      ?? 'items';
+        $output  = $verbs['output']    ?? 'drafts';
+        $name    = $overview['worker_name'] ?? strtoupper($dep->worker_slug);
+
+        $lines = [];
+
+        if ($processed > 0) {
+            $lines[] = "I {$verb} {$processed} {$unit} since last week.";
+        }
+        if ($sent > 0) {
+            $lines[] = "{$sent} {$output} approved and sent — keeping your work moving.";
+        }
+        if ($hoursSaved > 0) {
+            $lines[] = "Saved you roughly {$hoursSaved}h of manual work.";
+        }
+        if ($queueCount > 0) {
+            $lines[] = "{$queueCount} " . ($queueCount === 1 ? 'item needs' : 'items need') . " your eyes before I can move forward.";
+        }
+        if ($failed > 0) {
+            $lines[] = "I hit {$failed} " . ($failed === 1 ? 'snag' : 'snags') . " I couldn't handle alone — flagged below.";
+        }
+        if (empty($lines)) {
+            $lines[] = "All caught up — no new items since last check.";
+        }
+
+        return $lines;
+    }
+
+    private static function resolveClock(int $depId, int $userId, ?array $clockConfig): array
+    {
+        if (!$clockConfig) return ['value' => null, 'label' => '', 'unit' => ''];
+
+        $metric = $clockConfig['metric'] ?? 'hours_saved';
+        $label  = $clockConfig['label']  ?? '';
+        $period = $clockConfig['period'] ?? 'week';
+
+        $start = match($period) {
+            'week'    => now()->startOfWeek(),
+            'month'   => now()->startOfMonth(),
+            'quarter' => now()->startOfQuarter(),
+            default   => now()->startOfWeek(),
+        };
+
+        $txBase = DB::table('transactions')->where('deployment_id', $depId)->where('created_at', '>=', $start);
+
+        $value = match($metric) {
+            'hours_saved'    => round((clone $txBase)->count() * 0.25, 1),
+            'approved_sent'  => (clone $txBase)->whereIn('status', ['approved', 'sent'])->count(),
+            'emails_processed' => (clone $txBase)->count(),
+            'drafts_ready'   => (clone $txBase)->where('status', 'draft_ready')->count(),
+            default          => 0,
+        };
+
+        return ['value' => $value, 'label' => $label, 'period' => $period];
     }
 
     private static function resolvePanel(array $panel, int $depId, int $userId, string $slug = ''): array

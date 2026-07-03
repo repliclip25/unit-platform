@@ -109,15 +109,18 @@ class WorkerController extends Controller
         }
 
         $overviewPanels = [];
+        $overviewMeta   = [];
         if ($contract && method_exists($contract, 'overview')) {
-            $overviewPanels = \App\Platform\Services\DashboardService::resolve($dep, $contract->overview());
+            $resolved       = \App\Platform\Services\DashboardService::resolve($dep, $contract->overview());
+            $overviewPanels = $resolved['panels'] ?? [];
+            $overviewMeta   = $resolved['meta']   ?? [];
         }
 
         return view('dashboard.worker-detail', compact(
             'dep', 'contract', 'credential', 'credentials', 'connectedInboxes', 'availableCredentials',
             'txCount', 'recentTx', 'usage', 'pendingReview', 'stuckCount',
             'customModels', 'policyViolations', 'registryRow',
-            'isMultiCredential', 'productionReadiness', 'overviewPanels'
+            'isMultiCredential', 'productionReadiness', 'overviewPanels', 'overviewMeta'
         ));
     }
 

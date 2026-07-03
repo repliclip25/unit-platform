@@ -552,30 +552,44 @@ class NuxWorker implements WorkerContract
     public function overview(): array
     {
         return [
+            'worker_name'  => 'NUX',
+            'worker_role'  => 'Content Engine',
+            'value_clock'  => [
+                'metric' => 'approved_sent',
+                'label'  => 'posts published this week',
+                'period' => 'week',
+            ],
+            'briefing_verbs' => [
+                'processed'  => 'repurposed',
+                'unit'       => 'ideas',
+                'output'     => 'posts drafted',
+                'learning'   => 'content patterns learned',
+            ],
             'panels' => [
                 [
-                    'type'     => 'action_queue',
-                    'title'    => 'Awaiting Your Review',
-                    'empty'    => 'NUX is on top of everything — no drafts waiting.',
-                    'priority' => 1,
+                    'type'      => 'action_queue',
+                    'title'     => 'Needs Your Eyes',
+                    'empty'     => 'Nothing waiting — NUX has everything covered.',
+                    'priority'  => 1,
+                    'max_items' => 10,
                 ],
                 [
-                    'type'     => 'metric_strip',
-                    'title'    => 'This Month',
-                    'period'   => 'month',
-                    'metrics'  => ['emails_processed', 'drafts_ready', 'approved_sent', 'hours_saved'],
+                    'type'    => 'metric_strip',
+                    'title'   => 'This Week',
+                    'period'  => 'week',
+                    'metrics' => ['emails_processed', 'approved_sent', 'hours_saved', 'response_rate'],
                     'priority' => 2,
                 ],
                 [
                     'type'     => 'alert_feed',
-                    'title'    => 'Needs Attention',
-                    'empty'    => 'No issues detected.',
+                    'title'    => 'Where I Got Stuck',
+                    'empty'    => 'No issues — clean run.',
                     'priority' => 3,
                 ],
                 [
                     'type'     => 'activity_feed',
-                    'title'    => 'Recent Activity',
-                    'limit'    => 8,
+                    'title'    => 'What I Did',
+                    'limit'    => 6,
                     'priority' => 4,
                 ],
             ],
