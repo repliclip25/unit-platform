@@ -212,28 +212,33 @@
             </div>
             @endif
 
-            {{-- Connections --}}
-            @if(!empty($connectsTo))
+            {{-- You control --}}
+            @php
+                $controls = array_merge(
+                    array_map('strtolower', $connectsTo),
+                    ['rules', 'prompts']
+                );
+            @endphp
             <div class="px-5 py-3" style="border-top:1px solid var(--border-subtle)">
                 <p class="text-xs" style="color:var(--text-muted)">
-                    I'm connected to your
-                    @foreach($connectsTo as $i => $conn)
-                        <span class="font-bold uppercase tracking-wide" style="color:{{ $accentHex }}">{{ $conn }}</span>{{ !$loop->last ? ' · ' : '' }}
-                    @endforeach
+                    You control: {{ implode(' · ', $controls) }}
                 </p>
             </div>
-            @endif
 
-            {{-- Dynamic CTA --}}
+            {{-- Footer: Fast Track + Last shift --}}
             <div class="px-5 py-3 flex items-center justify-between gap-3" style="border-top:1px solid var(--border-subtle)">
-                <a href="{{ $card['cta']['url'] }}"
-                   class="text-sm font-semibold transition hover:opacity-80"
-                   style="color:{{ $accentHex }}">
-                    {{ $card['cta']['label'] }} →
+                <a href="{{ route('workers.show', $dep->worker_slug) }}#fast-track"
+                   class="text-xs font-semibold transition hover:opacity-80"
+                   style="color:var(--accent-text)">
+                    Fast Track →
                 </a>
-                @if(!$watchOk)
-                <span class="text-xs" style="color:#f87171">⚠ Gmail disconnected</span>
-                @endif
+                <span class="text-xs" style="color:var(--text-faint)">
+                    @if($card['lastTx'])
+                        Last shift: {{ \Carbon\Carbon::parse($card['lastTx']->created_at)->diffForHumans(null, true, true, 1) }} ago
+                    @else
+                        Never run
+                    @endif
+                </span>
             </div>
 
         </div>
