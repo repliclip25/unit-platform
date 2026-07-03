@@ -34,6 +34,8 @@ class NuxWorker implements WorkerContract
             'department'  => 'Marketing',
             'employer'    => 'Freelancers, Solo Founders, Content Creators, Agency Owners',
             'mission'     => 'Turn every great post into multi-channel reach — without extra work.',
+            'statement'   => 'I turn your ideas and existing content into polished posts across every channel — so your voice stays consistent without you having to show up every day.',
+            'connects_to' => ['LinkedIn', 'Twitter/X', 'Contacts', 'Gmail'],
             'introduction'=> "Hi, I'm NUX. I watch your LinkedIn and X accounts for posts worth repurposing. When I find one, I adapt it for the right channel, generate a matching image, and drop the draft in your Gmail for review. You write once — I handle the reach.",
             'what_i_do'   => [
                 'Watch your LinkedIn and X feeds for new posts',

@@ -157,16 +157,15 @@
             $dep         = $card['dep'];
             $dash        = $card['dash'];
             $registryRow = $card['registryRow'];
-            $billing     = $card['billing'];
             $inboxes     = $card['inboxes'];
             $watchOk     = $inboxes->every(fn($i) => $i->watch_active);
 
-            $identity    = $card['contract']->identity();
             $employee    = $card['employee'];
-            $workerName  = strtoupper($employee['name'] ?? $identity['slug'] ?? $dep->worker_slug);
-            $workerRole  = $employee['title'] ?? $identity['role'] ?? ($dash['subtitle'] ?? '');
+            $workerName  = $employee['name']  ?? strtoupper($dep->worker_slug);
+            $workerRole  = $employee['title'] ?? '';
+            $statement   = $employee['statement']   ?? $employee['mission'] ?? '';
+            $connectsTo  = $employee['connects_to'] ?? [];
 
-            $coverImg   = $registryRow?->cover_image   ? asset('storage/' . $registryRow->cover_image)   : null;
             $profileImg = $registryRow?->profile_image ? asset('storage/' . $registryRow->profile_image) : null;
             $mediaJson  = json_decode($registryRow?->media ?? '{}', true);
             $accentHex  = $mediaJson['color'] ?? '#f1d362';
@@ -174,25 +173,25 @@
             $isActive = $dep->status === 'active';
         @endphp
 
-        <div class="rounded-2xl overflow-hidden" style="background:var(--bg-card);border:1px solid var(--border)">
+        <div class="rounded-2xl" style="background:var(--bg-card);border:1px solid var(--border)">
 
-            {{-- Header: icon + name + role + status --}}
-            <div class="px-5 pt-5 pb-4 flex items-start justify-between gap-3">
+            {{-- Header --}}
+            <div class="px-5 pt-5 pb-4 flex items-center justify-between gap-3">
                 <div class="flex items-center gap-3">
                     @if($profileImg)
                     <img src="{{ $profileImg }}" alt="{{ $workerName }}"
-                         class="w-10 h-10 rounded-xl object-cover shrink-0"
-                         style="border:2px solid {{ $accentHex }}33">
+                         style="width:44px;height:44px;border-radius:12px;object-fit:cover;flex-shrink:0;border:2px solid {{ $accentHex }}44">
                     @else
-                    <div class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 text-sm font-bold"
-                         style="background:{{ $accentHex }}18;border:1px solid {{ $accentHex }}40;color:{{ $accentHex }}">
+                    <div style="width:44px;height:44px;border-radius:12px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;background:{{ $accentHex }}18;border:1px solid {{ $accentHex }}40;color:{{ $accentHex }}">
                         {{ strtoupper(substr($workerName, 0, 1)) }}
                     </div>
                     @endif
                     <div>
-                        <p class="font-bold text-base leading-tight" style="color:var(--text-primary)">{{ $workerName }}</p>
-                        <p class="text-xs mt-0.5" style="color:var(--text-muted)">{{ $workerRole }}</p>
-                        <p class="text-xs mt-1 font-medium {{ $isActive ? 'text-green-400' : 'text-amber-400' }}">
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <span class="font-bold text-sm" style="color:var(--text-primary)">{{ $workerName }}</span>
+                            <span class="text-xs" style="color:var(--text-muted)">{{ $workerRole }}</span>
+                        </div>
+                        <p class="text-xs font-medium mt-1 {{ $isActive ? 'text-green-400' : 'text-amber-400' }}">
                             ● {{ $isActive ? 'On duty' : ucfirst($dep->status) }}
                         </p>
                     </div>
@@ -204,39 +203,37 @@
                 </a>
             </div>
 
-            {{-- Cover image --}}
-            @if($coverImg)
-            <div style="position:relative;height:180px;overflow:hidden">
-                <img src="{{ $coverImg }}" alt="{{ $workerName }}"
-                     style="width:100%;height:100%;object-fit:cover;object-position:center top;display:block">
-                <div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,0) 40%,rgba(0,0,0,.75) 100%)"></div>
-                {{-- Nameplate --}}
-                <div style="position:absolute;bottom:12px;left:50%;transform:translateX(-50%);
-                            padding:4px 16px;border-radius:6px;border:1px solid {{ $accentHex }}60;
-                            background:rgba(0,0,0,.55);backdrop-filter:blur(8px)">
-                    <p style="font-size:11px;font-weight:800;letter-spacing:.12em;color:{{ $accentHex }};text-transform:uppercase">
-                        {{ $mediaJson['nameplate'] ?? $workerName }}
-                    </p>
-                </div>
+            {{-- Statement --}}
+            @if($statement)
+            <div class="px-5 pb-4">
+                <p class="text-sm leading-relaxed italic" style="color:var(--text-secondary)">
+                    "{{ $statement }}"
+                </p>
             </div>
             @endif
 
-            {{-- Quote + CTA --}}
-            <div class="px-5 py-4" style="border-top:1px solid var(--border-subtle)">
-                <div class="flex gap-2">
-                    <span class="text-xl leading-none shrink-0 mt-0.5" style="color:{{ $accentHex }}60">"</span>
-                    <p class="text-sm leading-relaxed" style="color:var(--text-secondary)">{{ $card['quote'] }}</p>
-                </div>
-                <div class="mt-3 flex items-center justify-between">
-                    <a href="{{ $card['cta']['url'] }}"
-                       class="text-sm font-semibold transition hover:opacity-80"
-                       style="color:{{ $accentHex }}">
-                        {{ $card['cta']['label'] }} →
-                    </a>
-                    @if(!$watchOk)
-                    <span class="text-xs" style="color:#f87171">⚠ Gmail disconnected</span>
-                    @endif
-                </div>
+            {{-- Connections --}}
+            @if(!empty($connectsTo))
+            <div class="px-5 py-3" style="border-top:1px solid var(--border-subtle)">
+                <p class="text-xs" style="color:var(--text-muted)">
+                    I'm connected to your
+                    @foreach($connectsTo as $i => $conn)
+                        <span class="font-bold uppercase tracking-wide" style="color:{{ $accentHex }}">{{ $conn }}</span>{{ !$loop->last ? ' · ' : '' }}
+                    @endforeach
+                </p>
+            </div>
+            @endif
+
+            {{-- Dynamic CTA --}}
+            <div class="px-5 py-3 flex items-center justify-between gap-3" style="border-top:1px solid var(--border-subtle)">
+                <a href="{{ $card['cta']['url'] }}"
+                   class="text-sm font-semibold transition hover:opacity-80"
+                   style="color:{{ $accentHex }}">
+                    {{ $card['cta']['label'] }} →
+                </a>
+                @if(!$watchOk)
+                <span class="text-xs" style="color:#f87171">⚠ Gmail disconnected</span>
+                @endif
             </div>
 
         </div>
@@ -264,16 +261,34 @@
             <div class="flex items-center justify-center gap-1.5 mb-3">
                 <p class="text-xs font-bold uppercase tracking-widest" style="color:var(--text-muted)">This week's value</p>
                 {{-- Tooltip --}}
-                <div class="relative group">
-                    <svg class="w-3.5 h-3.5 cursor-pointer" style="color:var(--text-faint)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="relative" style="display:inline-flex">
+                    <svg id="clock-info-icon" class="w-3.5 h-3.5 cursor-pointer" style="color:var(--text-faint)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                     </svg>
-                    <div class="absolute bottom-full right-0 mb-2 w-52 p-3 rounded-xl text-left opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-10"
-                         style="background:var(--bg-raised);border:1px solid var(--border);box-shadow:0 8px 24px rgba(0,0,0,.4)">
+                </div>
+                {{-- Fixed tooltip rendered at body level via JS --}}
+                <div id="clock-tooltip" style="display:none;position:fixed;z-index:9999;width:220px;padding:12px;border-radius:12px;text-align:left;pointer-events:none"
+                     class="shadow-2xl"
+                     style="background:var(--bg-raised);border:1px solid var(--border)">
+                    <div style="background:var(--bg-raised);border:1px solid var(--border);border-radius:12px;padding:12px">
                         <p class="text-xs font-semibold mb-1" style="color:var(--text-primary)">How this is calculated</p>
-                        <p class="text-xs leading-relaxed" style="color:var(--text-muted)">Each email processed by your workers saves an estimated <strong style="color:var(--text-secondary)">15 minutes</strong> of manual work. Total hours = emails × 0.25h, aggregated across all deployed workers.</p>
+                        <p class="text-xs leading-relaxed" style="color:var(--text-muted)">Each email processed by your workers saves an estimated <strong style="color:var(--text-secondary)">15 minutes</strong> of manual work.<br>Total hours = emails × 0.25h, aggregated across all your workers.</p>
                     </div>
                 </div>
+                <script>
+                (function(){
+                    const icon = document.getElementById('clock-info-icon');
+                    const tip  = document.getElementById('clock-tooltip');
+                    if (!icon || !tip) return;
+                    icon.addEventListener('mouseenter', function(e){
+                        const r = icon.getBoundingClientRect();
+                        tip.style.display = 'block';
+                        tip.style.left = Math.max(8, r.right - 220) + 'px';
+                        tip.style.top  = (r.top - tip.offsetHeight - 8) + 'px';
+                    });
+                    icon.addEventListener('mouseleave', function(){ tip.style.display = 'none'; });
+                })();
+                </script>
             </div>
             <p class="font-black leading-none mb-1"
                style="font-size:clamp(48px,8vw,80px);color:var(--accent-text);letter-spacing:-0.03em">
