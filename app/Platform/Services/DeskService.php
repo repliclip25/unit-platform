@@ -78,30 +78,46 @@ class DeskService
 
             $rows = DB::table('user_desk_cards')
                 ->where('user_id', $userId)
-                ->where('visible', true)
                 ->orderBy('position')
                 ->get()
                 ->keyBy('card_key');
 
             $staticPool = DeskCardRegistry::active();
             $workerPool = self::buildWorkerPool($userId);
+            $allPool    = array_merge($workerPool, $staticPool);
 
-            return $rows->map(function ($row) use ($staticPool, $workerPool, $context, $userId) {
-                $key = $row->card_key;
-                $def = $staticPool[$key] ?? $workerPool[$key] ?? null;
-                if (!$def) return null;
+            // If no rows exist yet (table empty or migration pending), use all defaults
+            if ($rows->isEmpty()) {
+                $fakeRows = collect();
+                foreach ($allPool as $key => $def) {
+                    if (!($def['default'] ?? true)) continue;
+                    $fakeRows->put($key, (object) [
+                        'card_key'          => $key,
+                        'visible'           => true,
+                        'position'          => $def['default_pos'] ?? 50,
+                        'last_dismissed_at' => null,
+                    ]);
+                }
+                $rows = $fakeRows;
+            }
 
-                $data = self::resolveCard($key, $userId, $context, $row, $workerPool);
-                if ($data === null) return null;
+            return $rows->filter(fn($row) => (bool) $row->visible)
+                ->map(function ($row) use ($staticPool, $workerPool, $context, $userId) {
+                    $key = $row->card_key;
+                    $def = $staticPool[$key] ?? $workerPool[$key] ?? null;
+                    if (!$def) return null;
 
-                return array_merge($def, [
-                    'key'               => $key,
-                    'position'          => $row->position,
-                    'last_dismissed_at' => $row->last_dismissed_at,
-                ], $data);
-            })->filter()->values();
+                    $data = self::resolveCard($key, $userId, $context, $row, $workerPool);
+                    if ($data === null) return null;
+
+                    return array_merge($def, [
+                        'key'               => $key,
+                        'position'          => $row->position,
+                        'last_dismissed_at' => $row->last_dismissed_at,
+                    ], $data);
+                })->filter()->values();
         } catch (\Throwable) {
-            return collect(); // table not migrated yet — return empty feed
+            return collect();
         }
     }
 

@@ -795,6 +795,7 @@ function messagingPanel() {
             'gmail'        => ['label' => 'Gmail / Credentials', 'desc' => 'Disconnect all Gmail accounts and deployment credential links', 'color' => '#60a5fa'],
             'deployments'  => ['label' => 'Worker Deployments', 'desc' => 'Remove all deployed workers (destructive — tenant must redeploy)', 'color' => '#c084fc'],
             'referral'     => ['label' => 'Referral',     'desc' => 'Clear referral credits and reset referral code', 'color' => '#f472b6'],
+            'queue'        => ['label' => 'Queue / Failed Jobs', 'desc' => "Delete this tenant's failed jobs from the queue so notifications clear", 'color' => '#94a3b8'],
         ];
         @endphp
 

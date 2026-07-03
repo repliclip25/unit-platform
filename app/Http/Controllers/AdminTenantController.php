@@ -623,6 +623,18 @@ class AdminTenantController extends Controller
             });
         }
 
+        if (in_array('queue', $scopes)) {
+            $run('queue', function () use ($id, &$log) {
+                // Delete failed jobs whose payload references this user_id
+                $deleted = DB::table('failed_jobs')
+                    ->get()
+                    ->filter(fn($j) => str_contains($j->payload ?? '', '"user_id":' . $id))
+                    ->each(fn($j) => DB::table('failed_jobs')->where('id', $j->id)->delete())
+                    ->count();
+                $log[] = "Cleared {$deleted} failed queue jobs for this tenant";
+            });
+        }
+
         // Log the admin action
         try {
             DB::table('platform_events')->insert([
