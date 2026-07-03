@@ -46,7 +46,7 @@ class DashboardController extends Controller
             $dash  = $contract->dashboard();
             $depId = $dep->id;
 
-            // Worker-specific stats declared by the contract
+            // Worker-specific stats
             $stats = collect($dash['stats'])->map(function ($stat) use ($depId) {
                 $value = match ($stat['key']) {
                     'tx_draft_ready' => DB::table('transactions')->where('deployment_id', $depId)->where('status', 'draft_ready')->count(),
@@ -60,26 +60,62 @@ class DashboardController extends Controller
                 return array_merge($stat, ['value' => $value]);
             });
 
+            $drafts   = (int) ($stats->firstWhere('key', 'tx_draft_ready')['value'] ?? 0);
+            $approved = (int) ($stats->firstWhere('key', 'tx_approved')['value']    ?? 0);
+            $total    = (int) ($stats->firstWhere('key', 'tx_total')['value']       ?? 0);
+            $failed   = (int) ($stats->firstWhere('key', 'tx_failed')['value']      ?? 0);
+
+            // Personal morning quote — worker speaks in first person
+            $overview  = method_exists($contract, 'overview') ? $contract->overview() : [];
+            $verbs     = $overview['briefing_verbs'] ?? [];
+            $verbProc  = $verbs['processed'] ?? 'processed';
+            $unit      = $verbs['unit']      ?? 'items';
+            $outputWord= $verbs['output']    ?? 'drafts';
+
+            if ($total === 0) {
+                $quote = "Ready and standing by — send me something to work on.";
+                $cta   = ['label' => 'Run Fast Track', 'url' => route('workers.show', $dep->worker_slug) . '#fast-track'];
+            } elseif ($drafts > 0) {
+                $quote = "Morning! I've {$verbProc} {$total} {$unit} and prepared {$drafts} " . ($drafts === 1 ? $outputWord : $outputWord . 's') . ". " . ($drafts === 1 ? 'It needs' : 'They need') . " your approval.";
+                $cta   = ['label' => 'Review now', 'url' => route('transactions', ['filter' => 'draft_ready'])];
+            } elseif ($failed > 0) {
+                $quote = "I hit {$failed} " . ($failed === 1 ? 'issue' : 'issues') . " I couldn't resolve on my own — flagged for your review.";
+                $cta   = ['label' => 'See what happened', 'url' => route('workers.show', $dep->worker_slug)];
+            } elseif ($approved > 0) {
+                $quote = "All caught up. {$approved} " . ($approved === 1 ? $outputWord . ' has' : $outputWord . 's have') . " been approved and sent — nothing waiting on you.";
+                $cta   = ['label' => 'Open workspace', 'url' => route('workers.show', $dep->worker_slug)];
+            } else {
+                $quote = "Working through the queue — I'll flag anything that needs you.";
+                $cta   = ['label' => 'Open workspace', 'url' => route('workers.show', $dep->worker_slug)];
+            }
+
             // Last run
             $lastTx = DB::table('transactions')->where('deployment_id', $depId)->orderByDesc('id')->first();
 
-            // Connection health — inboxes + watch status
+            // Connection health
             $inboxes = DB::table('deployment_credentials')
                 ->join('user_gmail_credentials', 'user_gmail_credentials.id', '=', 'deployment_credentials.credential_id')
                 ->where('deployment_credentials.deployment_id', $depId)
                 ->select('user_gmail_credentials.gmail_address', 'user_gmail_credentials.watch_active', 'deployment_credentials.is_primary')
                 ->get();
 
-            $billing = DB::table('deployment_billing')->where('deployment_id', $depId)->first();
+            $billing     = DB::table('deployment_billing')->where('deployment_id', $depId)->first();
+            $registryRow = DB::table('worker_registry')->where('slug', $dep->worker_slug)->first();
+            $employee    = method_exists($contract, 'employee') ? $contract->employee() : [];
 
             return [
-                'dep'      => $dep,
-                'contract' => $contract,
-                'dash'     => $dash,
-                'stats'    => $stats,
-                'lastTx'   => $lastTx,
-                'inboxes'  => $inboxes,
-                'billing'  => $billing,
+                'dep'         => $dep,
+                'contract'    => $contract,
+                'dash'        => $dash,
+                'stats'       => $stats,
+                'lastTx'      => $lastTx,
+                'inboxes'     => $inboxes,
+                'billing'     => $billing,
+                'registryRow' => $registryRow,
+                'employee'    => $employee,
+                'quote'       => $quote,
+                'cta'         => $cta,
+                'drafts'      => $drafts,
             ];
         })->filter()->values();
 

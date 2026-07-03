@@ -154,113 +154,100 @@
 
         @forelse($workerCards as $card)
         @php
-            $dep     = $card['dep'];
-            $dash    = $card['dash'];
-            $accent  = $accentMap[$dash['accent']] ?? $accentMap['violet'];
-            $billing = $card['billing'];
-            $lastTx  = $card['lastTx'];
-            $inboxes = $card['inboxes'];
-
-            $isTrial     = $billing?->status === 'trial';
-            $trialLeft   = max(0, ($billing?->trial_transactions_limit ?? 10) - ($billing?->trial_transactions_used ?? 0));
+            $dep         = $card['dep'];
+            $dash        = $card['dash'];
+            $registryRow = $card['registryRow'];
+            $billing     = $card['billing'];
+            $inboxes     = $card['inboxes'];
             $watchOk     = $inboxes->every(fn($i) => $i->watch_active);
-            $inboxCount  = $inboxes->count();
+
+            $identity    = $card['contract']->identity();
+            $employee    = $card['employee'];
+            $workerName  = strtoupper($employee['name'] ?? $identity['slug'] ?? $dep->worker_slug);
+            $workerRole  = $employee['title'] ?? $identity['role'] ?? ($dash['subtitle'] ?? '');
+
+            $coverImg   = $registryRow?->cover_image   ? asset('storage/' . $registryRow->cover_image)   : null;
+            $profileImg = $registryRow?->profile_image ? asset('storage/' . $registryRow->profile_image) : null;
+            $mediaJson  = json_decode($registryRow?->media ?? '{}', true);
+            $accentHex  = $mediaJson['color'] ?? '#f1d362';
+
+            $isActive = $dep->status === 'active';
         @endphp
 
-        <div class="bg-gray-900 border border-gray-800 rounded-2xl overflow-hidden">
+        <div class="rounded-2xl overflow-hidden" style="background:var(--bg-card);border:1px solid var(--border)">
 
-            {{-- Header --}}
-            <div class="px-5 pt-4 pb-3 flex items-center justify-between gap-3">
+            {{-- Header: icon + name + role + status --}}
+            <div class="px-5 pt-5 pb-4 flex items-start justify-between gap-3">
                 <div class="flex items-center gap-3">
-                    {{-- Icon --}}
-                    <div class="w-9 h-9 {{ $accent['bg'] }} ring-1 {{ $accent['ring'] }} rounded-xl flex items-center justify-center shrink-0">
-                        <svg class="w-4 h-4 {{ $accent['text'] }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $dash['icon'] }}"/>
-                        </svg>
+                    @if($profileImg)
+                    <img src="{{ $profileImg }}" alt="{{ $workerName }}"
+                         class="w-10 h-10 rounded-xl object-cover shrink-0"
+                         style="border:2px solid {{ $accentHex }}33">
+                    @else
+                    <div class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 text-sm font-bold"
+                         style="background:{{ $accentHex }}18;border:1px solid {{ $accentHex }}40;color:{{ $accentHex }}">
+                        {{ strtoupper(substr($workerName, 0, 1)) }}
                     </div>
+                    @endif
                     <div>
-                        <div class="flex items-center gap-2">
-                            <span class="text-white text-sm font-semibold">{{ $dep->name }}</span>
-                            <span class="text-xs {{ $dep->status === 'active' ? 'text-green-400' : 'text-yellow-400' }}">
-                                ● {{ ucfirst($dep->status) }}
-                            </span>
-                        </div>
-                        <p class="text-gray-600 text-xs mt-0.5">{{ $card['contract']->identity()['slug'] }} · v{{ $card['contract']->identity()['version'] }}</p>
+                        <p class="font-bold text-base leading-tight" style="color:var(--text-primary)">{{ $workerName }}</p>
+                        <p class="text-xs mt-0.5" style="color:var(--text-muted)">{{ $workerRole }}</p>
+                        <p class="text-xs mt-1 font-medium {{ $isActive ? 'text-green-400' : 'text-amber-400' }}">
+                            ● {{ $isActive ? 'On duty' : ucfirst($dep->status) }}
+                        </p>
                     </div>
                 </div>
                 <a href="{{ route('workers.show', $dep->worker_slug) }}"
-                   class="text-xs px-3 py-1.5 rounded-lg border border-gray-700 text-gray-400 hover:text-white hover:border-gray-500 transition font-medium shrink-0">
+                   class="text-xs px-3 py-1.5 rounded-lg font-medium shrink-0 transition hover:opacity-80"
+                   style="background:var(--bg-raised);color:var(--text-muted);border:1px solid var(--border)">
                     Open →
                 </a>
             </div>
 
-            {{-- Stats row: worker-specific + connection — flex-wrap for mobile --}}
-            <div class="flex flex-wrap border-t border-gray-800">
-
-                {{-- Connection health cell --}}
-                <div class="w-1/2 sm:flex-1 px-4 py-3 border-r border-gray-800 border-b sm:border-b-0">
-                    <p class="text-gray-600 text-xs">Connection</p>
-                    <div class="flex items-center gap-1 mt-1">
-                        <span class="text-xs {{ $watchOk ? 'text-green-400' : 'text-yellow-400' }}">
-                            {{ $watchOk ? '●' : '⚠' }}
-                        </span>
-                        <span class="text-white text-xs font-semibold">{{ $inboxCount }}</span>
-                        <span class="text-gray-600 text-xs">inbox{{ $inboxCount !== 1 ? 'es' : '' }}</span>
-                    </div>
-                </div>
-
-                {{-- Worker-specific stats --}}
-                @foreach($card['stats'] as $i => $stat)
-                <div class="w-1/2 sm:flex-1 px-4 py-3 border-r border-gray-800 border-b sm:border-b-0">
-                    <p class="text-gray-600 text-xs">{{ $stat['label'] }}</p>
-                    <p class="text-sm font-semibold mt-1
-                        {{ $stat['value'] > 0 && $stat['key'] === 'tx_draft_ready' ? $accent['statVal'] : '' }}
-                        {{ $stat['value'] > 0 && $stat['key'] === 'tx_urgent'      ? 'text-amber-300' : '' }}
-                        {{ !in_array($stat['key'], ['tx_draft_ready','tx_urgent'])  ? 'text-white' : '' }}">
-                        {{ number_format($stat['value']) }}
+            {{-- Cover image --}}
+            @if($coverImg)
+            <div style="position:relative;height:180px;overflow:hidden">
+                <img src="{{ $coverImg }}" alt="{{ $workerName }}"
+                     style="width:100%;height:100%;object-fit:cover;object-position:center top;display:block">
+                <div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,0) 40%,rgba(0,0,0,.75) 100%)"></div>
+                {{-- Nameplate --}}
+                <div style="position:absolute;bottom:12px;left:50%;transform:translateX(-50%);
+                            padding:4px 16px;border-radius:6px;border:1px solid {{ $accentHex }}60;
+                            background:rgba(0,0,0,.55);backdrop-filter:blur(8px)">
+                    <p style="font-size:11px;font-weight:800;letter-spacing:.12em;color:{{ $accentHex }};text-transform:uppercase">
+                        {{ $mediaJson['nameplate'] ?? $workerName }}
                     </p>
                 </div>
-                @endforeach
-
-                {{-- Billing / trial cell --}}
-                <div class="w-1/2 sm:flex-1 px-4 py-3">
-                    <p class="text-gray-600 text-xs">Plan</p>
-                    @if($isTrial)
-                        <p class="text-xs font-semibold mt-1 {{ $trialLeft <= 2 ? 'text-red-400' : 'text-gray-400' }}">
-                            {{ $trialLeft }} left
-                        </p>
-                    @else
-                        <p class="text-xs font-semibold mt-1 text-green-400">Active</p>
-                    @endif
-                </div>
             </div>
+            @endif
 
-            {{-- Last run --}}
-            <div class="border-t border-gray-800 px-5 py-3 flex items-center justify-between gap-2 flex-wrap">
-                <div class="flex items-center gap-1 flex-wrap">
-                    <span class="text-gray-600 text-xs">Last run</span>
-                    @if($lastTx)
-                        <span class="text-gray-400 text-xs">· {{ $lastTx->category ?? 'Processing…' }}</span>
-                        <span class="text-gray-600 text-xs">{{ \Carbon\Carbon::parse($lastTx->created_at)->diffForHumans() }}</span>
-                    @else
-                        <span class="text-gray-700 text-xs">· No runs yet</span>
+            {{-- Quote + CTA --}}
+            <div class="px-5 py-4" style="border-top:1px solid var(--border-subtle)">
+                <div class="flex gap-2">
+                    <span class="text-xl leading-none shrink-0 mt-0.5" style="color:{{ $accentHex }}60">"</span>
+                    <p class="text-sm leading-relaxed" style="color:var(--text-secondary)">{{ $card['quote'] }}</p>
+                </div>
+                <div class="mt-3 flex items-center justify-between">
+                    <a href="{{ $card['cta']['url'] }}"
+                       class="text-sm font-semibold transition hover:opacity-80"
+                       style="color:{{ $accentHex }}">
+                        {{ $card['cta']['label'] }} →
+                    </a>
+                    @if(!$watchOk)
+                    <span class="text-xs" style="color:#f87171">⚠ Gmail disconnected</span>
                     @endif
                 </div>
-                @if($lastTx)
-                    <span class="text-xs px-2 py-0.5 rounded-full shrink-0 {{ $statusColors[$lastTx->status] ?? 'bg-gray-800 text-gray-400' }}">
-                        {{ $lastTx->status }}
-                    </span>
-                @endif
             </div>
 
         </div>
         @empty
-        <div class="bg-gray-900 border border-gray-800 rounded-2xl px-6 py-10 text-center">
-            <p class="text-gray-500 text-sm">No employees hired yet.</p>
-            <p class="text-gray-600 text-xs mt-1 mb-4">Hire an employee from the roster to get started.</p>
+        <div class="rounded-2xl px-6 py-10 text-center" style="background:var(--bg-card);border:1px solid var(--border)">
+            <p class="text-sm" style="color:var(--text-muted)">No workers deployed yet.</p>
+            <p class="text-xs mt-1 mb-4" style="color:var(--text-faint)">Deploy a worker to get started.</p>
             <a href="{{ route('workers.deploy') }}"
-               class="text-xs px-4 py-2 rounded-lg bg-brand hover:bg-brand-deep text-brand-text font-semibold transition">
-                Hire an Employee →
+               class="text-xs px-4 py-2 rounded-lg font-semibold transition hover:opacity-90"
+               style="background:var(--accent);color:#000">
+                Deploy a Worker →
             </a>
         </div>
         @endforelse
