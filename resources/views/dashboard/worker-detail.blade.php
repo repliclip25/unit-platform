@@ -866,7 +866,7 @@
                 @if($ftCanRun)
                 <button type="submit" form="ft-form" id="ft-submit-btn"
                         onclick="startFtAnimation();this.disabled=true;this.innerHTML='<span style=\'opacity:.6\'>Running…</span>';document.getElementById(\'ft-form\').submit();"
-                        class="flex-1 text-sm font-bold px-4 py-3 rounded-xl hover:opacity-90 flex items-center justify-center gap-2 transition"
+                        class="flex-1 text-sm font-bold px-4 py-2 rounded-xl hover:opacity-90 flex items-center justify-center gap-2 transition"
                         style="background:var(--accent);color:#1a1404">
                     <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
                     Run Fast Track
@@ -878,7 +878,7 @@
                 @endif
                 @if(!$ftSubscribed)
                 <a href="{{ route('workers.billing', $dep->worker_slug) }}"
-                   class="flex-1 flex flex-col items-center justify-center gap-0.5 px-4 py-3 rounded-xl border transition hover:border-yellow-400/40 group"
+                   class="flex-1 flex flex-col items-center justify-center gap-0.5 px-4 py-2 rounded-xl border transition hover:border-yellow-400/40 group"
                    style="border-color:var(--border);background:var(--bg-surface)">
                     <span class="text-sm font-bold group-hover:text-yellow-300 transition" style="color:var(--text-primary)">Subscribe →</span>
                     <span class="text-xs" style="color:var(--text-muted)">Unlimited runs</span>
