@@ -779,7 +779,7 @@
             <div class="flex items-center justify-between gap-3">
                 <div>
                     <h3 class="text-base font-bold" style="color:var(--text-primary)">Pipeline</h3>
-                    <p class="text-xs mt-0.5" style="color:var(--text-muted)">How {{ $dep->name }} processes every email — step by step</p>
+                    <p class="text-xs mt-0.5" style="color:var(--text-muted)">{{ count($ftPipelineSteps) }}-stage process · How {{ $dep->name }} handles every email</p>
                 </div>
                 <div class="shrink-0 text-right">
                     @if($ftSubscribed)
@@ -798,9 +798,9 @@
 
         {{-- Pipeline stage flow --}}
         <div class="px-4 py-5" id="ft-pipeline-display">
-            <div class="flex items-start justify-between gap-1">
+            <div class="flex items-start gap-1" style="overflow-x:auto;overflow-y:visible;scrollbar-width:none;-webkit-overflow-scrolling:touch;padding-bottom:4px">
                 @foreach($ftPipelineSteps as $key => $step)
-                <div id="ftstage-{{ $key }}" class="flex flex-col items-center flex-1 min-w-0">
+                <div id="ftstage-{{ $key }}" class="flex flex-col items-center shrink-0" style="min-width:64px;max-width:80px">
                     {{-- Bubble --}}
                     <div class="ftstage-bubble w-11 h-11 rounded-2xl border-2 flex items-center justify-center relative transition-all duration-400 mb-2"
                          style="border-color:var(--border);background:var(--bg-raised)">
