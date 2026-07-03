@@ -55,11 +55,37 @@ class DashboardService
         // Total transactions ever (for new/onboarding state)
         $totalEver = DB::table('transactions')->where('deployment_id', $depId)->count();
 
+        // Failed and stuck this period
+        $clockConfig  = $overview['value_clock'] ?? null;
+        $period       = $clockConfig['period'] ?? 'week';
+        $periodStart  = match($period) {
+            'week'  => now()->startOfWeek(),
+            'month' => now()->startOfMonth(),
+            default => now()->startOfWeek(),
+        };
+        $periodLabel  = match($period) {
+            'week'  => 'this week',
+            'month' => 'this month',
+            default => 'this week',
+        };
+
+        $failedCount = DB::table('transactions')
+            ->where('deployment_id', $depId)
+            ->where('status', 'failed')
+            ->where('created_at', '>=', $periodStart)
+            ->count();
+
+        $stuckCount = DB::table('transactions')
+            ->where('deployment_id', $depId)
+            ->whereNotIn('status', ['draft_ready','approved','sent','failed','dismissed','filtered_out'])
+            ->where('updated_at', '<', now()->subMinutes(5))
+            ->count();
+
+        // Urgent items (draft_ready expiring within 7 days)
+        $urgentCount = (int) ($byType['action_queue']['urgent_count'] ?? 0);
+
         // Emotional state
         $state = self::emotionalState($totalEver, $alerts, $queueCount, $processed, $failed);
-
-        // Yesterday's briefing sentences
-        $briefing = self::buildBriefing($dep, $overview, $processed, $sent, $failed, $hoursSaved, $queueCount);
 
         // Value clock
         $clock = self::resolveClock($depId, $userId, $overview['value_clock'] ?? null);
@@ -69,14 +95,18 @@ class DashboardService
         $firstName = $user ? explode(' ', trim($user->name))[0] : 'there';
 
         return [
-            'worker_name'     => $overview['worker_name'] ?? strtoupper($dep->worker_slug),
-            'worker_role'     => $overview['worker_role'] ?? 'AI Worker',
-            'emotional_state' => $state,
-            'briefing'        => $briefing,
-            'value_clock'     => $clock,
-            'first_name'      => $firstName,
-            'queue_count'     => $queueCount,
-            'alert_count'     => $alerts,
+            'worker_name'      => $overview['worker_name'] ?? strtoupper($dep->worker_slug),
+            'worker_role'      => $overview['worker_role'] ?? 'AI Worker',
+            'emotional_state'  => $state,
+            'value_clock'      => $clock,
+            'first_name'       => $firstName,
+            // Overview list data
+            'emails_processed' => $processed,
+            'processed_period' => $periodLabel,
+            'drafts_count'     => $queueCount,
+            'urgent_count'     => $urgentCount,
+            'failed_count'     => $failedCount,
+            'stuck_count'      => $stuckCount,
         ];
     }
 
@@ -206,9 +236,12 @@ class DashboardService
             ];
         })->all();
 
+        $urgentCount = count(array_filter($items, fn($i) => $i['days_left'] !== null && $i['days_left'] <= 7));
+
         return [
-            'items' => $items,
-            'count' => count($items),
+            'items'        => $items,
+            'count'        => count($items),
+            'urgent_count' => $urgentCount,
         ];
     }
 
