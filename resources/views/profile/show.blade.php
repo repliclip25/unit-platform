@@ -222,18 +222,23 @@ $initials    = collect(explode(' ', $user->name))->map(fn($w) => strtoupper($w[0
             @php
                 $watchOk    = $cred->watch_active && $cred->watch_expires_at && \Carbon\Carbon::parse($cred->watch_expires_at)->isFuture();
                 $usedByDeps = $deploymentCredentials->get($cred->id, collect());
+                // Build label: "AVA — Gmail Access" from the workers using this inbox
+                $workerLabels = $usedByDeps->map(function($dc) use ($deployments, $contracts) {
+                    $dep = $deployments->firstWhere('id', $dc->deployment_id ?? null);
+                    if (!$dep) return null;
+                    $contract = $contracts->get($dep->worker_slug);
+                    $name = $contract ? ($contract->employee()['name'] ?? strtoupper($dep->worker_slug)) : strtoupper($dep->worker_slug);
+                    return $name . ' — Gmail Access';
+                })->filter()->unique()->values();
+                $connLabel = $workerLabels->isNotEmpty() ? $workerLabels->implode(', ') : 'Gmail Access';
             @endphp
             <div class="pf-row">
                 <div style="display:flex;align-items:center;gap:10px;min-width:0;flex:1">
                     <div style="width:32px;height:32px;border-radius:8px;background:rgba(241,211,98,.08);border:1px solid rgba(241,211,98,.15);display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;color:var(--accent-text)">✉</div>
                     <div style="min-width:0">
-                        <p style="font-size:13px;font-weight:600;color:var(--text-primary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ $cred->gmail_address }}</p>
-                        <div style="display:flex;flex-wrap:wrap;align-items:center;gap:5px;margin-top:2px">
-                            <span style="font-size:10px;font-weight:600;color:{{ $watchOk ? '#4ade80' : '#fbbf24' }}">{{ $watchOk ? '● Watch active' : '⚠ Watch inactive' }}</span>
-                            @if($usedByDeps->count())
-                            <span style="font-size:10px;color:var(--text-faint)">· {{ $usedByDeps->count() }} employee{{ $usedByDeps->count() !== 1 ? 's' : '' }}</span>
-                            @endif
-                        </div>
+                        <p style="font-size:13px;font-weight:600;color:var(--text-primary)">{{ $connLabel }}</p>
+                        <p style="font-size:11px;color:var(--text-muted);margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ $cred->gmail_address }}</p>
+                        <span style="font-size:10px;font-weight:600;color:{{ $watchOk ? '#4ade80' : '#fbbf24' }}">{{ $watchOk ? '● Active' : '⚠ Inactive' }}</span>
                     </div>
                 </div>
                 @if(!$watchOk)
