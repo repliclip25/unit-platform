@@ -198,26 +198,37 @@ class WorkerController extends Controller
         }
 
         // Copy platform default rules for this worker slug into the new deployment
-        $platformRules = DB::table('ava_rules')
-            ->whereNull('user_id')
-            ->whereNull('deployment_id')
-            ->get();
+        try {
+            $platformRules = DB::table('ava_rules')
+                ->whereNull('user_id')
+                ->whereNull('deployment_id')
+                ->get();
 
-        foreach ($platformRules as $rule) {
-            DB::table('ava_rules')->insert([
-                'user_id'           => auth()->id(),
-                'deployment_id'     => $depId,
-                'rule_id'           => $rule->rule_id,
-                'condition'         => $rule->condition,
-                'priority'          => $rule->priority,
-                'action'            => $rule->action,
-                'approval_required' => $rule->approval_required,
-                'notes'             => $rule->notes,
-                'active'            => true,
-                'is_platform'       => true,
-                'created_at'        => now(),
-                'updated_at'        => now(),
-            ]);
+            foreach ($platformRules as $rule) {
+                $alreadyCopied = DB::table('ava_rules')
+                    ->where('user_id', auth()->id())
+                    ->where('deployment_id', $depId)
+                    ->where('rule_id', $rule->rule_id)
+                    ->exists();
+                if ($alreadyCopied) continue;
+
+                DB::table('ava_rules')->insert([
+                    'user_id'           => auth()->id(),
+                    'deployment_id'     => $depId,
+                    'rule_id'           => $rule->rule_id,
+                    'condition'         => $rule->condition,
+                    'priority'          => $rule->priority,
+                    'action'            => $rule->action,
+                    'approval_required' => $rule->approval_required ?? false,
+                    'notes'             => $rule->notes,
+                    'active'            => true,
+                    'is_platform'       => true,
+                    'created_at'        => now(),
+                    'updated_at'        => now(),
+                ]);
+            }
+        } catch (\Throwable $e) {
+            Log::error('Worker deploy: rules copy failed', ['dep_id' => $depId, 'error' => $e->getMessage()]);
         }
 
         // Auto-start Gmail watch if a credential was linked at deploy time
