@@ -235,23 +235,32 @@ class WorkerController extends Controller
         }
 
         // Create billing record
-        $pricing     = DB::table('worker_pricing')->where('worker_slug', $request->worker_slug)->first();
-        $trialGated  = DB::table('platform_configs')->where('key', 'trial_payment_required')->value('value') === 'true';
-        $trialDays   = (int) (DB::table('platform_configs')->where('key', 'trial_days')->value('value') ?? 14);
+        $pricing    = DB::table('worker_pricing')->where('worker_slug', $request->worker_slug)->first();
+        $trialGated = false;
+        try {
+            $trialGated = DB::table('platform_configs')->where('key', 'trial_payment_required')->value('value') === 'true';
+            $trialDays  = (int) (DB::table('platform_configs')->where('key', 'trial_days')->value('value') ?? 14);
 
-        DB::table('deployment_billing')->insert([
-            'user_id'                  => auth()->id(),
-            'deployment_id'            => $depId,
-            'worker_slug'              => $request->worker_slug,
-            'status'                   => 'trial',
-            'trial_transactions_used'  => 0,
-            'trial_transactions_limit' => $pricing?->free_transactions ?? 10,
-            'trial_ends_at'            => now()->addDays($trialDays),
-            'created_at'               => now(),
-            'updated_at'               => now(),
-        ]);
+            DB::table('deployment_billing')->insert([
+                'user_id'                  => auth()->id(),
+                'deployment_id'            => $depId,
+                'worker_slug'              => $request->worker_slug,
+                'status'                   => 'trial',
+                'trial_transactions_used'  => 0,
+                'trial_transactions_limit' => $pricing?->free_transactions ?? 10,
+                'trial_ends_at'            => now()->addDays($trialDays),
+                'created_at'               => now(),
+                'updated_at'               => now(),
+            ]);
+        } catch (\Throwable $e) {
+            Log::error('Worker deploy: billing insert failed', ['dep_id' => $depId, 'error' => $e->getMessage()]);
+        }
 
-        UnitNotifier::workerDeployed($depId);
+        try {
+            UnitNotifier::workerDeployed($depId);
+        } catch (\Throwable $e) {
+            Log::error('Worker deploy: notifier failed', ['dep_id' => $depId, 'error' => $e->getMessage()]);
+        }
 
         // If trial gate is on, send tenant to billing to pick a plan (card collected there, trial days applied)
         if ($trialGated) {
