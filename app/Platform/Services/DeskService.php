@@ -86,36 +86,35 @@ class DeskService
             $workerPool = self::buildWorkerPool($userId);
             $allPool    = array_merge($workerPool, $staticPool);
 
-            // If no rows exist yet (table empty or migration pending), use all defaults
-            if ($rows->isEmpty()) {
-                $fakeRows = collect();
-                foreach ($allPool as $key => $def) {
-                    if (!($def['default'] ?? true)) continue;
-                    $fakeRows->put($key, (object) [
-                        'card_key'          => $key,
-                        'visible'           => true,
-                        'position'          => $def['default_pos'] ?? 50,
-                        'last_dismissed_at' => null,
-                    ]);
-                }
-                $rows = $fakeRows;
+            $results = collect();
+
+            foreach ($allPool as $key => $def) {
+                $row = $rows->get($key);
+
+                // Determine visibility: use saved row if exists, else default
+                $visible  = $row ? (bool) $row->visible : ($def['default'] ?? true);
+                $position = $row ? $row->position : ($def['default_pos'] ?? 50);
+
+                if (!$visible) continue;
+
+                $fakeRow = $row ?? (object) [
+                    'card_key'          => $key,
+                    'visible'           => true,
+                    'position'          => $position,
+                    'last_dismissed_at' => null,
+                ];
+
+                $data = self::resolveCard($key, $userId, $context, $fakeRow, $workerPool);
+                if ($data === null) continue;
+
+                $results->push(array_merge($def, [
+                    'key'               => $key,
+                    'position'          => $position,
+                    'last_dismissed_at' => $fakeRow->last_dismissed_at,
+                ], $data));
             }
 
-            return $rows->filter(fn($row) => (bool) $row->visible)
-                ->map(function ($row) use ($staticPool, $workerPool, $context, $userId) {
-                    $key = $row->card_key;
-                    $def = $staticPool[$key] ?? $workerPool[$key] ?? null;
-                    if (!$def) return null;
-
-                    $data = self::resolveCard($key, $userId, $context, $row, $workerPool);
-                    if ($data === null) return null;
-
-                    return array_merge($def, [
-                        'key'               => $key,
-                        'position'          => $row->position,
-                        'last_dismissed_at' => $row->last_dismissed_at,
-                    ], $data);
-                })->filter()->values();
+            return $results->sortBy('position')->values();
         } catch (\Throwable) {
             return collect();
         }
