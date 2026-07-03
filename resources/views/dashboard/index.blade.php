@@ -56,40 +56,109 @@
 </div>
 @endif
 
-{{-- ── Pipeline report ── --}}
-<div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-8">
+{{-- ── Overview list ── --}}
+@php
+    $primaryInbox = null;
+    foreach($workerCards as $wc) {
+        $pi = $wc['inboxes']->firstWhere('is_primary', true) ?? $wc['inboxes']->first();
+        if ($pi) { $primaryInbox = $pi; break; }
+    }
+    $gmailUrl = $primaryInbox
+        ? 'https://mail.google.com/mail/u/' . urlencode($primaryInbox->gmail_address) . '/#drafts'
+        : 'https://mail.google.com/mail/#drafts';
+@endphp
+<div class="mb-6">
+    <p class="text-xs font-medium mb-3" style="color:var(--text-muted)">{{ now()->format('l, F j · g:i A') }}</p>
+    <div class="divide-y" style="border-top:1px solid var(--border-subtle);border-bottom:1px solid var(--border-subtle)">
 
-    <div class="bg-gray-900 border border-gray-800 rounded-xl px-5 py-4">
-        <p class="text-gray-600 text-xs uppercase tracking-wide">Total Processed</p>
-        <p class="text-white text-3xl font-bold mt-1">{{ number_format($pipeline['total']) }}</p>
-        <p class="text-gray-700 text-xs mt-1">all time · all workers</p>
+        <div class="flex items-center justify-between py-3">
+            <div class="flex items-center gap-3">
+                <span class="w-1.5 h-1.5 rounded-full shrink-0" style="background:var(--text-faint)"></span>
+                <span class="text-sm" style="color:var(--text-secondary)">
+                    @if($ovProcessed > 0)
+                        <strong style="color:var(--text-primary)">{{ number_format($ovProcessed) }}</strong> emails processed this week
+                    @else
+                        No emails processed this week
+                    @endif
+                </span>
+            </div>
+        </div>
+
+        <div class="flex items-center justify-between py-3">
+            <div class="flex items-center gap-3">
+                <span class="w-1.5 h-1.5 rounded-full shrink-0"
+                      style="background:{{ $ovDrafts > 0 ? 'var(--accent)' : 'var(--text-faint)' }}"></span>
+                <span class="text-sm" style="color:var(--text-secondary)">
+                    @if($ovDrafts > 0)
+                        <strong style="color:var(--text-primary)">{{ $ovDrafts }}</strong> {{ $ovDrafts === 1 ? 'draft' : 'drafts' }} ready for your review
+                    @else
+                        No drafts waiting for review
+                    @endif
+                </span>
+            </div>
+            @if($ovDrafts > 0)
+            <a href="{{ $gmailUrl }}" target="_blank" rel="noopener"
+               class="text-xs font-semibold flex items-center gap-1 shrink-0 ml-4 transition hover:opacity-80"
+               style="color:var(--accent-text)">
+                Open Gmail
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+            </a>
+            @endif
+        </div>
+
+        <div class="flex items-center justify-between py-3">
+            <div class="flex items-center gap-3">
+                <span class="w-1.5 h-1.5 rounded-full shrink-0"
+                      style="background:{{ $ovUrgent > 0 ? '#fbbf24' : 'var(--text-faint)' }}"></span>
+                <span class="text-sm" style="color:var(--text-secondary)">
+                    @if($ovUrgent > 0)
+                        <strong style="color:#fbbf24">{{ $ovUrgent }}</strong> {{ $ovUrgent === 1 ? 'item' : 'items' }} marked urgent — needs your attention
+                    @else
+                        No urgent items
+                    @endif
+                </span>
+            </div>
+            @if($ovUrgent > 0)
+            <a href="{{ route('transactions', ['filter' => 'draft_ready', 'priority' => 'high']) }}"
+               class="text-xs font-semibold shrink-0 ml-4 transition hover:opacity-80" style="color:#fbbf24">Review →</a>
+            @endif
+        </div>
+
+        <div class="flex items-center justify-between py-3">
+            @php $problemCount = $ovFailed + $ovStuck; @endphp
+            <div class="flex items-center gap-3">
+                <span class="w-1.5 h-1.5 rounded-full shrink-0"
+                      style="background:{{ $problemCount > 0 ? '#f87171' : 'var(--text-faint)' }}"></span>
+                <span class="text-sm" style="color:var(--text-secondary)">
+                    @if($problemCount > 0)
+                        <strong style="color:#f87171">{{ $problemCount }}</strong> {{ $problemCount === 1 ? 'item' : 'items' }} failed or stuck in pipeline
+                    @else
+                        Pipeline running clean — no failures this week
+                    @endif
+                </span>
+            </div>
+            @if($problemCount > 0)
+            <a href="{{ route('transactions', ['filter' => 'failed']) }}"
+               class="text-xs font-semibold shrink-0 ml-4 transition hover:opacity-80" style="color:#f87171">View →</a>
+            @endif
+        </div>
+
     </div>
-
-    <div class="bg-gray-900 border border-gray-800 rounded-xl px-5 py-4">
-        <p class="text-gray-600 text-xs uppercase tracking-wide">In Pipeline</p>
-        <p class="{{ $pipeline['in_pipeline'] > 0 ? 'text-blue-400' : 'text-gray-500' }} text-3xl font-bold mt-1">
-            {{ number_format($pipeline['in_pipeline']) }}
-        </p>
-        <p class="text-gray-700 text-xs mt-1">currently running</p>
-    </div>
-
-    <div class="bg-gray-900 border border-gray-800 rounded-xl px-5 py-4">
-        <p class="text-gray-600 text-xs uppercase tracking-wide">Needs Review</p>
-        <p class="{{ $pipeline['needs_review'] > 0 ? 'text-amber-400' : 'text-gray-500' }} text-3xl font-bold mt-1">
-            {{ number_format($pipeline['needs_review']) }}
-        </p>
-        <p class="text-gray-700 text-xs mt-1">awaiting human decision</p>
-    </div>
-
-    <div class="bg-gray-900 border border-gray-800 rounded-xl px-5 py-4">
-        <p class="text-gray-600 text-xs uppercase tracking-wide">Failed</p>
-        <p class="{{ $pipeline['failed'] > 0 ? 'text-red-400' : 'text-gray-500' }} text-3xl font-bold mt-1">
-            {{ number_format($pipeline['failed']) }}
-        </p>
-        <p class="text-gray-700 text-xs mt-1">transactions · need attention</p>
-    </div>
-
 </div>
+
+{{-- ── Value Clock ── --}}
+@if($clockValue > 0)
+<div class="mb-8 rounded-2xl px-6 py-8 text-center relative overflow-hidden"
+     style="background:var(--bg-card);border:1px solid var(--border)">
+    <div style="position:absolute;inset:0;background:radial-gradient(ellipse at 50% 120%, rgba(var(--accent-rgb),0.07) 0%, transparent 70%);pointer-events:none"></div>
+    <p class="text-xs font-bold uppercase tracking-widest mb-3" style="color:var(--text-muted)">This week's value</p>
+    <p class="font-black leading-none mb-2"
+       style="font-size:clamp(56px,12vw,96px);color:var(--accent-text);letter-spacing:-0.03em">
+        {{ number_format($clockValue, 1) }}
+    </p>
+    <p class="text-base" style="color:var(--text-secondary)">hours returned to your team</p>
+</div>
+@endif
 
 {{-- ── Body: worker cards + notifications ── --}}
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">

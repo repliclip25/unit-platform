@@ -10,13 +10,26 @@ class DashboardController extends Controller
     {
         $userId = auth()->id();
 
-        // ── Pipeline-level stats (universal — meaningful for any worker type) ──
+        // ── Overview list data ────────────────────────────────────────────────
+        $weekStart    = now()->startOfWeek();
+        $ovProcessed  = DB::table('transactions')->where('user_id', $userId)->where('created_at', '>=', $weekStart)->count();
+        $ovDrafts     = DB::table('transactions')->where('user_id', $userId)->where('status', 'draft_ready')->whereNull('human_decision')->count();
+        $ovUrgent     = DB::table('transactions')->where('user_id', $userId)->where('status', 'draft_ready')->whereIn('priority', ['High','Critical'])->count();
+        $ovFailed     = DB::table('transactions')->where('user_id', $userId)->where('status', 'failed')->where('created_at', '>=', $weekStart)->count();
+        $ovStuck      = DB::table('transactions')->where('user_id', $userId)
+            ->whereNotIn('status', ['draft_ready','approved','sent','failed','dismissed','filtered_out'])
+            ->where('updated_at', '<', now()->subMinutes(5))->count();
+
+        // ── Platform Value Clock — total hours returned this week ─────────────
+        $clockValue = round($ovProcessed * 0.25, 1);
+
+        // ── Pipeline-level stats (kept for worker cards) ──────────────────────
         $pipelineActive = ['received','ingesting','reading','classifying','memory_lookup','logging','templating','drafting','pushing'];
         $pipeline = [
             'total'       => DB::table('transactions')->where('user_id', $userId)->count(),
             'in_pipeline' => DB::table('transactions')->where('user_id', $userId)->whereIn('status', $pipelineActive)->count(),
-            'needs_review'=> DB::table('transactions')->where('user_id', $userId)->whereIn('status', ['draft_ready','human_review'])->whereNull('human_decision')->count(),
-            'failed'      => DB::table('transactions')->where('user_id', $userId)->where('status', 'failed')->count(),
+            'needs_review'=> $ovDrafts,
+            'failed'      => $ovFailed,
         ];
 
         // ── Worker cards ──
@@ -86,6 +99,9 @@ class DashboardController extends Controller
             ->count();
         $referralEligible = $realTxCount >= 5;
 
-        return view('dashboard.index', compact('pipeline', 'workerCards', 'notifications', 'referralCode', 'referralUrl', 'referralEligible'));
+        return view('dashboard.index', compact(
+            'pipeline', 'workerCards', 'notifications', 'referralCode', 'referralUrl', 'referralEligible',
+            'ovProcessed', 'ovDrafts', 'ovUrgent', 'ovFailed', 'ovStuck', 'clockValue'
+        ));
     }
 }
