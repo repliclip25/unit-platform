@@ -69,8 +69,18 @@ class WorkerController extends Controller
         $pendingReview    = DB::table('transactions')->where('deployment_id', $id)->where('status', 'draft_ready')->whereNull('human_decision')->count();
         $stuckCount       = DB::table('transactions')->where('deployment_id', $id)->whereNotIn('status', ['draft_ready','approved','sent','failed'])->where('updated_at', '<', now()->subMinutes(5))->count();
         $customModels     = DB::table('tenant_custom_models')->where('user_id', auth()->id())->where('active', true)->get();
-        // Self-heal: create missing billing record if store() failed silently
-        $hasBilling = DB::table('deployment_billing')->where('deployment_id', $id)->exists();
+        // Self-heal: create missing billing record, or fix one that was created with limit=0
+        $existingBilling = DB::table('deployment_billing')->where('deployment_id', $id)->first();
+        $hasBilling = $existingBilling !== null;
+        if ($hasBilling && (int)($existingBilling->trial_transactions_limit ?? 0) === 0) {
+            try {
+                $pricing_  = DB::table('worker_pricing')->where('worker_slug', $dep->worker_slug)->first();
+                DB::table('deployment_billing')->where('deployment_id', $id)->update([
+                    'trial_transactions_limit' => ($pricing_?->free_transactions ?: 25),
+                    'updated_at'               => now(),
+                ]);
+            } catch (\Throwable) {}
+        }
         if (!$hasBilling) {
             try {
                 $pricing_  = DB::table('worker_pricing')->where('worker_slug', $dep->worker_slug)->first();
@@ -81,7 +91,7 @@ class WorkerController extends Controller
                     'worker_slug'              => $dep->worker_slug,
                     'status'                   => 'trial',
                     'trial_transactions_used'  => 0,
-                    'trial_transactions_limit' => $pricing_?->free_transactions ?? 25,
+                    'trial_transactions_limit' => ($pricing_?->free_transactions ?: 25),
                     'trial_ends_at'            => now()->addDays($trialDays),
                     'created_at'               => now(),
                     'updated_at'               => now(),
@@ -279,7 +289,7 @@ class WorkerController extends Controller
                 'worker_slug'              => $request->worker_slug,
                 'status'                   => 'trial',
                 'trial_transactions_used'  => 0,
-                'trial_transactions_limit' => $pricing?->free_transactions ?? 10,
+                'trial_transactions_limit' => ($pricing?->free_transactions ?: 25),
                 'trial_ends_at'            => now()->addDays($trialDays),
                 'created_at'               => now(),
                 'updated_at'               => now(),

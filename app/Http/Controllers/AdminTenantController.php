@@ -436,7 +436,7 @@ class AdminTenantController extends Controller
             'worker_slug'              => $dep->worker_slug,
             'status'                   => 'trial',
             'trial_transactions_used'  => 0,
-            'trial_transactions_limit' => $pricing?->free_transactions ?? 10,
+            'trial_transactions_limit' => ($pricing?->free_transactions ?: 25),
             'billing_period_start'     => now()->startOfMonth(),
             'created_at'               => now(),
             'updated_at'               => now(),
