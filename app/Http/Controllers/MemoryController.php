@@ -52,6 +52,25 @@ class MemoryController extends Controller
         return back()->with('success', 'Asset added.');
     }
 
+    public function updateAsset(Request $request, int $id)
+    {
+        $request->validate(['name' => 'required', 'type' => 'required']);
+        DB::table('assets')
+            ->where('id', $id)
+            ->where('user_id', auth()->id())
+            ->update([
+                'name'         => $request->name,
+                'type'         => $request->type,
+                'vendor'       => $request->vendor,
+                'renewal_date' => $request->renewal_date ?: null,
+                'cost_per_year'=> $request->cost_per_year ?: null,
+                'client_id'    => $request->client_id ?: null,
+                'notes'        => $request->notes,
+                'updated_at'   => now(),
+            ]);
+        return back()->with('success', 'Asset updated.');
+    }
+
     public function destroyAsset(int $id)
     {
         DB::table('assets')->where('id', $id)->where('user_id', auth()->id())->update(['deleted_at' => now()]);

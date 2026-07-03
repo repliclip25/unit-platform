@@ -219,6 +219,8 @@
                         $urgColor = $days === null ? 'var(--text-faint)' : ($days <= 0 ? '#f87171' : ($days <= 15 ? '#fbbf24' : ($days <= 30 ? '#facc15' : 'var(--text-muted)')));
                         $cn = $clients->firstWhere('id', $asset->client_id);
                     @endphp
+
+                    {{-- Summary row --}}
                     <div class="px-5 py-4 flex items-start justify-between gap-4">
                         <div class="min-w-0 flex-1">
                             <p class="text-sm font-medium" style="color:var(--text-primary)">{{ $asset->name }}</p>
@@ -237,12 +239,77 @@
                                 </p>
                             @endif
                         </div>
-                        <form method="POST" action="{{ route('memory.assets.destroy', $asset->id) }}" class="shrink-0">
-                            @csrf @method('DELETE')
-                            <button class="text-xs transition hover:opacity-80" style="color:var(--text-faint)"
-                                    onclick="return confirm('Remove {{ addslashes($asset->name) }}?')">Remove</button>
+                        <div class="flex items-center gap-3 shrink-0">
+                            <button onclick="toggleAssetEdit({{ $asset->id }})"
+                                    class="text-xs font-medium transition hover:opacity-80"
+                                    style="color:var(--accent-text)">Edit</button>
+                            <form method="POST" action="{{ route('memory.assets.destroy', $asset->id) }}">
+                                @csrf @method('DELETE')
+                                <button class="text-xs transition hover:opacity-80" style="color:var(--text-faint)"
+                                        onclick="return confirm('Remove {{ addslashes($asset->name) }}?')">Remove</button>
+                            </form>
+                        </div>
+                    </div>
+
+                    {{-- Inline edit form (hidden by default) --}}
+                    <div id="asset-edit-{{ $asset->id }}" class="hidden px-5 pb-4" style="background:var(--bg-raised);border-top:1px solid var(--border-subtle)">
+                        <form method="POST" action="{{ route('memory.assets.update', $asset->id) }}" class="pt-4 space-y-3">
+                            @csrf @method('PATCH')
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                <div class="sm:col-span-2">
+                                    <label class="text-xs block mb-1" style="color:var(--text-muted)">Asset Name</label>
+                                    <input type="text" name="name" value="{{ $asset->name }}" required
+                                           class="w-full text-sm rounded-lg px-3 py-2 border focus:outline-none"
+                                           style="background:var(--bg-card);color:var(--text-primary);border-color:var(--border)">
+                                </div>
+                                <div>
+                                    <label class="text-xs block mb-1" style="color:var(--text-muted)">Type</label>
+                                    <select name="type" class="w-full text-sm rounded-lg px-3 py-2 border focus:outline-none"
+                                            style="background:var(--bg-card);color:var(--text-primary);border-color:var(--border)">
+                                        @foreach(['SSL Certificate','Domain','Hosting','SaaS Subscription','Other'] as $t)
+                                            <option @if($asset->type === $t) selected @endif>{{ $t }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="text-xs block mb-1" style="color:var(--text-muted)">Vendor</label>
+                                    <input type="text" name="vendor" value="{{ $asset->vendor }}"
+                                           class="w-full text-sm rounded-lg px-3 py-2 border focus:outline-none"
+                                           style="background:var(--bg-card);color:var(--text-primary);border-color:var(--border)">
+                                </div>
+                                <div>
+                                    <label class="text-xs block mb-1" style="color:var(--text-muted)">Renewal Date</label>
+                                    <input type="date" name="renewal_date" value="{{ $asset->renewal_date }}"
+                                           class="w-full text-sm rounded-lg px-3 py-2 border focus:outline-none"
+                                           style="background:var(--bg-card);color:var(--text-primary);border-color:var(--border)">
+                                </div>
+                                <div>
+                                    <label class="text-xs block mb-1" style="color:var(--text-muted)">Cost / Year ($)</label>
+                                    <input type="number" name="cost_per_year" step="0.01" value="{{ $asset->cost_per_year }}"
+                                           class="w-full text-sm rounded-lg px-3 py-2 border focus:outline-none"
+                                           style="background:var(--bg-card);color:var(--text-primary);border-color:var(--border)">
+                                </div>
+                                <div class="sm:col-span-2">
+                                    <label class="text-xs block mb-1" style="color:var(--text-muted)">Client</label>
+                                    <select name="client_id" class="w-full text-sm rounded-lg px-3 py-2 border focus:outline-none"
+                                            style="background:var(--bg-card);color:var(--text-primary);border-color:var(--border)">
+                                        <option value="">— none —</option>
+                                        @foreach($clients as $cl)
+                                            <option value="{{ $cl->id }}" @if($asset->client_id == $cl->id) selected @endif>{{ $cl->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="flex gap-2 pt-1">
+                                <button type="submit" class="text-sm px-4 py-2 rounded-lg font-semibold transition hover:opacity-90"
+                                        style="background:var(--accent);color:#000">Save</button>
+                                <button type="button" onclick="toggleAssetEdit({{ $asset->id }})"
+                                        class="text-sm px-4 py-2 rounded-lg transition hover:opacity-80"
+                                        style="background:var(--bg-card);color:var(--text-muted);border:1px solid var(--border)">Cancel</button>
+                            </div>
                         </form>
                     </div>
+
                 @empty
                     <div class="px-5 py-10 text-center text-sm" style="color:var(--text-faint)">No assets yet.</div>
                 @endforelse
@@ -416,6 +483,11 @@ function showTab(name) {
 
 const hash = window.location.hash.replace('#', '');
 if (['clients','contacts','assets','rules'].includes(hash)) showTab(hash);
+
+function toggleAssetEdit(id) {
+    const el = document.getElementById('asset-edit-' + id);
+    el.classList.toggle('hidden');
+}
 </script>
 
 </x-app-layout>
