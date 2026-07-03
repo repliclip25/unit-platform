@@ -548,12 +548,11 @@ class AdminTenantController extends Controller
                 $deps = DB::table('worker_deployments')->where('user_id', $id)->pluck('id');
                 foreach ($deps as $depId) {
                     DB::table('deployment_billing')->where('deployment_id', $depId)->update([
-                        'status'                   => 'trial',
-                        'trial_transactions_used'  => 0,
-                        'trial_transactions_limit' => 6,
-                        'stripe_subscription_id'   => null,
-                        'stripe_customer_id'       => null,
-                        'updated_at'               => now(),
+                        'status'                  => 'trial',
+                        'trial_transactions_used' => 0,
+                        'trial_transactions_limit'=> 6,
+                        'stripe_subscription_id'  => null,
+                        'updated_at'              => now(),
                     ]);
                 }
                 DB::table('usage_events')->where('user_id', $id)->delete();
