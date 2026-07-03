@@ -40,22 +40,24 @@ class PlatformClockRegistry
             ],
 
             'memory' => [
-                'label'   => 'Memory Entries',
-                'metric'  => 'memory_entries',
+                'label'   => 'Memory Enrichments',
+                'metric'  => 'memory_enrichments',
                 'unit'    => '',
                 'prefix'  => '',
-                'subtitle'=> '{count} clients & contacts stored',
-                'formula' => 'count of clients + contacts in your memory',
-                'source'  => 'Every client and contact your workers learn is stored in memory and reused across future emails — no re-training needed.',
+                'subtitle'=> '{count} enrichments stored',
+                'formula' => 'sum of all records across memory types',
+                'source'  => 'Memory on UNIT grows with your workers. Every piece of data they learn — clients, contacts, assets, and future types — is stored once and reused across every interaction.',
                 'scope'   => 'user',
                 'owner'   => 'TEAM',
                 'resolver'=> fn(int $userId) => [
                     'value' => number_format(
                         DB::table('clients')->where('user_id', $userId)->count()
                         + DB::table('contacts')->where('user_id', $userId)->count()
+                        + DB::table('assets')->where('user_id', $userId)->count()
                     ),
                     'count' => DB::table('clients')->where('user_id', $userId)->count()
-                               + DB::table('contacts')->where('user_id', $userId)->count(),
+                               + DB::table('contacts')->where('user_id', $userId)->count()
+                               + DB::table('assets')->where('user_id', $userId)->count(),
                 ],
             ],
         ];
