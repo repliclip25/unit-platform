@@ -19,20 +19,22 @@ class DashboardService
 
         usort($panels, fn($a, $b) => ($a['priority'] ?? 99) <=> ($b['priority'] ?? 99));
 
+        $slug = $dep->worker_slug;
+
         return array_map(fn($panel) => array_merge(
             $panel,
-            ['data' => self::resolvePanel($panel, $depId, $userId)]
+            ['data' => self::resolvePanel($panel, $depId, $userId, $slug)]
         ), $panels);
     }
 
-    private static function resolvePanel(array $panel, int $depId, int $userId): array
+    private static function resolvePanel(array $panel, int $depId, int $userId, string $slug = ''): array
     {
         return match($panel['type']) {
             'action_queue'  => self::actionQueue($depId, $panel),
             'horizon'       => self::horizon($userId, $panel),
             'metric_strip'  => self::metricStrip($depId, $panel),
             'proof_of_work' => self::proofOfWork($depId, $panel),
-            'alert_feed'    => self::alertFeed($depId, $panel),
+            'alert_feed'    => self::alertFeed($depId, $panel, $slug),
             'activity_feed' => self::activityFeed($depId, $panel),
             'insight'       => self::insight($depId, $panel),
             'status_map'    => self::statusMap($depId, $panel),
@@ -199,7 +201,7 @@ class DashboardService
     // ── alert_feed ───────────────────────────────────────────────────────────
     // Issues needing awareness.
 
-    private static function alertFeed(int $depId, array $panel): array
+    private static function alertFeed(int $depId, array $panel, string $slug = ''): array
     {
         $alerts = [];
 
@@ -247,7 +249,7 @@ class DashboardService
                 'message'  => "{$pct}% of this week's emails failed processing — check the Log tab for details.",
                 'action'   => 'View Log',
                 'route'    => 'workers.log',
-                'params'   => ['dep' => $depId],
+                'params'   => ['slug' => $slug],
             ];
         }
 
