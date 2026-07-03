@@ -450,8 +450,15 @@ class OnboardingController extends Controller
                 'intentMeta'   => $this->intentMeta(session('onboarding_intent_worker')),
             ]),
             'select-worker' => (function () {
-                // Gate: email must be verified before choosing a worker
                 $user = auth()->user();
+
+                // If email is verified at the Laravel level but platform_verifications
+                // is missing the row (e.g. after a flush), auto-seed it now.
+                if ($user->hasVerifiedEmail()) {
+                    PlatformVerificationService::markVerified($user->id, 'email', [], 'system');
+                }
+
+                // Gate: all required platform verifications must be complete
                 if (!PlatformVerificationService::isPlatformReady($user->id)) {
                     return redirect()->route('onboarding.verify')
                         ->with('info', 'Please verify your email before selecting a worker.');
