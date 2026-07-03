@@ -19,6 +19,12 @@ class DeskService
 
     public static function seedDefaults(int $userId): void
     {
+        try {
+            DB::table('user_desk_cards')->where('user_id', $userId)->exists();
+        } catch (\Throwable) {
+            return; // table not yet migrated — skip seeding silently
+        }
+
         $existing = DB::table('user_desk_cards')
             ->where('user_id', $userId)
             ->pluck('card_key')
@@ -67,61 +73,69 @@ class DeskService
 
     public static function resolve(int $userId, array $context): \Illuminate\Support\Collection
     {
-        self::seedDefaults($userId);
+        try {
+            self::seedDefaults($userId);
 
-        $rows = DB::table('user_desk_cards')
-            ->where('user_id', $userId)
-            ->where('visible', true)
-            ->orderBy('position')
-            ->get()
-            ->keyBy('card_key');
+            $rows = DB::table('user_desk_cards')
+                ->where('user_id', $userId)
+                ->where('visible', true)
+                ->orderBy('position')
+                ->get()
+                ->keyBy('card_key');
 
-        $staticPool = DeskCardRegistry::active();
-        $workerPool = self::buildWorkerPool($userId);
+            $staticPool = DeskCardRegistry::active();
+            $workerPool = self::buildWorkerPool($userId);
 
-        return $rows->map(function ($row) use ($staticPool, $workerPool, $context, $userId) {
-            $key = $row->card_key;
-            $def = $staticPool[$key] ?? $workerPool[$key] ?? null;
-            if (!$def) return null;
+            return $rows->map(function ($row) use ($staticPool, $workerPool, $context, $userId) {
+                $key = $row->card_key;
+                $def = $staticPool[$key] ?? $workerPool[$key] ?? null;
+                if (!$def) return null;
 
-            $data = self::resolveCard($key, $userId, $context, $row, $workerPool);
-            if ($data === null) return null;
+                $data = self::resolveCard($key, $userId, $context, $row, $workerPool);
+                if ($data === null) return null;
 
-            return array_merge($def, [
-                'key'               => $key,
-                'position'          => $row->position,
-                'last_dismissed_at' => $row->last_dismissed_at,
-            ], $data);
-        })->filter()->values();
+                return array_merge($def, [
+                    'key'               => $key,
+                    'position'          => $row->position,
+                    'last_dismissed_at' => $row->last_dismissed_at,
+                ], $data);
+            })->filter()->values();
+        } catch (\Throwable) {
+            return collect(); // table not migrated yet — return empty feed
+        }
     }
 
     // ── All cards for Customize Desk drawer ──────────────────────────────────
 
     public static function allForUser(int $userId): \Illuminate\Support\Collection
     {
-        self::seedDefaults($userId);
+        try {
+            self::seedDefaults($userId);
 
-        $rows = DB::table('user_desk_cards')
-            ->where('user_id', $userId)
-            ->orderBy('position')
-            ->get()
-            ->keyBy('card_key');
+            $rows = DB::table('user_desk_cards')
+                ->where('user_id', $userId)
+                ->orderBy('position')
+                ->get()
+                ->keyBy('card_key');
 
-        $staticPool = DeskCardRegistry::active();
-        $workerPool = self::buildWorkerPool($userId);
-        $allPool    = array_merge($workerPool, $staticPool); // workers first in drawer
+            $staticPool = DeskCardRegistry::active();
+            $workerPool = self::buildWorkerPool($userId);
+            $allPool    = array_merge($workerPool, $staticPool);
 
-        $cards = collect();
-        foreach ($allPool as $key => $def) {
-            $row = $rows->get($key);
-            $cards->push(array_merge($def, [
-                'key'      => $key,
-                'visible'  => $row ? (bool) $row->visible : ($def['default'] ?? true),
-                'position' => $row ? $row->position : ($def['default_pos'] ?? 50),
-            ]));
+            $cards = collect();
+            foreach ($allPool as $key => $def) {
+                $row = $rows->get($key);
+                $cards->push(array_merge($def, [
+                    'key'      => $key,
+                    'visible'  => $row ? (bool) $row->visible : ($def['default'] ?? true),
+                    'position' => $row ? $row->position : ($def['default_pos'] ?? 50),
+                ]));
+            }
+
+            return $cards->sortBy('position')->values();
+        } catch (\Throwable) {
+            return collect();
         }
-
-        return $cards->sortBy('position')->values();
     }
 
     // ── Build worker card pool dynamically ────────────────────────────────────
