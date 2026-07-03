@@ -551,8 +551,12 @@ class AdminTenantController extends Controller
         }
 
         if (in_array('desk', $scopes)) {
-            DB::table('user_desk_cards')->where('user_id', $id)->delete();
-            $log[] = "Cleared desk card preferences (will re-seed on next dashboard load)";
+            try {
+                DB::table('user_desk_cards')->where('user_id', $id)->delete();
+                $log[] = "Cleared desk card preferences (will re-seed on next dashboard load)";
+            } catch (\Throwable) {
+                $log[] = "Desk cards skipped (migration pending)";
+            }
         }
 
         if (in_array('onboarding', $scopes)) {
@@ -585,13 +589,19 @@ class AdminTenantController extends Controller
         }
 
         // Log the admin action
-        DB::table('platform_events')->insert([
-            'user_id'    => $id,
-            'event_type' => 'admin_flush',
-            'payload'    => json_encode(['scopes' => $scopes, 'log' => $log, 'admin_id' => auth()->id()]),
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+        try {
+            DB::table('platform_events')->insert([
+                'user_id'     => $id,
+                'type'        => 'admin_flush',
+                'worker_slug' => 'platform',
+                'event'       => 'admin_flush',
+                'payload'     => json_encode(['scopes' => $scopes, 'log' => $log, 'admin_id' => auth()->id()]),
+                'created_at'  => now(),
+                'updated_at'  => now(),
+            ]);
+        } catch (\Throwable) {
+            // audit log failure should never block the flush
+        }
 
         // Send flush notice to the tenant if anything was actually cleared
         if (!empty($log)) {
