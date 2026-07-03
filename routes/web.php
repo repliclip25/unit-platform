@@ -381,6 +381,12 @@ Route::middleware(['auth', 'verified', 'onboarded', 'not-pending-del'])->group(f
         // ── Pipeline Stage Health ─────────────────────────────────────────────
         Route::get('/admin/pipeline-health', [AdminPipelineHealthController::class, 'index'])->name('admin.pipeline-health');
 
+        // Desk card admin
+        Route::get( '/admin/desk-cards',                    [\App\Http\Controllers\AdminDeskCardController::class, 'index'])->name('admin.desk-cards');
+        Route::post('/admin/desk-cards/save',               [\App\Http\Controllers\AdminDeskCardController::class, 'save'])->name('admin.desk-cards.save');
+        Route::post('/admin/desk-cards/{key}/toggle',       [\App\Http\Controllers\AdminDeskCardController::class, 'toggle'])->name('admin.desk-cards.toggle')->where('key', '[a-z0-9._-]+');
+        Route::post('/admin/desk-cards/{key}/toggle-default',[\App\Http\Controllers\AdminDeskCardController::class, 'toggleDefault'])->name('admin.desk-cards.toggle-default')->where('key', '[a-z0-9._-]+');
+
         // Worker lifecycle management
         Route::post('/admin/workers/{slug}/commission',   [AdminWorkerLifecycleController::class, 'commission'])->name('admin.workers.commission');
         Route::post('/admin/workers/{slug}/testing',      [AdminWorkerLifecycleController::class, 'setTesting'])->name('admin.workers.testing');

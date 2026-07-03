@@ -24,7 +24,7 @@ class DeskService
             ->pluck('card_key')
             ->flip();
 
-        // Seed static (non-worker) default cards
+        // Seed static (non-worker) default cards (respects admin active/default config)
         $defaults = DeskCardRegistry::defaults();
         foreach ($defaults as $pos => $key) {
             if ($existing->has($key)) continue;
@@ -76,7 +76,7 @@ class DeskService
             ->get()
             ->keyBy('card_key');
 
-        $staticPool = DeskCardRegistry::all();
+        $staticPool = DeskCardRegistry::active();
         $workerPool = self::buildWorkerPool($userId);
 
         return $rows->map(function ($row) use ($staticPool, $workerPool, $context, $userId) {
@@ -107,7 +107,7 @@ class DeskService
             ->get()
             ->keyBy('card_key');
 
-        $staticPool = DeskCardRegistry::all();
+        $staticPool = DeskCardRegistry::active();
         $workerPool = self::buildWorkerPool($userId);
         $allPool    = array_merge($workerPool, $staticPool); // workers first in drawer
 

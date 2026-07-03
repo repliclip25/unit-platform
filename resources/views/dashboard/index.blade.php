@@ -132,26 +132,36 @@
                 $tierLabels = ['pipeline' => 'Pipeline', 'memory' => 'Memory', 'growth' => 'Growth', 'platform' => 'Platform'];
                 $grouped = collect($deskAllCards)->groupBy('tier');
             @endphp
+            <style>
+            .desk-tog { position:relative;width:34px;height:20px;cursor:pointer;flex-shrink:0 }
+            .desk-tog input { opacity:0;width:0;height:0;position:absolute }
+            .desk-tog-track { position:absolute;inset:0;border-radius:10px;transition:.18s;background:var(--bg-raised);border:1px solid var(--border) }
+            .desk-tog input:checked ~ .desk-tog-track { background:var(--accent);border-color:transparent }
+            .desk-tog-thumb { position:absolute;top:3px;left:3px;width:12px;height:12px;border-radius:50%;transition:.18s;pointer-events:none;background:var(--text-muted) }
+            .desk-tog input:checked ~ .desk-tog-track .desk-tog-thumb { transform:translateX(14px);background:#000 }
+            </style>
             @foreach(['pipeline','memory','growth','platform'] as $tier)
             @if($grouped->has($tier))
             <div class="px-5 py-3" style="border-bottom:1px solid var(--border-subtle)">
-                <p class="text-xs font-bold uppercase tracking-widest mb-2" style="color:var(--text-muted)">
+                <p class="text-xs font-bold uppercase tracking-widest mb-3" style="color:var(--text-muted)">
                     {{ $tierLabels[$tier] }}
                 </p>
-                <div class="space-y-2">
+                <div class="space-y-3">
                     @foreach($grouped[$tier] as $item)
-                    <label class="flex items-center gap-3 cursor-pointer select-none">
-                        <input type="checkbox"
-                               class="desk-toggle"
-                               data-key="{{ $item['key'] }}"
-                               @if($item['visible']) checked @endif
-                               onchange="deskSaveToggle(this)"
-                               style="accent-color:var(--accent);width:14px;height:14px">
+                    <div class="flex items-center gap-3">
+                        <label class="desk-tog" title="{{ $item['visible'] ? 'Showing' : 'Hidden' }}">
+                            <input type="checkbox"
+                                   class="desk-toggle"
+                                   data-key="{{ $item['key'] }}"
+                                   @if($item['visible']) checked @endif
+                                   onchange="deskSaveToggle(this)">
+                            <div class="desk-tog-track"><div class="desk-tog-thumb"></div></div>
+                        </label>
                         <div class="flex-1 min-w-0">
-                            <p class="text-xs font-medium" style="color:var(--text-primary)">{{ $item['label'] }}</p>
-                            <p class="text-xs" style="color:var(--text-faint)">{{ $item['description'] }}</p>
+                            <p class="text-xs font-semibold leading-tight" style="color:var(--text-primary)">{{ $item['label'] }}</p>
+                            <p class="text-xs mt-0.5" style="color:var(--text-faint)">{{ $item['description'] }}</p>
                         </div>
-                    </label>
+                    </div>
                     @endforeach
                 </div>
             </div>
@@ -159,7 +169,7 @@
             @endforeach
             <div class="px-5 py-3">
                 <p class="text-xs" style="color:var(--text-faint)">
-                    Cards only appear when there's something to show. Toggle off to permanently hide a card type.
+                    Cards only show when there's something to display. Toggle off to permanently hide a card type from your desk.
                 </p>
             </div>
         </div>

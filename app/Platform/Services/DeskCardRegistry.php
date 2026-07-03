@@ -92,14 +92,40 @@ class DeskCardRegistry
 
     public static function get(string $key): ?array
     {
-        // Worker-keyed cards are valid even though they're not in this static pool
         if (str_starts_with($key, 'worker.')) return ['dynamic' => true];
         return self::all()[$key] ?? null;
     }
 
+    /**
+     * Returns cards with admin DB overrides merged in, filtering inactive ones.
+     */
+    public static function active(): array
+    {
+        $pool = self::all();
+        try {
+            $config = \Illuminate\Support\Facades\DB::table('platform_desk_card_config')
+                ->get()->keyBy('card_key');
+        } catch (\Throwable) {
+            return $pool; // table not yet migrated
+        }
+
+        $result = [];
+        foreach ($pool as $key => $def) {
+            $row = $config->get($key);
+            if ($row && !(bool) $row->active) continue; // globally disabled by admin
+            $result[$key] = array_merge($def, [
+                'label'       => $row?->label       ?: $def['label'],
+                'description' => $row?->description ?: $def['description'],
+                'default'     => $row ? (bool) $row->default_on : $def['default'],
+                'default_pos' => $row?->sort_order ?? $def['default_pos'],
+            ]);
+        }
+        return $result;
+    }
+
     public static function defaults(): array
     {
-        return collect(self::all())
+        return collect(self::active())
             ->filter(fn($c) => $c['default'])
             ->sortBy('default_pos')
             ->keys()
