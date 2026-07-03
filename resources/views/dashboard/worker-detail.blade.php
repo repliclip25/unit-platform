@@ -869,7 +869,7 @@
                         class="flex-1 text-sm font-bold px-4 py-3 rounded-xl hover:opacity-90 flex items-center justify-center gap-2 transition"
                         style="background:var(--accent);color:#1a1404">
                     <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-                    ⚡ Run Fast Track
+                    Run Fast Track
                 </button>
                 @else
                 <div class="flex-1 text-center text-xs py-3 rounded-xl border" style="color:var(--text-faint);border-color:var(--border)">
