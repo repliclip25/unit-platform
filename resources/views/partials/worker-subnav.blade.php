@@ -20,9 +20,16 @@
             {{ $tab['label'] }}
         </a>
     @endforeach
-    <div class="ml-auto hidden sm:flex items-center gap-2 pb-2 pl-4 shrink-0">
+    <div class="ml-auto hidden sm:flex items-center gap-3 pb-2 pl-4 shrink-0">
         <span class="text-xs {{ $dep->status === 'active' ? 'text-green-400' : 'text-yellow-400' }}">● {{ ucfirst($dep->status) }}</span>
         <span class="text-xs" style="color:var(--text-faint)">·</span>
         <span class="text-xs" style="color:var(--text-muted)">{{ $dep->worker_slug }}</span>
+        <span class="text-xs" style="color:var(--text-faint)">·</span>
+        <a href="{{ route('workers.show', $dep->worker_slug) }}#fast-track"
+           class="flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-lg transition hover:opacity-90"
+           style="background:var(--accent);color:#1a1404">
+            <svg class="w-3 h-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+            Fast Track
+        </a>
     </div>
 </div>
