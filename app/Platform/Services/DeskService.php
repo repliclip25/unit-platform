@@ -341,27 +341,21 @@ class DeskService
             ];
         }
 
-        if ($key === 'memory.top_queried') {
-            // Top-queried based on how many transactions reference a client_id
-            $top = DB::table('transactions')
-                ->where('user_id', $userId)
-                ->whereNotNull('client_id')
-                ->select('client_id', DB::raw('count(*) as hits'))
-                ->groupBy('client_id')
-                ->orderByDesc('hits')
-                ->limit(1)
-                ->first();
+        if ($key === 'memory.summary') {
+            $clients  = DB::table('clients')->where('user_id', $userId)->whereNull('deleted_at')->count();
+            $contacts = DB::table('contacts')->where('user_id', $userId)->whereNull('deleted_at')->count();
+            $assets   = DB::table('assets')->where('user_id', $userId)->whereNull('deleted_at')->count();
+            $total    = $clients + $contacts + $assets;
 
-            if (!$top) return null;
-
-            $client = DB::table('clients')->where('id', $top->client_id)->first();
-            if (!$client) return null;
+            $cLabel = $clients  === 1 ? 'client'  : 'clients';
+            $tLabel = $contacts === 1 ? 'contact' : 'contacts';
+            $aLabel = $assets   === 1 ? 'asset'   : 'assets';
 
             return [
-                'text'   => "<strong>{$client->name}</strong> is your most-referenced memory — looked up <strong>{$top->hits}</strong> " . ($top->hits === 1 ? 'time' : 'times'),
-                'dot'    => 'grey',
-                'action' => ['label' => 'View', 'url' => route('memory')],
-                'always' => false,
+                'text'   => "<strong>{$clients}</strong> {$cLabel} · <strong>{$contacts}</strong> {$tLabel} · <strong>{$assets}</strong> {$aLabel} in your memory",
+                'dot'    => $total > 0 ? 'green' : 'grey',
+                'action' => ['label' => 'View memory', 'url' => route('memory')],
+                'always' => true,
             ];
         }
 

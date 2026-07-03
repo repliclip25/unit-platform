@@ -35,11 +35,11 @@ class DeskCardRegistry
                 'default_pos' => 6,
                 'dismissible' => false,
             ],
-            'memory.top_queried' => [
+            'memory.summary' => [
                 'tier'        => 'memory',
-                'label'       => 'Top Queried Memory',
-                'description' => 'The memory records your workers look up most often',
-                'default'     => false,
+                'label'       => 'Memory Summary',
+                'description' => 'Total clients, contacts, and assets loaded in your memory',
+                'default'     => true,
                 'default_pos' => 7,
                 'dismissible' => false,
             ],
