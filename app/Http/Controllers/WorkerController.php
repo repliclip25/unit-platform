@@ -138,6 +138,9 @@ class WorkerController extends Controller
         }
 
         $contract      = \App\Platform\Services\WorkerRegistry::resolve($slug);
+        if (!$contract) {
+            return back()->with('error', 'Worker not found. Please refresh and try again.');
+        }
         $inst          = $contract->instances();
         $existingCount = DB::table('worker_deployments')
                            ->where('user_id', auth()->id())
@@ -183,11 +186,15 @@ class WorkerController extends Controller
 
         // Capture first worker touchpoint for segmented messaging
         $user = auth()->user();
-        if (!$user->first_worker_slug) {
-            DB::table('users')->where('id', $user->id)->update([
-                'first_worker_slug' => $request->worker_slug,
-                'first_worker_at'   => now(),
-            ]);
+        try {
+            if (!$user->first_worker_slug) {
+                DB::table('users')->where('id', $user->id)->update([
+                    'first_worker_slug' => $request->worker_slug,
+                    'first_worker_at'   => now(),
+                ]);
+            }
+        } catch (\Throwable) {
+            // Column may not exist on older production schema — non-fatal
         }
 
         // Copy platform default rules for this worker slug into the new deployment
