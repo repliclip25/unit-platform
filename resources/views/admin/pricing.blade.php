@@ -240,12 +240,12 @@
                             </div>
                             <div>
                                 <div class="wf-lbl">Monthly Flat Rate ($)</div>
-                                <input type="number" step="0.01" name="monthly_flat_rate" id="ef-monthly_flat_rate" class="wf-input">
+                                <input type="number" step="0.01" name="monthly_flat_rate" id="ef-monthly_flat_rate" class="wf-input" oninput="refreshUEFromForm()">
                                 <div class="wf-hint">Must match the Stripe price charge</div>
                             </div>
                             <div>
                                 <div class="wf-lbl">Transaction Limit <span style="font-weight:400;color:var(--text-muted)">(0 = unlimited)</span></div>
-                                <input type="number" name="transaction_limit" id="ef-transaction_limit" class="wf-input">
+                                <input type="number" name="transaction_limit" id="ef-transaction_limit" class="wf-input" oninput="refreshUEFromForm()">
                                 <div class="wf-hint">Enforced by PolicyEngine</div>
                             </div>
                             <div>
@@ -303,6 +303,50 @@
                             </div>
                         </div>
                         <div id="ai-tier-cost" style="margin-top:8px;padding:10px 12px;border-radius:9px;background:var(--bg-raised);border:1px solid var(--border);font-size:12px;color:var(--text-muted)"></div>
+
+                        {{-- UNIT ECONOMICS --}}
+                        <div class="wf-sep">Unit Economics</div>
+                        <div id="ue-panel" style="border-radius:10px;overflow:hidden;border:1px solid var(--border)">
+                            <div style="display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid var(--border)">
+                                <div style="padding:10px 14px;border-right:1px solid var(--border)">
+                                    <div style="font-size:10px;font-weight:600;letter-spacing:.06em;color:var(--text-muted);margin-bottom:4px">REVENUE</div>
+                                    <div id="ue-revenue" style="font-size:18px;font-weight:700;color:var(--text-primary)">—</div>
+                                    <div style="font-size:10px;color:var(--text-muted)">monthly flat rate</div>
+                                </div>
+                                <div style="padding:10px 14px">
+                                    <div style="font-size:10px;font-weight:600;letter-spacing:.06em;color:var(--text-muted);margin-bottom:4px">GROSS PROFIT</div>
+                                    <div id="ue-gp" style="font-size:18px;font-weight:700;color:var(--text-primary)">—</div>
+                                    <div id="ue-gp-pct" style="font-size:10px;color:var(--text-muted)">after all costs</div>
+                                </div>
+                            </div>
+                            <div style="display:grid;grid-template-columns:repeat(4,1fr);background:var(--bg-raised)">
+                                <div style="padding:10px 14px;border-right:1px solid var(--border)">
+                                    <div style="font-size:10px;color:var(--text-muted);margin-bottom:3px">AI Cost</div>
+                                    <div id="ue-ai" style="font-size:13px;font-weight:600;color:var(--text-primary)">—</div>
+                                    <div id="ue-ai-note" style="font-size:10px;color:var(--text-muted)">avg volume</div>
+                                </div>
+                                <div style="padding:10px 14px;border-right:1px solid var(--border)">
+                                    <div style="font-size:10px;color:var(--text-muted);margin-bottom:3px">Stripe Fee</div>
+                                    <div id="ue-stripe" style="font-size:13px;font-weight:600;color:var(--text-primary)">—</div>
+                                    <div style="font-size:10px;color:var(--text-muted)">2.9% + $0.30</div>
+                                </div>
+                                <div style="padding:10px 14px;border-right:1px solid var(--border)">
+                                    <div style="font-size:10px;color:var(--text-muted);margin-bottom:3px">Infra</div>
+                                    <div id="ue-infra" style="font-size:13px;font-weight:600;color:var(--text-primary)">—</div>
+                                    <div style="font-size:10px;color:var(--text-muted)">~$0.50/tenant/mo</div>
+                                </div>
+                                <div style="padding:10px 14px">
+                                    <div style="font-size:10px;color:var(--text-muted);margin-bottom:3px">Tax Reserve</div>
+                                    <div id="ue-tax" style="font-size:13px;font-weight:600;color:var(--text-primary)">—</div>
+                                    <div style="font-size:10px;color:var(--text-muted)">~8% sales tax</div>
+                                </div>
+                            </div>
+                            <div style="padding:8px 14px;background:var(--bg-surface);border-top:1px solid var(--border);font-size:11px;color:var(--text-muted)">
+                                Based on avg volume: <span id="ue-vol-label" style="color:var(--text-secondary);font-weight:600">—</span> transactions/mo
+                                · <span id="ue-cost-per-tx" style="color:var(--text-secondary)">—</span> cost/tx
+                                · <span id="ue-margin-status" style="font-weight:600">—</span>
+                            </div>
+                        </div>
 
                         {{-- STRIPE LIVE PRICE --}}
                         <div class="wf-sep">Stripe — Live Price ID</div>
@@ -480,6 +524,7 @@ const PLANS = {
         sort_order:           {{ $plan->sort_order ?? 0 }},
         accent_color:         @json($plan->accent_color ?? '#f1d362'),
         free_transactions:    {{ $plan->free_transactions ?? 0 }},
+        included_transactions: {{ $plan->included_transactions ?? 0 }},
         monthly_flat_rate:    {{ $plan->monthly_flat_rate ?? 0 }},
         transaction_limit:    {{ $plan->transaction_limit ?? 0 }},
         support_label:        @json($plan->support_label ?? ''),
@@ -555,6 +600,7 @@ function selectPlan(id) {
     setSelectValue('ef-classify_model', p.classify_model || 'claude-haiku-4-5-20251001');
     setSelectValue('ef-draft_model',    p.draft_model    || 'claude-haiku-4-5-20251001');
     updateCostPreview(p.classify_model, p.draft_model, p.draft_model_threshold);
+    updateUnitEconomics(p);
 
     // Color
     document.getElementById('ef-accent_color').value = p.accent_color;
@@ -691,6 +737,18 @@ document.querySelector('#add-modal').addEventListener('click', function(e) {
     if (e.target === this) closeAdd();
 });
 
+function refreshUEFromForm() {
+    const get = id => document.getElementById(id)?.value ?? '';
+    updateUnitEconomics({
+        monthly_flat_rate:      get('ef-monthly_flat_rate'),
+        transaction_limit:      get('ef-transaction_limit'),
+        included_transactions:  get('ef-transaction_limit') || 200,
+        classify_model:         get('ef-classify_model'),
+        draft_model:            get('ef-draft_model'),
+        draft_model_threshold:  get('ef-draft_model_threshold'),
+    });
+}
+
 function submitVisibilityToggle() {
     const form = document.getElementById('ep-visibility-form');
     if (form && form.action) form.submit();
@@ -718,6 +776,70 @@ function onTierChange(tier) {
     if (tier === 'standard' && threshEl && !threshEl.value) threshEl.value = 500;
     if (tier !== 'standard' && threshEl) threshEl.value = '';
     updateCostPreview(p.classify, p.draft, tier === 'standard' ? 500 : null);
+    refreshUEFromForm();
+}
+
+function updateUnitEconomics(plan) {
+    const revenue = parseFloat(plan.monthly_flat_rate) || 0;
+    const limit   = parseInt(plan.transaction_limit)   || 0; // 0 = unlimited
+    const vol     = limit > 0 ? limit : (parseInt(plan.included_transactions) || 200);
+
+    // Model costs per 1K tokens (blended input+output)
+    const modelCost = {
+        'claude-haiku-4-5-20251001': 0.00025,
+        'claude-sonnet-4-6':         0.0030,
+        'claude-opus-4-7':           0.0180,
+    };
+    const classify = modelCost[plan.classify_model] ?? modelCost['claude-haiku-4-5-20251001'];
+    const draft    = modelCost[plan.draft_model]    ?? modelCost['claude-haiku-4-5-20251001'];
+
+    // Token estimates per pipeline
+    const classifyToks = 600;
+    const draftToks    = 1200;
+
+    // If threshold applies, blend the per-email cost
+    let costPerEmail;
+    const threshold = parseInt(plan.draft_model_threshold) || 0;
+    if (threshold > 0 && vol > threshold) {
+        const aboveThreshold = vol - threshold;
+        costPerEmail = (
+            (threshold * ((classify * classifyToks / 1000) + (draft * draftToks / 1000))) +
+            (aboveThreshold * ((classify * classifyToks / 1000) + (classify * draftToks / 1000)))
+        ) / vol;
+    } else {
+        costPerEmail = (classify * classifyToks / 1000) + (draft * draftToks / 1000);
+    }
+
+    const aiCost    = costPerEmail * vol;
+    const stripeFee = revenue > 0 ? (revenue * 0.029 + 0.30) : 0;
+    const infra     = 0.50;
+    const taxRes    = revenue * 0.08; // ~8% sales tax reserve
+    const totalCost = aiCost + stripeFee + infra + taxRes;
+    const gp        = revenue - totalCost;
+    const gpPct     = revenue > 0 ? (gp / revenue * 100) : 0;
+
+    const fmt = v => v >= 0 ? '$' + v.toFixed(2) : '−$' + Math.abs(v).toFixed(2);
+    const pctColor = gpPct >= 60 ? 'var(--badge-fast-text)' : gpPct >= 40 ? 'var(--badge-balanced-text)' : '#f87171';
+    const marginLabel = gpPct >= 60 ? '✓ On target (50–70%+)' : gpPct >= 40 ? '⚠ Below target' : '✗ Margin too thin';
+
+    const setText = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+    const setStyle = (id, k, v) => { const el = document.getElementById(id); if (el) el.style[k] = v; };
+
+    setText('ue-revenue',   revenue > 0 ? fmt(revenue) : 'Custom');
+    setText('ue-gp',        revenue > 0 ? fmt(gp)      : '—');
+    setText('ue-gp-pct',    revenue > 0 ? gpPct.toFixed(1) + '% gross margin' : 'Custom pricing');
+    setStyle('ue-gp', 'color', revenue > 0 ? pctColor : 'var(--text-muted)');
+
+    setText('ue-ai',       revenue > 0 ? fmt(aiCost)    : '—');
+    setText('ue-ai-note',  vol + ' tx @ ' + '$' + costPerEmail.toFixed(4) + '/tx');
+    setText('ue-stripe',   revenue > 0 ? fmt(stripeFee) : '—');
+    setText('ue-infra',    fmt(infra));
+    setText('ue-tax',      revenue > 0 ? fmt(taxRes)    : '—');
+
+    setText('ue-vol-label',     vol);
+    setText('ue-cost-per-tx',   '$' + costPerEmail.toFixed(4));
+    setText('ue-margin-status', revenue > 0 ? marginLabel : 'Set monthly rate to see margin');
+    setStyle('ue-margin-status', 'color', pctColor);
 }
 
 function updateCostPreview(classifyModel, draftModel, threshold) {

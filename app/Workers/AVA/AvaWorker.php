@@ -997,4 +997,9 @@ class AvaWorker implements WorkerContract
             'unit_label_plural'  => 'emails processed',
         ];
     }
+
+    public function defaultPlan(): string
+    {
+        return 'starter';
+    }
 }

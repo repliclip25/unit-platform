@@ -848,4 +848,9 @@ class NuxWorker implements WorkerContract
             'unit_label_plural'  => 'posts generated',
         ];
     }
+
+    public function defaultPlan(): string
+    {
+        return 'starter';
+    }
 }

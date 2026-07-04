@@ -326,10 +326,22 @@ class WorkerController extends Controller
                 }
             }
 
+            // Resolve the default plan slug from the WorkerContract so AI tier,
+            // transaction_limit, and all pricing DB values are live from day one.
+            $contract    = \App\Platform\Services\WorkerRegistry::resolve($workerSlug);
+            $defaultPlan = $contract->defaultPlan();
+
+            // Confirm the plan exists in DB; fall back gracefully if not yet seeded
+            $planExists  = DB::table('worker_pricing')
+                ->where('worker_slug', $workerSlug)
+                ->where('plan_slug', $defaultPlan)
+                ->exists();
+
             DB::table('deployment_billing')->insert([
                 'user_id'                  => $userId,
                 'deployment_id'            => $depId,
                 'worker_slug'              => $workerSlug,
+                'plan_slug'                => $planExists ? $defaultPlan : null,
                 'status'                   => $billingStatus,
                 'trial_transactions_used'  => $trialUsed,
                 'trial_transactions_limit' => $trialLimit,

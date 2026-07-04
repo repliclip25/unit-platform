@@ -622,4 +622,16 @@ interface WorkerContract
      * without a code deploy — the platform checks DB first, falls back to this contract.
      */
     public function billing(): array;
+
+    /**
+     * The plan slug every new deployment starts on.
+     *
+     * This is the trial plan — the lowest tier with the free_transactions allocation.
+     * The platform uses this at deploy time to set deployment_billing.plan_slug so that
+     * AI tier, transaction_limit, and all pricing DB values are resolved immediately,
+     * without any admin intervention.
+     *
+     * Must match a worker_pricing row with worker_slug = $this->identity()['slug'].
+     */
+    public function defaultPlan(): string;
 }
