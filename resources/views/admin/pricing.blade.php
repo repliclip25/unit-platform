@@ -6,6 +6,22 @@
 .pr-left    { position:sticky;top:20px;max-height:calc(100vh - 80px);overflow-y:auto }
 .pr-right   { position:sticky;top:20px }
 
+/* ── Mobile ─────────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+    .pr-wrap        { grid-template-columns:1fr;gap:0 }
+    .pr-left        { position:static;max-height:none;overflow:visible }
+    .pr-right       { position:static;display:none }
+    .pr-right.mobile-open { display:block;margin-top:12px }
+    .ep-body        { max-height:none }
+    .wf-grid        { grid-template-columns:1fr }
+    .wf-full        { grid-column:1 }
+    .mobile-back    { display:flex !important }
+    .ue-costs-grid  { grid-template-columns:1fr 1fr !important }
+    .ue-costs-grid > div:nth-child(2) { border-right:none !important }
+    .ue-costs-grid > div:nth-child(3) { border-top:1px solid var(--border) }
+    .ue-costs-grid > div:nth-child(4) { border-top:1px solid var(--border) }
+}
+
 /* ── Plan list ──────────────────────────────────────────────────────────── */
 .pl-group   { margin-bottom:20px }
 .pl-worker  { font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
@@ -188,6 +204,8 @@
             </div>
             <div id="ep-content" style="display:none">
                 <div class="ep-hd" id="ep-header">
+                    <button type="button" class="mobile-back" onclick="closeMobilePanel()"
+                        style="display:none;background:none;border:none;cursor:pointer;color:var(--text-muted);padding:0 8px 0 0;flex-shrink:0;font-size:18px;line-height:1">←</button>
                     <div style="flex:1;min-width:0">
                         <div style="font-size:14px;font-weight:600;color:var(--text-primary)" id="ep-title">—</div>
                         <div style="font-size:11px;color:var(--text-muted);font-family:monospace" id="ep-slugs">—</div>
@@ -319,7 +337,7 @@
                                     <div id="ue-gp-pct" style="font-size:10px;color:var(--text-muted)">after all costs</div>
                                 </div>
                             </div>
-                            <div style="display:grid;grid-template-columns:repeat(4,1fr);background:var(--bg-raised)">
+                            <div style="display:grid;grid-template-columns:repeat(4,1fr);background:var(--bg-raised)" class="ue-costs-grid">
                                 <div style="padding:10px 14px;border-right:1px solid var(--border)">
                                     <div style="font-size:10px;color:var(--text-muted);margin-bottom:3px">AI Cost</div>
                                     <div id="ue-ai" style="font-size:13px;font-weight:600;color:var(--text-primary)">—</div>
@@ -565,6 +583,13 @@ function selectPlan(id) {
     document.getElementById('ep-empty').style.display = 'none';
     document.getElementById('ep-content').style.display = 'block';
 
+    // On mobile, reveal the right column and scroll to it
+    const rightCol = document.querySelector('.pr-right');
+    if (rightCol && window.innerWidth <= 768) {
+        rightCol.classList.add('mobile-open');
+        setTimeout(() => rightCol.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
+    }
+
     // Header
     document.getElementById('ep-title').textContent = p.display_name || p.worker_slug.toUpperCase();
     document.getElementById('ep-slugs').textContent = p.worker_slug + ' · ' + p.plan_slug;
@@ -736,6 +761,14 @@ function onPickWorker(sel) {
 document.querySelector('#add-modal').addEventListener('click', function(e) {
     if (e.target === this) closeAdd();
 });
+
+function closeMobilePanel() {
+    const rightCol = document.querySelector('.pr-right');
+    if (rightCol) rightCol.classList.remove('mobile-open');
+    _activePlanId = null;
+    document.querySelectorAll('.pl-card').forEach(c => c.classList.remove('active'));
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
 
 function refreshUEFromForm() {
     const get = id => document.getElementById(id)?.value ?? '';
