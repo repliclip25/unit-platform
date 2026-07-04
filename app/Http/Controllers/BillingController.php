@@ -121,7 +121,14 @@ class BillingController extends Controller
             return back()->with('error', 'Plan not found for this worker.');
         }
 
-        if ($planSlug === 'enterprise' || !$pricing->stripe_flat_price_id) {
+        // Resolve billing mode — determines which Stripe environment and which price ID to use
+        $billingMode = $pricing->billing_mode ?? 'test';
+        $isLive      = $billingMode === 'live';
+        $priceId     = $isLive
+            ? ($pricing->stripe_flat_price_id ?? null)
+            : ($pricing->stripe_test_price_id ?? $pricing->stripe_flat_price_id ?? null);
+
+        if ($planSlug === 'enterprise' || !$priceId) {
             return redirect()->route('billing')
                 ->with('info', 'Enterprise pricing is custom. Please contact ' . config('services.unit.support_email') . ' to get started.');
         }
@@ -143,9 +150,9 @@ class BillingController extends Controller
         $existingSubId = DB::table('users')->where('id', $user->id)->value('stripe_subscription_id');
 
         if ($existingSubId) {
-            $builder = $user->newSubscriptionItem($pricing->stripe_flat_price_id);
+            $builder = $user->newSubscriptionItem($priceId);
         } else {
-            $builder = $user->newSubscription('platform', $pricing->stripe_flat_price_id);
+            $builder = $user->newSubscription('platform', $priceId);
         }
 
         // Apply Stripe coupon if one is configured for this plan

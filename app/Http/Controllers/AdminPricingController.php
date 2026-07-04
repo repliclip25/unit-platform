@@ -25,6 +25,7 @@ class AdminPricingController extends Controller
 
     /**
      * Verify a Stripe Price ID and return its details — called via JS fetch.
+     * Uses test key if the request includes mode=test, live key otherwise.
      */
     public function verifyStripePrice(Request $request)
     {
@@ -32,11 +33,17 @@ class AdminPricingController extends Controller
         if (!$priceId) {
             return response()->json(['error' => 'No price ID provided.'], 422);
         }
-        if (!config('cashier.secret')) {
+
+        $mode   = $request->input('mode', 'live');
+        $secret = $mode === 'test'
+            ? (config('services.stripe.test_secret') ?: config('cashier.secret'))
+            : (config('services.stripe.live_secret') ?: config('cashier.secret'));
+
+        if (!$secret) {
             return response()->json(['error' => 'Stripe not configured.'], 422);
         }
         try {
-            $stripe = new \Stripe\StripeClient(config('cashier.secret'));
+            $stripe = new \Stripe\StripeClient($secret);
             $price  = $stripe->prices->retrieve($priceId, ['expand' => ['product']]);
             return response()->json([
                 'id'        => $price->id,
@@ -105,7 +112,9 @@ class AdminPricingController extends Controller
             'overage_price_per_tx' => 'nullable|numeric|min:0',
             'plan_highlights'      => 'nullable|string',
             'support_label'        => 'nullable|string|max:120',
+            'billing_mode'         => 'nullable|in:live,test',
             'stripe_flat_price_id' => 'nullable|string|max:120',
+            'stripe_test_price_id' => 'nullable|string|max:120',
             'stripe_coupon_id'     => 'nullable|string|max:120',
             'discount_pct'         => 'nullable|numeric|min:0|max:100',
             'promo_label'          => 'nullable|string|max:80',
@@ -121,7 +130,7 @@ class AdminPricingController extends Controller
             'updated_at' => now(),
         ]));
 
-        return redirect()->route('admin.pricing')->with('success', 'Worker pricing created.');
+        return redirect()->route('admin.pricing')->with('success', 'Plan created.');
     }
 
     public function update(Request $request, int $id)
@@ -141,7 +150,9 @@ class AdminPricingController extends Controller
             'overage_price_per_tx' => 'nullable|numeric|min:0',
             'plan_highlights'      => 'nullable|string',
             'support_label'        => 'nullable|string|max:120',
+            'billing_mode'         => 'nullable|in:live,test',
             'stripe_flat_price_id' => 'nullable|string|max:120',
+            'stripe_test_price_id' => 'nullable|string|max:120',
             'stripe_coupon_id'     => 'nullable|string|max:120',
             'discount_pct'         => 'nullable|numeric|min:0|max:100',
             'promo_label'          => 'nullable|string|max:80',
@@ -155,7 +166,7 @@ class AdminPricingController extends Controller
             'updated_at' => now(),
         ]));
 
-        return redirect()->route('admin.pricing')->with('success', 'Pricing updated.');
+        return redirect()->route('admin.pricing', ['editing' => $id])->with('success', 'Plan updated.');
     }
 
     public function toggle(int $id)
@@ -167,6 +178,27 @@ class AdminPricingController extends Controller
             'updated_at' => now(),
         ]);
         return redirect()->route('admin.pricing')->with('success', $plan->active ? 'Plan hidden.' : 'Plan set live.');
+    }
+
+    /**
+     * Set billing_mode for all plans under a worker slug in one shot.
+     * Called from the pricing page billing mode toggle.
+     */
+    public function setBillingMode(Request $request, int $id)
+    {
+        $plan = DB::table('worker_pricing')->find($id);
+        if (!$plan) abort(404);
+
+        $mode = $request->input('billing_mode');
+        if (!in_array($mode, ['live', 'test'])) abort(422);
+
+        // Apply to all plans for this worker so Starter/Pro/Enterprise stay in sync
+        DB::table('worker_pricing')
+            ->where('worker_slug', $plan->worker_slug)
+            ->update(['billing_mode' => $mode, 'updated_at' => now()]);
+
+        return redirect()->route('admin.pricing', ['editing' => $id])
+            ->with('success', strtoupper($plan->worker_slug) . ' billing switched to ' . strtoupper($mode) . ' mode.');
     }
 
     private function highlightsToJson(string $raw): string

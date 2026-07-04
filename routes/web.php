@@ -324,6 +324,7 @@ Route::middleware(['auth', 'verified', 'onboarded', 'not-pending-del'])->group(f
         Route::post('/admin/pricing/{id}/toggle',  [AdminPricingController::class, 'toggle'])->name('admin.pricing.toggle');
         Route::post('/admin/pricing/verify-price',  [AdminPricingController::class, 'verifyStripePrice'])->name('admin.pricing.verify-price');
         Route::post('/admin/pricing/verify-coupon', [AdminPricingController::class, 'verifyStripeCoupon'])->name('admin.pricing.verify-coupon');
+        Route::post('/admin/pricing/{id}/billing-mode', [AdminPricingController::class, 'setBillingMode'])->name('admin.pricing.billing-mode');
 
         Route::get('/admin/integrations',          [AdminIntegrationController::class, 'index'])->name('admin.integrations');
         Route::post('/admin/integrations',         [AdminIntegrationController::class, 'store'])->name('admin.integrations.store');

@@ -66,6 +66,15 @@ return [
         'api_key' => env('GOOGLE_AI_API_KEY'),
     ],
 
+    'stripe' => [
+        'live_key'            => env('STRIPE_LIVE_KEY'),
+        'live_secret'         => env('STRIPE_LIVE_SECRET'),
+        'live_webhook_secret' => env('STRIPE_LIVE_WEBHOOK_SECRET'),
+        'test_key'            => env('STRIPE_TEST_KEY', env('STRIPE_KEY')),
+        'test_secret'         => env('STRIPE_TEST_SECRET', env('STRIPE_SECRET')),
+        'test_webhook_secret' => env('STRIPE_TEST_WEBHOOK_SECRET', env('STRIPE_WEBHOOK_SECRET')),
+    ],
+
     'unit' => [
         'noreply_email' => env('UNIT_NOREPLY_EMAIL', 'hello@unit.report'),
         'noreply_name'  => env('UNIT_NOREPLY_NAME', 'UNIT'),
