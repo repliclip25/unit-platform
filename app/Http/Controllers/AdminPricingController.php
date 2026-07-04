@@ -11,9 +11,7 @@ class AdminPricingController extends Controller
     {
         $plans = DB::table('worker_pricing')->orderBy('worker_slug')->orderBy('sort_order')->get();
 
-        $existingSlugs   = $plans->pluck('worker_slug')->unique()->toArray();
         $registryWorkers = DB::table('worker_registry')
-            ->whereNotIn('slug', $existingSlugs)
             ->orderBy('name')
             ->get(['slug', 'name', 'description']);
 
