@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Platform\Services\WorkerRegistry;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -15,10 +16,22 @@ class AdminPricingController extends Controller
             ->orderBy('name')
             ->get(['slug', 'name', 'description']);
 
+        // Build AI stages map keyed by worker_slug — drives the dynamic model-slot
+        // labels in the pricing edit panel without any hardcoding in the blade.
+        $aiStagesMap = [];
+        foreach ($registryWorkers as $w) {
+            try {
+                $contract = WorkerRegistry::resolve($w->slug);
+                $aiStagesMap[$w->slug] = $contract->aiStages();
+            } catch (\Throwable) {
+                $aiStagesMap[$w->slug] = [];
+            }
+        }
+
         $stripeTestMode = str_starts_with(config('cashier.secret', ''), 'sk_test_');
         $stripeDashBase = 'https://dashboard.stripe.com/' . ($stripeTestMode ? 'test/' : '');
 
-        return view('admin.pricing', compact('plans', 'registryWorkers', 'stripeTestMode', 'stripeDashBase'));
+        return view('admin.pricing', compact('plans', 'registryWorkers', 'aiStagesMap', 'stripeTestMode', 'stripeDashBase'));
     }
 
     /**

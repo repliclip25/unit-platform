@@ -293,7 +293,7 @@
                                 <div class="wf-hint">Controls which Claude model runs each pipeline stage for subscribers on this plan</div>
                             </div>
                             <div>
-                                <div class="wf-lbl">Classify &amp; Memory Model</div>
+                                <div class="wf-lbl" id="ef-classify_model-label">Classify Model</div>
                                 <div class="wf-sel-wrap">
                                     <select name="classify_model" id="ef-classify_model" class="wf-select">
                                         <option value="claude-haiku-4-5-20251001">Haiku 4.5 — $0.80/M · fast</option>
@@ -301,10 +301,10 @@
                                         <option value="claude-opus-4-7">Opus 4.7 — $15.00/M · powerful</option>
                                     </select>
                                 </div>
-                                <div class="wf-hint">Used for ReadEmail, ClassifyEmail, MemoryLookup, SelectTemplate</div>
+                                <div class="wf-hint" id="ef-classify_model-stages">Select a plan to see which pipeline stages use this model</div>
                             </div>
                             <div>
-                                <div class="wf-lbl">Draft Model</div>
+                                <div class="wf-lbl" id="ef-draft_model-label">Draft Model</div>
                                 <div class="wf-sel-wrap">
                                     <select name="draft_model" id="ef-draft_model" class="wf-select">
                                         <option value="claude-haiku-4-5-20251001">Haiku 4.5 — $0.80/M · fast</option>
@@ -312,7 +312,7 @@
                                         <option value="claude-opus-4-7">Opus 4.7 — $15.00/M · powerful</option>
                                     </select>
                                 </div>
-                                <div class="wf-hint">Used for DraftEmail — where quality matters most</div>
+                                <div class="wf-hint" id="ef-draft_model-stages">Select a plan to see which pipeline stages use this model</div>
                             </div>
                             <div>
                                 <div class="wf-lbl">Draft Downgrade Threshold <span style="font-weight:400;color:var(--text-muted)">(0 = none)</span></div>
@@ -563,6 +563,9 @@ const PLANS = {
     @endforeach
 };
 
+// AI stages per worker — sourced from WorkerContract::aiStages(), never hardcoded
+const AI_STAGES = @json($aiStagesMap);
+
 const _csrf = document.querySelector('meta[name="csrf-token"]')?.content || '';
 const TOGGLE_BASE  = '{{ url("admin/pricing") }}';
 
@@ -626,6 +629,7 @@ function selectPlan(id) {
     setSelectValue('ef-draft_model',    p.draft_model    || 'claude-haiku-4-5-20251001');
     updateCostPreview(p.classify_model, p.draft_model, p.draft_model_threshold);
     updateUnitEconomics(p);
+    renderAiStageLabels(p.worker_slug);
 
     // Color
     document.getElementById('ef-accent_color').value = p.accent_color;
@@ -768,6 +772,36 @@ function closeMobilePanel() {
     _activePlanId = null;
     document.querySelectorAll('.pl-card').forEach(c => c.classList.remove('active'));
     window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function renderAiStageLabels(workerSlug) {
+    const stages = AI_STAGES[workerSlug] || {};
+
+    Object.entries(stages).forEach(([modelField, info]) => {
+        const labelEl  = document.getElementById('ef-' + modelField + '-label');
+        const stagesEl = document.getElementById('ef-' + modelField + '-stages');
+
+        if (labelEl)  labelEl.textContent  = info.label || modelField;
+        if (stagesEl) {
+            if (info.job_classes && info.job_classes.length > 0) {
+                // Strip 'Job' suffix for readability: 'ReadEmailJob' → 'ReadEmail'
+                const names = info.job_classes.map(j => j.replace(/Job$/, ''));
+                stagesEl.textContent = 'Pipeline stages: ' + names.join(' → ');
+            } else {
+                stagesEl.textContent = '';
+            }
+        }
+    });
+
+    // Clear any model slots not used by this worker
+    ['classify_model', 'draft_model'].forEach(field => {
+        if (!stages[field]) {
+            const l = document.getElementById('ef-' + field + '-label');
+            const s = document.getElementById('ef-' + field + '-stages');
+            if (l) l.textContent = field.replace('_', ' ');
+            if (s) s.textContent = 'Not used by this worker';
+        }
+    });
 }
 
 function refreshUEFromForm() {

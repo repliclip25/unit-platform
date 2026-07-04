@@ -853,4 +853,18 @@ class NuxWorker implements WorkerContract
     {
         return 'starter';
     }
+
+    public function aiStages(): array
+    {
+        return [
+            'classify_model' => [
+                'label'       => 'Classify Model',
+                'job_classes' => ['ReadPostJob', 'ClassifyPostJob'],
+            ],
+            'draft_model' => [
+                'label'       => 'Draft & Repurpose Model',
+                'job_classes' => ['RepurposePostJob', 'DraftPostJob'],
+            ],
+        ];
+    }
 }

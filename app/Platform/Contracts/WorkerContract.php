@@ -634,4 +634,30 @@ interface WorkerContract
      * Must match a worker_pricing row with worker_slug = $this->identity()['slug'].
      */
     public function defaultPlan(): string;
+
+    /**
+     * Declare which pipeline stages use AI and which model slot each maps to.
+     *
+     * Returns an array keyed by model field name (must match worker_pricing columns
+     * and WorkerInput properties — 'classify_model', 'draft_model', etc.).
+     * Each entry describes the label shown in the admin pricing panel and the
+     * job_class values (from pipelineStages()) that use that model slot.
+     *
+     * Example:
+     *   [
+     *     'classify_model' => [
+     *       'label'      => 'Classify & Memory Model',
+     *       'job_classes' => ['ReadEmailJob', 'ClassifyEmailJob', 'MemoryLookupJob', 'SelectTemplateJob'],
+     *     ],
+     *     'draft_model' => [
+     *       'label'      => 'Draft Model',
+     *       'job_classes' => ['DraftEmailJob'],
+     *     ],
+     *   ]
+     *
+     * The platform uses this to:
+     *   - Render accurate stage lists in the admin pricing panel (no hardcoding)
+     *   - Validate that every AI-using stage has a model assigned before commissioning
+     */
+    public function aiStages(): array;
 }

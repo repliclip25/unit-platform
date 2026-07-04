@@ -74,4 +74,5 @@ class NullWorkerContract implements WorkerContract
     public function stuckRecoveryMap(): array  { return []; }
     public function billing(): array           { return ['trial_transactions' => 0, 'trial_days' => 0, 'billing_unit' => 'transaction', 'unit_label' => 'transaction', 'unit_label_plural' => 'transactions']; }
     public function defaultPlan(): string      { return 'starter'; }
+    public function aiStages(): array          { return []; }
 }
