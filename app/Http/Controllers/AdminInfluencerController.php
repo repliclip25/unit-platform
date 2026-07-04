@@ -64,7 +64,7 @@ class AdminInfluencerController extends Controller
                 ];
                 $body    = str_replace(array_keys($replacements), array_values($replacements), $tpl->body);
                 $subject = str_replace(array_keys($replacements), array_values($replacements), $tpl->subject);
-                Mail::raw($body, fn($m) => $m->to($influencer->email, $influencer->name)->subject($subject)->replyTo('hello@unit.report', $tpl->from_name));
+                Mail::raw($body, fn($m) => $m->to($influencer->email, $influencer->name)->subject($subject)->replyTo(config('services.unit.noreply_email'), $tpl->from_name));
             }
         } catch (\Throwable $e) {
             Log::error('Influencer approval email failed', ['id' => $id, 'error' => $e->getMessage()]);

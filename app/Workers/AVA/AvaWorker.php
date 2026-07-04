@@ -945,7 +945,7 @@ class AvaWorker implements WorkerContract
         return [
             'type'     => 'platform',
             'name'     => 'UNIT',
-            'contact'  => 'hello@unit.report',
+            'contact'  => config('services.unit.noreply_email'),
             'website'  => 'https://unit.report',
             'license'  => 'proprietary',
             'sla'      => '99.9% pipeline uptime · 4h support response · daily digest on failures',

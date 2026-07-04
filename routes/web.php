@@ -223,9 +223,6 @@ Route::middleware(['auth', 'verified', 'onboarded', 'not-pending-del'])->group(f
     Route::post('/workers/{id}/nux/idea',             [NuxController::class, 'submitIdea'])->name('nux.submit.idea');
     Route::post('/nux/performance/{registerId}',      [NuxController::class, 'submitPerformance'])->name('nux.submit.performance');
 
-    // ── Manual test (dev only) ──────────────────────────────────────────────
-    Route::post('/workers/ava/test',  [GmailController::class, 'test'])->name('ava.test');
-
     // Billing
     Route::get('/billing', [BillingController::class, 'index'])->name('billing');
     Route::get('/billing/checkout/{deployment}', [BillingController::class, 'checkout'])->name('billing.checkout');

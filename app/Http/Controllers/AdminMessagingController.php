@@ -415,7 +415,7 @@ class AdminMessagingController extends Controller
                 'audience'    => 'all',
                 'worker_slug' => null,
                 'label'       => 'Worker Request — Internal Notification',
-                'description' => 'Internal email sent to hello@unit.report when a worker request is submitted.',
+                'description' => 'Internal email sent to ' . config('services.unit.admin_email') . ' when a worker request is submitted.',
                 'trigger_condition' => 'on_worker_request_submit',
                 'day_offset'  => null,
                 'trigger_state' => null,
@@ -836,7 +836,7 @@ class AdminMessagingController extends Controller
             Mail::raw($body, fn($m) => $m
                 ->to($admin->email, $admin->name)
                 ->subject($subject)
-                ->replyTo('hello@unit.report', $tpl->from_name)
+                ->replyTo(config('services.unit.noreply_email'), $tpl->from_name)
             );
             return response()->json(['ok' => true, 'message' => "Test sent to {$admin->email}"]);
         } catch (\Throwable $e) {

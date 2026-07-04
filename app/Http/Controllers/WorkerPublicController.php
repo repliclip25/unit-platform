@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\DB;
 use App\Platform\Services\WorkerRegistry;
+use App\Platform\Services\PlatformDefaults;
 
 class WorkerPublicController extends Controller
 {
@@ -73,7 +74,7 @@ class WorkerPublicController extends Controller
                     ['q' => 'Does AVA submit renewals automatically?', 'a' => 'No. AVA prepares and drafts the renewal, then queues it for your review. Nothing submits without your explicit approval. You stay in control of every filing.'],
                     ['q' => 'How does AVA access my renewal inbox?', 'a' => 'AVA connects to your email via a configured inbox integration. You define which inbox it monitors and what it can read — you remain in control of the access scope.'],
                     ['q' => 'What happens if AVA misses something?', 'a' => 'Every transaction is fully logged and visible in your dashboard. If AVA can\'t classify or process something, it flags it for manual review rather than guessing.'],
-                    ['q' => 'How much does it cost?', 'a' => 'Your first 25 transactions are completely free. After that, you pay a monthly subscription based on your deployment. No setup fees, no per-transaction charges.'],
+                    ['q' => 'How much does it cost?', 'a' => 'Your first ' . PlatformDefaults::freeTransactionsFor($slug) . ' transactions are completely free. After that, you pay a monthly subscription based on your deployment. No setup fees, no per-transaction charges.'],
                     ['q' => 'Can I cancel my subscription?', 'a' => 'Yes — cancel any time, no questions asked. Your data stays accessible for 30 days after cancellation.'],
                 ],
             ],

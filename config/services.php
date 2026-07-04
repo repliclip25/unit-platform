@@ -66,6 +66,13 @@ return [
         'api_key' => env('GOOGLE_AI_API_KEY'),
     ],
 
+    'unit' => [
+        'noreply_email' => env('UNIT_NOREPLY_EMAIL', 'hello@unit.report'),
+        'noreply_name'  => env('UNIT_NOREPLY_NAME', 'UNIT'),
+        'support_email' => env('UNIT_SUPPORT_EMAIL', 'support@unit.app'),
+        'admin_email'   => env('UNIT_ADMIN_EMAIL', 'hello@unit.report'),
+    ],
+
     'gmail' => [
         'client_id'            => env('GMAIL_CLIENT_ID'),
         'client_secret'        => env('GMAIL_CLIENT_SECRET'),

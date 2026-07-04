@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use App\Platform\Services\PlatformDefaults;
 
 class WorkerBuilderController extends Controller
 {
@@ -296,7 +297,7 @@ PHP;
         $credPhp = "[\n" . implode("\n", $credItems) . "\n        ]";
         $instancesPhp  = $phpAssoc(array_merge(['multiple'=>false,'min'=>1,'max'=>1,'label'=>'deployment','rationale'=>''], $instances));
         $tagsPhp       = $phpArray($tags);
-        $ownerPhp      = $phpAssoc(array_merge(['type'=>'platform','name'=>'UNIT','contact'=>'hello@unit.report','website'=>'https://unit.report','license'=>'proprietary','sla'=>'','since'=>date('Y'),'verified'=>true], $owner));
+        $ownerPhp      = $phpAssoc(array_merge(['type'=>'platform','name'=>'UNIT','contact'=>config('services.unit.noreply_email'),'website'=>'https://unit.report','license'=>'proprietary','sla'=>'','since'=>date('Y'),'verified'=>true], $owner));
         $mediaPhp      = $phpAssoc(array_merge(['color'=>'#f1d362','quote'=>'','avatar'=>null,'banner'=>null], $media));
 
         $stub = <<<PHP
@@ -597,10 +598,7 @@ PHP;
                 'stripe_flat_price_id'  => $p->stripe_flat_price_id ?? null,
             ])->toArray();
 
-        // ── Trial limit from worker_pricing (authoritative source) ────────────
-        $defaultTrialLimit = DB::table('worker_pricing')
-            ->where('worker_slug', $slug)
-            ->value('free_transactions') ?? 25;
+        $defaultTrialLimit = PlatformDefaults::freeTransactionsFor($slug);
 
         // ── Live deployment sample (first deployment as example + summary) ────
         $totalDeployments  = DB::table('worker_deployments')->where('worker_slug', $slug)->count();

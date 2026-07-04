@@ -47,7 +47,7 @@ class EmailDispatcher
             Mail::raw($body, fn($m) => $m
                 ->to($toEmail, $toName)
                 ->subject($subject)
-                ->replyTo('hello@unit.report', $from)
+                ->replyTo(config('services.unit.noreply_email'), $from)
             );
 
             self::log($key, $userId, $toEmail, $subject, 'sent');

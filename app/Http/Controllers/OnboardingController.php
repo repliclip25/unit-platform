@@ -6,6 +6,7 @@ use App\Platform\Services\PlatformVerificationService;
 use App\Platform\Services\UnitNotifier;
 use App\Platform\Services\WorkerOnboardingService;
 use App\Platform\Services\WorkerRegistry;
+use App\Platform\Services\PlatformDefaults;
 use App\Platform\Services\Gmail\GmailWatchService;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\Request;
@@ -433,15 +434,14 @@ class OnboardingController extends Controller
                 }
             }
 
-            $pricing = DB::table('worker_pricing')->where('worker_slug', $workerSlug)->first();
             DB::table('deployment_billing')->insert([
                 'user_id'                  => $userId,
                 'deployment_id'            => $depId,
                 'worker_slug'              => $workerSlug,
                 'status'                   => 'trial',
                 'trial_transactions_used'  => 0,
-                'trial_transactions_limit' => $pricing?->free_transactions ?: 25,
-                'trial_ends_at'            => now()->addDays(14),
+                'trial_transactions_limit' => PlatformDefaults::freeTransactionsFor($workerSlug),
+                'trial_ends_at'            => now()->addDays(PlatformDefaults::trialDays()),
                 'created_at'               => now(),
                 'updated_at'               => now(),
             ]);

@@ -60,7 +60,7 @@ class InfluencerController extends Controller
             if ($tpl) {
                 $body    = str_replace(['{name}', '{app_url}'], [$request->name, config('app.url')], $tpl->body);
                 $subject = str_replace(['{name}', '{app_url}'], [$request->name, config('app.url')], $tpl->subject);
-                Mail::raw($body, fn($m) => $m->to($request->email, $request->name)->subject($subject)->replyTo('hello@unit.report', $tpl->from_name));
+                Mail::raw($body, fn($m) => $m->to($request->email, $request->name)->subject($subject)->replyTo(config('services.unit.noreply_email'), $tpl->from_name));
             }
         } catch (\Throwable $e) {
             Log::error('Influencer application email failed', ['error' => $e->getMessage()]);

@@ -226,7 +226,7 @@ class StripeWebhookController extends Controller
             Mail::raw($body, fn($m) => $m
                 ->to($user->email, $user->name)
                 ->subject($subject)
-                ->replyTo('hello@unit.report', $tpl->from_name)
+                ->replyTo(config('services.unit.noreply_email'), $tpl->from_name)
             );
         } catch (\Throwable $e) {
             Log::error('Stripe webhook: email failed', ['user_id' => $userId, 'error' => $e->getMessage()]);

@@ -115,7 +115,7 @@ class OnboardingSequenceJob implements ShouldQueue
             Mail::raw($body, fn($m) => $m
                 ->to($user->email, $user->name)
                 ->subject($subject)
-                ->replyTo('hello@unit.report', $tpl->from_name)
+                ->replyTo(config('services.unit.noreply_email'), $tpl->from_name)
             );
 
             DB::table('tenant_email_log')->insert([

@@ -123,7 +123,7 @@ class BillingController extends Controller
 
         if ($planSlug === 'enterprise' || !$pricing->stripe_flat_price_id) {
             return redirect()->route('billing')
-                ->with('info', 'Enterprise pricing is custom. Please contact hello@unit.report to get started.');
+                ->with('info', 'Enterprise pricing is custom. Please contact ' . config('services.unit.support_email') . ' to get started.');
         }
 
         if (!$user->stripe_id) {

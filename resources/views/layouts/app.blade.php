@@ -6,7 +6,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>UNIT — {{ $title ?? 'Command Center' }}</title>
     <link rel="icon" type="image/png" href="/logo.png">
-    @if(config('services.gtm_id') && auth()->check() && auth()->user()->role !== 'admin')
+    @if(config('services.gtm_id') && auth()->check() && !auth()->user()->isAdmin())
     <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});
     var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;
     j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
@@ -366,7 +366,7 @@
                     <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
                     Billing
                 </a>
-                @if(auth()->user()->role === 'admin')
+                @if(auth()->user()->isAdmin())
                 <a href="{{ route('qa') }}" class="{{ $navLink(request()->routeIs('qa*')) }}" style="{{ $navStyle(request()->routeIs('qa*')) }}">
                     <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                     System QA
@@ -408,7 +408,7 @@
                     <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/></svg>
                     API Keys
                 </a>
-                @if(auth()->user()->role === 'admin')
+                @if(auth()->user()->isAdmin())
                 {{-- ── Admin-only divider ─────────────────────────────── --}}
                 <div class="flex items-center gap-2 px-3 my-3">
                     <div class="flex-1 h-px" style="background:var(--border)"></div>
@@ -614,7 +614,7 @@ document.getElementById('mob-toggle').addEventListener('click', function () {
 
 @livewireScripts
 
-@if(config('services.facebook_pixel_id') && auth()->check() && auth()->user()->role !== 'admin')
+@if(config('services.facebook_pixel_id') && auth()->check() && !auth()->user()->isAdmin())
 {{-- Facebook Pixel --}}
 <script>
 !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
@@ -634,7 +634,7 @@ fbq('trackCustom', 'PlatformPage', {
     src="https://www.facebook.com/tr?id={{ config('services.facebook_pixel_id') }}&ev=PageView&noscript=1"/></noscript>
 @endif
 
-@if(config('services.gtm_id') && auth()->check() && auth()->user()->role !== 'admin')
+@if(config('services.gtm_id') && auth()->check() && !auth()->user()->isAdmin())
 {{-- Google Tag Manager (body) --}}
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id={{ config('services.gtm_id') }}"
 height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>

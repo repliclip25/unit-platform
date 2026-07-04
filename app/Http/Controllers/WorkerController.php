@@ -9,6 +9,7 @@ use App\Platform\Services\Gmail\GmailWatchService;
 use App\Platform\Services\TransactionService;
 use App\Platform\Services\UnitNotifier;
 use App\Platform\Services\WorkerRegistry;
+use App\Platform\Services\PlatformDefaults;
 
 class WorkerController extends Controller
 {
@@ -74,25 +75,22 @@ class WorkerController extends Controller
         $hasBilling = $existingBilling !== null;
         if ($hasBilling && (int)($existingBilling->trial_transactions_limit ?? 0) === 0) {
             try {
-                $pricing_  = DB::table('worker_pricing')->where('worker_slug', $dep->worker_slug)->first();
                 DB::table('deployment_billing')->where('deployment_id', $id)->update([
-                    'trial_transactions_limit' => ($pricing_?->free_transactions ?: 25),
+                    'trial_transactions_limit' => PlatformDefaults::freeTransactionsFor($dep->worker_slug),
                     'updated_at'               => now(),
                 ]);
             } catch (\Throwable) {}
         }
         if (!$hasBilling) {
             try {
-                $pricing_  = DB::table('worker_pricing')->where('worker_slug', $dep->worker_slug)->first();
-                $trialDays = (int) (DB::table('platform_configs')->where('key', 'trial_days')->value('value') ?? 14);
                 DB::table('deployment_billing')->insert([
                     'user_id'                  => auth()->id(),
                     'deployment_id'            => $id,
                     'worker_slug'              => $dep->worker_slug,
                     'status'                   => 'trial',
                     'trial_transactions_used'  => 0,
-                    'trial_transactions_limit' => ($pricing_?->free_transactions ?: 25),
-                    'trial_ends_at'            => now()->addDays($trialDays),
+                    'trial_transactions_limit' => PlatformDefaults::freeTransactionsFor($dep->worker_slug),
+                    'trial_ends_at'            => now()->addDays(PlatformDefaults::trialDays()),
                     'created_at'               => now(),
                     'updated_at'               => now(),
                 ]);
@@ -281,7 +279,6 @@ class WorkerController extends Controller
         $trialGated = false;
         try {
             $trialGated = DB::table('platform_configs')->where('key', 'trial_payment_required')->value('value') === 'true';
-            $trialDays  = (int) (DB::table('platform_configs')->where('key', 'trial_days')->value('value') ?? 14);
 
             DB::table('deployment_billing')->insert([
                 'user_id'                  => auth()->id(),
@@ -289,8 +286,8 @@ class WorkerController extends Controller
                 'worker_slug'              => $request->worker_slug,
                 'status'                   => 'trial',
                 'trial_transactions_used'  => 0,
-                'trial_transactions_limit' => ($pricing?->free_transactions ?: 25),
-                'trial_ends_at'            => now()->addDays($trialDays),
+                'trial_transactions_limit' => PlatformDefaults::freeTransactionsFor($request->worker_slug),
+                'trial_ends_at'            => now()->addDays(PlatformDefaults::trialDays()),
                 'created_at'               => now(),
                 'updated_at'               => now(),
             ]);

@@ -114,7 +114,7 @@ class ReferralService
             $appUrl  = config('app.url');
             $body    = str_replace(['{name}', '{app_url}'], [$referrer->name, $appUrl], $tpl->body);
             $subject = str_replace(['{name}', '{app_url}'], [$referrer->name, $appUrl], $tpl->subject);
-            Mail::raw($body, fn($m) => $m->to($referrer->email, $referrer->name)->subject($subject)->replyTo('hello@unit.report', $tpl->from_name));
+            Mail::raw($body, fn($m) => $m->to($referrer->email, $referrer->name)->subject($subject)->replyTo(config('services.unit.noreply_email'), $tpl->from_name));
         } catch (\Throwable $e) {
             Log::error("Referral email failed [{$key}]", ['referrer_id' => $referrer->id, 'error' => $e->getMessage()]);
         }

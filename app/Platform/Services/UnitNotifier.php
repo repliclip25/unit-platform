@@ -28,7 +28,7 @@ class UnitNotifier
     {
         try {
             Mail::raw($message, fn($m) => $m
-                ->to('hello@unit.report', 'UNIT Admin')
+                ->to(config('services.unit.admin_email'), config('services.unit.noreply_name') . ' Admin')
                 ->subject('[UNIT Alert] ' . $subject)
             );
         } catch (\Throwable $e) {

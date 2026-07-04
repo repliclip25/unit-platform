@@ -537,7 +537,7 @@
     <div class="bg-gray-900 border border-gray-800 rounded-2xl">
         <div class="px-5 py-4 border-b border-gray-800 flex items-center justify-between">
             <h2 class="text-white text-sm font-semibold">Invoices</h2>
-            @if(auth()->user()->role === 'admin')
+            @if(auth()->user()->isAdmin())
                 <span class="text-xs text-amber-600 border border-amber-900/40 rounded px-2 py-0.5">Admin: void clears a due invoice from Stripe without charging the tenant</span>
             @endif
         </div>
@@ -563,7 +563,7 @@
                 <a href="{{ route('billing.invoice', $invoice->id) }}"
                    class="text-xs text-gray-500" style="text-decoration:none">Download PDF →</a>
 
-                @if(auth()->user()->role === 'admin' && $isDue)
+                @if(auth()->user()->isAdmin() && $isDue)
                 <form method="POST" action="{{ route('admin.invoices.void', $invoice->id) }}">
                     @csrf
                     <input type="hidden" name="user_id" value="{{ auth()->id() }}">

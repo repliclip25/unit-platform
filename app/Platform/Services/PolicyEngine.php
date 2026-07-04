@@ -36,7 +36,7 @@ class PolicyEngine
                 'Once the issue is resolved, the platform team will lift the suspension.',
             ],
             'cta_label'    => 'Email Support',
-            'cta_url'      => 'mailto:support@unit.app',
+            'cta_url'      => 'mailto:' . config('services.unit.support_email'),
             'cta_route'    => null,
             'color'        => 'red',
         ],

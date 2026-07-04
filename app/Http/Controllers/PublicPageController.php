@@ -194,7 +194,7 @@ class PublicPageController extends Controller
 
             Mail::send([], [], function ($m) use ($name, $email, $subject, $fromName, $firstName, $htmlBody) {
                 $m->to($email, $name)
-                  ->from('hello@unit.report', $fromName)
+                  ->from(config('services.unit.noreply_email'), $fromName)
                   ->subject($subject)
                   ->html("<!DOCTYPE html><html><body style='font-family:Inter,Arial,sans-serif;background:#f4f4f2;margin:0;padding:40px 20px'>
 <div style='max-width:580px;margin:0 auto'>
@@ -206,7 +206,7 @@ class PublicPageController extends Controller
     {$htmlBody}
     <div style='margin-top:32px;padding-top:24px;border-top:1px solid #f0f0ee'>
       <p style='margin:0;color:#555555;font-size:14px'>— Franklin</p>
-      <p style='margin:4px 0 0;color:#999999;font-size:12px'>UNIT &middot; hello@unit.report</p>
+      <p style='margin:4px 0 0;color:#999999;font-size:12px'>UNIT &middot; " . config('services.unit.noreply_email') . "</p>
     </div>
   </div>
   <div style='background:#f9f9f7;border:1px solid #e2e2e0;border-top:none;border-radius:0 0 12px 12px;padding:14px 32px'>
@@ -237,8 +237,8 @@ class PublicPageController extends Controller
             $body .= "AI FOLLOW-UP SENT:\n{$followup}";
 
             Mail::send([], [], function ($m) use ($body, $subject) {
-                $m->to('hello@unit.report', 'UNIT Admin')
-                  ->from('hello@unit.report', 'UNIT System')
+                $m->to(config('services.unit.admin_email'), config('services.unit.noreply_name') . ' Admin')
+                  ->from(config('services.unit.noreply_email'), config('services.unit.noreply_name') . ' System')
                   ->subject($subject)
                   ->text($body);
             });

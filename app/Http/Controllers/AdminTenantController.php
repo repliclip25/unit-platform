@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
+use App\Platform\Services\PlatformDefaults;
 
 class AdminTenantController extends Controller
 {
@@ -428,15 +429,13 @@ class AdminTenantController extends Controller
         if ($exists) {
             return back()->with('error', 'Billing record already exists for this deployment.');
         }
-        $pricing = DB::table('worker_pricing')->where('worker_slug', $dep->worker_slug)->first()
-                ?? DB::table('worker_pricing')->where('worker_slug', 'ava')->first();
         DB::table('deployment_billing')->insert([
             'user_id'                  => $dep->user_id,
             'deployment_id'            => $id,
             'worker_slug'              => $dep->worker_slug,
             'status'                   => 'trial',
             'trial_transactions_used'  => 0,
-            'trial_transactions_limit' => ($pricing?->free_transactions ?: 25),
+            'trial_transactions_limit' => PlatformDefaults::freeTransactionsFor($dep->worker_slug),
             'billing_period_start'     => now()->startOfMonth(),
             'created_at'               => now(),
             'updated_at'               => now(),
