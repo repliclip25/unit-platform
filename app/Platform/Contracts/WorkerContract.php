@@ -645,19 +645,19 @@ interface WorkerContract
      *
      * Example:
      *   [
-     *     'classify_model' => [
-     *       'label'      => 'Classify & Memory Model',
-     *       'job_classes' => ['ReadEmailJob', 'ClassifyEmailJob', 'MemoryLookupJob', 'SelectTemplateJob'],
-     *     ],
-     *     'draft_model' => [
-     *       'label'      => 'Draft Model',
-     *       'job_classes' => ['DraftEmailJob'],
-     *     ],
+     *     ['key' => 'read',     'label' => 'Read Email',      'job_class' => 'ReadEmailJob'],
+     *     ['key' => 'classify', 'label' => 'Classify Email',  'job_class' => 'ClassifyEmailJob'],
+     *     ['key' => 'memory',   'label' => 'Memory Lookup',   'job_class' => 'MemoryLookupJob'],
+     *     ['key' => 'template', 'label' => 'Select Template', 'job_class' => 'SelectTemplateJob'],
+     *     ['key' => 'draft',    'label' => 'Draft Email',     'job_class' => 'DraftEmailJob'],
      *   ]
      *
+     * Keys are stored in worker_pricing.stage_models JSON (e.g. {"read":"claude-haiku-4-5-20251001",...}).
+     * WorkerInput::modelFor(key) resolves the model per stage at pipeline runtime.
+     *
      * The platform uses this to:
-     *   - Render accurate stage lists in the admin pricing panel (no hardcoding)
-     *   - Validate that every AI-using stage has a model assigned before commissioning
+     *   - Render one model selector per AI stage in the admin pricing panel
+     *   - Populate stage_models defaults when a new plan tier is applied
      */
     public function aiStages(): array;
 }

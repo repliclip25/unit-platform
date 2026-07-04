@@ -1005,17 +1005,12 @@ class AvaWorker implements WorkerContract
 
     public function aiStages(): array
     {
-        // Derived from pipelineStages() — the job_class is the authoritative link.
-        // Any new AI stage added to pipelineStages() only needs to be listed here.
         return [
-            'classify_model' => [
-                'label'       => 'Classify & Memory Model',
-                'job_classes' => ['ReadEmailJob', 'ClassifyEmailJob', 'MemoryLookupJob', 'SelectTemplateJob'],
-            ],
-            'draft_model' => [
-                'label'       => 'Draft Model',
-                'job_classes' => ['DraftEmailJob'],
-            ],
+            ['key' => 'read',     'label' => 'Read Email',      'job_class' => 'ReadEmailJob'],
+            ['key' => 'classify', 'label' => 'Classify Email',  'job_class' => 'ClassifyEmailJob'],
+            ['key' => 'memory',   'label' => 'Memory Lookup',   'job_class' => 'MemoryLookupJob'],
+            ['key' => 'template', 'label' => 'Select Template', 'job_class' => 'SelectTemplateJob'],
+            ['key' => 'draft',    'label' => 'Draft Email',     'job_class' => 'DraftEmailJob'],
         ];
     }
 }

@@ -134,10 +134,15 @@ class AdminPricingController extends Controller
             'classify_model'         => 'nullable|string|max:80',
             'draft_model'            => 'nullable|string|max:80',
             'draft_model_threshold'  => 'nullable|integer|min:0',
+            'stage_models'           => 'nullable|array',
+            'stage_models.*'         => 'nullable|string|max:80',
         ]);
 
         $data['plan_highlights']       = $this->highlightsToJson($data['plan_highlights'] ?? '');
         $data['included_transactions'] = $data['transaction_limit'] ?? 0;
+        $data['stage_models']          = !empty($data['stage_models'])
+            ? json_encode(array_filter($data['stage_models']))
+            : null;
 
         DB::table('worker_pricing')->insert(array_merge($data, [
             'active'     => true,
@@ -176,10 +181,15 @@ class AdminPricingController extends Controller
             'classify_model'         => 'nullable|string|max:80',
             'draft_model'            => 'nullable|string|max:80',
             'draft_model_threshold'  => 'nullable|integer|min:0',
+            'stage_models'           => 'nullable|array',
+            'stage_models.*'         => 'nullable|string|max:80',
         ]);
 
         $data['plan_highlights']       = $this->highlightsToJson($data['plan_highlights'] ?? '');
         $data['included_transactions'] = $data['transaction_limit'] ?? 0;
+        $data['stage_models']          = !empty($data['stage_models'])
+            ? json_encode(array_filter($data['stage_models']))
+            : null;
 
         DB::table('worker_pricing')->where('id', $id)->update(array_merge($data, [
             'updated_at' => now(),

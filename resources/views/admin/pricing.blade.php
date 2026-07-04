@@ -292,28 +292,7 @@
                                 </div>
                                 <div class="wf-hint">Controls which Claude model runs each pipeline stage for subscribers on this plan</div>
                             </div>
-                            <div>
-                                <div class="wf-lbl" id="ef-classify_model-label">Classify Model</div>
-                                <div class="wf-sel-wrap">
-                                    <select name="classify_model" id="ef-classify_model" class="wf-select">
-                                        <option value="claude-haiku-4-5-20251001">Haiku 4.5 — $0.80/M · fast</option>
-                                        <option value="claude-sonnet-4-6">Sonnet 4.6 — $3.00/M · balanced</option>
-                                        <option value="claude-opus-4-7">Opus 4.7 — $15.00/M · powerful</option>
-                                    </select>
-                                </div>
-                                <div class="wf-hint" id="ef-classify_model-stages">Select a plan to see which pipeline stages use this model</div>
-                            </div>
-                            <div>
-                                <div class="wf-lbl" id="ef-draft_model-label">Draft Model</div>
-                                <div class="wf-sel-wrap">
-                                    <select name="draft_model" id="ef-draft_model" class="wf-select">
-                                        <option value="claude-haiku-4-5-20251001">Haiku 4.5 — $0.80/M · fast</option>
-                                        <option value="claude-sonnet-4-6">Sonnet 4.6 — $3.00/M · balanced</option>
-                                        <option value="claude-opus-4-7">Opus 4.7 — $15.00/M · powerful</option>
-                                    </select>
-                                </div>
-                                <div class="wf-hint" id="ef-draft_model-stages">Select a plan to see which pipeline stages use this model</div>
-                            </div>
+                            <div id="ef-stage-models-container" style="display:contents"></div>
                             <div>
                                 <div class="wf-lbl">Draft Downgrade Threshold <span style="font-weight:400;color:var(--text-muted)">(0 = none)</span></div>
                                 <input type="number" name="draft_model_threshold" id="ef-draft_model_threshold" class="wf-input" placeholder="500">
@@ -552,6 +531,7 @@ const PLANS = {
         classify_model:         @json($plan->classify_model ?? 'claude-haiku-4-5-20251001'),
         draft_model:            @json($plan->draft_model ?? 'claude-haiku-4-5-20251001'),
         draft_model_threshold:  {{ $plan->draft_model_threshold ?? 0 }},
+        stage_models:           @json(json_decode($plan->stage_models ?? 'null') ?? new stdClass),
         stripe_flat_price_id:   @json($plan->stripe_flat_price_id ?? ''),
         stripe_test_price_id: @json($plan->stripe_test_price_id ?? ''),
         stripe_coupon_id:     @json($plan->stripe_coupon_id ?? ''),
@@ -624,12 +604,10 @@ function selectPlan(id) {
     });
 
     // AI tier selects
-    setSelectValue('ef-ai_tier',        p.ai_tier        || 'economy');
-    setSelectValue('ef-classify_model', p.classify_model || 'claude-haiku-4-5-20251001');
-    setSelectValue('ef-draft_model',    p.draft_model    || 'claude-haiku-4-5-20251001');
-    updateCostPreview(p.classify_model, p.draft_model, p.draft_model_threshold);
+    setSelectValue('ef-ai_tier', p.ai_tier || 'economy');
+    renderAiStageSelectors(p.worker_slug, p.stage_models || {});
+    updateCostPreview(p);
     updateUnitEconomics(p);
-    renderAiStageLabels(p.worker_slug);
 
     // Color
     document.getElementById('ef-accent_color').value = p.accent_color;
@@ -774,44 +752,82 @@ function closeMobilePanel() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-function renderAiStageLabels(workerSlug) {
-    const stages = AI_STAGES[workerSlug] || {};
+function renderAiStageSelectors(workerSlug, stageModels) {
+    const container = document.getElementById('ef-stage-models-container');
+    if (!container) return;
+    container.innerHTML = '';
 
-    Object.entries(stages).forEach(([modelField, info]) => {
-        const labelEl  = document.getElementById('ef-' + modelField + '-label');
-        const stagesEl = document.getElementById('ef-' + modelField + '-stages');
+    const stages = AI_STAGES[workerSlug] || [];
+    if (!stages.length) {
+        container.innerHTML = '<div style="grid-column:1/-1;color:var(--text-muted);font-size:12px;padding:4px 0">No AI stages defined for this worker</div>';
+        return;
+    }
 
-        if (labelEl)  labelEl.textContent  = info.label || modelField;
-        if (stagesEl) {
-            if (info.job_classes && info.job_classes.length > 0) {
-                // Strip 'Job' suffix for readability: 'ReadEmailJob' → 'ReadEmail'
-                const names = info.job_classes.map(j => j.replace(/Job$/, ''));
-                stagesEl.textContent = 'Pipeline stages: ' + names.join(' → ');
-            } else {
-                stagesEl.textContent = '';
-            }
-        }
+    const modelOptions = [
+        { value: 'claude-haiku-4-5-20251001', label: 'Haiku 4.5 — $0.80/M · fast' },
+        { value: 'claude-sonnet-4-6',         label: 'Sonnet 4.6 — $3.00/M · balanced' },
+        { value: 'claude-opus-4-7',           label: 'Opus 4.7 — $15.00/M · powerful' },
+    ];
+
+    stages.forEach(stage => {
+        const key     = stage.key;
+        const label   = stage.label || key;
+        const current = stageModels[key] || 'claude-haiku-4-5-20251001';
+
+        const wrap = document.createElement('div');
+
+        const lbl = document.createElement('div');
+        lbl.className = 'wf-lbl';
+        lbl.textContent = label;
+
+        const selWrap = document.createElement('div');
+        selWrap.className = 'wf-sel-wrap';
+
+        const sel = document.createElement('select');
+        sel.name      = 'stage_models[' + key + ']';
+        sel.id        = 'ef-stage_models_' + key;
+        sel.className = 'wf-select';
+        sel.onchange  = () => { updateCostPreview(null); refreshUEFromForm(); };
+
+        modelOptions.forEach(opt => {
+            const o = document.createElement('option');
+            o.value       = opt.value;
+            o.textContent = opt.label;
+            if (opt.value === current) o.selected = true;
+            sel.appendChild(o);
+        });
+
+        const hint = document.createElement('div');
+        hint.className   = 'wf-hint';
+        hint.textContent = stage.job_class ? stage.job_class.replace(/Job$/, '') + 'Job' : '';
+
+        selWrap.appendChild(sel);
+        wrap.appendChild(lbl);
+        wrap.appendChild(selWrap);
+        wrap.appendChild(hint);
+        container.appendChild(wrap);
     });
+}
 
-    // Clear any model slots not used by this worker
-    ['classify_model', 'draft_model'].forEach(field => {
-        if (!stages[field]) {
-            const l = document.getElementById('ef-' + field + '-label');
-            const s = document.getElementById('ef-' + field + '-stages');
-            if (l) l.textContent = field.replace('_', ' ');
-            if (s) s.textContent = 'Not used by this worker';
-        }
+function getStageModelsFromForm() {
+    const container = document.getElementById('ef-stage-models-container');
+    if (!container) return {};
+    const result = {};
+    container.querySelectorAll('select[name^="stage_models["]').forEach(sel => {
+        const m = sel.name.match(/stage_models\[(.+)\]/);
+        if (m) result[m[1]] = sel.value;
     });
+    return result;
 }
 
 function refreshUEFromForm() {
     const get = id => document.getElementById(id)?.value ?? '';
+    const sm  = getStageModelsFromForm();
     updateUnitEconomics({
         monthly_flat_rate:      get('ef-monthly_flat_rate'),
         transaction_limit:      get('ef-transaction_limit'),
         included_transactions:  get('ef-transaction_limit') || 200,
-        classify_model:         get('ef-classify_model'),
-        draft_model:            get('ef-draft_model'),
+        stage_models:           sm,
         draft_model_threshold:  get('ef-draft_model_threshold'),
     });
 }
@@ -831,51 +847,71 @@ function setSelectValue(id, value) {
 
 function onTierChange(tier) {
     const presets = {
-        economy:  { classify: 'claude-haiku-4-5-20251001', draft: 'claude-haiku-4-5-20251001' },
-        standard: { classify: 'claude-haiku-4-5-20251001', draft: 'claude-sonnet-4-6' },
-        premium:  { classify: 'claude-sonnet-4-6',         draft: 'claude-sonnet-4-6' },
+        economy:  { default: 'claude-haiku-4-5-20251001', draft: 'claude-haiku-4-5-20251001' },
+        standard: { default: 'claude-haiku-4-5-20251001', draft: 'claude-sonnet-4-6' },
+        premium:  { default: 'claude-sonnet-4-6',         draft: 'claude-sonnet-4-6' },
     };
     const p = presets[tier];
     if (!p) return;
-    setSelectValue('ef-classify_model', p.classify);
-    setSelectValue('ef-draft_model',    p.draft);
+
+    // Apply preset to all rendered stage selects
+    const container = document.getElementById('ef-stage-models-container');
+    if (container) {
+        container.querySelectorAll('select[name^="stage_models["]').forEach(sel => {
+            const m = sel.name.match(/stage_models\[(.+)\]/);
+            const key = m ? m[1] : '';
+            setSelectValue(sel.id, key === 'draft' ? p.draft : p.default);
+        });
+    }
+
     const threshEl = document.getElementById('ef-draft_model_threshold');
     if (tier === 'standard' && threshEl && !threshEl.value) threshEl.value = 500;
     if (tier !== 'standard' && threshEl) threshEl.value = '';
-    updateCostPreview(p.classify, p.draft, tier === 'standard' ? 500 : null);
+    updateCostPreview(null);
     refreshUEFromForm();
 }
 
-function updateUnitEconomics(plan) {
-    const revenue = parseFloat(plan.monthly_flat_rate) || 0;
-    const limit   = parseInt(plan.transaction_limit)   || 0; // 0 = unlimited
-    const vol     = limit > 0 ? limit : (parseInt(plan.included_transactions) || 200);
-
-    // Model costs per 1K tokens (blended input+output)
+function stageModelCostPerEmail(stageModels, threshold, vol) {
     const modelCost = {
         'claude-haiku-4-5-20251001': 0.00025,
         'claude-sonnet-4-6':         0.0030,
         'claude-opus-4-7':           0.0180,
     };
-    const classify = modelCost[plan.classify_model] ?? modelCost['claude-haiku-4-5-20251001'];
-    const draft    = modelCost[plan.draft_model]    ?? modelCost['claude-haiku-4-5-20251001'];
+    // Token budget per stage key
+    const stageToks = { read: 400, classify: 500, memory: 300, template: 200, draft: 1200 };
+    const fallback  = modelCost['claude-haiku-4-5-20251001'];
 
-    // Token estimates per pipeline
-    const classifyToks = 600;
-    const draftToks    = 1200;
+    const sm = stageModels || {};
 
-    // If threshold applies, blend the per-email cost
-    let costPerEmail;
-    const threshold = parseInt(plan.draft_model_threshold) || 0;
-    if (threshold > 0 && vol > threshold) {
-        const aboveThreshold = vol - threshold;
-        costPerEmail = (
-            (threshold * ((classify * classifyToks / 1000) + (draft * draftToks / 1000))) +
-            (aboveThreshold * ((classify * classifyToks / 1000) + (classify * draftToks / 1000)))
-        ) / vol;
-    } else {
-        costPerEmail = (classify * classifyToks / 1000) + (draft * draftToks / 1000);
+    function costForModels(overrideDraft) {
+        let c = 0;
+        Object.entries(stageToks).forEach(([key, toks]) => {
+            const model = (key === 'draft' && overrideDraft) ? overrideDraft : (sm[key] || 'claude-haiku-4-5-20251001');
+            c += (modelCost[model] ?? fallback) * toks / 1000;
+        });
+        return c;
     }
+
+    const draftModel   = sm['draft'] || 'claude-haiku-4-5-20251001';
+    const downgradeModel = sm['classify'] || sm['read'] || 'claude-haiku-4-5-20251001';
+
+    const thresh = parseInt(threshold) || 0;
+    if (thresh > 0 && vol > thresh) {
+        const above = vol - thresh;
+        return (
+            (thresh * costForModels(null)) +
+            (above  * costForModels(downgradeModel))
+        ) / vol;
+    }
+    return costForModels(null);
+}
+
+function updateUnitEconomics(plan) {
+    const revenue = parseFloat(plan.monthly_flat_rate) || 0;
+    const limit   = parseInt(plan.transaction_limit)   || 0;
+    const vol     = limit > 0 ? limit : (parseInt(plan.included_transactions) || 200);
+
+    const costPerEmail = stageModelCostPerEmail(plan.stage_models, plan.draft_model_threshold, vol);
 
     const aiCost    = costPerEmail * vol;
     const stripeFee = revenue > 0 ? (revenue * 0.029 + 0.30) : 0;
@@ -909,26 +945,15 @@ function updateUnitEconomics(plan) {
     setStyle('ue-margin-status', 'color', pctColor);
 }
 
-function updateCostPreview(classifyModel, draftModel, threshold) {
+function updateCostPreview(_unused) {
     const el = document.getElementById('ai-tier-cost');
     if (!el) return;
 
-    // Cost per 1K tokens (input+output blended estimate)
-    const costs = {
-        'claude-haiku-4-5-20251001': 0.00025,
-        'claude-sonnet-4-6':         0.0030,
-    };
-
-    const classify = costs[classifyModel] ?? costs['claude-haiku-4-5-20251001'];
-    const draft    = costs[draftModel]    ?? costs['claude-haiku-4-5-20251001'];
-
-    // Rough token estimates per pipeline stage
-    const classifyTokens = 600;  // read + classify + memory stages
-    const draftTokens    = 1200; // draft stage
-
-    const costPerEmail = (classify * classifyTokens / 1000) + (draft * draftTokens / 1000);
+    const sm        = getStageModelsFromForm();
+    const threshold = document.getElementById('ef-draft_model_threshold')?.value || 0;
+    const costPerEmail = stageModelCostPerEmail(sm, threshold, 200);
     const costStr      = '$' + costPerEmail.toFixed(4);
-    const threshNote   = threshold ? ` · auto-downgrade after ${threshold} emails/mo` : '';
+    const threshNote   = parseInt(threshold) > 0 ? ` · auto-downgrade after ${threshold} emails/mo` : '';
 
     el.textContent = `~${costStr} per email${threshNote}`;
     el.style.color = costPerEmail < 0.02 ? 'var(--badge-fast-text)' : costPerEmail < 0.04 ? 'var(--badge-balanced-text)' : 'var(--badge-powerful-text)';

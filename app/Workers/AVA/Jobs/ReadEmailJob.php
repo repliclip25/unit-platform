@@ -33,7 +33,7 @@ class ReadEmailJob implements ShouldQueue
         UsageGuard::checkNew($this->txId);
 
         $input = UnitPlatform::getInput($this->txId);
-        $claude->configure($input->classifyModel, $input->userId, $input->workerSlug);
+        $claude->configure($input->modelFor('read'), $input->userId, $input->workerSlug);
         UnitPlatform::setStatus($this->txId, 'reading');
 
         $rawEmail = $input->raw['raw_email'] ?? '';

@@ -114,16 +114,16 @@ final class UnitPlatform
         $depConfig = json_decode($dep?->config ?? '{}', true) ?: [];
 
         // ── Plan-driven model resolution ──────────────────────────────────
-        // Priority: tenant custom model (depConfig) → plan ai tier → platform default
+        // Priority: tenant custom model (depConfig) → stage_models JSON → classify/draft legacy → platform default
         $classifyModel = 'claude-haiku-4-5-20251001';
         $draftModel    = 'claude-sonnet-4-6';
+        $stageModels   = [];
 
         if (!empty($depConfig['ai_model'])) {
-            // Tenant has a custom model set — use it for all stages
+            // Tenant custom model override — applies to every stage
             $classifyModel = $depConfig['ai_model'];
             $draftModel    = $depConfig['ai_model'];
         } else {
-            // Resolve from the active billing plan
             $billing = $tx->deployment_id
                 ? DB::table('deployment_billing')->where('deployment_id', $tx->deployment_id)->first()
                 : null;
@@ -135,12 +135,22 @@ final class UnitPlatform
                     ->first();
 
                 if ($plan) {
+                    // Per-stage model map (new system — takes priority)
+                    if (!empty($plan->stage_models)) {
+                        $stageModels = json_decode($plan->stage_models, true) ?: [];
+                    }
+
+                    // Legacy two-model fields (fallback when stage_models not set)
                     $classifyModel = $plan->classify_model ?: $classifyModel;
                     $draftModel    = $plan->draft_model    ?: $draftModel;
 
-                    // Threshold check — downgrade draft to classify_model if usage exceeded
-                    if ($plan->draft_model_threshold && $billing->unit_count >= $plan->draft_model_threshold) {
+                    // Threshold check — downgrade draft stage to classify model to protect margin
+                    if (empty($stageModels) && $plan->draft_model_threshold && $billing->unit_count >= $plan->draft_model_threshold) {
                         $draftModel = $classifyModel;
+                    }
+                    if (!empty($stageModels) && $plan->draft_model_threshold && $billing->unit_count >= $plan->draft_model_threshold) {
+                        $downgrade = $stageModels['classify'] ?? $stageModels['read'] ?? $classifyModel;
+                        $stageModels['draft'] = $downgrade;
                     }
                 }
             }
@@ -162,6 +172,7 @@ final class UnitPlatform
             aiModel:        $depConfig['ai_model'] ?? $draftModel,
             classifyModel:  $classifyModel,
             draftModel:     $draftModel,
+            stageModels:    $stageModels,
         );
     }
 

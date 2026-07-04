@@ -29,7 +29,7 @@ class ClassifyEmailJob implements ShouldQueue
     public function handle(ClaudeService $claude): void
     {
         $input = UnitPlatform::getInput($this->txId);
-        $claude->configure($input->classifyModel, $input->userId, $input->workerSlug);
+        $claude->configure($input->modelFor('classify'), $input->userId, $input->workerSlug);
         UnitPlatform::setStatus($this->txId, 'classifying');
 
         $readOutput = $input->stage('read');
