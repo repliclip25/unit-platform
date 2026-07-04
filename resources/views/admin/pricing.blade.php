@@ -362,12 +362,15 @@
                         <input type="hidden" name="billing_mode" id="ef-billing_mode" value="test">
 
                         <div style="display:flex;justify-content:space-between;align-items:center;margin-top:20px;padding-top:16px;border-top:1px solid var(--border)">
-                            <form id="ep-visibility-form" method="POST" style="margin:0">
-                                @csrf
-                                <button type="submit" id="ep-visibility-btn" class="wp-btn wp-btn-out" style="font-size:12px">—</button>
-                            </form>
-                            <button type="submit" form="ep-form" class="wp-btn wp-btn-gold">Save changes</button>
+                            <button type="button" id="ep-visibility-btn" class="wp-btn wp-btn-out" style="font-size:12px" onclick="submitVisibilityToggle()">—</button>
+                            <button type="submit" class="wp-btn wp-btn-gold">Save changes</button>
                         </div>
+                    </form>
+
+                    {{-- Visibility toggle form lives OUTSIDE ep-form to avoid nesting --}}
+                    <form id="ep-visibility-form" method="POST" style="display:none">
+                        @csrf
+                        @method('POST')
                     </form>
                 </div>
             </div>
@@ -527,11 +530,14 @@ function selectPlan(id) {
     // Form action
     document.getElementById('ep-form').action = TOGGLE_BASE + '/' + id;
 
-    // Visibility toggle form
-    document.getElementById('ep-visibility-form').action = TOGGLE_BASE + '/' + id + '/toggle';
+    // Visibility toggle form (outside ep-form to avoid invalid nesting)
+    const visForm = document.getElementById('ep-visibility-form');
+    if (visForm) visForm.action = TOGGLE_BASE + '/' + id + '/toggle';
     const vBtn = document.getElementById('ep-visibility-btn');
-    vBtn.textContent = p.active ? 'Hide from pricing page' : 'Go live on pricing page';
-    vBtn.className   = 'wp-btn ' + (p.active ? 'wp-btn-red' : 'wp-btn-out');
+    if (vBtn) {
+        vBtn.textContent = p.active ? 'Hide from pricing page' : 'Go live on pricing page';
+        vBtn.className   = 'wp-btn ' + (p.active ? 'wp-btn-red' : 'wp-btn-out');
+    }
 
     // Populate fields
     const fields = ['display_name','tagline','transaction_label','worker_url','sort_order',
@@ -684,6 +690,11 @@ function onPickWorker(sel) {
 document.querySelector('#add-modal').addEventListener('click', function(e) {
     if (e.target === this) closeAdd();
 });
+
+function submitVisibilityToggle() {
+    const form = document.getElementById('ep-visibility-form');
+    if (form && form.action) form.submit();
+}
 
 function setSelectValue(id, value) {
     const el = document.getElementById(id);
