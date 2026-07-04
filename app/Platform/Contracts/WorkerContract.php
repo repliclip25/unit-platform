@@ -605,4 +605,21 @@ interface WorkerContract
      * be flagged but not auto-recovered).
      */
     public function stuckRecoveryMap(): array;
+
+    /**
+     * Billing DNA — defines how this worker is metered and what the trial looks like.
+     *
+     * Required keys:
+     *   trial_transactions  int     Free units granted on first deploy (e.g. 25)
+     *   trial_days          int     Max days the trial runs before expiring (e.g. 14)
+     *   billing_unit        string  What one "transaction" represents for this worker
+     *                               (e.g. 'email' for AVA, 'post' for NUX, 'video' for future workers)
+     *   unit_label          string  Human-readable singular label shown in UI (e.g. 'email processed')
+     *   unit_label_plural   string  Plural form (e.g. 'emails processed')
+     *
+     * The platform reads this at deploy time to seed deployment_billing and the
+     * trial ledger. Admins can override trial_transactions via worker_pricing.free_transactions
+     * without a code deploy — the platform checks DB first, falls back to this contract.
+     */
+    public function billing(): array;
 }

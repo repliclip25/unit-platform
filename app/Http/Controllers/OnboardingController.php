@@ -434,14 +434,44 @@ class OnboardingController extends Controller
                 }
             }
 
+            $ledger   = DB::table('user_worker_trial_ledger')
+                          ->where('user_id', $userId)->where('worker_slug', $workerSlug)->first();
+            $granted  = PlatformDefaults::freeTransactionsFor($workerSlug);
+            $tDays    = PlatformDefaults::trialDays($workerSlug);
+
+            if (!$ledger) {
+                DB::table('user_worker_trial_ledger')->insert([
+                    'user_id'           => $userId,
+                    'worker_slug'       => $workerSlug,
+                    'granted'           => $granted,
+                    'used'              => 0,
+                    'first_deployed_at' => now(),
+                    'trial_expires_at'  => now()->addDays($tDays),
+                    'created_at'        => now(),
+                    'updated_at'        => now(),
+                ]);
+                $billingStatus = 'trial';
+                $trialUsed     = 0;
+                $trialLimit    = $granted;
+                $trialEndsAt   = now()->addDays($tDays);
+            } else {
+                $remaining     = max(0, (int)$ledger->granted - (int)$ledger->used);
+                $notExpired    = $ledger->trial_expires_at && now()->lt($ledger->trial_expires_at);
+                $billingStatus = ($remaining > 0 && $notExpired) ? 'trial' : 'trial_exhausted';
+                $trialUsed     = (int)$ledger->used;
+                $trialLimit    = (int)$ledger->granted;
+                $trialEndsAt   = $ledger->trial_expires_at;
+            }
+
             DB::table('deployment_billing')->insert([
                 'user_id'                  => $userId,
                 'deployment_id'            => $depId,
                 'worker_slug'              => $workerSlug,
-                'status'                   => 'trial',
-                'trial_transactions_used'  => 0,
-                'trial_transactions_limit' => PlatformDefaults::freeTransactionsFor($workerSlug),
-                'trial_ends_at'            => now()->addDays(PlatformDefaults::trialDays()),
+                'status'                   => $billingStatus,
+                'trial_transactions_used'  => $trialUsed,
+                'trial_transactions_limit' => $trialLimit,
+                'trial_ends_at'            => $trialEndsAt,
+                'billing_unit'             => PlatformDefaults::billingUnit($workerSlug),
                 'created_at'               => now(),
                 'updated_at'               => now(),
             ]);

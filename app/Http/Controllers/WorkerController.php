@@ -145,11 +145,19 @@ class WorkerController extends Controller
             $overviewMeta   = $resolved['meta']   ?? [];
         }
 
+        $pricingTiers = DB::table('worker_pricing')
+            ->where('worker_slug', $dep->worker_slug)
+            ->where('active', true)
+            ->whereNotNull('stripe_flat_price_id')
+            ->orderBy('sort_order')
+            ->get();
+
         return view('dashboard.worker-detail', compact(
             'dep', 'contract', 'credential', 'credentials', 'connectedInboxes', 'availableCredentials',
             'txCount', 'recentTx', 'usage', 'pendingReview', 'stuckCount',
             'customModels', 'policyViolations', 'registryRow',
-            'isMultiCredential', 'productionReadiness', 'overviewPanels', 'overviewMeta'
+            'isMultiCredential', 'productionReadiness', 'overviewPanels', 'overviewMeta',
+            'pricingTiers'
         ));
     }
 
@@ -274,20 +282,59 @@ class WorkerController extends Controller
             }
         }
 
-        // Create billing record
-        $pricing    = DB::table('worker_pricing')->where('worker_slug', $request->worker_slug)->first();
+        // Create billing record — respects trial ledger for re-deploys
         $trialGated = false;
         try {
-            $trialGated = DB::table('platform_configs')->where('key', 'trial_payment_required')->value('value') === 'true';
+            $trialGated  = DB::table('platform_configs')->where('key', 'trial_payment_required')->value('value') === 'true';
+            $workerSlug  = $request->worker_slug;
+            $userId      = auth()->id();
+            $ledger      = DB::table('user_worker_trial_ledger')
+                             ->where('user_id', $userId)->where('worker_slug', $workerSlug)->first();
+            $granted     = PlatformDefaults::freeTransactionsFor($workerSlug);
+            $trialDays   = PlatformDefaults::trialDays($workerSlug);
+
+            if (!$ledger) {
+                // First ever deploy — create ledger row and start fresh trial
+                DB::table('user_worker_trial_ledger')->insert([
+                    'user_id'          => $userId,
+                    'worker_slug'      => $workerSlug,
+                    'granted'          => $granted,
+                    'used'             => 0,
+                    'first_deployed_at'=> now(),
+                    'trial_expires_at' => now()->addDays($trialDays),
+                    'created_at'       => now(),
+                    'updated_at'       => now(),
+                ]);
+                $billingStatus   = 'trial';
+                $trialUsed       = 0;
+                $trialLimit      = $granted;
+                $trialEndsAt     = now()->addDays($trialDays);
+            } else {
+                $remaining = max(0, (int)$ledger->granted - (int)$ledger->used);
+                if ($remaining > 0 && $ledger->trial_expires_at && now()->lt($ledger->trial_expires_at)) {
+                    // Re-deploy with credits still remaining — restore them
+                    $billingStatus = 'trial';
+                    $trialUsed     = (int)$ledger->used;
+                    $trialLimit    = (int)$ledger->granted;
+                    $trialEndsAt   = $ledger->trial_expires_at;
+                } else {
+                    // Trial used up — go straight to paywall
+                    $billingStatus = 'trial_exhausted';
+                    $trialUsed     = (int)$ledger->used;
+                    $trialLimit    = (int)$ledger->granted;
+                    $trialEndsAt   = $ledger->trial_expires_at;
+                }
+            }
 
             DB::table('deployment_billing')->insert([
-                'user_id'                  => auth()->id(),
+                'user_id'                  => $userId,
                 'deployment_id'            => $depId,
-                'worker_slug'              => $request->worker_slug,
-                'status'                   => 'trial',
-                'trial_transactions_used'  => 0,
-                'trial_transactions_limit' => PlatformDefaults::freeTransactionsFor($request->worker_slug),
-                'trial_ends_at'            => now()->addDays(PlatformDefaults::trialDays()),
+                'worker_slug'              => $workerSlug,
+                'status'                   => $billingStatus,
+                'trial_transactions_used'  => $trialUsed,
+                'trial_transactions_limit' => $trialLimit,
+                'trial_ends_at'            => $trialEndsAt,
+                'billing_unit'             => PlatformDefaults::billingUnit($workerSlug),
                 'created_at'               => now(),
                 'updated_at'               => now(),
             ]);
@@ -312,6 +359,22 @@ class WorkerController extends Controller
 
     public function destroy(int $id)
     {
+        $dep = DB::table('worker_deployments')->where('id', $id)->where('user_id', auth()->id())->first();
+        if (!$dep) return redirect()->route('workers.deploy')->with('error', 'Worker not found.');
+
+        // Sync trial usage back to ledger before removing the deployment
+        $billing = DB::table('deployment_billing')->where('deployment_id', $id)->first();
+        if ($billing && in_array($billing->status, ['trial', 'trial_exhausted'])) {
+            DB::table('user_worker_trial_ledger')
+                ->where('user_id', auth()->id())
+                ->where('worker_slug', $dep->worker_slug)
+                ->update(['used' => $billing->trial_transactions_used, 'updated_at' => now()]);
+        }
+
+        // Preserve billing history — null the deployment_id FK, don't delete the row
+        DB::table('deployment_billing')->where('deployment_id', $id)
+            ->update(['deployment_id' => null, 'status' => 'decommissioned', 'updated_at' => now()]);
+
         DB::table('worker_deployments')->where('id', $id)->where('user_id', auth()->id())->delete();
         return redirect()->route('workers.deploy')->with('success', 'Worker removed.');
     }

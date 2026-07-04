@@ -837,4 +837,15 @@ class NuxWorker implements WorkerContract
             'drafting'    => DraftPostJob::class,
         ];
     }
+
+    public function billing(): array
+    {
+        return [
+            'trial_transactions' => 10,
+            'trial_days'         => 14,
+            'billing_unit'       => 'post',
+            'unit_label'         => 'post generated',
+            'unit_label_plural'  => 'posts generated',
+        ];
+    }
 }

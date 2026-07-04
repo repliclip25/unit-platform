@@ -36,7 +36,7 @@ class PolicyEngine
                 'Once the issue is resolved, the platform team will lift the suspension.',
             ],
             'cta_label'    => 'Email Support',
-            'cta_url'      => 'mailto:' . config('services.unit.support_email'),
+            'cta_url'      => 'mailto:support@unit.app',
             'cta_route'    => null,
             'color'        => 'red',
         ],
@@ -253,14 +253,35 @@ class PolicyEngine
                 ]);
             }
 
+            // trial_exhausted is a hard status set at deploy time (re-deploy with no credits)
+            if ($billing?->status === 'trial_exhausted') {
+                $violations[] = self::violation('TRIAL_EXHAUSTED', [
+                    'used'          => (int) ($billing->trial_transactions_used  ?? 0),
+                    'limit'         => (int) ($billing->trial_transactions_limit ?? 0),
+                    'deployment_id' => $deploymentId,
+                    'reason'        => 'exhausted',
+                ]);
+            }
+
             if ($billing?->status === 'trial') {
-                $used  = (int) ($billing->trial_transactions_used  ?? 0);
-                $limit = (int) ($billing->trial_transactions_limit ?? 10);
-                if ($used >= $limit) {
+                $used      = (int) ($billing->trial_transactions_used  ?? 0);
+                $limit     = (int) ($billing->trial_transactions_limit ?? 10);
+                $expired   = $billing->trial_ends_at && now()->gt($billing->trial_ends_at);
+                $txUsedUp  = $used >= $limit;
+
+                if ($txUsedUp || $expired) {
+                    // Auto-transition status to trial_exhausted so future checks are instant
+                    try {
+                        DB::table('deployment_billing')
+                            ->where('id', $billing->id)
+                            ->update(['status' => 'trial_exhausted', 'updated_at' => now()]);
+                    } catch (\Throwable) {}
+
                     $violations[] = self::violation('TRIAL_EXHAUSTED', [
                         'used'          => $used,
                         'limit'         => $limit,
                         'deployment_id' => $deploymentId,
+                        'reason'        => $expired ? 'expired' : 'transactions',
                     ]);
                 }
             }

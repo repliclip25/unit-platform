@@ -134,10 +134,104 @@
     </script>
     @endif
 
-    {{-- ── Policy Violations ───────────────────────────────────────────────── --}}
-    @if(!empty($policyViolations))
+    {{-- ── Trial Exhausted Paywall Overlay ────────────────────────────────── --}}
+    @php
+        $isTrialExhausted = collect($policyViolations ?? [])->contains('code', 'TRIAL_EXHAUSTED');
+        $ftBillingForPaywall = DB::table('deployment_billing')->where('deployment_id', $dep->id)->first();
+        $trialReason = collect($policyViolations ?? [])->firstWhere('code', 'TRIAL_EXHAUSTED')['context']['reason'] ?? 'transactions';
+    @endphp
+    @if($isTrialExhausted)
+    <div class="mb-6 rounded-2xl border overflow-hidden" style="background:rgba(0,0,0,0.4);border-color:rgba(241,211,98,0.25)">
+
+        {{-- Header --}}
+        <div class="px-6 py-5 border-b" style="background:rgba(241,211,98,0.05);border-color:rgba(241,211,98,0.15)">
+            <div class="flex items-start justify-between gap-4">
+                <div>
+                    <div class="flex items-center gap-2 mb-1">
+                        <svg class="w-4 h-4" fill="none" stroke="#f1d362" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                        <p class="text-sm font-bold" style="color:var(--accent)">Trial {{ $trialReason === 'expired' ? 'Expired' : 'Complete' }}</p>
+                    </div>
+                    <p class="text-xs" style="color:var(--text-muted)">
+                        @if($trialReason === 'expired')
+                            Your 14-day trial period has ended. Subscribe to keep {{ $dep->name }} running.
+                        @else
+                            You've used all {{ $ftBillingForPaywall?->trial_transactions_limit ?? 25 }} free {{ $contract ? ($contract->billing()['unit_label_plural'] ?? 'transactions') : 'transactions' }}. Choose a plan to continue.
+                        @endif
+                    </p>
+                </div>
+                <div class="text-right shrink-0">
+                    <p class="text-2xl font-bold" style="color:var(--accent)">{{ $ftBillingForPaywall?->trial_transactions_used ?? 0 }}/{{ $ftBillingForPaywall?->trial_transactions_limit ?? 25 }}</p>
+                    <p class="text-xs" style="color:var(--text-faint)">{{ $contract ? ($contract->billing()['unit_label_plural'] ?? 'transactions') : 'transactions' }} used</p>
+                </div>
+            </div>
+        </div>
+
+        {{-- Plan cards --}}
+        @if($pricingTiers->isNotEmpty())
+        <div class="px-6 py-5">
+            <p class="text-xs font-semibold uppercase tracking-widest mb-4" style="color:var(--text-muted)">Choose a plan to continue</p>
+            <div class="grid grid-cols-1 sm:grid-cols-{{ $pricingTiers->count() >= 2 ? '2' : '1' }} gap-3">
+                @foreach($pricingTiers as $tier)
+                @php
+                    $isRecommended = $tier->plan_slug === 'pro';
+                    $highlights    = json_decode($tier->plan_highlights ?? '[]', true) ?: [];
+                @endphp
+                <div class="rounded-xl border p-4 relative"
+                     style="background:{{ $isRecommended ? 'rgba(241,211,98,0.06)' : 'rgba(255,255,255,0.02)' }};border-color:{{ $isRecommended ? 'rgba(241,211,98,0.35)' : 'rgba(255,255,255,0.08)' }}">
+                    @if($isRecommended)
+                    <span class="absolute -top-2.5 left-4 text-xs font-bold px-2.5 py-0.5 rounded-full" style="background:var(--accent);color:#000">Most popular</span>
+                    @endif
+                    <div class="mb-3">
+                        <p class="text-sm font-bold" style="color:var(--text-primary)">{{ $tier->display_name }}</p>
+                        <p class="text-xs mt-0.5" style="color:var(--text-muted)">{{ $tier->tagline }}</p>
+                    </div>
+                    <div class="mb-3">
+                        <span class="text-2xl font-bold" style="color:{{ $isRecommended ? 'var(--accent)' : 'var(--text-primary)' }}">${{ number_format($tier->monthly_flat_rate, 0) }}</span>
+                        <span class="text-xs" style="color:var(--text-faint)">/month</span>
+                    </div>
+                    @if($tier->transaction_limit)
+                    <p class="text-xs mb-3" style="color:var(--text-muted)">{{ number_format($tier->transaction_limit) }} {{ $contract ? ($contract->billing()['unit_label_plural'] ?? 'transactions') : 'transactions' }}/month</p>
+                    @else
+                    <p class="text-xs mb-3" style="color:var(--text-muted)">Unlimited {{ $contract ? ($contract->billing()['unit_label_plural'] ?? 'transactions') : 'transactions' }}</p>
+                    @endif
+                    @if(!empty($highlights))
+                    <ul class="space-y-1 mb-4">
+                        @foreach(array_slice($highlights, 0, 3) as $hl)
+                        <li class="flex items-center gap-1.5 text-xs" style="color:var(--text-secondary)">
+                            <svg class="w-3 h-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                            {{ $hl }}
+                        </li>
+                        @endforeach
+                    </ul>
+                    @endif
+                    <form method="POST" action="{{ route('billing.checkout', $dep->id) }}">
+                        @csrf
+                        <input type="hidden" name="plan" value="{{ $tier->plan_slug }}">
+                        <button type="submit" class="w-full text-sm font-bold py-2 rounded-lg transition hover:opacity-90"
+                                style="background:{{ $isRecommended ? 'var(--accent)' : 'rgba(255,255,255,0.08)' }};color:{{ $isRecommended ? '#000' : 'var(--text-primary)' }}">
+                            Subscribe — ${{ number_format($tier->monthly_flat_rate, 0) }}/mo
+                        </button>
+                    </form>
+                </div>
+                @endforeach
+            </div>
+            <p class="text-xs mt-4 text-center" style="color:var(--text-faint)">Cancel any time · No setup fees · Billed monthly</p>
+        </div>
+        @else
+        <div class="px-6 py-5 text-center">
+            <p class="text-sm mb-3" style="color:var(--text-muted)">Contact us to set up your subscription.</p>
+            <a href="mailto:{{ config('services.unit.support_email') }}" class="text-sm font-semibold" style="color:var(--accent)">{{ config('services.unit.support_email') }} →</a>
+        </div>
+        @endif
+
+    </div>
+    @endif
+
+    {{-- ── Policy Violations (non-TRIAL_EXHAUSTED) ─────────────────────────── --}}
+    @php $otherViolations = collect($policyViolations ?? [])->filter(fn($v) => $v['code'] !== 'TRIAL_EXHAUSTED')->values()->all(); @endphp
+    @if(!empty($otherViolations))
     <div class="mb-5">
-        @include('partials.policy-violations', ['violations' => $policyViolations])
+        @include('partials.policy-violations', ['violations' => $otherViolations])
     </div>
     @endif
 

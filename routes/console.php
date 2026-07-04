@@ -113,16 +113,7 @@ Artisan::command('onboarding:sequence', function () {
 // ── Monthly billing period reset ─────────────────────────────────────────────
 
 // Runs on the 1st of each month at midnight — resets unit_count for all active subscriptions
-Schedule::call(function () {
-    \Illuminate\Support\Facades\DB::table('deployment_billing')
-        ->where('status', 'active')
-        ->update([
-            'unit_count'           => 0,
-            'billing_period_start' => now()->startOfMonth(),
-            'updated_at'           => now(),
-        ]);
-    \Illuminate\Support\Facades\Log::info('Billing period reset: unit_count zeroed for all active deployments.');
-})->monthlyOn(1, '00:05')->name('billing.period.reset');
+Schedule::command('billing:reset-monthly-quotas')->monthlyOn(1, '00:05')->name('billing.period.reset');
 
 // ── Gmail token expiry check ──────────────────────────────────────────────────
 

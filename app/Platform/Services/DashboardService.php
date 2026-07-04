@@ -268,13 +268,17 @@ class DashboardService
         $windows = $panel['windows'] ?? [30, 60, 90];
         $maxDays = max($windows);
 
+        $isSqlite    = DB::getDriverName() === 'sqlite';
+        $todayExpr   = $isSqlite ? "date('now')" : 'CURDATE()';
+        $futureExpr  = $isSqlite ? "date('now', '+' || ? || ' days')" : 'DATE_ADD(CURDATE(), INTERVAL ? DAY)';
+
         $assets = DB::table('assets')
             ->where('user_id', $userId)
             ->whereNull('deleted_at')
             ->where('type', '!=', 'discovered')
             ->whereNotNull('renewal_date')
-            ->whereRaw('renewal_date >= CURDATE()')
-            ->whereRaw('renewal_date <= DATE_ADD(CURDATE(), INTERVAL ? DAY)', [$maxDays])
+            ->whereRaw("renewal_date >= {$todayExpr}")
+            ->whereRaw("renewal_date <= {$futureExpr}", [$maxDays])
             ->orderBy('renewal_date')
             ->get();
 

@@ -32,14 +32,22 @@ class TransactionService
                     ->increment('unit_count');
 
                 // Only increment trial counter while the deployment is still in trial
-                $billingStatus = DB::table('deployment_billing')
+                $billing = DB::table('deployment_billing')
                     ->where('deployment_id', $deploymentId)
-                    ->value('status');
+                    ->first(['status', 'trial_transactions_used', 'worker_slug', 'user_id']);
 
-                if ($billingStatus === 'trial') {
+                if ($billing && $billing->status === 'trial') {
                     DB::table('deployment_billing')
                         ->where('deployment_id', $deploymentId)
                         ->increment('trial_transactions_used');
+
+                    // Keep trial ledger in sync so re-deploy credits are accurate
+                    if ($billing->user_id && $billing->worker_slug) {
+                        DB::table('user_worker_trial_ledger')
+                            ->where('user_id', $billing->user_id)
+                            ->where('worker_slug', $billing->worker_slug)
+                            ->update(['used' => $billing->trial_transactions_used + 1, 'updated_at' => now()]);
+                    }
                 }
             }
         });

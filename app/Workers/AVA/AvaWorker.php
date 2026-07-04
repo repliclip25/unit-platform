@@ -986,4 +986,15 @@ class AvaWorker implements WorkerContract
             'drafting'      => DraftEmailJob::class,
         ];
     }
+
+    public function billing(): array
+    {
+        return [
+            'trial_transactions' => 25,
+            'trial_days'         => 14,
+            'billing_unit'       => 'email',
+            'unit_label'         => 'email processed',
+            'unit_label_plural'  => 'emails processed',
+        ];
+    }
 }
