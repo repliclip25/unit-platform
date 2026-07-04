@@ -260,6 +260,50 @@
                                   placeholder="One highlight per line&#10;100 emails/month&#10;Full pipeline"></textarea>
                         <div class="wf-hint" style="margin-top:4px">One bullet per line · 4–6 lines ideal</div>
 
+                        {{-- AI TIER --}}
+                        <div class="wf-sep">AI Tier</div>
+                        <div class="wf-grid">
+                            <div class="wf-full">
+                                <div class="wf-lbl">Tier</div>
+                                <div class="wf-sel-wrap">
+                                    <select name="ai_tier" id="ef-ai_tier" class="wf-select" onchange="onTierChange(this.value)">
+                                        <option value="economy">Economy — Haiku for all stages</option>
+                                        <option value="standard">Standard — Haiku classify · Sonnet draft</option>
+                                        <option value="premium">Premium — Sonnet for all stages</option>
+                                    </select>
+                                </div>
+                                <div class="wf-hint">Controls which Claude model runs each pipeline stage for subscribers on this plan</div>
+                            </div>
+                            <div>
+                                <div class="wf-lbl">Classify &amp; Memory Model</div>
+                                <div class="wf-sel-wrap">
+                                    <select name="classify_model" id="ef-classify_model" class="wf-select">
+                                        <option value="claude-haiku-4-5-20251001">Haiku 4.5 — $0.80/M · fast</option>
+                                        <option value="claude-sonnet-4-6">Sonnet 4.6 — $3.00/M · balanced</option>
+                                        <option value="claude-opus-4-7">Opus 4.7 — $15.00/M · powerful</option>
+                                    </select>
+                                </div>
+                                <div class="wf-hint">Used for ReadEmail, ClassifyEmail, MemoryLookup, SelectTemplate</div>
+                            </div>
+                            <div>
+                                <div class="wf-lbl">Draft Model</div>
+                                <div class="wf-sel-wrap">
+                                    <select name="draft_model" id="ef-draft_model" class="wf-select">
+                                        <option value="claude-haiku-4-5-20251001">Haiku 4.5 — $0.80/M · fast</option>
+                                        <option value="claude-sonnet-4-6">Sonnet 4.6 — $3.00/M · balanced</option>
+                                        <option value="claude-opus-4-7">Opus 4.7 — $15.00/M · powerful</option>
+                                    </select>
+                                </div>
+                                <div class="wf-hint">Used for DraftEmail — where quality matters most</div>
+                            </div>
+                            <div>
+                                <div class="wf-lbl">Draft Downgrade Threshold <span style="font-weight:400;color:var(--text-muted)">(0 = none)</span></div>
+                                <input type="number" name="draft_model_threshold" id="ef-draft_model_threshold" class="wf-input" placeholder="500">
+                                <div class="wf-hint">After this many transactions/mo, draft switches to the classify model to protect margin</div>
+                            </div>
+                        </div>
+                        <div id="ai-tier-cost" style="margin-top:8px;padding:10px 12px;border-radius:9px;background:var(--bg-raised);border:1px solid var(--border);font-size:12px;color:var(--text-muted)"></div>
+
                         {{-- STRIPE LIVE PRICE --}}
                         <div class="wf-sep">Stripe — Live Price ID</div>
                         <div>
@@ -437,8 +481,12 @@ const PLANS = {
         transaction_limit:    {{ $plan->transaction_limit ?? 0 }},
         support_label:        @json($plan->support_label ?? ''),
         plan_highlights:      @json(implode("\n", json_decode($plan->plan_highlights ?? '[]', true))),
-        billing_mode:         @json($plan->billing_mode ?? 'test'),
-        stripe_flat_price_id: @json($plan->stripe_flat_price_id ?? ''),
+        billing_mode:           @json($plan->billing_mode ?? 'test'),
+        ai_tier:                @json($plan->ai_tier ?? 'economy'),
+        classify_model:         @json($plan->classify_model ?? 'claude-haiku-4-5-20251001'),
+        draft_model:            @json($plan->draft_model ?? 'claude-haiku-4-5-20251001'),
+        draft_model_threshold:  {{ $plan->draft_model_threshold ?? 0 }},
+        stripe_flat_price_id:   @json($plan->stripe_flat_price_id ?? ''),
         stripe_test_price_id: @json($plan->stripe_test_price_id ?? ''),
         stripe_coupon_id:     @json($plan->stripe_coupon_id ?? ''),
         discount_pct:         @json($plan->discount_pct ?? ''),
@@ -489,11 +537,18 @@ function selectPlan(id) {
     const fields = ['display_name','tagline','transaction_label','worker_url','sort_order',
                     'free_transactions','monthly_flat_rate','transaction_limit','support_label',
                     'plan_highlights','stripe_flat_price_id','stripe_test_price_id',
-                    'stripe_coupon_id','discount_pct','promo_label','promo_expires_at'];
+                    'stripe_coupon_id','discount_pct','promo_label','promo_expires_at',
+                    'draft_model_threshold'];
     fields.forEach(f => {
         const el = document.getElementById('ef-' + f);
         if (el) el.value = p[f] ?? '';
     });
+
+    // AI tier selects
+    setSelectValue('ef-ai_tier',        p.ai_tier        || 'economy');
+    setSelectValue('ef-classify_model', p.classify_model || 'claude-haiku-4-5-20251001');
+    setSelectValue('ef-draft_model',    p.draft_model    || 'claude-haiku-4-5-20251001');
+    updateCostPreview(p.classify_model, p.draft_model, p.draft_model_threshold);
 
     // Color
     document.getElementById('ef-accent_color').value = p.accent_color;
@@ -629,6 +684,55 @@ function onPickWorker(sel) {
 document.querySelector('#add-modal').addEventListener('click', function(e) {
     if (e.target === this) closeAdd();
 });
+
+function setSelectValue(id, value) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    for (let i = 0; i < el.options.length; i++) {
+        if (el.options[i].value === value) { el.selectedIndex = i; return; }
+    }
+}
+
+function onTierChange(tier) {
+    const presets = {
+        economy:  { classify: 'claude-haiku-4-5-20251001', draft: 'claude-haiku-4-5-20251001' },
+        standard: { classify: 'claude-haiku-4-5-20251001', draft: 'claude-sonnet-4-6' },
+        premium:  { classify: 'claude-sonnet-4-6',         draft: 'claude-sonnet-4-6' },
+    };
+    const p = presets[tier];
+    if (!p) return;
+    setSelectValue('ef-classify_model', p.classify);
+    setSelectValue('ef-draft_model',    p.draft);
+    const threshEl = document.getElementById('ef-draft_model_threshold');
+    if (tier === 'standard' && threshEl && !threshEl.value) threshEl.value = 500;
+    if (tier !== 'standard' && threshEl) threshEl.value = '';
+    updateCostPreview(p.classify, p.draft, tier === 'standard' ? 500 : null);
+}
+
+function updateCostPreview(classifyModel, draftModel, threshold) {
+    const el = document.getElementById('ai-tier-cost');
+    if (!el) return;
+
+    // Cost per 1K tokens (input+output blended estimate)
+    const costs = {
+        'claude-haiku-4-5-20251001': 0.00025,
+        'claude-sonnet-4-6':         0.0030,
+    };
+
+    const classify = costs[classifyModel] ?? costs['claude-haiku-4-5-20251001'];
+    const draft    = costs[draftModel]    ?? costs['claude-haiku-4-5-20251001'];
+
+    // Rough token estimates per pipeline stage
+    const classifyTokens = 600;  // read + classify + memory stages
+    const draftTokens    = 1200; // draft stage
+
+    const costPerEmail = (classify * classifyTokens / 1000) + (draft * draftTokens / 1000);
+    const costStr      = '$' + costPerEmail.toFixed(4);
+    const threshNote   = threshold ? ` · auto-downgrade after ${threshold} emails/mo` : '';
+
+    el.textContent = `~${costStr} per email${threshNote}`;
+    el.style.color = costPerEmail < 0.02 ? 'var(--badge-fast-text)' : costPerEmail < 0.04 ? 'var(--badge-balanced-text)' : 'var(--badge-powerful-text)';
+}
 
 // Auto-open the plan that was just saved (via ?editing=ID)
 const editingId = {{ request('editing', 'null') }};

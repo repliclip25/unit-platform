@@ -28,7 +28,7 @@ class DraftEmailJob implements ShouldQueue
     public function handle(ClaudeService $claude): void
     {
         $input    = UnitPlatform::getInput($this->txId);
-        $claude->configure($input->aiModel, $input->userId, $input->workerSlug);
+        $claude->configure($input->draftModel, $input->userId, $input->workerSlug);
         $memory   = $input->stage('memory');
         $classify = $input->stage('classify');
         $template = $input->stage('template');

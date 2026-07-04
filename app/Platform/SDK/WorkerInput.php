@@ -21,7 +21,9 @@ final class WorkerInput
         public readonly ?object $credential,       // Gmail OAuth credential — never put on queue payload
         public readonly ?string $tenantEmail,      // tenant's own account email (fallback recipient)
         public readonly array   $pipelineConfig,   // per-stage config: ['read' => ['max_tokens'=>1024, 'timeout'=>90], ...]
-        public readonly string  $aiModel = 'claude-sonnet-4-6', // deployment-level model override
+        public readonly string  $aiModel        = 'claude-sonnet-4-6', // deployment-level model override (legacy fallback)
+        public readonly string  $classifyModel  = 'claude-haiku-4-5-20251001', // classify + memory + template stages
+        public readonly string  $draftModel     = 'claude-sonnet-4-6',         // draft stage (may be downgraded by threshold)
     ) {}
 
     public function stage(string $name): array

@@ -113,6 +113,39 @@ final class UnitPlatform
 
         $depConfig = json_decode($dep?->config ?? '{}', true) ?: [];
 
+        // ── Plan-driven model resolution ──────────────────────────────────
+        // Priority: tenant custom model (depConfig) → plan ai tier → platform default
+        $classifyModel = 'claude-haiku-4-5-20251001';
+        $draftModel    = 'claude-sonnet-4-6';
+
+        if (!empty($depConfig['ai_model'])) {
+            // Tenant has a custom model set — use it for all stages
+            $classifyModel = $depConfig['ai_model'];
+            $draftModel    = $depConfig['ai_model'];
+        } else {
+            // Resolve from the active billing plan
+            $billing = $tx->deployment_id
+                ? DB::table('deployment_billing')->where('deployment_id', $tx->deployment_id)->first()
+                : null;
+
+            if ($billing?->plan_slug) {
+                $plan = DB::table('worker_pricing')
+                    ->where('worker_slug', $slug)
+                    ->where('plan_slug', $billing->plan_slug)
+                    ->first();
+
+                if ($plan) {
+                    $classifyModel = $plan->classify_model ?: $classifyModel;
+                    $draftModel    = $plan->draft_model    ?: $draftModel;
+
+                    // Threshold check — downgrade draft to classify_model if usage exceeded
+                    if ($plan->draft_model_threshold && $billing->unit_count >= $plan->draft_model_threshold) {
+                        $draftModel = $classifyModel;
+                    }
+                }
+            }
+        }
+
         return new WorkerInput(
             txId:           $txId,
             deploymentId:   $tx->deployment_id ?? 0,
@@ -126,7 +159,9 @@ final class UnitPlatform
             credential:     $credential,
             tenantEmail:    $tenantEmail,
             pipelineConfig: $pipelineConfig,
-            aiModel:        $depConfig['ai_model'] ?? 'claude-sonnet-4-6',
+            aiModel:        $depConfig['ai_model'] ?? $draftModel,
+            classifyModel:  $classifyModel,
+            draftModel:     $draftModel,
         );
     }
 

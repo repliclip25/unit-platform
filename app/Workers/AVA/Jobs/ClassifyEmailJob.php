@@ -29,8 +29,7 @@ class ClassifyEmailJob implements ShouldQueue
     public function handle(ClaudeService $claude): void
     {
         $input = UnitPlatform::getInput($this->txId);
-        // Use Haiku for classification — cheap, fast, sufficient for categorization
-        $claude->configure('claude-haiku-4-5-20251001', $input->userId, $input->workerSlug);
+        $claude->configure($input->classifyModel, $input->userId, $input->workerSlug);
         UnitPlatform::setStatus($this->txId, 'classifying');
 
         $readOutput = $input->stage('read');
