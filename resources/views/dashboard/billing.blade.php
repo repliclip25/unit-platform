@@ -44,7 +44,7 @@
         $depTiers    = $pricingTiers[$dep->worker_slug] ?? collect();
 
         // Value metric — worker-specific
-        $processed   = (int) ($emailsProcessed[$dep->id]->total ?? 0);
+        $processed   = (int) ($emailsProcessed[$dep->id]?->total ?? 0);
         $minPerEmail = 16;
         $hoursSaved  = $processed > 0 ? round($processed * $minPerEmail / 60, 1) : null;
 

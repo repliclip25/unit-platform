@@ -162,6 +162,6 @@ class AvaPricingSeeder extends Seeder
 
         ]);
 
-        $this->command->info('AVA pricing seeded: Starter ($49) · Pro ($149) · Enterprise (custom)');
+        $this->command->info('AVA pricing seeded: Starter (free trial) · Pro ($149) · Enterprise (custom)');
     }
 }
