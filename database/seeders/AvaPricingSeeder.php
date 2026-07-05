@@ -16,32 +16,32 @@ class AvaPricingSeeder extends Seeder
 
         DB::table('worker_pricing')->insert([
 
-            // ── Starter ──────────────────────────────────────────────────────
+            // ── Starter (trial plan — free experience, never subscribed to) ──────
             [
                 'worker_slug'          => 'ava',
                 'plan_slug'            => 'starter',
                 'billing_unit'         => 'email',
-                'display_name'         => 'AVA — Starter',
-                'tagline'              => 'Automate your renewal inbox. Review only what needs a human.',
+                'display_name'         => 'AVA — Free Trial',
+                'tagline'              => 'Try AVA free. 25 emails processed, no credit card required.',
                 'transaction_label'    => 'one renewal email read, classified, drafted, and delivered to your review queue',
                 'worker_url'           => '/w/ava',
                 'accent_color'         => '#cb0655',
                 'sort_order'           => 1,
                 'free_transactions'    => 25,
-                'monthly_flat_rate'    => 49.00,
+                'monthly_flat_rate'    => 0.00,
                 'discount_pct'         => 0,
                 'promo_label'          => null,
                 'promo_expires_at'     => null,
-                'included_transactions'=> 200,
-                'transaction_limit'    => 200,
-                'overage_price_per_tx' => 0.25,
+                'included_transactions'=> 25,
+                'transaction_limit'    => 25,
+                'overage_price_per_tx' => 0.00,
                 'plan_highlights'      => json_encode([
-                    '200 renewal emails processed per month',
+                    '25 renewal emails processed free',
                     'Full 8-stage pipeline — read, classify, draft, review',
                     'Gmail inbox connect & draft delivery',
                     'Client, contact & asset memory',
                     'Renewal register with status tracking',
-                    'Email support',
+                    'No credit card required',
                 ]),
                 'prompt_overrides'     => false,
                 'support_label'        => 'Email support',
