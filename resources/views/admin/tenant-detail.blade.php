@@ -527,6 +527,30 @@
                             </form>
                         @endif
                     </div>
+                    {{-- Admin-initiated account deletion --}}
+                    <div class="border-t border-gray-800 pt-4" x-data="{ open: false }">
+                        <div x-show="!open">
+                            <button type="button" @click="open=true"
+                                    class="w-full text-xs py-2 rounded-lg transition font-medium"
+                                    style="background:rgba(239,68,68,0.08);color:#f87171;border:1px solid rgba(239,68,68,0.2)">
+                                Delete Account
+                            </button>
+                        </div>
+                        <div x-show="open" class="space-y-2">
+                            <p class="text-red-400 text-xs font-semibold">Send a deletion confirmation email to the tenant. They must click the link to confirm — this cannot be undone.</p>
+                            <div class="flex gap-2">
+                                <button type="button" @click="open=false" class="flex-1 text-xs py-2 rounded-lg border border-gray-800 text-gray-500 hover:text-white transition">Cancel</button>
+                                <form method="POST" action="{{ route('admin.tenants.request-deletion', $tenant->id) }}" class="flex-1">
+                                    @csrf
+                                    <button type="submit" class="w-full text-xs py-2 rounded-lg font-medium transition"
+                                            style="background:rgba(239,68,68,0.15);color:#f87171;border:1px solid rgba(239,68,68,0.3)">
+                                        Send email
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
                     @if($apiKeys->isNotEmpty())
                     <div class="border-t border-gray-800 pt-4">
                         <p class="text-gray-400 text-xs font-medium mb-2">API Keys</p>

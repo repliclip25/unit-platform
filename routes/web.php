@@ -52,6 +52,10 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+// Account deletion confirmation (token-authenticated, no login required)
+Route::get('/account/delete-confirm/{token}',  [\App\Http\Controllers\AccountDeletionController::class, 'confirm'])->name('account.delete-confirm');
+Route::post('/account/delete-confirm/{token}', [\App\Http\Controllers\AccountDeletionController::class, 'execute'])->name('account.delete-execute');
+
 // Public marketing pages
 Route::get('/about',                [PublicPageController::class, 'about'])->name('about');
 Route::get('/pricing',              [PublicPageController::class, 'pricing'])->name('pricing');
@@ -345,6 +349,7 @@ Route::middleware(['auth', 'verified', 'onboarded', 'not-pending-del'])->group(f
         Route::post('/admin/tenants/{id}/ai-message',                    [AdminTenantController::class, 'sendAiMessage'])->name('admin.tenants.ai-message');
         Route::post('/admin/tenants/{id}/toggle-block',                  [AdminTenantController::class, 'toggleBlock'])->name('admin.tenants.toggle-block');
         Route::post('/admin/tenants/{id}/flush',                          [AdminTenantController::class, 'flush'])->name('admin.tenants.flush');
+        Route::post('/admin/tenants/{id}/request-deletion',              [AdminTenantController::class, 'requestDeletion'])->name('admin.tenants.request-deletion');
         Route::post('/admin/deployments/{id}/backfill-billing',          [AdminTenantController::class, 'backfillBilling'])->name('admin.deployments.backfill-billing');
         Route::post('/admin/deployments/{id}/set-billing-status',        [AdminTenantController::class, 'setBillingStatus'])->name('admin.deployments.set-billing-status');
         Route::post('/admin/invoices/{invoiceId}/void',                  [AdminTenantController::class, 'voidInvoice'])->name('admin.invoices.void');

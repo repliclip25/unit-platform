@@ -284,6 +284,39 @@ class AdminTenantController extends Controller
         ));
     }
 
+    public function requestDeletion(int $id)
+    {
+        $tenant = DB::table('users')->where('id', $id)->where('role', 'tenant')->first();
+        if (!$tenant) return back()->with('error', 'Tenant not found.');
+
+        // Generate a secure one-time token valid for 72 hours
+        $token = bin2hex(random_bytes(32));
+
+        DB::table('users')->where('id', $id)->update([
+            'deletion_token'              => $token,
+            'admin_deletion_requested_at' => now(),
+        ]);
+
+        $confirmUrl = url('/account/delete-confirm/' . $token);
+
+        \App\Platform\Services\EmailDispatcher::send(
+            'admin_deletion_request',
+            $tenant->email,
+            $tenant->name,
+            $tenant->id,
+            [
+                '{confirm_url}' => $confirmUrl,
+            ]
+        );
+
+        \App\Platform\Services\UnitNotifier::adminAlert(
+            "Account deletion requested: {$tenant->name}",
+            "Admin sent a deletion confirmation email to {$tenant->name} ({$tenant->email}). Awaiting tenant confirmation."
+        );
+
+        return back()->with('success', "Deletion confirmation email sent to {$tenant->email}. Account will be nuked once they confirm.");
+    }
+
     public function block(int $id, Request $request)
     {
         $validCodes = array_keys(\App\Platform\Services\PolicyEngine::POLICIES);
