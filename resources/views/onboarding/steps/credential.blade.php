@@ -72,9 +72,10 @@
     $authorizeRoute = $credentialInfo['authorize_route'] ?? null;
 @endphp
 
-<div class="mb-8">
+<div class="mb-6">
+    <p class="text-xs font-semibold uppercase tracking-widest mb-3" style="color:var(--accent-text)">Step 1 of 4 — Inbox access</p>
     <h1 class="text-2xl font-black text-white mb-2">Connect your {{ $credLabel }}</h1>
-    <p style="color:var(--text-muted)">{{ $credHint }}</p>
+    <p class="text-sm leading-relaxed" style="color:var(--text-muted)">{{ $credHint }} AVA watches your inbox 24/7 — every renewal email that arrives gets classified, matched to a client, and drafted automatically.</p>
 </div>
 
 @if($hasCredential)

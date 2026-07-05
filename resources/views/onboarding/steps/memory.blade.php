@@ -8,12 +8,20 @@
     $needed      = $health['needed'];
     $hasAny      = ($clientCount + $contactCount + $assetCount) > 0;
     $threshold   = \App\Platform\Services\MemoryHealthService::HEALTHY_THRESHOLD;
+    $persona     = auth()->user()->persona ?? null;
+    $personaCopy = match($persona) {
+        'it_agency'        => ['noun' => 'client', 'asset' => 'domain / service', 'example_client' => 'Acme Corp', 'example_asset' => 'acmecorp.com', 'example_type' => 'other'],
+        'insurance_broker' => ['noun' => 'insured', 'asset' => 'policy', 'example_client' => 'Rivera Auto Group', 'example_asset' => 'Commercial Auto — Markel', 'example_type' => 'commercial_auto'],
+        'compliance'       => ['noun' => 'client', 'asset' => 'license / permit', 'example_client' => 'Sunrise Contractors', 'example_asset' => 'General Contractor License', 'example_type' => 'other'],
+        default            => ['noun' => 'client', 'asset' => 'asset', 'example_client' => 'Riverside Auto Group', 'example_asset' => 'Service Agreement', 'example_type' => 'other'],
+    };
 @endphp
 
 <div class="mb-6">
+    <p class="text-xs font-semibold uppercase tracking-widest mb-3" style="color:var(--accent-text)">Step 3 of 4 — Memory</p>
     <h1 class="text-2xl font-black text-white mb-2">Load your book of business</h1>
     <p class="text-gray-400 text-sm leading-relaxed">
-        AVA matches incoming renewal emails to your clients. The more you add here, the higher her confidence — and the less you'll need to correct.
+        AVA matches incoming renewal emails to your {{ $personaCopy['noun'] }}s. The more you add here, the higher her confidence — and the less you'll need to correct after each draft.
     </p>
 </div>
 
@@ -57,7 +65,7 @@
 
 {{-- ── Quick-add form ── --}}
 <div class="mb-5">
-    <p class="text-xs font-semibold text-gray-500 uppercase tracking-widest mb-3">Add a client</p>
+    <p class="text-xs font-semibold text-gray-500 uppercase tracking-widest mb-3">Add a {{ $personaCopy['noun'] }}</p>
     <form method="POST" action="{{ route('onboarding.memory.quickadd') }}"
           class="bg-gray-900 border border-gray-800 rounded-xl p-5 space-y-3">
         @csrf
@@ -70,7 +78,7 @@
             <div>
                 <label class="block text-xs text-gray-500 mb-1">Client / Company name <span class="text-red-400">*</span></label>
                 <input type="text" name="client_name" value="{{ old('client_name') }}"
-                       placeholder="e.g. Riverside Auto Group"
+                       placeholder="e.g. {{ $personaCopy['example_client'] }}"
                        class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-yellow-400/50">
             </div>
             <div>
@@ -86,9 +94,9 @@
                        class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-yellow-400/50">
             </div>
             <div>
-                <label class="block text-xs text-gray-500 mb-1">Policy / Asset <span class="text-red-400">*</span></label>
+                <label class="block text-xs text-gray-500 mb-1">{{ ucfirst($personaCopy['asset']) }} <span class="text-red-400">*</span></label>
                 <input type="text" name="asset_name" value="{{ old('asset_name') }}"
-                       placeholder="e.g. Commercial Auto — Markel"
+                       placeholder="e.g. {{ $personaCopy['example_asset'] }}"
                        class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-yellow-400/50">
             </div>
             <div>

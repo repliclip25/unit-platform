@@ -113,6 +113,13 @@ class AvaWorker implements WorkerContract
                 'icon'        => 'mail',
             ],
             [
+                'name'        => 'persona',
+                'label'       => 'What do you renew?',
+                'description' => 'Tell AVA what kind of renewals you manage so she learns your industry from day one.',
+                'optional'    => false,
+                'icon'        => 'user',
+            ],
+            [
                 'name'        => 'memory',
                 'label'       => 'Upload your contacts & assets',
                 'description' => 'Your clients, domains, and subscriptions — so AVA knows who each email is about.',

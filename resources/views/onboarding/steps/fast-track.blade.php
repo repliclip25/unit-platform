@@ -2,10 +2,10 @@
 
 @php
     $ft            = $contract?->fastTrack() ?? [];
-    $sampleSubject = $ft['subject'] ?? 'Domain Renewal Notice — yourdomain.com expires in 30 days';
-    $sampleRaw     = $ft['raw_email'] ?? "Subject: Domain Renewal Notice — example.com\n\nHi,\n\nThis is a reminder that your domain example.com is due for renewal in 30 days. Please renew at your earliest convenience to avoid any service interruption.\n\nBest regards,\nDomain Services Team";
+    $sampleRaw     = $personaSample ?? $ft['raw_email'] ?? "Subject: Domain Renewal Notice — example.com\n\nHi,\n\nThis is a reminder that your domain example.com is due for renewal in 30 days. Please renew at your earliest convenience to avoid any service interruption.\n\nBest regards,\nDomain Services Team";
     $outcome       = $outcome ?? [];
     $workerName    = $contract?->identity()['name'] ?? 'Your worker';
+    $isPersonalised = isset($personaSample) && $personaSample !== null;
 @endphp
 
 @php
@@ -126,10 +126,18 @@
 @else
 {{-- ── NOT YET RUN ── --}}
 
-<div class="mb-8">
+<div class="mb-6">
+    <p class="text-xs font-semibold uppercase tracking-widest mb-3" style="color:var(--accent-text)">Final step — Live test</p>
     <h1 class="text-2xl font-black text-white mb-2">See {{ $workerName }} work — before you commit to anything.</h1>
-    <p class="text-gray-400 text-sm">Fire a sample renewal email through your worker and watch it classify, match, and draft a response in real time.</p>
+    <p class="text-gray-400 text-sm leading-relaxed">You've connected Gmail and loaded your clients. Now fire a renewal email through AVA's pipeline and watch her classify it, match it to memory, and draft a response — in real time.</p>
 </div>
+
+@if($isPersonalised)
+<div class="mb-4 flex items-center gap-2 bg-green-500/10 border border-green-500/20 rounded-xl px-4 py-3">
+    <svg class="w-4 h-4 text-green-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+    <p class="text-green-400 text-sm">Pre-filled with your actual client data — this is a real test, not a demo.</p>
+</div>
+@endif
 
 @if(session('fast_track_error'))
 <div class="bg-red-500/10 border border-red-500/30 rounded-xl px-5 py-4 mb-5">
@@ -152,7 +160,7 @@
     @csrf
     <div class="mb-5">
         <label class="block text-gray-400 text-xs font-semibold uppercase tracking-widest mb-2">
-            Sample email — edit to personalise
+            {{ $isPersonalised ? 'Your renewal email — edit if needed' : 'Sample email — edit to personalise' }}
         </label>
         <textarea name="sample_email" rows="8"
             class="w-full bg-gray-900 border border-gray-800 focus:border-yellow-400/50 rounded-xl px-4 py-3 text-sm text-gray-300 leading-relaxed font-mono resize-none outline-none transition-colors"
@@ -161,7 +169,8 @@
     </div>
 
     <button type="submit" id="run-btn"
-        class="w-full bg-yellow-400 hover:bg-yellow-300 text-gray-950 font-bold text-base py-4 rounded-xl transition-colors mb-3">
+        class="w-full font-bold text-base py-4 rounded-xl transition-colors mb-3"
+        style="background:var(--accent);color:#1a1404">
         &#9889; Run live test
     </button>
 </form>

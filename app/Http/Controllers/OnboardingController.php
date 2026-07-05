@@ -99,6 +99,7 @@ class OnboardingController extends Controller
             'select-worker' => $this->handleSelectWorker($request),
             'credential'    => $this->handleCredential($request),
             'gmail'         => $this->handleGmail($request),
+            'persona'       => $this->handlePersona($request),
             'memory'        => $this->handleMemory($request),
             'fast-track'    => $this->handleFastTrack($request),
             default         => redirect()->route('onboarding'),
@@ -342,6 +343,23 @@ class OnboardingController extends Controller
         $authorizeRoute = $gmailSlot['authorize_route'] ?? 'nux.gmail.authorize';
 
         return redirect()->route($authorizeRoute);
+    }
+
+    private function handlePersona(Request $request)
+    {
+        $allowed = ['it_agency', 'insurance_broker', 'compliance', 'other'];
+        $persona = $request->input('persona');
+
+        if (!in_array($persona, $allowed)) {
+            return back()->withErrors(['persona' => 'Please select a use case to continue.']);
+        }
+
+        DB::table('users')->where('id', auth()->id())->update(['persona' => $persona]);
+
+        $wos = WorkerOnboardingService::load(auth()->id());
+        if ($wos) WorkerOnboardingService::advanceStep($wos->id, 'persona');
+
+        return redirect()->route('onboarding.step', 'memory');
     }
 
     private function handleMemory(Request $request)
@@ -659,6 +677,7 @@ class OnboardingController extends Controller
                 $clients  = DB::table('clients')->where('user_id', $userId)->whereNull('deleted_at')->get();
                 $contacts = DB::table('contacts')->where('user_id', $userId)->whereNull('deleted_at')->get()->groupBy('client_id');
                 $assets   = DB::table('assets')->where('user_id', $userId)->whereNull('deleted_at')->get()->groupBy('client_id');
+                // persona is accessed directly in the view via auth()->user()->persona
 
                 $sampleClients = $clients->map(function ($client) use ($contacts, $assets) {
                     $client->contacts = $contacts->get($client->id, collect());
@@ -677,13 +696,63 @@ class OnboardingController extends Controller
                 ];
             })(),
 
-            'fast-track' => [
-                'contract'      => $contract,
-                'depId'         => $depId,
-                'txId'          => session('onboarding_fast_track_tx'),
-                'hasCredential' => DB::table('user_gmail_credentials')->where('user_id', auth()->id())->exists(),
-                'outcome'       => $contract?->fastTrackOutcome() ?? [],
+            'persona' => [
+                'contract' => $contract,
+                'current'  => DB::table('users')->where('id', auth()->id())->value('persona'),
             ],
+
+            'fast-track' => (function () use ($contract, $depId) {
+                $userId  = auth()->id();
+                $persona = DB::table('users')->where('id', $userId)->value('persona');
+
+                // Try to build a personalised sample from real memory
+                $sample  = null;
+                $client  = DB::table('clients')->where('user_id', $userId)->whereNull('deleted_at')->first();
+                if ($client) {
+                    $contact = DB::table('contacts')
+                        ->where('user_id', $userId)
+                        ->where('client_id', $client->id)
+                        ->whereNotNull('email')
+                        ->whereNull('deleted_at')
+                        ->first();
+                    $asset = DB::table('assets')
+                        ->where('user_id', $userId)
+                        ->where('client_id', $client->id)
+                        ->whereNull('deleted_at')
+                        ->first();
+
+                    if ($asset) {
+                        $renewalDate = $asset->renewal_date
+                            ? \Carbon\Carbon::parse($asset->renewal_date)->format('F j, Y')
+                            : now()->addDays(30)->format('F j, Y');
+                        $contactName = $contact?->name ?? 'Team';
+                        $sample = implode("\n", [
+                            'From: Renewal System <renewals@example.com>',
+                            'Subject: Renewal Notice — ' . $asset->name . ' for ' . $client->name,
+                            'Date: ' . now()->toRfc2822String(),
+                            '',
+                            'Dear ' . $contactName . ',',
+                            '',
+                            'This is a reminder that ' . $asset->name . ' (' . $client->name . ') is due for renewal on ' . $renewalDate . '.',
+                            '',
+                            'Please confirm renewal or contact us to discuss your options before the expiry date.',
+                            '',
+                            'Regards,',
+                            'Renewal Coordination Team',
+                        ]);
+                    }
+                }
+
+                return [
+                    'contract'      => $contract,
+                    'depId'         => $depId,
+                    'txId'          => session('onboarding_fast_track_tx'),
+                    'hasCredential' => DB::table('user_gmail_credentials')->where('user_id', $userId)->exists(),
+                    'outcome'       => $contract?->fastTrackOutcome() ?? [],
+                    'personaSample' => $sample,
+                    'persona'       => $persona,
+                ];
+            })(),
 
             default => [],
         };
