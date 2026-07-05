@@ -329,6 +329,13 @@
     @include('admin.messaging-tpl-card', ['tpl' => $tpl, 'badge' => 'tpl-badge tpl-badge-pl', 'badgeText' => 'Platform'])
     @endforeach
 
+    {{-- ── Memory Enrichment ── --}}
+    <div class="tpl-group-label">Memory Enrichment</div>
+    <p style="font-size:11px;color:var(--text-muted);margin-bottom:10px">Platform-scoped. Fires Day 1, 3, and 7 after onboarding for tenants whose deployed workers use memory but haven't reached the health threshold (5 complete records). Stops automatically once healthy.</p>
+    @foreach($templates->where('sequence','memory_enrichment') as $tpl)
+    @include('admin.messaging-tpl-card', ['tpl' => $tpl, 'badge' => 'tpl-badge', 'badgeText' => 'Memory', 'badgeStyle' => 'background:rgba(var(--accent-rgb),0.1);color:var(--accent-text);border:1px solid rgba(var(--accent-rgb),0.3)'])
+    @endforeach
+
     {{-- ── Newsletter ── --}}
     <div class="tpl-group-label">Newsletter — 90-Day Arc</div>
     <p style="font-size:11px;color:var(--text-muted);margin-bottom:10px">Goes to all active tenants. Day 7, 14, 30, 60, 90 milestones. One send per key, ever.</p>
