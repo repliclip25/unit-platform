@@ -99,6 +99,11 @@ Artisan::command('policy:enforce', function () {
     $this->table(['Action', 'User ID', 'Policy', 'Reason'], $results);
 })->purpose('Evaluate all tenants and auto-block policy violations');
 
+// ── Memory enrichment nudges ──────────────────────────────────────────────────
+
+// Runs daily at 9AM — sends Day 1, Day 3, Day 7 nudges to tenants below memory health threshold
+Schedule::command('ava:nudge-memory')->dailyAt('09:00')->name('ava.memory.nudge');
+
 // ── Onboarding email sequence ─────────────────────────────────────────────────
 
 // Runs daily at 9AM — sends Day 3 and Day 7 contextual nudges based on activation state

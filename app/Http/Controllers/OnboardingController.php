@@ -205,6 +205,70 @@ class OnboardingController extends Controller
             ->with('success', 'Sample data loaded — your worker can now run a full live test.');
     }
 
+    // ── Quick-add a single client + contact + asset inline during onboarding ────
+
+    public function quickAddMemory(Request $request)
+    {
+        $request->validate([
+            'client_name'    => 'required|string|max:120',
+            'contact_name'   => 'required|string|max:120',
+            'contact_email'  => 'required|email|max:200',
+            'asset_name'     => 'required|string|max:200',
+            'asset_type'     => 'nullable|string|max:60',
+            'renewal_date'   => 'nullable|date',
+        ]);
+
+        $userId = auth()->id();
+
+        // Reuse existing client by exact name so repeated adds don't duplicate
+        $clientId = DB::table('clients')
+            ->where('user_id', $userId)
+            ->whereNull('deleted_at')
+            ->where('name', $request->client_name)
+            ->value('id');
+
+        if (!$clientId) {
+            $clientId = DB::table('clients')->insertGetId([
+                'user_id'    => $userId,
+                'name'       => $request->client_name,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
+
+        // Add contact if this email isn't already linked to this client
+        $contactExists = DB::table('contacts')
+            ->where('user_id', $userId)
+            ->where('client_id', $clientId)
+            ->where('email', $request->contact_email)
+            ->whereNull('deleted_at')
+            ->exists();
+
+        if (!$contactExists) {
+            DB::table('contacts')->insert([
+                'user_id'    => $userId,
+                'client_id'  => $clientId,
+                'name'       => $request->contact_name,
+                'email'      => $request->contact_email,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
+
+        DB::table('assets')->insert([
+            'user_id'      => $userId,
+            'client_id'    => $clientId,
+            'name'         => $request->asset_name,
+            'type'         => $request->asset_type ?: 'policy',
+            'renewal_date' => $request->renewal_date ?: null,
+            'created_at'   => now(),
+            'updated_at'   => now(),
+        ]);
+
+        return redirect()->route('onboarding.step', 'memory')
+            ->with('quick_add_success', "Added {$request->client_name} — keep going or continue when ready.");
+    }
+
     // ── Private step handlers ─────────────────────────────────────────────────
 
     private function handleWelcome(Request $request)
@@ -609,6 +673,7 @@ class OnboardingController extends Controller
                     'assetCount'        => $assets->flatten(1)->count(),
                     'sampleClients'     => $sampleClients,
                     'platformTemplates' => DB::table('email_templates')->whereNull('user_id')->where('worker_slug', $slug)->get(),
+                    'memoryHealth'      => \App\Platform\Services\MemoryHealthService::score($userId),
                 ];
             })(),
 

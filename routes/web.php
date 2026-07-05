@@ -92,6 +92,7 @@ Route::middleware(['auth'])->group(function () {
 
     // Memory seed (called from memory step UI, not a step handler)
     Route::post('/onboarding/memory/seed',         [\App\Http\Controllers\OnboardingController::class, 'seedMemory'])->name('onboarding.memory.seed');
+    Route::post('/onboarding/memory/quickadd',     [\App\Http\Controllers\OnboardingController::class, 'quickAddMemory'])->name('onboarding.memory.quickadd');
 
     Route::get('/onboarding/complete',             [\App\Http\Controllers\OnboardingController::class, 'complete'])->name('onboarding.complete');
     Route::get('/onboarding/skip',                 [\App\Http\Controllers\OnboardingController::class, 'skip'])->name('onboarding.skip');
