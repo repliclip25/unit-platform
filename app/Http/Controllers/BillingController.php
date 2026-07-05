@@ -137,6 +137,32 @@ class BillingController extends Controller
             $user->createAsStripeCustomer(['name' => $user->name, 'email' => $user->email]);
         }
 
+        // Apply any accrued referral credit balance as a Stripe customer balance credit.
+        // Stripe deducts it automatically from the next invoice — no coupon required.
+        $creditBalance = (float) DB::table('users')->where('id', $user->id)->value('referral_credit_balance');
+        if ($creditBalance > 0) {
+            try {
+                $stripe = new \Stripe\StripeClient(config('cashier.secret'));
+                // Stripe customer balance is in cents, negative = credit
+                $stripe->customers->update($user->stripe_id, [
+                    'balance' => (int) round(-$creditBalance * 100),
+                ]);
+                DB::table('users')->where('id', $user->id)->update([
+                    'referral_credit_balance' => 0,
+                    'updated_at'              => now(),
+                ]);
+                \Illuminate\Support\Facades\Log::info('Referral credit applied to Stripe customer', [
+                    'user_id'    => $user->id,
+                    'credit_usd' => $creditBalance,
+                ]);
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::error('Failed to apply referral credit to Stripe', [
+                    'user_id' => $user->id,
+                    'error'   => $e->getMessage(),
+                ]);
+            }
+        }
+
         session(['pending_plan_slug_' . $deploymentId => $planSlug]);
 
         // If this deployment is still in trial, carry over the remaining days so Stripe shows
@@ -262,6 +288,72 @@ class BillingController extends Controller
         $planLabel = ucfirst($planSlug);
         return redirect()->route('workers.show', $deploymentId)
             ->with('success', ucfirst($deployment->worker_slug) . " {$planLabel} plan activated. You're fully operational.");
+    }
+
+    // Re-activate a canceled deployment — sends user back through checkout for a fresh subscription.
+    // Workers canceled via Stripe portal land here via the worker-detail "Reactivate" button.
+    public function reactivate(Request $request, int $deploymentId)
+    {
+        $user       = $request->user();
+        $deployment = DB::table('worker_deployments')
+            ->where('id', $deploymentId)
+            ->where('user_id', $user->id)
+            ->firstOrFail();
+
+        $billing = DB::table('deployment_billing')
+            ->where('deployment_id', $deploymentId)
+            ->first();
+
+        if (!$billing || $billing->status !== 'canceled') {
+            return back()->with('error', 'This worker is not canceled.');
+        }
+
+        $planSlug = $request->input('plan', 'pro'); // default to pro on reactivation
+
+        $pricing = DB::table('worker_pricing')
+            ->where('worker_slug', $deployment->worker_slug)
+            ->where('plan_slug', $planSlug)
+            ->where('active', true)
+            ->where('is_trial_plan', false)
+            ->first();
+
+        if (!$pricing) {
+            return back()->with('error', 'Plan not found.');
+        }
+
+        $billingMode = $pricing->billing_mode ?? 'test';
+        $priceId     = $billingMode === 'live'
+            ? ($pricing->stripe_flat_price_id ?? null)
+            : ($pricing->stripe_test_price_id ?? $pricing->stripe_flat_price_id ?? null);
+
+        if (!$priceId) {
+            return back()->with('error', 'No Stripe price configured for this plan.');
+        }
+
+        if (!$user->stripe_id) {
+            $user->createAsStripeCustomer(['name' => $user->name, 'email' => $user->email]);
+        }
+
+        // Restore worker to active state before checkout so pipeline is unblocked on success
+        DB::table('worker_deployments')->where('id', $deploymentId)->update([
+            'status'     => 'active',
+            'updated_at' => now(),
+        ]);
+
+        session(['pending_plan_slug_' . $deploymentId => $planSlug]);
+
+        $existingSubId = DB::table('users')->where('id', $user->id)->value('stripe_subscription_id');
+        $builder = $existingSubId
+            ? $user->newSubscriptionItem($priceId)
+            : $user->newSubscription('platform', $priceId);
+        $builder = $builder->allowPromotionCodes();
+
+        $session = $builder->checkout([
+            'success_url' => route('billing.success', $deploymentId),
+            'cancel_url'  => route('workers.show', $deploymentId),
+        ]);
+
+        return redirect($session->url);
     }
 
     // Billing portal — manage payment method, invoices, cancel

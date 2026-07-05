@@ -225,9 +225,10 @@ Route::middleware(['auth', 'verified', 'onboarded', 'not-pending-del'])->group(f
 
     // Billing
     Route::get('/billing', [BillingController::class, 'index'])->name('billing');
-    Route::get('/billing/checkout/{deployment}', [BillingController::class, 'checkout'])->name('billing.checkout');
-    Route::get('/billing/success/{deployment}', [BillingController::class, 'success'])->name('billing.success');
-    Route::get('/billing/portal', [BillingController::class, 'portal'])->name('billing.portal');
+    Route::get('/billing/checkout/{deployment}',    [BillingController::class, 'checkout'])->name('billing.checkout');
+    Route::get('/billing/success/{deployment}',     [BillingController::class, 'success'])->name('billing.success');
+    Route::post('/billing/reactivate/{deployment}', [BillingController::class, 'reactivate'])->name('billing.reactivate');
+    Route::get('/billing/portal',                   [BillingController::class, 'portal'])->name('billing.portal');
     Route::get('/billing/invoice/{id}', function (string $id) {
         return request()->user()->downloadInvoice($id);
     })->name('billing.invoice');

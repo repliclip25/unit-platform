@@ -310,12 +310,42 @@ class AdminTenantController extends Controller
 
     public function resetTrial(int $id, Request $request)
     {
-        $depId = $request->input('deployment_id');
-        DB::table('deployment_billing')
+        $depId    = $request->input('deployment_id');
+        $days     = max(1, (int) $request->input('trial_days', 30));
+        $newLimit = (int) $request->input('trial_limit', 25);
+
+        $query = DB::table('deployment_billing')
             ->where('user_id', $id)
-            ->when($depId, fn($q) => $q->where('deployment_id', $depId))
-            ->update(['trial_transactions_used' => 0, 'updated_at' => now()]);
-        return back()->with('success', 'Trial counter reset.');
+            ->when($depId, fn($q) => $q->where('deployment_id', $depId));
+
+        $query->update([
+            'status'                   => 'trial',
+            'trial_transactions_used'  => 0,
+            'trial_transactions_limit' => $newLimit,
+            'trial_ends_at'            => now()->addDays($days),
+            'past_due_since'           => null,
+            'updated_at'               => now(),
+        ]);
+
+        // Also reset the trial ledger so re-deploys don't hit trial_exhausted immediately
+        if ($depId) {
+            $workerSlug = DB::table('deployment_billing')
+                ->where('deployment_id', $depId)
+                ->value('worker_slug');
+            if ($workerSlug) {
+                DB::table('user_worker_trial_ledger')
+                    ->where('user_id', $id)
+                    ->where('worker_slug', $workerSlug)
+                    ->update([
+                        'used'             => 0,
+                        'granted'          => $newLimit,
+                        'trial_expires_at' => now()->addDays($days),
+                        'updated_at'       => now(),
+                    ]);
+            }
+        }
+
+        return back()->with('success', "Trial reset: {$newLimit} transactions · {$days} days.");
     }
 
     public function resetPassword(int $id, Request $request)

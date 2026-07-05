@@ -262,11 +262,18 @@
     {{-- ── System Notices — disconnected inbox, billing, stopped worker ────── --}}
     @php
         $watchInactiveInboxes = $connectedInboxes->where('watch_active', false);
-        $billingRow   = \Illuminate\Support\Facades\DB::table('deployment_billing')->where('deployment_id', $dep->id)->first();
-        $billingAlert = $billingRow && $billingRow->status === 'past_due';
+        $billingRow    = \Illuminate\Support\Facades\DB::table('deployment_billing')->where('deployment_id', $dep->id)->first();
+        $billingAlert  = $billingRow && $billingRow->status === 'past_due';
+        $isCanceled    = $billingRow && $billingRow->status === 'canceled';
         $workerStopped = in_array($dep->status, ['stopped', 'decommissioned']);
+        $subscriptionPlans = \Illuminate\Support\Facades\DB::table('worker_pricing')
+            ->where('worker_slug', $dep->worker_slug)
+            ->where('active', true)
+            ->where('is_trial_plan', false)
+            ->orderBy('sort_order')
+            ->get();
     @endphp
-    @if($watchInactiveInboxes->isNotEmpty() || $billingAlert || $workerStopped)
+    @if($watchInactiveInboxes->isNotEmpty() || $billingAlert || $workerStopped || $isCanceled)
     <div class="space-y-2 mb-4">
 
         @if($workerStopped)
@@ -283,6 +290,32 @@
                     Resume →
                 </button>
             </form>
+        </div>
+        @endif
+
+        @if($isCanceled)
+        <div class="rounded-2xl border overflow-hidden mb-2" style="background:rgba(0,0,0,0.35);border-color:rgba(241,211,98,0.2)">
+            <div class="px-5 py-4 border-b" style="background:rgba(241,211,98,0.04);border-color:rgba(241,211,98,0.12)">
+                <p class="font-bold text-sm" style="color:var(--accent)">Subscription Canceled</p>
+                <p class="text-xs mt-1" style="color:var(--text-muted)">
+                    This worker is stopped. Reactivate by choosing a plan — you'll go through a fresh checkout and your worker will resume immediately.
+                </p>
+            </div>
+            @if($subscriptionPlans->isNotEmpty())
+            <div class="px-5 py-4 flex flex-wrap gap-3">
+                @foreach($subscriptionPlans as $sp)
+                <form method="POST" action="{{ route('billing.reactivate', $dep->id) }}">
+                    @csrf
+                    <input type="hidden" name="plan" value="{{ $sp->plan_slug }}">
+                    <button type="submit" class="text-sm font-semibold px-4 py-2 rounded-lg border transition"
+                        style="{{ $sp->plan_slug === 'pro' ? 'background:var(--accent);color:#12100a;border-color:var(--accent)' : 'background:rgba(255,255,255,0.04);color:var(--text-primary);border-color:var(--border)' }}">
+                        {{ $sp->display_name }}
+                        @if($sp->monthly_flat_rate > 0) · ${{ number_format($sp->monthly_flat_rate, 0) }}/mo @else · Custom @endif
+                    </button>
+                </form>
+                @endforeach
+            </div>
+            @endif
         </div>
         @endif
 
