@@ -50,10 +50,10 @@
 
     {{-- Header --}}
     <div class="bg-gray-900 border border-gray-800 rounded-xl p-5 mb-4">
-        <div class="flex items-start justify-between gap-4">
-            <div>
+        <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+            <div class="min-w-0">
                 <div class="flex items-center gap-2 mb-2 flex-wrap">
-                    <span class="font-mono text-gray-500 text-sm">{{ $tx->tx_id }}</span>
+                    <span class="font-mono text-gray-500 text-xs">{{ $tx->tx_id }}</span>
                     @if($tx->priority)
                         <span class="text-xs px-2 py-0.5 rounded-full {{ in_array($tx->priority, ['High','Critical']) ? 'bg-amber-900 text-amber-300' : 'bg-gray-800 text-gray-400' }}">
                             {{ $tx->priority }}
@@ -64,7 +64,7 @@
                         <span class="text-xs px-2 py-0.5 rounded-full bg-yellow-900/40 text-yellow-400 border border-yellow-800/40">⚡ Fast Track Test</span>
                     @endif
                 </div>
-                <h2 class="text-white text-xl font-semibold">{{ $tx->category ?? 'Processing...' }}</h2>
+                <h2 class="text-white text-lg sm:text-xl font-semibold leading-snug">{{ $tx->category ?? 'Processing...' }}</h2>
                 @if($tx->worker_slug === 'nux' && $nuxRegister)
                     <p class="text-gray-400 text-sm mt-1">
                         {{ strtoupper($nuxRegister->source_platform ?? '') }} → {{ implode(', ', json_decode($nuxRegister->target_channels ?? '[]', true) ?: []) }} · {{ $nuxRegister->topic ?? '—' }}
@@ -77,9 +77,9 @@
                 <p class="text-gray-600 text-xs mt-1">{{ \Carbon\Carbon::parse($tx->created_at)->format('M j, Y · g:i A') }} · {{ $source }}</p>
             </div>
             @if($tx->gmail_draft_id)
-                <div class="text-right shrink-0">
+                <div class="sm:text-right shrink-0">
                     <p class="text-gray-500 text-xs mb-1">Gmail Draft</p>
-                    <p class="text-brand text-xs font-mono">{{ $tx->gmail_draft_id }}</p>
+                    <p class="text-brand text-xs font-mono break-all">{{ $tx->gmail_draft_id }}</p>
                     <p class="text-green-400 text-xs mt-1">✓ Saved in Gmail</p>
                 </div>
             @endif
@@ -90,30 +90,32 @@
     @if($isFailed)
     <div class="mb-4 rounded-xl border px-5 py-4
         {{ $failureType === 'infrastructure' ? 'bg-red-900/20 border-red-700/40' : 'bg-amber-900/20 border-amber-700/40' }}">
-        <div class="flex items-start gap-3">
-            <span class="{{ $failureType === 'infrastructure' ? 'text-red-400' : 'text-amber-400' }} mt-0.5 text-base shrink-0">
-                {{ $failureType === 'infrastructure' ? '✕' : '⚠' }}
-            </span>
-            <div class="flex-1">
-                @if($failureType === 'infrastructure')
-                    <p class="text-red-300 font-semibold text-sm mb-1">Infrastructure failure</p>
-                    <p class="text-gray-400 text-xs leading-relaxed">
-                        The pipeline job crashed before completing — likely a transient error (token expiry, queue restart, API timeout).
-                        <strong class="text-gray-300">Re-firing is safe</strong> — the original email will be re-processed from scratch.
-                    </p>
-                @endif
-                @if($failureType === 'data')
-                    <p class="text-amber-300 font-semibold text-sm mb-1">Data failure</p>
-                    <p class="text-gray-400 text-xs leading-relaxed">
-                        The pipeline ran but couldn't complete due to missing or mismatched data.
-                        @if($lowConfidence) Confidence was {{ $memory->confidence }}% — below the required threshold.@endif
-                        @if($unassigned) No client is linked to this asset.@endif
-                        <strong class="text-gray-300">Re-firing without fixing the underlying data will produce the same result.</strong>
-                    </p>
-                @endif
+        <div class="flex flex-col gap-3">
+            <div class="flex items-start gap-3">
+                <span class="{{ $failureType === 'infrastructure' ? 'text-red-400' : 'text-amber-400' }} mt-0.5 text-base shrink-0">
+                    {{ $failureType === 'infrastructure' ? '✕' : '⚠' }}
+                </span>
+                <div class="flex-1">
+                    @if($failureType === 'infrastructure')
+                        <p class="text-red-300 font-semibold text-sm mb-1">Infrastructure failure</p>
+                        <p class="text-gray-400 text-xs leading-relaxed">
+                            The pipeline job crashed before completing — likely a transient error (token expiry, queue restart, API timeout).
+                            <strong class="text-gray-300">Re-firing is safe</strong> — the original email will be re-processed from scratch.
+                        </p>
+                    @endif
+                    @if($failureType === 'data')
+                        <p class="text-amber-300 font-semibold text-sm mb-1">Data failure</p>
+                        <p class="text-gray-400 text-xs leading-relaxed">
+                            The pipeline ran but couldn't complete due to missing or mismatched data.
+                            @if($lowConfidence) Confidence was {{ $memory->confidence }}% — below the required threshold.@endif
+                            @if($unassigned) No client is linked to this asset.@endif
+                            <strong class="text-gray-300">Re-firing without fixing the underlying data will produce the same result.</strong>
+                        </p>
+                    @endif
+                </div>
             </div>
-            {{-- Action buttons inside banner --}}
-            <div class="flex flex-col items-end gap-2 shrink-0">
+            {{-- Action buttons --}}
+            <div class="flex flex-wrap items-center gap-2">
                 @if($failureType === 'infrastructure' && $canRefire)
                     <form method="POST" action="{{ route('transactions.refire', $tx->tx_id) }}">
                         @csrf
@@ -158,7 +160,7 @@
     </div>
     @endif
 
-    <div class="grid grid-cols-2 gap-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
 
         {{-- Left column --}}
         <div class="space-y-4">
@@ -367,7 +369,7 @@
 
     {{-- Footer actions --}}
     @if($canDismiss || $canDelete)
-    <div class="mt-6 pt-4 border-t border-gray-800 flex items-center justify-between">
+    <div class="mt-6 pt-4 border-t border-gray-800 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div class="flex items-center gap-3">
             @if($canDismiss)
             <form method="POST" action="{{ route('transactions.dismiss', $tx->tx_id) }}">
@@ -393,7 +395,7 @@
             </form>
             @endif
         </div>
-        <p class="text-gray-700 text-xs">{{ trim(($canDismiss && !$isFastTrack ? 'Dismiss removes from active queues · ' : '') . ($canDelete ? 'Delete permanently removes test data' : ''), ' · ') }}</p>
+        <p class="text-gray-700 text-xs hidden sm:block">{{ trim(($canDismiss && !$isFastTrack ? 'Dismiss removes from active queues · ' : '') . ($canDelete ? 'Delete permanently removes test data' : ''), ' · ') }}</p>
     </div>
     @endif
 
