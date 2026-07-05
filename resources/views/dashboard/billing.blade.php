@@ -114,7 +114,9 @@
                             <span class="text-xs px-2 py-0.5 rounded-full"
                                   style="background:var(--bg-raised);color:var(--text-secondary);border:1px solid var(--border)">
                                 {{ $activeTier->display_name }}
-                                @if($activeTier->monthly_flat_rate > 0)· ${{ number_format($activeTier->monthly_flat_rate, 0) }}/mo@endif
+                                @if($activeTier->monthly_flat_rate > 0)
+                                    · ${{ number_format($activeTier->monthly_flat_rate, 0) }}/mo
+                                @endif
                             </span>
                         @endif
                     </div>
