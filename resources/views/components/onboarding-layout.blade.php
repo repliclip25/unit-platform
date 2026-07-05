@@ -13,6 +13,18 @@
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
+        :root{
+            --accent:#f1d362;--accent-rgb:241,211,98;--accent-text:#f1d362;
+            --bg-card:#0d1117;--bg-surface:#111827;--bg-raised:#1a2230;
+            --border:rgba(255,255,255,0.10);--border-subtle:rgba(255,255,255,0.07);
+            --text-primary:#f9fafb;--text-secondary:#9ca3af;--text-muted:#6b7280;--text-faint:#374151;
+        }
+        [data-theme="light"]{
+            --accent:#f1d362;--accent-rgb:241,211,98;--accent-text:#7a5c00;
+            --bg-card:#ffffff;--bg-surface:#f8fafc;--bg-raised:#f1f5f9;
+            --border:rgba(0,0,0,0.09);--border-subtle:#e8e8e6;
+            --text-primary:#0f172a;--text-secondary:#475569;--text-muted:#64748b;--text-faint:#cbd5e1;
+        }
         body{background:#030712;color:#f9fafb;transition:background .25s,color .2s}
         [data-theme="light"] body,[data-theme="light"]>body{background:#f8fafc;color:#0f172a}
         [x-cloak]{display:none!important}

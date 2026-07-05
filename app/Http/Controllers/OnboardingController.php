@@ -395,7 +395,54 @@ class OnboardingController extends Controller
         }
 
         $txId    = 'onb-' . auth()->id() . '-' . now()->timestamp;
-        $payload = array_merge($contract->fastTrack(), [
+        $userId  = auth()->id();
+
+        // Build the payload — personalise with real memory if available
+        $basePayload = $contract->fastTrack();
+        $client = DB::table('clients')->where('user_id', $userId)->whereNull('deleted_at')->first();
+        if ($client) {
+            $contact = DB::table('contacts')
+                ->where('user_id', $userId)
+                ->where('client_id', $client->id)
+                ->whereNotNull('email')
+                ->whereNull('deleted_at')
+                ->first();
+            $asset = DB::table('assets')
+                ->where('user_id', $userId)
+                ->where('client_id', $client->id)
+                ->whereNull('deleted_at')
+                ->first();
+
+            if ($asset) {
+                $renewalDate  = $asset->renewal_date
+                    ? \Carbon\Carbon::parse($asset->renewal_date)->format('F j, Y')
+                    : now()->addDays(30)->format('F j, Y');
+                $contactName  = $contact?->name ?? 'Team';
+                $contactEmail = $contact?->email ?? null;
+
+                $basePayload['subject'] = 'Renewal Notice — ' . $asset->name . ' for ' . $client->name;
+                $basePayload['from']    = 'renewal-system@example.com';
+                $basePayload['raw_email'] = implode("\n", [
+                    'From: Renewal System <renewal-system@example.com>',
+                    'Subject: Renewal Notice — ' . $asset->name . ' for ' . $client->name,
+                    'Date: ' . now()->toRfc2822String(),
+                    '',
+                    'Dear ' . $contactName . ',',
+                    '',
+                    'This is a reminder that ' . $asset->name . ' (' . $client->name . ') is due for renewal on ' . $renewalDate . '.',
+                    '',
+                    'Please confirm renewal or contact us to discuss your options before the expiry date.',
+                    '',
+                    'Regards,',
+                    'Renewal Coordination Team',
+                ]);
+                if ($contactEmail) {
+                    $basePayload['to'] = $contactEmail;
+                }
+            }
+        }
+
+        $payload = array_merge($basePayload, [
             'fast_track' => true,
             '_queue'     => 'fast-track',
         ]);
@@ -456,40 +503,48 @@ class OnboardingController extends Controller
                 'updated_at'  => now(),
             ]);
 
-            // Seed demo memory so fast track has a real match to work with
-            $clientId = DB::table('clients')->insertGetId([
-                'user_id'         => $userId,
-                'name'            => 'Acme Corp',
-                'industry'        => 'Technology',
-                'role'            => 'Client',
-                'preferred_style' => 'Professional',
-                'notes'           => 'Demo client — matches the fast track sample email.',
-                'created_at'      => now(),
-                'updated_at'      => now(),
-            ]);
+            // Only seed demo memory when the user has no real clients yet.
+            // If they added data during the memory step, skip — we'll use their real data.
+            $hasRealClients = DB::table('clients')
+                ->where('user_id', $userId)
+                ->whereNull('deleted_at')
+                ->exists();
 
-            DB::table('contacts')->insert([
-                'user_id'    => $userId,
-                'client_id'  => $clientId,
-                'name'       => 'John Smith',
-                'role'       => 'IT Manager',
-                'email'      => 'john@acmecorp.com',
-                'is_primary' => true,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
+            if (!$hasRealClients) {
+                $clientId = DB::table('clients')->insertGetId([
+                    'user_id'         => $userId,
+                    'name'            => 'Acme Corp',
+                    'industry'        => 'Technology',
+                    'role'            => 'Client',
+                    'preferred_style' => 'Professional',
+                    'notes'           => 'Demo client — added for the fast track sample email.',
+                    'created_at'      => now(),
+                    'updated_at'      => now(),
+                ]);
 
-            DB::table('assets')->insert([
-                'user_id'      => $userId,
-                'client_id'    => $clientId,
-                'name'         => 'yourdomain.com',
-                'type'         => 'Domain',
-                'vendor'       => 'Domain Registrar',
-                'renewal_date' => now()->addDays(30)->toDateString(),
-                'notes'        => 'Demo asset — matches the fast track sample renewal email.',
-                'created_at'   => now(),
-                'updated_at'   => now(),
-            ]);
+                DB::table('contacts')->insert([
+                    'user_id'    => $userId,
+                    'client_id'  => $clientId,
+                    'name'       => 'John Smith',
+                    'role'       => 'IT Manager',
+                    'email'      => 'john@acmecorp.com',
+                    'is_primary' => true,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+
+                DB::table('assets')->insert([
+                    'user_id'      => $userId,
+                    'client_id'    => $clientId,
+                    'name'         => 'yourdomain.com',
+                    'type'         => 'Domain',
+                    'vendor'       => 'Domain Registrar',
+                    'renewal_date' => now()->addDays(30)->toDateString(),
+                    'notes'        => 'Demo asset — matches the fast track sample renewal email.',
+                    'created_at'   => now(),
+                    'updated_at'   => now(),
+                ]);
+            }
 
             // Copy platform default rules (AVA-specific — each worker manages its own rule tables)
             if ($workerSlug === 'ava') {

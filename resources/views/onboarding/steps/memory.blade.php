@@ -100,17 +100,20 @@
                        class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-yellow-400/50">
             </div>
             <div>
-                <label class="block text-xs text-gray-500 mb-1">Policy type</label>
+                @php
+                    $assetTypeOptions = match($persona) {
+                        'it_agency'        => ['domain' => 'Domain', 'ssl' => 'SSL Certificate', 'hosting' => 'Hosting Plan', 'saas' => 'SaaS Subscription', 'other' => 'Other'],
+                        'insurance_broker' => ['commercial_auto' => 'Commercial Auto', 'general_liability' => 'General Liability', 'workers_comp' => "Workers' Comp", 'property' => 'Property', 'umbrella' => 'Umbrella', 'professional' => 'Professional Liability', 'other' => 'Other'],
+                        'compliance'       => ['business_license' => 'Business License', 'permit' => 'Operating Permit', 'certification' => 'Certification', 'registration' => 'Trade Registration', 'other' => 'Other'],
+                        default            => ['service_contract' => 'Service Contract', 'vendor_agreement' => 'Vendor Agreement', 'membership' => 'Membership', 'warranty' => 'Warranty', 'other' => 'Other'],
+                    };
+                @endphp
+                <label class="block text-xs text-gray-500 mb-1">{{ ucfirst($personaCopy['asset']) }} type</label>
                 <select name="asset_type"
                         class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-gray-300 focus:outline-none focus:border-yellow-400/50">
-                    <option value="policy" {{ old('asset_type') === 'policy' ? 'selected' : '' }}>Policy</option>
-                    <option value="commercial_auto" {{ old('asset_type') === 'commercial_auto' ? 'selected' : '' }}>Commercial Auto</option>
-                    <option value="general_liability" {{ old('asset_type') === 'general_liability' ? 'selected' : '' }}>General Liability</option>
-                    <option value="workers_comp" {{ old('asset_type') === 'workers_comp' ? 'selected' : '' }}>Workers' Comp</option>
-                    <option value="property" {{ old('asset_type') === 'property' ? 'selected' : '' }}>Property</option>
-                    <option value="umbrella" {{ old('asset_type') === 'umbrella' ? 'selected' : '' }}>Umbrella</option>
-                    <option value="professional" {{ old('asset_type') === 'professional' ? 'selected' : '' }}>Professional Liability</option>
-                    <option value="other" {{ old('asset_type') === 'other' ? 'selected' : '' }}>Other</option>
+                    @foreach($assetTypeOptions as $val => $label)
+                    <option value="{{ $val }}" {{ old('asset_type') === $val ? 'selected' : '' }}>{{ $label }}</option>
+                    @endforeach
                 </select>
             </div>
             <div>
