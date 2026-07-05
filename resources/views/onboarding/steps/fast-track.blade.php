@@ -132,12 +132,23 @@
     <p class="text-gray-400 text-sm leading-relaxed">You've connected Gmail and loaded your clients. Now fire a renewal email through AVA's pipeline and watch her classify it, match it to memory, and draft a response — in real time.</p>
 </div>
 
-@if($isPersonalised)
-<div class="mb-4 flex items-center gap-2 bg-green-500/10 border border-green-500/20 rounded-xl px-4 py-3">
-    <svg class="w-4 h-4 text-green-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-    <p class="text-green-400 text-sm">Pre-filled with your actual client data — this is a real test, not a demo.</p>
-</div>
-@endif
+@php
+    // Parse the raw email into header fields + body for the inbox UI
+    $rawLines     = explode("\n", str_replace("\r\n", "\n", trim($sampleRaw)));
+    $parsedFrom    = '';
+    $parsedSubject = '';
+    $parsedDate    = '';
+    $bodyStartIdx  = count($rawLines);
+    foreach ($rawLines as $i => $line) {
+        if (trim($line) === '') { $bodyStartIdx = $i + 1; break; }
+        if (str_starts_with($line, 'From:'))    $parsedFrom    = trim(substr($line, 5));
+        if (str_starts_with($line, 'Subject:')) $parsedSubject = trim(substr($line, 8));
+        if (str_starts_with($line, 'Date:'))    $parsedDate    = trim(substr($line, 5));
+    }
+    $emailBody = implode("\n", array_slice($rawLines, $bodyStartIdx));
+    // Header lines to reconstruct the full raw email on submit
+    $headerLines = implode("\n", array_slice($rawLines, 0, $bodyStartIdx - 1));
+@endphp
 
 @if(session('fast_track_error'))
 <div class="bg-red-500/10 border border-red-500/30 rounded-xl px-5 py-4 mb-5">
@@ -158,14 +169,59 @@
 
 <form method="POST" action="{{ route('onboarding.step.handle', 'fast-track') }}" id="ft-form">
     @csrf
-    <div class="mb-5">
-        <label class="block text-gray-400 text-xs font-semibold uppercase tracking-widest mb-2">
-            {{ $isPersonalised ? 'Your renewal email — edit if needed' : 'Sample email — edit to personalise' }}
-        </label>
-        <textarea name="sample_email" rows="8"
-            class="w-full bg-gray-900 border border-gray-800 focus:border-yellow-400/50 rounded-xl px-4 py-3 text-sm text-gray-300 leading-relaxed font-mono resize-none outline-none transition-colors"
-            placeholder="Paste or type an email to test...">{{ $sampleRaw }}</textarea>
-        <p class="text-gray-700 text-xs mt-1.5">This email will be fed directly into your worker's pipeline — exactly as if it arrived in your Gmail inbox.</p>
+    {{-- Hidden field carries the reconstructed full raw email --}}
+    <input type="hidden" name="sample_email" id="sample_email_full" value="{{ htmlspecialchars($sampleRaw) }}">
+    {{-- Header block as hidden data for reconstruction --}}
+    <input type="hidden" id="email_header_lines" value="{{ htmlspecialchars($headerLines) }}">
+
+    {{-- ── Email inbox card ── --}}
+    <div class="mb-5 rounded-2xl overflow-hidden border border-gray-800 bg-gray-950">
+
+        {{-- Window chrome --}}
+        <div class="flex items-center justify-between px-4 py-3 border-b border-gray-800 bg-gray-900">
+            <div class="flex items-center gap-1.5">
+                <div class="w-3 h-3 rounded-full bg-red-500/70"></div>
+                <div class="w-3 h-3 rounded-full bg-yellow-400/70"></div>
+                <div class="w-3 h-3 rounded-full bg-green-500/70"></div>
+            </div>
+            <div class="flex items-center gap-2">
+                <div class="w-2 h-2 rounded-full {{ $isPersonalised ? 'bg-green-500' : 'bg-gray-600' }}"></div>
+                <span class="text-xs font-medium {{ $isPersonalised ? 'text-green-400' : 'text-gray-500' }}">
+                    {{ $isPersonalised ? 'Using your client data' : 'Sample email' }}
+                </span>
+            </div>
+            <div class="w-16"></div>{{-- spacer --}}
+        </div>
+
+        {{-- Email header fields --}}
+        <div class="px-5 pt-4 pb-3 border-b border-gray-800/60 space-y-2">
+            <div class="flex items-start gap-3">
+                <span class="text-gray-600 text-xs w-14 pt-0.5 shrink-0">From</span>
+                <span class="text-gray-300 text-sm truncate">{{ $parsedFrom ?: 'Renewal System <renewals@example.com>' }}</span>
+            </div>
+            <div class="flex items-start gap-3">
+                <span class="text-gray-600 text-xs w-14 pt-0.5 shrink-0">To</span>
+                <span class="text-gray-400 text-sm truncate">{{ auth()->user()->email }}</span>
+            </div>
+            <div class="flex items-start gap-3">
+                <span class="text-gray-600 text-xs w-14 pt-0.5 shrink-0">Subject</span>
+                <span class="text-white text-sm font-medium truncate">{{ $parsedSubject ?: 'Domain Renewal Notice' }}</span>
+            </div>
+        </div>
+
+        {{-- Editable body --}}
+        <textarea id="email_body_edit" rows="9"
+            class="w-full bg-gray-950 px-5 py-4 text-sm text-gray-300 leading-relaxed font-mono outline-none resize-y block"
+            placeholder="Type or paste the email body here..."
+            style="min-height:180px">{{ $emailBody }}</textarea>
+
+        {{-- Footer hint --}}
+        <div class="px-5 py-2.5 border-t border-gray-800/60 flex items-center gap-2">
+            <svg class="w-3.5 h-3.5 text-gray-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+            </svg>
+            <p class="text-gray-600 text-xs">AVA will process this exactly as if it arrived in your Gmail inbox — no real email is sent.</p>
+        </div>
     </div>
 
     <button type="submit" id="run-btn"
@@ -178,6 +234,22 @@
 <a href="{{ route('onboarding.complete') }}" class="block text-center text-gray-600 hover:text-gray-400 text-sm transition-colors">
     Skip — go straight to dashboard
 </a>
+
+<script>
+// Reconstruct full raw email from headers + edited body before submit
+(function() {
+    const bodyEdit   = document.getElementById('email_body_edit');
+    const fullField  = document.getElementById('sample_email_full');
+    const headerLines = document.getElementById('email_header_lines').value;
+
+    function sync() {
+        fullField.value = headerLines + "\n\n" + bodyEdit.value;
+    }
+    bodyEdit.addEventListener('input', sync);
+    document.getElementById('ft-form').addEventListener('submit', sync);
+    sync(); // initial sync
+})();
+</script>
 @endif
 
 </x-onboarding-layout>

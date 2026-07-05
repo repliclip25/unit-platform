@@ -760,6 +760,25 @@ class OnboardingController extends Controller
                 $userId  = auth()->id();
                 $persona = DB::table('users')->where('id', $userId)->value('persona');
 
+                // Auto-clean Acme Corp demo data if the user has added real clients
+                $hasRealClients = DB::table('clients')
+                    ->where('user_id', $userId)
+                    ->whereNull('deleted_at')
+                    ->where('name', '!=', 'Acme Corp')
+                    ->exists();
+                if ($hasRealClients) {
+                    $demo = DB::table('clients')
+                        ->where('user_id', $userId)
+                        ->where('name', 'Acme Corp')
+                        ->whereNull('deleted_at')
+                        ->first();
+                    if ($demo) {
+                        DB::table('assets')->where('user_id', $userId)->where('client_id', $demo->id)->delete();
+                        DB::table('contacts')->where('user_id', $userId)->where('client_id', $demo->id)->delete();
+                        DB::table('clients')->where('id', $demo->id)->delete();
+                    }
+                }
+
                 // Try to build a personalised sample from real memory
                 $sample  = null;
                 $client  = DB::table('clients')->where('user_id', $userId)->whereNull('deleted_at')->first();
