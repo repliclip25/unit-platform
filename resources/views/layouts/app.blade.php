@@ -719,10 +719,20 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         input.placeholder = current.value === '' ? (current.label || 'Select…') : 'Select…';
         input.autocomplete = 'off';
         input.className   = sel.className.replace('bg-gray-800','').replace('bg-gray-900','')
-                            + ' ss-input w-full bg-gray-800 text-white rounded-lg px-3 border border-gray-700 focus:outline-none focus:border-yellow-500 placeholder-gray-600';
-        // Preserve explicit py- from original select or fallback
+                            + ' ss-input w-full bg-gray-800 text-white rounded-lg border border-gray-700 focus:outline-none focus:border-yellow-500 placeholder-gray-600';
+        // Preserve explicit py- from original select or fallback; leave room for chevron button
         if (!input.className.includes('py-')) input.className += ' py-2';
+        input.style.paddingLeft  = '12px';
+        input.style.paddingRight = '32px';
         wrap.insertBefore(input, sel);
+
+        // Clickable chevron button — opens/closes dropdown without clearing text
+        const chevron = document.createElement('button');
+        chevron.type      = 'button';
+        chevron.tabIndex  = -1;
+        chevron.innerHTML = '<svg width="10" height="6" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+        chevron.style.cssText = 'position:absolute;right:0;top:0;bottom:0;width:32px;display:flex;align-items:center;justify-content:center;background:none;border:none;cursor:pointer;color:var(--text-muted,#888);pointer-events:auto';
+        wrap.appendChild(chevron);
 
         // Dropdown
         const drop = document.createElement('div');
@@ -731,9 +741,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         drop.style.top       = '100%';
         wrap.appendChild(drop);
 
-        function renderDrop(q) {
+        let isSearching = false; // true while user is typing — filters; false = show all
+
+        function renderDrop(q, filterMode) {
             const lower   = q.toLowerCase();
-            const matches = options.filter(o => o.label.toLowerCase().includes(lower));
+            const matches = filterMode
+                ? options.filter(o => o.label.toLowerCase().includes(lower))
+                : options;
             drop.innerHTML = matches.slice(0, 80).map(o =>
                 `<div class="ss-opt px-3 py-2 text-sm cursor-pointer hover:bg-gray-700 ${o.value === sel.value ? 'text-yellow-400' : (o.value === '' ? 'text-gray-500' : 'text-white')}"
                     data-val="${o.value}" data-lbl="${o.label.replace(/"/g,'&quot;')}">${o.label}</div>`
@@ -744,18 +758,45 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             drop.querySelectorAll('.ss-opt').forEach(opt => {
                 opt.addEventListener('mousedown', e => {
                     e.preventDefault();
-                    sel.value    = opt.dataset.val;
-                    input.value  = opt.dataset.val === '' ? '' : opt.dataset.lbl;
+                    sel.value         = opt.dataset.val;
+                    input.value       = opt.dataset.val === '' ? '' : opt.dataset.lbl;
                     input.placeholder = opt.dataset.val === '' ? opt.dataset.lbl : 'Select…';
+                    isSearching       = false;
                     drop.classList.add('hidden');
                     sel.dispatchEvent(new Event('change', { bubbles: true }));
                 });
             });
         }
 
-        input.addEventListener('focus', () => { renderDrop(input.value); drop.classList.remove('hidden'); });
-        input.addEventListener('input', () => renderDrop(input.value));
-        input.addEventListener('blur',  () => setTimeout(() => drop.classList.add('hidden'), 160));
+        function openDrop() {
+            isSearching = false;
+            renderDrop('', false); // always show all on open
+            drop.classList.remove('hidden');
+        }
+
+        chevron.addEventListener('mousedown', e => {
+            e.preventDefault();
+            if (!drop.classList.contains('hidden')) {
+                drop.classList.add('hidden');
+            } else {
+                input.focus();
+                openDrop();
+            }
+        });
+
+        input.addEventListener('focus', () => { openDrop(); });
+        input.addEventListener('input', () => { isSearching = true; renderDrop(input.value, true); drop.classList.remove('hidden'); });
+        input.addEventListener('blur',  () => {
+            setTimeout(() => {
+                drop.classList.add('hidden');
+                // Restore display label if user blurred without selecting
+                if (isSearching) {
+                    const chosen = options.find(o => o.value === sel.value);
+                    input.value  = (chosen && chosen.value !== '') ? chosen.label : '';
+                    isSearching  = false;
+                }
+            }, 160);
+        });
     }
 
     function enhanceAll() {

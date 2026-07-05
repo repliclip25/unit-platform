@@ -76,6 +76,8 @@
 .wf-sel-wrap::after { content:'';position:absolute;right:10px;top:50%;transform:translateY(-50%);
     width:0;height:0;border-left:4px solid transparent;border-right:4px solid transparent;
     border-top:5px solid var(--text-muted);pointer-events:none }
+/* ss-wrap (JS-enhanced searchable select) provides its own chevron button */
+.wf-sel-wrap:has(.ss-wrap)::after { display:none }
 .wf-color-row { display:flex;gap:8px;align-items:center }
 .wf-swatch { width:32px;height:32px;border-radius:7px;border:1px solid var(--border);cursor:pointer;padding:2px;background:none;flex-shrink:0 }
 .wf-verify-row { display:flex;gap:7px;align-items:flex-start }
