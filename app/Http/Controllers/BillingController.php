@@ -13,7 +13,6 @@ class BillingController extends Controller
         $user        = $request->user();
         $deployments = DB::table('worker_deployments')
             ->where('user_id', $user->id)
-            ->whereIn('status', ['active', 'paused', 'stopped'])
             ->get();
 
         $billingRecords = DB::table('deployment_billing')
@@ -21,20 +20,29 @@ class BillingController extends Controller
             ->get()
             ->keyBy('deployment_id');
 
-        // Subscription plans only — trial plans are never shown as upgrade options
-        $pricingTiers = DB::table('worker_pricing')
-            ->where('active', true)
-            ->where('is_trial_plan', false)
-            ->orderBy('sort_order')
-            ->get()
-            ->groupBy('worker_slug');
+        // Subscription plans only — trial plans never shown as upgrade options
+        try {
+            $pricingTiers = DB::table('worker_pricing')
+                ->where('active', true)
+                ->where('is_trial_plan', false)
+                ->orderBy('sort_order')
+                ->get()
+                ->groupBy('worker_slug');
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('BillingController: pricingTiers query failed', ['error' => $e->getMessage()]);
+            $pricingTiers = collect();
+        }
 
-        $promotions = DB::table('platform_promotions')
-            ->where('active', true)
-            ->where(function ($q) { $q->whereNull('expires_at')->orWhere('expires_at', '>', now()); })
-            ->where(function ($q) { $q->whereNull('starts_at')->orWhere('starts_at', '<=', now()); })
-            ->whereNull('code')
-            ->get();
+        try {
+            $promotions = DB::table('platform_promotions')
+                ->where('active', true)
+                ->where(function ($q) { $q->whereNull('expires_at')->orWhere('expires_at', '>', now()); })
+                ->where(function ($q) { $q->whereNull('starts_at')->orWhere('starts_at', '<=', now()); })
+                ->whereNull('code')
+                ->get();
+        } catch (\Throwable $e) {
+            $promotions = collect();
+        }
 
         try {
             $invoices = $user->stripe_id ? $user->invoices() : collect();
@@ -42,16 +50,26 @@ class BillingController extends Controller
             $invoices = collect();
         }
 
-        $policyViolations = \App\Platform\Services\PolicyEngine::evaluateAll($user->id);
+        try {
+            $policyViolations = \App\Platform\Services\PolicyEngine::evaluateAll($user->id);
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('BillingController: policyViolations failed', ['error' => $e->getMessage()]);
+            $policyViolations = [];
+        }
 
-        // Value metric — total completed emails per deployment (all-time), for the value clock
-        $emailsProcessed = DB::table('transactions')
-            ->where('user_id', $user->id)
-            ->whereIn('status', ['draft_ready', 'approved', 'sent'])
-            ->selectRaw('deployment_id, COUNT(*) as total')
-            ->groupBy('deployment_id')
-            ->get()
-            ->keyBy('deployment_id');
+        // Value metric — total completed emails per deployment (all-time)
+        try {
+            $emailsProcessed = DB::table('transactions')
+                ->where('user_id', $user->id)
+                ->whereIn('status', ['draft_ready', 'approved', 'sent'])
+                ->selectRaw('deployment_id, COUNT(*) as total')
+                ->groupBy('deployment_id')
+                ->get()
+                ->keyBy('deployment_id');
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('BillingController: emailsProcessed query failed', ['error' => $e->getMessage()]);
+            $emailsProcessed = collect();
+        }
 
         return view('dashboard.billing', compact(
             'deployments', 'billingRecords', 'pricingTiers', 'promotions',
