@@ -13,7 +13,7 @@ class BillingController extends Controller
         $user        = $request->user();
         $deployments = DB::table('worker_deployments')
             ->where('user_id', $user->id)
-            ->whereIn('status', ['active', 'paused'])
+            ->whereIn('status', ['active', 'paused', 'stopped'])
             ->get();
 
         $billingRecords = DB::table('deployment_billing')
@@ -21,66 +21,20 @@ class BillingController extends Controller
             ->get()
             ->keyBy('deployment_id');
 
-        // Load all tiers, group by worker_slug
-        $allPricing = DB::table('worker_pricing')->where('active', true)->orderBy('sort_order')->get();
-        $pricing = $allPricing->keyBy('worker_slug'); // legacy compat — first row per worker
-        $pricingTiers = $allPricing->groupBy('worker_slug'); // all tiers per worker
+        // Subscription plans only — trial plans are never shown as upgrade options
+        $pricingTiers = DB::table('worker_pricing')
+            ->where('active', true)
+            ->where('is_trial_plan', false)
+            ->orderBy('sort_order')
+            ->get()
+            ->groupBy('worker_slug');
 
         $promotions = DB::table('platform_promotions')
             ->where('active', true)
             ->where(function ($q) { $q->whereNull('expires_at')->orWhere('expires_at', '>', now()); })
             ->where(function ($q) { $q->whereNull('starts_at')->orWhere('starts_at', '<=', now()); })
-            ->whereNull('code') // auto-applied only
+            ->whereNull('code')
             ->get();
-
-        $monthlyUsage = DB::table('usage_events')
-            ->where('user_id', $user->id)
-            ->whereYear('created_at', now()->year)
-            ->whereMonth('created_at', now()->month)
-            ->selectRaw('SUM(cost_usd) as total_cost, SUM(tokens_input + tokens_output) as total_tokens')
-            ->first();
-
-        // Per-worker spend this month (total)
-        $workerSpend = DB::table('usage_events')
-            ->where('user_id', $user->id)
-            ->whereYear('created_at', now()->year)
-            ->whereMonth('created_at', now()->month)
-            ->groupBy('deployment_id')
-            ->selectRaw('deployment_id, SUM(cost_usd) as cost, SUM(tokens_input+tokens_output) as tokens')
-            ->get()->keyBy('deployment_id');
-
-        // Per-worker, per-stage-type breakdown (pipeline vs testing vs fast-track)
-        $testStages     = ['draft_email_test', 'memory_test', 'classify_test', 'prompt_test', 'fast_track_test'];
-        $pipelineStages = ['read', 'classify', 'memory', 'draft', 'select_template', 'log', 'push'];
-        $workerStageBreakdown = DB::table('usage_events')
-            ->where('user_id', $user->id)
-            ->whereYear('created_at', now()->year)
-            ->whereMonth('created_at', now()->month)
-            ->whereNotNull('stage')
-            ->groupBy('deployment_id', 'stage')
-            ->selectRaw('deployment_id, stage, SUM(cost_usd) as cost, SUM(tokens_input+tokens_output) as tokens, COUNT(*) as calls')
-            ->get()
-            ->groupBy('deployment_id');
-
-        // Per-stage breakdown (platform-wide, for the chart)
-        $stageBreakdown = DB::table('usage_events')
-            ->where('user_id', $user->id)
-            ->whereYear('created_at', now()->year)
-            ->whereMonth('created_at', now()->month)
-            ->whereNotNull('stage')
-            ->groupBy('stage')
-            ->selectRaw('stage, SUM(cost_usd) as cost, SUM(tokens_input+tokens_output) as tokens, COUNT(*) as calls')
-            ->orderByRaw('SUM(cost_usd) DESC')
-            ->get();
-
-        // Daily spend last 30 days
-        $dailySpend = DB::table('usage_events')
-            ->where('user_id', $user->id)
-            ->where('created_at', '>=', now()->subDays(29)->startOfDay())
-            ->selectRaw('DATE(created_at) as day, SUM(cost_usd) as cost')
-            ->groupBy('day')
-            ->orderBy('day')
-            ->pluck('cost', 'day');
 
         try {
             $invoices = $user->stripe_id ? $user->invoices() : collect();
@@ -88,14 +42,11 @@ class BillingController extends Controller
             $invoices = collect();
         }
 
-        $spendCap        = (float) ($user->monthly_spend_cap ?? 0);
         $policyViolations = \App\Platform\Services\PolicyEngine::evaluateAll($user->id);
 
         return view('dashboard.billing', compact(
-            'deployments', 'billingRecords', 'pricing', 'pricingTiers', 'promotions',
-            'monthlyUsage', 'invoices', 'workerSpend', 'stageBreakdown',
-            'workerStageBreakdown', 'testStages', 'pipelineStages',
-            'dailySpend', 'spendCap', 'policyViolations'
+            'deployments', 'billingRecords', 'pricingTiers', 'promotions',
+            'invoices', 'policyViolations'
         ));
     }
 
