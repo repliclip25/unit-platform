@@ -431,6 +431,23 @@ class WorkerController extends Controller
         $credentialId = (int) $request->input('credential_id');
         $credential   = DB::table('user_gmail_credentials')->where('id', $credentialId)->where('user_id', auth()->id())->firstOrFail();
 
+        // Enforce inbox_limit from the tenant's active plan
+        $billing = DB::table('deployment_billing')->where('deployment_id', $id)->first();
+        if ($billing?->plan_slug) {
+            $plan = DB::table('worker_pricing')
+                ->where('worker_slug', $dep->worker_slug)
+                ->where('plan_slug', $billing->plan_slug)
+                ->first();
+            $inboxLimit = $plan?->inbox_limit ?? null;
+            if (!is_null($inboxLimit)) {
+                $currentCount = DB::table('deployment_credentials')->where('deployment_id', $id)->count();
+                if ($currentCount >= $inboxLimit) {
+                    $planName = $plan->display_name ?? ucfirst($billing->plan_slug);
+                    return back()->with('error', "Your {$planName} plan allows up to {$inboxLimit} connected inbox" . ($inboxLimit === 1 ? '' : 'es') . ". Upgrade to connect more.");
+                }
+            }
+        }
+
         $isPrimary = !DB::table('deployment_credentials')->where('deployment_id', $id)->where('is_primary', true)->exists();
 
         DB::table('deployment_credentials')->insertOrIgnore([

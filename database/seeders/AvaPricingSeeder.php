@@ -34,6 +34,7 @@ class AvaPricingSeeder extends Seeder
                 'promo_expires_at'     => null,
                 'included_transactions'=> 25,
                 'transaction_limit'    => 25,
+                'inbox_limit'          => 1,
                 'overage_price_per_tx' => 0.00,
                 'plan_highlights'      => json_encode([
                     '25 renewal emails processed free',
@@ -81,6 +82,7 @@ class AvaPricingSeeder extends Seeder
                 'promo_expires_at'     => null,
                 'included_transactions'=> 0,
                 'transaction_limit'    => null,
+                'inbox_limit'          => 5,
                 'overage_price_per_tx' => 0.00,
                 'plan_highlights'      => json_encode([
                     'Unlimited renewal emails processed',
@@ -128,6 +130,7 @@ class AvaPricingSeeder extends Seeder
                 'promo_expires_at'     => null,
                 'included_transactions'=> 0,
                 'transaction_limit'    => null,
+                'inbox_limit'          => null,
                 'overage_price_per_tx' => 0.00,
                 'plan_highlights'      => json_encode([
                     'Unlimited emails — volume pricing available',
