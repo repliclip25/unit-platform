@@ -145,10 +145,12 @@ class WorkerController extends Controller
             $overviewMeta   = $resolved['meta']   ?? [];
         }
 
+        // Trial plans are the free-experience tier — exclude from subscription paywall.
+        // Subscribers move from trial → Pro/Enterprise, never back to Starter.
         $pricingTiers = DB::table('worker_pricing')
             ->where('worker_slug', $dep->worker_slug)
             ->where('active', true)
-            ->whereNotNull('stripe_flat_price_id')
+            ->where('is_trial_plan', false)
             ->orderBy('sort_order')
             ->get();
 

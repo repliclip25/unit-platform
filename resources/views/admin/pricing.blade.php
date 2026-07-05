@@ -252,6 +252,24 @@
                             </div>
                         </div>
 
+                        {{-- TRIAL PLAN --}}
+                        <div class="wf-sep">Trial Plan</div>
+                        <div class="wf-grid">
+                            <div class="wf-full" style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:9px;background:var(--bg-raised);border:1px solid var(--border)">
+                                <input type="checkbox" name="is_trial_plan" id="ef-is_trial_plan" value="1" style="width:16px;height:16px;accent-color:var(--accent);cursor:pointer" onchange="onTrialPlanToggle(this.checked)">
+                                <div>
+                                    <div style="font-size:13px;font-weight:600;color:var(--text-primary)">This is the trial experience plan</div>
+                                    <div class="wf-hint" style="margin-top:0">Trial plans are shown during onboarding but hidden from the subscription paywall — subscribers move to Pro or Enterprise</div>
+                                </div>
+                            </div>
+                            <div id="ef-trial-days-wrap">
+                                <div class="wf-lbl">Trial Duration (days)</div>
+                                <input type="number" name="trial_days" id="ef-trial_days" class="wf-input" placeholder="30" min="1" max="365">
+                                <div class="wf-hint">Leave blank to use the platform default. Options: 14 · 30 · 60 · 90</div>
+                            </div>
+                            <div></div>
+                        </div>
+
                         <div class="wf-sep">Pricing</div>
                         <div class="wf-grid">
                             <div>
@@ -528,6 +546,8 @@ const PLANS = {
         transaction_limit:    {{ $plan->transaction_limit ?? 0 }},
         support_label:        @json($plan->support_label ?? ''),
         plan_highlights:      @json(implode("\n", json_decode($plan->plan_highlights ?? '[]', true))),
+        is_trial_plan:          {{ $plan->is_trial_plan ? 'true' : 'false' }},
+        trial_days:             {{ $plan->trial_days ?? 'null' }},
         billing_mode:           @json($plan->billing_mode ?? 'test'),
         ai_tier:                @json($plan->ai_tier ?? 'economy'),
         classify_model:         @json($plan->classify_model ?? 'claude-haiku-4-5-20251001'),
@@ -617,6 +637,13 @@ function selectPlan(id) {
 
     // Hidden billing_mode
     document.getElementById('ef-billing_mode').value = p.billing_mode;
+
+    // Trial plan toggle
+    const trialCb = document.getElementById('ef-is_trial_plan');
+    if (trialCb) trialCb.checked = !!p.is_trial_plan;
+    const trialDaysEl = document.getElementById('ef-trial_days');
+    if (trialDaysEl) trialDaysEl.value = p.trial_days ?? '';
+    onTrialPlanToggle(!!p.is_trial_plan);
 
     // Clear verify badges
     ['live-price-badge','test-price-badge','coupon-badge'].forEach(id => {
@@ -832,6 +859,11 @@ function refreshUEFromForm() {
         stage_models:           sm,
         draft_model_threshold:  get('ef-draft_model_threshold'),
     });
+}
+
+function onTrialPlanToggle(checked) {
+    const wrap = document.getElementById('ef-trial-days-wrap');
+    if (wrap) wrap.style.opacity = checked ? '1' : '0.4';
 }
 
 function submitVisibilityToggle() {

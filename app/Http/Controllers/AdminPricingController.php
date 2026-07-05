@@ -136,6 +136,8 @@ class AdminPricingController extends Controller
             'draft_model_threshold'  => 'nullable|integer|min:0',
             'stage_models'           => 'nullable|array',
             'stage_models.*'         => 'nullable|string|max:80',
+            'is_trial_plan'          => 'nullable|boolean',
+            'trial_days'             => 'nullable|integer|min:1|max:365',
         ]);
 
         $data['plan_highlights']       = $this->highlightsToJson($data['plan_highlights'] ?? '');
@@ -143,6 +145,7 @@ class AdminPricingController extends Controller
         $data['stage_models']          = !empty($data['stage_models'])
             ? json_encode(array_filter($data['stage_models']))
             : null;
+        $data['is_trial_plan']         = (bool) ($data['is_trial_plan'] ?? false);
 
         DB::table('worker_pricing')->insert(array_merge($data, [
             'active'     => true,
@@ -183,6 +186,8 @@ class AdminPricingController extends Controller
             'draft_model_threshold'  => 'nullable|integer|min:0',
             'stage_models'           => 'nullable|array',
             'stage_models.*'         => 'nullable|string|max:80',
+            'is_trial_plan'          => 'nullable|boolean',
+            'trial_days'             => 'nullable|integer|min:1|max:365',
         ]);
 
         $data['plan_highlights']       = $this->highlightsToJson($data['plan_highlights'] ?? '');
@@ -190,6 +195,7 @@ class AdminPricingController extends Controller
         $data['stage_models']          = !empty($data['stage_models'])
             ? json_encode(array_filter($data['stage_models']))
             : null;
+        $data['is_trial_plan']         = (bool) ($data['is_trial_plan'] ?? false);
 
         DB::table('worker_pricing')->where('id', $id)->update(array_merge($data, [
             'updated_at' => now(),

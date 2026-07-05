@@ -167,7 +167,10 @@ class StripeWebhookController extends Controller
         $this->notifyTenant($user->id, 'subscription_canceled');
     }
 
-    // ── Invoice paid → restore active, auto-unblock if was PAYMENT_PAST_DUE ──
+    // ── Invoice paid → restore active, reset monthly quota, auto-unblock ────
+    // Fires on every successful charge including renewals. We reset unit_count
+    // here so PolicyEngine's PLAN_QUOTA_EXCEEDED gate clears at the start of
+    // each billing cycle — without this, active subscribers hit a permanent block.
 
     private function onInvoicePaid(object $invoice): void
     {
@@ -180,6 +183,7 @@ class StripeWebhookController extends Controller
             return;
         }
 
+        // Restore past_due deployments to active
         DB::table('deployment_billing')
             ->where('user_id', $user->id)
             ->where('status', 'past_due')
@@ -189,14 +193,31 @@ class StripeWebhookController extends Controller
                 'updated_at'     => now(),
             ]);
 
+        // Reset monthly usage counter on all active deployments for this billing cycle.
+        // Only resets deployments that have a plan with a finite transaction_limit — unlimited
+        // plans (transaction_limit = null or 0) don't need a reset but get one harmlessly.
+        $resetCount = DB::table('deployment_billing')
+            ->where('user_id', $user->id)
+            ->where('status', 'active')
+            ->update([
+                'unit_count'  => 0,
+                'updated_at'  => now(),
+            ]);
+
+        Log::info('Stripe: invoice paid → usage counters reset', [
+            'sub_id'      => $subId,
+            'user_id'     => $user->id,
+            'deployments' => $resetCount,
+            'period_start'=> $invoice->period_start ?? null,
+            'period_end'  => $invoice->period_end   ?? null,
+        ]);
+
         // Auto-unblock if hard-blocked for payment failure
         if ($user->block_policy_code === 'PAYMENT_PAST_DUE') {
             UsageGuard::unblockUser($user->id);
             $this->notifyTenant($user->id, 'payment_resolved');
             Log::info('Stripe: invoice paid → user auto-unblocked', ['user_id' => $user->id]);
         }
-
-        Log::info('Stripe: invoice paid → active', ['sub_id' => $subId, 'user_id' => $user->id]);
     }
 
     // ── Email tenant ──────────────────────────────────────────────────────────
