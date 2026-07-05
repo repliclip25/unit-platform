@@ -44,9 +44,18 @@ class BillingController extends Controller
 
         $policyViolations = \App\Platform\Services\PolicyEngine::evaluateAll($user->id);
 
+        // Value metric — total completed emails per deployment (all-time), for the value clock
+        $emailsProcessed = DB::table('transactions')
+            ->where('user_id', $user->id)
+            ->whereIn('status', ['draft_ready', 'approved', 'sent'])
+            ->selectRaw('deployment_id, COUNT(*) as total')
+            ->groupBy('deployment_id')
+            ->get()
+            ->keyBy('deployment_id');
+
         return view('dashboard.billing', compact(
             'deployments', 'billingRecords', 'pricingTiers', 'promotions',
-            'invoices', 'policyViolations'
+            'invoices', 'policyViolations', 'emailsProcessed'
         ));
     }
 
