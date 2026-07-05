@@ -134,14 +134,14 @@
                         <span style="font-size:1.75rem;font-weight:800;line-height:1;color:var(--accent-text)">{{ $hoursSaved }}</span>
                         <span class="text-xs font-medium" style="color:var(--text-muted)">hrs saved</span>
                     </div>
-                    <a href="{{ route('transactions.index') }}?deployment={{ $dep->id }}"
+                    <a href="{{ route('transactions') }}?deployment={{ $dep->id }}"
                        class="text-xs block mt-0.5 hover:underline"
                        style="color:var(--text-faint)">
                         {{ number_format($processed) }} emails → view transactions
                     </a>
                 </div>
                 @else
-                <a href="{{ route('transactions.index') }}?deployment={{ $dep->id }}"
+                <a href="{{ route('transactions') }}?deployment={{ $dep->id }}"
                    class="text-xs" style="color:var(--text-faint)">View transactions →</a>
                 @endif
             </div>
