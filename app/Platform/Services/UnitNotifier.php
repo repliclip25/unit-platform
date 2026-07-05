@@ -36,6 +36,10 @@ class UnitNotifier
         }
     }
 
+    // Minimum confidence to send a draft-ready email.
+    // Below this threshold the client/asset match is too uncertain to be actionable.
+    private const DRAFT_NOTIFY_CONFIDENCE_FLOOR = 50;
+
     public static function draftReady(string $txId, array $payload): void
     {
         try {
@@ -46,8 +50,19 @@ class UnitNotifier
             $asset      = $payload['asset']['name']    ?? 'Unknown asset';
             $client     = $payload['client']['name']   ?? 'Unknown client';
             $draftSubj  = $payload['draft']['subject'] ?? 'Renewal';
-            $confidence = $payload['ava']['confidence'] ?? null;
-            $appUrl     = config('app.url');
+            $confidence = isset($payload['ava']['confidence']) ? (int) $payload['ava']['confidence'] : null;
+
+            // Skip notification when confidence is too low to be actionable.
+            // The draft still exists in the dashboard — we just don't send a midnight
+            // email the broker can't act on without first fixing their memory data.
+            if ($confidence !== null && $confidence < self::DRAFT_NOTIFY_CONFIDENCE_FLOOR) {
+                Log::info('[UnitNotifier] draftReady skipped — confidence below floor', [
+                    'tx_id'      => $txId,
+                    'confidence' => $confidence,
+                    'floor'      => self::DRAFT_NOTIFY_CONFIDENCE_FLOOR,
+                ]);
+                return;
+            }
 
             EmailDispatcher::send('draft_ready', $user->email, $user->name, $user->id, [
                 '{draft_subject}' => $draftSubj,
