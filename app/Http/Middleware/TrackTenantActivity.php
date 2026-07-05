@@ -44,16 +44,21 @@ class TrackTenantActivity
                     $meta['ref_id'] = $depId;
                 }
 
-                DB::table('tenant_activity_log')->insert([
-                    'user_id'    => Auth::id(),
-                    'page'       => $routeName,
-                    'section'    => $section,
-                    'action'     => 'view',
-                    'ip'         => $request->ip(),
-                    'user_agent' => substr($request->userAgent() ?? '', 0, 512),
-                    'meta'       => $meta ? json_encode($meta) : null,
-                    'created_at' => now(),
-                ]);
+                try {
+                    DB::table('tenant_activity_log')->insert([
+                        'user_id'    => Auth::id(),
+                        'page'       => $routeName,
+                        'section'    => $section,
+                        'action'     => 'view',
+                        'ip'         => $request->ip(),
+                        'user_agent' => substr($request->userAgent() ?? '', 0, 512),
+                        'meta'       => $meta ? json_encode($meta) : null,
+                        'created_at' => now(),
+                    ]);
+                } catch (\Throwable $e) {
+                    // Never let activity logging break the page
+                }
+
             }
         }
 
