@@ -863,4 +863,10 @@ class NuxWorker implements WorkerContract
             ['key' => 'draft',     'label' => 'Package Draft',   'job_class' => 'DraftPostJob'],
         ];
     }
+
+    public function memoryRequirements(): array
+    {
+        // NUX repurposes content — it does not use client/contact/asset memory
+        return [];
+    }
 }

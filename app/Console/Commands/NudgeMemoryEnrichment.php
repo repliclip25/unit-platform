@@ -29,7 +29,8 @@ class NudgeMemoryEnrichment extends Command
             try {
                 $health = MemoryHealthService::score($user->id);
 
-                // Already healthy — nothing to nudge
+                // Worker doesn't use memory, or already healthy — nothing to nudge
+                if (!$health['needs_memory']) continue;
                 if ($health['healthy']) continue;
 
                 $daysSince = (int) now()->diffInDays($user->onboarding_completed_at);

@@ -14,7 +14,7 @@ return new class extends Migration
             [
                 'key'         => 'memory_nudge_d1',
                 'sequence'    => 'memory_enrichment',
-                'worker_slug' => 'ava',
+                'worker_slug' => null,
                 'label'       => 'AVA — Memory Nudge (Day 1)',
                 'subject'     => 'AVA ran — but didn\'t recognise your clients',
                 'body'        =>
@@ -43,7 +43,7 @@ Franklin at UNIT",
             [
                 'key'         => 'memory_nudge_d3',
                 'sequence'    => 'memory_enrichment',
-                'worker_slug' => 'ava',
+                'worker_slug' => null,
                 'label'       => 'AVA — Memory Nudge (Day 3)',
                 'subject'     => 'AVA is {score}% there — {needed} more clients to go',
                 'body'        =>
@@ -72,7 +72,7 @@ Franklin at UNIT",
             [
                 'key'         => 'memory_nudge_d7',
                 'sequence'    => 'memory_enrichment',
-                'worker_slug' => 'ava',
+                'worker_slug' => null,
                 'label'       => 'AVA — Memory Nudge (Day 7)',
                 'subject'     => 'One week in — AVA is still waiting on your clients',
                 'body'        =>

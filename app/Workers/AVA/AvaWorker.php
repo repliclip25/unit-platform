@@ -1013,4 +1013,13 @@ class AvaWorker implements WorkerContract
             ['key' => 'draft',    'label' => 'Draft Email',     'job_class' => 'DraftEmailJob'],
         ];
     }
+
+    public function memoryRequirements(): array
+    {
+        return [
+            'clients'  => ['name'],
+            'contacts' => ['name', 'email'],
+            'assets'   => ['name', 'renewal_date'],
+        ];
+    }
 }

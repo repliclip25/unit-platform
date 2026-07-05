@@ -660,4 +660,30 @@ interface WorkerContract
      *   - Populate stage_models defaults when a new plan tier is applied
      */
     public function aiStages(): array;
+
+    /**
+     * Declare which platform memory entities this worker relies on.
+     *
+     * Memory is platform-scoped (clients, contacts, assets belong to the user,
+     * not to any worker). Workers declare what they need so the platform can
+     * calculate health scores and send enrichment nudges on their behalf.
+     *
+     * Return an array with any of these keys:
+     *   'clients'  => ['name', ...]           — client fields required
+     *   'contacts' => ['name', 'email', ...]  — contact fields required
+     *   'assets'   => ['name', 'renewal_date', ...] — asset fields required
+     *
+     * A "complete record" for health scoring is one client that satisfies
+     * all declared contact and asset field requirements.
+     *
+     * Return [] if this worker does not use platform memory at all.
+     *
+     * Example (AVA):
+     *   return [
+     *       'clients'  => ['name'],
+     *       'contacts' => ['name', 'email'],
+     *       'assets'   => ['name', 'renewal_date'],
+     *   ];
+     */
+    public function memoryRequirements(): array;
 }
