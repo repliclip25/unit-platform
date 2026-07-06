@@ -202,6 +202,7 @@ Route::middleware(['auth', 'verified', 'onboarded', 'not-pending-del'])->group(f
     // ── Worker: Rules ───────────────────────────────────────────────────────
     Route::get('/workers/{slug}/rules',                              [WorkerRulesController::class, 'index'])->name('workers.rules');
     Route::post('/workers/{id}/rules',                               [WorkerRulesController::class, 'store'])->name('workers.rules.store');
+    Route::patch('/workers/{id}/rules/{rid}',                        [WorkerRulesController::class, 'update'])->name('workers.rules.update');
     Route::delete('/workers/{id}/rules/{rid}',                       [WorkerRulesController::class, 'destroy'])->name('workers.rules.destroy');
     Route::post('/workers/{id}/rules/reset',                         [WorkerRulesController::class, 'resetToContract'])->name('workers.rules.reset');
 

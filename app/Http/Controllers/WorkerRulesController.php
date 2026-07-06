@@ -109,6 +109,31 @@ class WorkerRulesController extends Controller
         return back()->with('success', "Rule {$ruleId} added.");
     }
 
+    public function update(int $id, int $rid, Request $request)
+    {
+        DB::table('worker_deployments')->where('id', $id)->where('user_id', auth()->id())->firstOrFail();
+        $request->validate([
+            'condition' => 'required',
+            'action'    => 'required',
+            'priority'  => 'required|in:Critical,High,Medium,Low',
+        ]);
+
+        DB::table('ava_rules')
+            ->where('id', $rid)
+            ->where('deployment_id', $id)
+            ->where('is_platform', false)
+            ->update([
+                'condition'         => $request->condition,
+                'action'            => $request->action,
+                'priority'          => $request->priority,
+                'notes'             => $request->notes,
+                'approval_required' => $request->boolean('approval_required'),
+                'updated_at'        => now(),
+            ]);
+
+        return back()->with('success', 'Rule updated.');
+    }
+
     public function destroy(int $id, int $rid)
     {
         DB::table('worker_deployments')->where('id', $id)->where('user_id', auth()->id())->firstOrFail();
