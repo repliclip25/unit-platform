@@ -347,19 +347,69 @@ class OnboardingController extends Controller
 
     private function handlePersona(Request $request)
     {
-        $allowed = ['it_agency', 'insurance_broker', 'compliance', 'other'];
         $persona = $request->input('persona');
+        $wos     = WorkerOnboardingService::load(auth()->id());
+        $depId   = $wos?->deployment_id ?? session('onboarding_deployment_id');
+
+        // Validate against the contract's declared personas
+        $contract = $depId
+            ? WorkerRegistry::resolve(DB::table('worker_deployments')->where('id', $depId)->value('worker_slug') ?? 'ava')
+            : null;
+        $allowed = array_keys($contract?->personas() ?? ['it_agency' => 1, 'insurance_broker' => 1, 'compliance' => 1, 'other' => 1]);
 
         if (!in_array($persona, $allowed)) {
             return back()->withErrors(['persona' => 'Please select a use case to continue.']);
         }
 
+        // Store on both the deployment (primary, per-worker) and user (fallback)
+        if ($depId) {
+            DB::table('worker_deployments')->where('id', $depId)->update(['persona' => $persona]);
+            $this->seedPersonaRules($depId, auth()->id(), $contract, $persona);
+        }
         DB::table('users')->where('id', auth()->id())->update(['persona' => $persona]);
 
-        $wos = WorkerOnboardingService::load(auth()->id());
         if ($wos) WorkerOnboardingService::advanceStep($wos->id, 'persona');
 
         return redirect()->route('onboarding.step', 'memory');
+    }
+
+    /**
+     * Swap deployment-scoped rules to match the chosen persona.
+     * Removes any previously seeded persona rules (is_platform = false), then inserts
+     * the new persona's capture_rules from the contract. Platform rules (is_platform = true)
+     * are never touched.
+     */
+    private function seedPersonaRules(int $depId, int $userId, $contract, string $persona): void
+    {
+        $personas = $contract?->personas() ?? [];
+        $rules    = $personas[$persona]['capture_rules'] ?? [];
+        if (empty($rules)) return;
+
+        // Remove previously seeded persona rules for this deployment only
+        DB::table('ava_rules')
+            ->where('deployment_id', $depId)
+            ->where(function ($q) {
+                $q->where('is_platform', false)->orWhereNull('is_platform');
+            })
+            ->delete();
+
+        $now = now();
+        foreach ($rules as $rule) {
+            DB::table('ava_rules')->insertOrIgnore([
+                'user_id'           => $userId,
+                'deployment_id'     => $depId,
+                'rule_id'           => $rule['rule_id'],
+                'condition'         => $rule['condition'],
+                'priority'          => $rule['priority'],
+                'action'            => $rule['action'],
+                'approval_required' => $rule['approval_required'],
+                'notes'             => $rule['notes'] ?? null,
+                'active'            => true,
+                'is_platform'       => false,
+                'created_at'        => $now,
+                'updated_at'        => $now,
+            ]);
+        }
     }
 
     private function handleMemory(Request $request)
@@ -727,12 +777,17 @@ class OnboardingController extends Controller
                 'credentialEmail' => DB::table('user_gmail_credentials')->where('user_id', auth()->id())->value('gmail_address'),
             ],
 
-            'memory' => (function () use ($depId, $slug) {
+            'memory' => (function () use ($depId, $slug, $contract) {
                 $userId   = auth()->id();
                 $clients  = DB::table('clients')->where('user_id', $userId)->whereNull('deleted_at')->get();
                 $contacts = DB::table('contacts')->where('user_id', $userId)->whereNull('deleted_at')->get()->groupBy('client_id');
                 $assets   = DB::table('assets')->where('user_id', $userId)->whereNull('deleted_at')->get()->groupBy('client_id');
-                // persona is accessed directly in the view via auth()->user()->persona
+
+                // Resolve the persona definition from the contract
+                $persona    = DB::table('worker_deployments')->where('id', $depId)->value('persona')
+                              ?? DB::table('users')->where('id', $userId)->value('persona');
+                $allPersonas = $contract?->personas() ?? [];
+                $personaDef  = ($persona && isset($allPersonas[$persona])) ? $allPersonas[$persona] : null;
 
                 $sampleClients = $clients->map(function ($client) use ($contacts, $assets) {
                     $client->contacts = $contacts->get($client->id, collect());
@@ -748,12 +803,17 @@ class OnboardingController extends Controller
                     'sampleClients'     => $sampleClients,
                     'platformTemplates' => DB::table('email_templates')->whereNull('user_id')->where('worker_slug', $slug)->get(),
                     'memoryHealth'      => \App\Platform\Services\MemoryHealthService::score($userId),
+                    'personaDef'        => $personaDef,
                 ];
             })(),
 
             'persona' => [
                 'contract' => $contract,
-                'current'  => DB::table('users')->where('id', auth()->id())->value('persona'),
+                'personas' => $contract?->personas() ?? [],
+                'current'  => DB::table('worker_deployments')
+                    ->where('id', $depId)
+                    ->value('persona')
+                    ?? DB::table('users')->where('id', auth()->id())->value('persona'),
             ],
 
             'fast-track' => (function () use ($contract, $depId) {

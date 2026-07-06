@@ -1029,4 +1029,182 @@ class AvaWorker implements WorkerContract
             'assets'   => ['name', 'renewal_date'],
         ];
     }
+
+    public function personas(): array
+    {
+        return [
+            'it_agency' => [
+                'label'   => 'IT / Digital Agency',
+                'tagline' => 'Domains, SSL, hosting, SaaS subscriptions',
+                'detail'  => 'You manage tech renewals for clients. A lapsed domain or expired SSL cert costs them visibility and costs you credibility.',
+                'examples'    => ['Domain renewals', 'SSL certificates', 'Hosting plans', 'SaaS subscriptions'],
+                'icon'        => 'computer',
+                'asset_types' => [
+                    'domain'  => 'Domain',
+                    'ssl'     => 'SSL Certificate',
+                    'hosting' => 'Hosting Plan',
+                    'saas'    => 'SaaS Subscription',
+                    'other'   => 'Other',
+                ],
+                'capture_rules' => [
+                    ['rule_id' => 'IT-001', 'condition' => 'SSL certificate expires in <= 15 days',    'priority' => 'High',     'action' => 'Log + draft client approval email + notify account manager',      'approval_required' => true,  'notes' => 'Never auto-send — client must approve renewal cost'],
+                    ['rule_id' => 'IT-002', 'condition' => 'Domain expires in <= 30 days',             'priority' => 'Medium',   'action' => 'Log + draft renewal reminder to client contact',                  'approval_required' => true,  'notes' => 'If internal asset, notify owner only — no client email'],
+                    ['rule_id' => 'IT-003', 'condition' => 'Hosting invoice due in <= 7 days',         'priority' => 'High',     'action' => 'Log + draft payment reminder',                                    'approval_required' => true,  'notes' => 'Check whether client or agency pays — adjust recipient'],
+                    ['rule_id' => 'IT-004', 'condition' => 'SaaS subscription renewal notice',         'priority' => 'Medium',   'action' => 'Log + summarise seat count, cost, and due date',                  'approval_required' => false, 'notes' => 'Notify account manager — no client action needed unless seats changed'],
+                    ['rule_id' => 'IT-005', 'condition' => 'Failed or declined payment',               'priority' => 'Critical', 'action' => 'Log + draft urgent payment notice + notify immediately',          'approval_required' => true,  'notes' => 'Flag as urgent — service may be suspended'],
+                    ['rule_id' => 'IT-006', 'condition' => 'Low confidence memory match (< 0.6)',      'priority' => 'High',     'action' => 'Do not draft — request human confirmation of client and asset',   'approval_required' => true,  'notes' => 'Halt pipeline at MemoryLookupJob until confirmed'],
+                ],
+                'memory_copy' => [
+                    'client_noun'    => 'client',
+                    'asset_noun'     => 'domain / service',
+                    'example_client' => 'Acme Corp',
+                    'example_asset'  => 'acmecorp.com',
+                ],
+                'nudge_copy' => [
+                    'd1' => [
+                        'subject' => "AVA is watching — but doesn't know your clients' domains yet",
+                        'body'    => "Hi {name},\n\nAVA is live and monitoring your inbox — but she can't connect renewal emails to clients yet because her memory is empty.\n\nRight now every domain renewal notice, SSL alert, or hosting invoice comes back as \"Unknown client.\" AVA can't draft a useful response without knowing who the email belongs to.\n\nYou're at {score}% memory coverage. Add {needed} more clients with a domain or service and a contact email to reach reliable drafts.\n\nTakes 90 seconds per client:\n{app_url}/onboarding/step/memory\n\nFranklin at UNIT",
+                    ],
+                    'd3' => [
+                        'subject' => '{score}% there — {needed} more domains to go',
+                        'body'    => "Hi {name},\n\nThree days in — AVA is processing renewal emails but memory is at {score}%.\n\nAt {threshold} complete clients she starts matching renewals reliably. You're {needed} away.\n\nEach entry takes 90 seconds: client name, contact email, domain or service name.\n\n{app_url}/onboarding/step/memory\n\nMost IT managers finish their top clients in one sitting — usually 10–15 minutes.\n\nFranklin at UNIT",
+                    ],
+                    'd7' => [
+                        'subject' => "One week in — AVA still can't recognise your clients",
+                        'body'    => "Hi {name},\n\nA week since setup — memory is still at {score}%.\n\nEvery domain renewal, SSL alert, and hosting notice is coming back \"Unknown.\" Every draft needs a full rewrite before it's usable.\n\nYou need {needed} complete records. That's {needed} clients with a contact email and at least one domain or service.\n\nHere's the link:\n{app_url}/onboarding/step/memory\n\nIf the form isn't working for you, reply and I'll help you import via CSV.\n\nFranklin at UNIT",
+                    ],
+                ],
+            ],
+
+            'insurance_broker' => [
+                'label'   => 'Insurance Broker',
+                'tagline' => 'P&C, commercial, liability, auto policies',
+                'detail'  => 'A missed renewal means an uninsured client. You track dozens of policies across carriers — AVA makes sure nothing slips.',
+                'examples'    => ['Commercial auto', 'General liability', 'Property & casualty', "Workers' comp"],
+                'icon'        => 'shield',
+                'asset_types' => [
+                    'commercial_auto'   => 'Commercial Auto',
+                    'general_liability' => 'General Liability',
+                    'workers_comp'      => "Workers' Comp",
+                    'property'          => 'Property',
+                    'umbrella'          => 'Umbrella',
+                    'professional'      => 'Professional Liability',
+                    'other'             => 'Other',
+                ],
+                'capture_rules' => [
+                    ['rule_id' => 'IB-001', 'condition' => 'Policy renewal notice — expiry in <= 30 days',   'priority' => 'High',     'action' => 'Log + draft renewal notice to insured with policy details',      'approval_required' => true,  'notes' => 'Confirm premium and coverage have not changed before sending'],
+                    ['rule_id' => 'IB-002', 'condition' => 'Policy expiry in <= 7 days',                    'priority' => 'Critical', 'action' => 'Log + draft urgent lapse warning + notify broker immediately',    'approval_required' => true,  'notes' => 'Escalate — uninsured gap risk is critical'],
+                    ['rule_id' => 'IB-003', 'condition' => 'Premium payment overdue or past due notice',    'priority' => 'High',     'action' => 'Log + draft premium payment reminder to insured',                'approval_required' => true,  'notes' => 'Include grace period end date if stated in email'],
+                    ['rule_id' => 'IB-004', 'condition' => 'Carrier non-renewal or cancellation notice',   'priority' => 'Critical', 'action' => 'Log + notify broker immediately — do not draft without review',   'approval_required' => true,  'notes' => 'Human must decide replacement carrier before any client communication'],
+                    ['rule_id' => 'IB-005', 'condition' => 'Coverage change or endorsement notice',        'priority' => 'Medium',   'action' => 'Log + summarise change + flag for broker review',                 'approval_required' => false, 'notes' => 'No client draft — broker verifies change first'],
+                    ['rule_id' => 'IB-006', 'condition' => 'Low confidence memory match (< 0.6)',           'priority' => 'High',     'action' => 'Do not draft — request broker confirmation of insured and policy','approval_required' => true,  'notes' => 'Policy drafts without confirmed insured identity are high risk'],
+                ],
+                'memory_copy' => [
+                    'client_noun'    => 'insured',
+                    'asset_noun'     => 'policy',
+                    'example_client' => 'Rivera Auto Group',
+                    'example_asset'  => 'Commercial Auto — Markel',
+                ],
+                'nudge_copy' => [
+                    'd1' => [
+                        'subject' => "AVA is live — but doesn't know your book of business yet",
+                        'body'    => "Hi {name},\n\nAVA is monitoring your inbox — but every renewal notice coming in is returning \"Unknown insured.\" She can't draft a renewal response without knowing who the policy belongs to.\n\nYou're at {score}% memory coverage. Add {needed} more insureds with a contact email and at least one policy to reach reliable drafts.\n\nTakes 90 seconds per client:\n{app_url}/onboarding/step/memory\n\nThe sooner your book is loaded, the sooner AVA catches every renewal before it slips.\n\nFranklin at UNIT",
+                    ],
+                    'd3' => [
+                        'subject' => 'Policy renewals coming in — AVA still missing {needed} clients',
+                        'body'    => "Hi {name},\n\nThree days in — AVA is processing renewal notices but memory is at {score}%.\n\nAt {threshold} complete insureds she starts matching policies reliably. You're {needed} away.\n\nEach entry takes 90 seconds: insured name, contact email, policy type.\n\n{app_url}/onboarding/step/memory\n\nA missed renewal is an uninsured client. Worth 10 minutes today.\n\nFranklin at UNIT",
+                    ],
+                    'd7' => [
+                        'subject' => 'One week in — {needed} policies still unmatched',
+                        'body'    => "Hi {name},\n\nA week since you set up AVA — memory is at {score}%.\n\nEvery renewal notice she's seen this week came back without a match. Those drafts are useless until your book is loaded.\n\nYou need {needed} more complete insureds — name, contact email, and one policy each.\n\n{app_url}/onboarding/step/memory\n\nIf you'd rather import your book via CSV, reply to this email and I'll send you the template.\n\nFranklin at UNIT",
+                    ],
+                ],
+            ],
+
+            'compliance' => [
+                'label'   => 'Compliance / Licensing',
+                'tagline' => 'Business licenses, permits, certifications',
+                'detail'  => "A lapsed license can shut operations down instantly. You keep clients legal — AVA keeps track so you don't have to chase every expiry manually.",
+                'examples'    => ['Business licenses', 'Professional certifications', 'Operating permits', 'Trade registrations'],
+                'icon'        => 'clipboard',
+                'asset_types' => [
+                    'business_license' => 'Business License',
+                    'permit'           => 'Operating Permit',
+                    'certification'    => 'Certification',
+                    'registration'     => 'Trade Registration',
+                    'other'            => 'Other',
+                ],
+                'capture_rules' => [
+                    ['rule_id' => 'CM-001', 'condition' => 'License or permit renewal notice — expiry in <= 60 days', 'priority' => 'Medium',   'action' => 'Log + draft renewal reminder to client',                          'approval_required' => true,  'notes' => 'Some jurisdictions require 60-day lead — adjust threshold per client if needed'],
+                    ['rule_id' => 'CM-002', 'condition' => 'License or permit expiry in <= 14 days',                  'priority' => 'Critical', 'action' => 'Log + draft urgent renewal notice + notify compliance manager',    'approval_required' => true,  'notes' => 'Operations may halt on day of expiry — treat as urgent'],
+                    ['rule_id' => 'CM-003', 'condition' => 'Certification renewal or re-examination notice',          'priority' => 'High',     'action' => 'Log + draft action plan with deadline for client',                 'approval_required' => true,  'notes' => 'Include exam booking or submission requirements if mentioned'],
+                    ['rule_id' => 'CM-004', 'condition' => 'Regulatory or enforcement notice received',               'priority' => 'Critical', 'action' => 'Log + escalate to compliance manager — do not draft without review','approval_required' => true,  'notes' => 'Any enforcement notice requires human review before client communication'],
+                    ['rule_id' => 'CM-005', 'condition' => 'Fee payment due for renewal',                             'priority' => 'High',     'action' => 'Log + draft payment reminder with fee amount and due date',        'approval_required' => true,  'notes' => 'Include link to payment portal if provided in email'],
+                    ['rule_id' => 'CM-006', 'condition' => 'Low confidence memory match (< 0.6)',                     'priority' => 'High',     'action' => 'Do not draft — request confirmation of client and license type',   'approval_required' => true,  'notes' => 'Wrong client on a compliance notice is a liability risk'],
+                ],
+                'memory_copy' => [
+                    'client_noun'    => 'client',
+                    'asset_noun'     => 'license / permit',
+                    'example_client' => 'Sunrise Contractors',
+                    'example_asset'  => 'General Contractor License',
+                ],
+                'nudge_copy' => [
+                    'd1' => [
+                        'subject' => "AVA is watching — but your clients' licenses aren't loaded",
+                        'body'    => "Hi {name},\n\nAVA is live and monitoring your inbox — but she can't connect renewal notices to clients without knowing your book.\n\nEvery license renewal, permit notice, or certification alert is coming back \"Unknown.\" AVA can't draft a useful response until you load your clients.\n\nYou're at {score}% coverage. Add {needed} more clients with a contact email and at least one license or permit.\n\n{app_url}/onboarding/step/memory\n\nFranklin at UNIT",
+                    ],
+                    'd3' => [
+                        'subject' => '{needed} more clients to go — compliance notices piling up',
+                        'body'    => "Hi {name},\n\nThree days in — AVA is at {score}% memory. She's seeing renewal notices but can't match them to clients yet.\n\nAt {threshold} complete clients she starts drafting reliably. You're {needed} away.\n\nClient name. Contact email. License or permit name. 90 seconds each.\n\n{app_url}/onboarding/step/memory\n\nFranklin at UNIT",
+                    ],
+                    'd7' => [
+                        'subject' => 'One week in — license renewals still unmatched',
+                        'body'    => "Hi {name},\n\nA week since setup — memory is at {score}%.\n\nA lapsed license is a crisis. AVA can prevent it — but only once she knows your clients.\n\nYou need {needed} more complete records. Reply to this email if you'd like help importing via CSV.\n\n{app_url}/onboarding/step/memory\n\nFranklin at UNIT",
+                    ],
+                ],
+            ],
+
+            'other' => [
+                'label'   => 'Other',
+                'tagline' => 'Anything where a missed renewal is a disaster',
+                'detail'  => "You track something else — contracts, memberships, subscriptions, warranties. If a lapse causes damage, AVA's the right tool.",
+                'examples'    => ['Service contracts', 'Vendor agreements', 'Memberships', 'Warranties'],
+                'icon'        => 'grid',
+                'asset_types' => [
+                    'service_contract' => 'Service Contract',
+                    'vendor_agreement' => 'Vendor Agreement',
+                    'membership'       => 'Membership',
+                    'warranty'         => 'Warranty',
+                    'other'            => 'Other',
+                ],
+                'capture_rules' => [
+                    ['rule_id' => 'OT-001', 'condition' => 'Renewal notice — expiry in <= 30 days',     'priority' => 'Medium',   'action' => 'Log + draft renewal reminder using best matching template',        'approval_required' => true,  'notes' => 'Review draft before sending — template may need adjustment for asset type'],
+                    ['rule_id' => 'OT-002', 'condition' => 'Expiry in <= 7 days',                       'priority' => 'Critical', 'action' => 'Log + draft urgent renewal notice + notify immediately',           'approval_required' => true,  'notes' => 'Treat any 7-day expiry as critical regardless of asset type'],
+                    ['rule_id' => 'OT-003', 'condition' => 'Payment overdue or invoice past due',       'priority' => 'High',     'action' => 'Log + draft payment reminder with amount and due date',            'approval_required' => true,  'notes' => 'Include any late fee details if mentioned in email'],
+                    ['rule_id' => 'OT-004', 'condition' => 'Cancellation or lapse notice received',    'priority' => 'Critical', 'action' => 'Log + draft urgent response + notify account owner',               'approval_required' => true,  'notes' => 'Do not delay — cancellations often have short reinstatement windows'],
+                    ['rule_id' => 'OT-005', 'condition' => 'Low confidence memory match (< 0.6)',       'priority' => 'High',     'action' => 'Do not draft — request confirmation of client and asset',          'approval_required' => true,  'notes' => 'Halt pipeline until human confirms match'],
+                ],
+                'memory_copy' => [
+                    'client_noun'    => 'client',
+                    'asset_noun'     => 'asset',
+                    'example_client' => 'Riverside Auto Group',
+                    'example_asset'  => 'Service Agreement',
+                ],
+                'nudge_copy' => [
+                    'd1' => [
+                        'subject' => "AVA is running — but can't recognise your clients yet",
+                        'body'    => "Hi {name},\n\nAVA is monitoring your inbox — but every renewal email coming in is returning \"Unknown client.\" She can't draft a response until she knows who each email belongs to.\n\nYou're at {score}% memory coverage. Add {needed} more clients with a contact email and at least one asset.\n\n{app_url}/onboarding/step/memory\n\nFranklin at UNIT",
+                    ],
+                    'd3' => [
+                        'subject' => 'AVA at {score}% — {needed} more clients to reliable drafts',
+                        'body'    => "Hi {name},\n\nThree days in — memory is at {score}%. You're {needed} clients away from reliable drafts.\n\nEach entry takes 90 seconds: client name, contact email, asset name.\n\n{app_url}/onboarding/step/memory\n\nFranklin at UNIT",
+                    ],
+                    'd7' => [
+                        'subject' => 'One week in — AVA still waiting on your clients',
+                        'body'    => "Hi {name},\n\nA week since setup — memory is still at {score}%.\n\nAVA can't do what she was built to do without your book of business. You need {needed} more complete records.\n\n{app_url}/onboarding/step/memory\n\nIf the quick-add form isn't working, reply and I'll help you import via CSV.\n\nFranklin at UNIT",
+                    ],
+                ],
+            ],
+        ];
+    }
 }

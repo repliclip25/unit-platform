@@ -869,4 +869,10 @@ class NuxWorker implements WorkerContract
         // NUX repurposes content — it does not use client/contact/asset memory
         return [];
     }
+
+    public function personas(): array
+    {
+        // NUX does not have a persona selection step — skip by returning []
+        return [];
+    }
 }

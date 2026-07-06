@@ -686,4 +686,25 @@ interface WorkerContract
      *   ];
      */
     public function memoryRequirements(): array;
+
+    /**
+     * Declare the personas (ICPs) this worker serves.
+     *
+     * Drives the onboarding persona-selection step, memory step copy/asset types,
+     * and per-persona nudge email copy. Return [] if this worker has no persona
+     * concept (persona step is skipped in onboarding).
+     *
+     * Each key is a slug stored in worker_deployments.persona.
+     * Shape per persona:
+     *   label       — display name
+     *   tagline     — one-line sub-label
+     *   detail      — expanded copy shown when selected
+     *   examples    — string[] of example asset/renewal types
+     *   icon        — icon key: 'computer' | 'shield' | 'clipboard' | 'grid'
+     *   asset_types — ['value' => 'Label'] map for the memory step dropdown
+     *   memory_copy — ['client_noun','asset_noun','example_client','example_asset']
+     *   nudge_copy  — ['d1'=>['subject','body'], 'd3'=>..., 'd7'=>...]
+     *                 Placeholders: {name} {score} {complete} {needed} {threshold} {app_url}
+     */
+    public function personas(): array;
 }

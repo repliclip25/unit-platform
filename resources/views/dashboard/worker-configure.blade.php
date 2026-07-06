@@ -192,6 +192,75 @@
                 </form>
             </div>
 
+            {{-- Use Case / Persona --}}
+            @php
+                $personas       = $contract->personas();
+                $currentPersona = $dep->persona ?? null;
+                $personaIcons   = [
+                    'computer'  => '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>',
+                    'shield'    => '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>',
+                    'clipboard' => '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>',
+                    'grid'      => '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg>',
+                ];
+            @endphp
+            @if(!empty($personas))
+            <div class="bg-gray-900 border border-gray-800 rounded-xl" x-data="{ open: false }">
+                <div class="px-5 py-4 border-b border-gray-800 flex items-center justify-between">
+                    <div>
+                        <h3 class="text-white text-sm font-semibold">Use Case</h3>
+                        <p class="text-gray-500 text-xs mt-0.5">
+                            Changing this swaps your capture rules to match the selected use case.
+                        </p>
+                    </div>
+                    @if($currentPersona && isset($personas[$currentPersona]))
+                    <span class="flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-full border"
+                          style="border-color:rgba(var(--accent-rgb),0.3);background:rgba(var(--accent-rgb),0.08);color:var(--accent-text)">
+                        {!! $personaIcons[$personas[$currentPersona]['icon'] ?? 'grid'] !!}
+                        {{ $personas[$currentPersona]['label'] }}
+                    </span>
+                    @endif
+                </div>
+                <div class="px-5 py-4">
+                    <form method="POST" action="{{ route('workers.persona', $dep->id) }}" x-data="{ selected: '{{ $currentPersona ?? '' }}' }">
+                        @csrf @method('PATCH')
+                        <div class="space-y-2 mb-4">
+                            @foreach($personas as $key => $p)
+                            @php $icon = $personaIcons[$p['icon'] ?? 'grid']; @endphp
+                            <label class="flex items-center gap-3 cursor-pointer rounded-lg border px-4 py-3 transition-colors"
+                                   :class="selected === '{{ $key }}' ? 'border-yellow-400/40 bg-yellow-400/5' : 'border-gray-800 hover:border-gray-700'">
+                                <input type="radio" name="persona" value="{{ $key }}" class="sr-only" x-model="selected">
+                                <div class="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 transition-colors"
+                                     :class="selected === '{{ $key }}' ? 'text-yellow-400' : 'text-gray-500'"
+                                     :style="selected === '{{ $key }}' ? 'background:rgba(var(--accent-rgb),0.12)' : 'background:#1f2937'">
+                                    {!! $icon !!}
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <p class="text-sm font-medium transition-colors"
+                                       :class="selected === '{{ $key }}' ? 'text-white' : 'text-gray-400'">
+                                        {{ $p['label'] }}
+                                    </p>
+                                    <p class="text-xs text-gray-600">{{ $p['tagline'] }}</p>
+                                </div>
+                                <div x-show="selected === '{{ $key }}'" x-cloak
+                                     class="w-4 h-4 rounded-full flex items-center justify-center shrink-0"
+                                     style="background:var(--accent)">
+                                    <svg class="w-2.5 h-2.5" viewBox="0 0 12 12" fill="none">
+                                        <path d="M2 6l3 3 5-5" stroke="#111" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </div>
+                            </label>
+                            @endforeach
+                        </div>
+                        <button type="submit"
+                                class="px-4 py-2 rounded-lg text-sm font-semibold transition"
+                                style="background:var(--accent);color:#111">
+                            Save use case
+                        </button>
+                    </form>
+                </div>
+            </div>
+            @endif
+
             {{-- Prompt Overrides --}}
             @if(!empty($pipelineStages))
             @php

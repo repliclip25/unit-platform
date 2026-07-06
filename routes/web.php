@@ -164,6 +164,7 @@ Route::middleware(['auth', 'verified', 'onboarded', 'not-pending-del'])->group(f
     Route::get('/workers/{slug}/configure',                          [WorkerController::class, 'configure'])->name('workers.configure');
     Route::patch('/workers/{id}/config',                             [WorkerController::class, 'updateConfig'])->name('workers.config');
     Route::patch('/workers/{id}/model',                              [WorkerController::class, 'updateModel'])->name('workers.model');
+    Route::patch('/workers/{id}/persona',                            [WorkerController::class, 'updatePersona'])->name('workers.persona');
     Route::post('/workers/{id}/prompt-overrides',                    [WorkerController::class, 'savePromptOverride'])->name('workers.prompt-overrides');
     Route::post('/workers/{id}/prompt-test',                         [WorkerController::class, 'testPrompt'])->name('workers.prompt-test');
     Route::get('/workers/{slug}/log',                                [WorkerController::class, 'log'])->name('workers.log');

@@ -593,6 +593,59 @@ class WorkerController extends Controller
         return back()->with('success', 'AI model updated.');
     }
 
+    public function updatePersona(Request $request, int $id)
+    {
+        $dep     = DB::table('worker_deployments')->where('id', $id)->where('user_id', auth()->id())->firstOrFail();
+        $persona = $request->input('persona');
+
+        $contract = WorkerRegistry::resolve($dep->worker_slug ?? 'ava');
+        $allowed  = array_keys($contract->personas());
+
+        if (!in_array($persona, $allowed)) {
+            return back()->withErrors(['persona' => 'Invalid persona selected.']);
+        }
+
+        DB::table('worker_deployments')->where('id', $id)->update([
+            'persona'    => $persona,
+            'updated_at' => now(),
+        ]);
+        DB::table('users')->where('id', auth()->id())->update(['persona' => $persona]);
+
+        // Swap persona-specific rules — remove old persona rules, seed new ones
+        $personas = $contract->personas();
+        $rules    = $personas[$persona]['capture_rules'] ?? [];
+
+        if (!empty($rules)) {
+            DB::table('ava_rules')
+                ->where('deployment_id', $id)
+                ->where(function ($q) {
+                    $q->where('is_platform', false)->orWhereNull('is_platform');
+                })
+                ->delete();
+
+            $now    = now();
+            $userId = auth()->id();
+            foreach ($rules as $rule) {
+                DB::table('ava_rules')->insertOrIgnore([
+                    'user_id'           => $userId,
+                    'deployment_id'     => $id,
+                    'rule_id'           => $rule['rule_id'],
+                    'condition'         => $rule['condition'],
+                    'priority'          => $rule['priority'],
+                    'action'            => $rule['action'],
+                    'approval_required' => $rule['approval_required'],
+                    'notes'             => $rule['notes'] ?? null,
+                    'active'            => true,
+                    'is_platform'       => false,
+                    'created_at'        => $now,
+                    'updated_at'        => $now,
+                ]);
+            }
+        }
+
+        return back()->with('success', 'Use case updated — your rules have been refreshed.');
+    }
+
     public function testPrompt(Request $request, int $id)
     {
         $userId = auth()->id();
