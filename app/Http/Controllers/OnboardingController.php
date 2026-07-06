@@ -373,41 +373,10 @@ class OnboardingController extends Controller
         return redirect()->route('onboarding.step', 'memory');
     }
 
-    /**
-     * Swap deployment-scoped rules to match the chosen persona.
-     * Removes any previously seeded persona rules (is_platform = false), then inserts
-     * the new persona's capture_rules from the contract. Platform rules (is_platform = true)
-     * are never touched.
-     */
     private function seedPersonaRules(int $depId, int $userId, $contract, string $persona): void
     {
-        $personas = $contract?->personas() ?? [];
-        $rules    = $personas[$persona]['capture_rules'] ?? [];
-        if (empty($rules)) return;
-
-        // Remove any existing persona rules for this deployment (never touch platform rules)
-        DB::table('ava_rules')
-            ->where('deployment_id', $depId)
-            ->whereNotNull('persona')
-            ->delete();
-
-        $now = now();
-        foreach ($rules as $rule) {
-            DB::table('ava_rules')->insertOrIgnore([
-                'user_id'           => $userId,
-                'deployment_id'     => $depId,
-                'persona'           => $persona,
-                'rule_id'           => $rule['rule_id'],
-                'condition'         => $rule['condition'],
-                'priority'          => $rule['priority'],
-                'action'            => $rule['action'],
-                'approval_required' => $rule['approval_required'],
-                'notes'             => $rule['notes'] ?? null,
-                'active'            => true,
-                'is_platform'       => false,
-                'created_at'        => $now,
-                'updated_at'        => $now,
-            ]);
+        if ($contract) {
+            \App\Platform\Services\PersonaRuleSeeder::seed($depId, $userId, $contract, $persona);
         }
     }
 

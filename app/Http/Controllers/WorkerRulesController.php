@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Platform\Services\PersonaRuleSeeder;
 use App\Platform\Services\WorkerRegistry;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -14,19 +15,18 @@ class WorkerRulesController extends Controller
             ->where(fn($q) => $q->where('worker_slug', $slug)->when(is_numeric($slug), fn($q2) => $q2->orWhere('id', (int)$slug)))
             ->firstOrFail();
 
-        $contract       = WorkerRegistry::resolve($dep->worker_slug ?? 'ava');
-        $personas       = $contract->personas();
-        $activePersona  = $dep->persona ?? (empty($personas) ? null : array_key_first($personas));
+        $contract      = WorkerRegistry::resolve($dep->worker_slug ?? 'ava');
+        $personas      = $contract->personas();
+        $activePersona = $dep->persona ?? (empty($personas) ? null : array_key_first($personas));
 
-        // Rules grouped: persona-keyed buckets + platform bucket
         $allRules = DB::table('ava_rules')
             ->where('deployment_id', $dep->id)
             ->orderByRaw("FIELD(priority,'Critical','High','Medium','Low')")
             ->orderBy('rule_id')
             ->get();
 
-        $rulesByPersona   = [];
-        $platformRules    = [];
+        $rulesByPersona = [];
+        $platformRules  = [];
         foreach ($allRules as $rule) {
             if ($rule->persona === null) {
                 $platformRules[] = $rule;
@@ -35,8 +35,26 @@ class WorkerRulesController extends Controller
             }
         }
 
+        // Diff each persona's deployed rules against the current contract definition
+        $diffByPersona = [];
+        foreach ($personas as $key => $p) {
+            if (!empty($rulesByPersona[$key])) {
+                $diffByPersona[$key] = PersonaRuleSeeder::diff(
+                    $rulesByPersona[$key], $contract, $key
+                );
+            }
+        }
+
+        // Total stale/orphaned/missing across all personas for the banner
+        $totalIssues = 0;
+        foreach ($diffByPersona as $d) {
+            $totalIssues += count($d['stale']) + count($d['orphaned']) + count($d['missing']);
+        }
+
         return view('dashboard.worker-rules', compact(
-            'dep', 'personas', 'activePersona', 'rulesByPersona', 'platformRules'
+            'dep', 'personas', 'activePersona',
+            'rulesByPersona', 'platformRules',
+            'diffByPersona', 'totalIssues'
         ));
     }
 
@@ -50,14 +68,12 @@ class WorkerRulesController extends Controller
             'persona'   => 'required',
         ]);
 
-        // Validate persona is declared by the contract
         $contract = WorkerRegistry::resolve($dep->worker_slug ?? 'ava');
         $allowed  = array_keys($contract->personas());
         if (!in_array($request->persona, $allowed)) {
             return back()->withErrors(['persona' => 'Invalid persona.']);
         }
 
-        // Auto-assign rule_id within the persona namespace (e.g. IB-007, IT-004)
         $prefix = strtoupper(substr($request->persona, 0, 2));
         $last   = DB::table('ava_rules')
             ->where('deployment_id', $id)
@@ -70,10 +86,8 @@ class WorkerRulesController extends Controller
         } elseif ($last && preg_match('/(\d+)$/', $last, $m)) {
             $ruleId = $prefix . '-' . str_pad((int)$m[1] + 1, 3, '0', STR_PAD_LEFT);
         } else {
-            $ruleId = $prefix . '-' . str_pad(
-                DB::table('ava_rules')->where('deployment_id', $id)->where('persona', $request->persona)->count() + 1,
-                3, '0', STR_PAD_LEFT
-            );
+            $count  = DB::table('ava_rules')->where('deployment_id', $id)->where('persona', $request->persona)->count();
+            $ruleId = $prefix . '-' . str_pad($count + 1, 3, '0', STR_PAD_LEFT);
         }
 
         DB::table('ava_rules')->insert([
@@ -92,18 +106,35 @@ class WorkerRulesController extends Controller
             'updated_at'        => now(),
         ]);
 
-        return back()->with('success', "Rule {$ruleId} added to {$request->persona}.");
+        return back()->with('success', "Rule {$ruleId} added.");
     }
 
     public function destroy(int $id, int $rid)
     {
         DB::table('worker_deployments')->where('id', $id)->where('user_id', auth()->id())->firstOrFail();
-        // Never delete platform rules from the UI
         DB::table('ava_rules')
             ->where('id', $rid)
             ->where('deployment_id', $id)
             ->where('is_platform', false)
             ->delete();
         return back()->with('success', 'Rule removed.');
+    }
+
+    /**
+     * Reset all persona rules for this deployment to the latest contract definition.
+     * Custom rules the tenant added manually are wiped — only contract rules are seeded.
+     */
+    public function resetToContract(int $id, Request $request)
+    {
+        $dep = DB::table('worker_deployments')->where('id', $id)->where('user_id', auth()->id())->firstOrFail();
+
+        if (!$dep->persona) {
+            return back()->withErrors(['reset' => 'No persona set for this deployment.']);
+        }
+
+        $contract = WorkerRegistry::resolve($dep->worker_slug ?? 'ava');
+        PersonaRuleSeeder::seed($id, auth()->id(), $contract, $dep->persona);
+
+        return back()->with('success', 'Rules reset to the latest ' . ucfirst(str_replace('_', ' ', $dep->persona)) . ' definition.');
     }
 }

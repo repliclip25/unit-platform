@@ -30,6 +30,8 @@ use App\Http\Controllers\AdminPipelineHealthController;
 use App\Http\Controllers\AdminPricingController;
 use App\Http\Controllers\AdminMessagingController;
 use App\Http\Controllers\AdminWorkerLifecycleController;
+use App\Http\Controllers\AdminWorkerPersonaController;
+use App\Http\Controllers\AdminWorkerRulesController;
 use App\Http\Controllers\NuxController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -201,6 +203,7 @@ Route::middleware(['auth', 'verified', 'onboarded', 'not-pending-del'])->group(f
     Route::get('/workers/{slug}/rules',                              [WorkerRulesController::class, 'index'])->name('workers.rules');
     Route::post('/workers/{id}/rules',                               [WorkerRulesController::class, 'store'])->name('workers.rules.store');
     Route::delete('/workers/{id}/rules/{rid}',                       [WorkerRulesController::class, 'destroy'])->name('workers.rules.destroy');
+    Route::post('/workers/{id}/rules/reset',                         [WorkerRulesController::class, 'resetToContract'])->name('workers.rules.reset');
 
     // ── Models & API Keys ───────────────────────────────────────────────────
     Route::get('/settings/api-keys',             [SettingsController::class, 'apiKeys'])->name('settings.api-keys');
@@ -314,6 +317,11 @@ Route::middleware(['auth', 'verified', 'onboarded', 'not-pending-del'])->group(f
         Route::post('/admin/workers/{slug}/status',                       [WorkerBuilderController::class, 'updateStatus'])->name('admin.workers.status');
         Route::delete('/admin/workers/{slug}',                            [WorkerBuilderController::class, 'destroy'])->name('admin.workers.destroy');
         Route::get('/admin/workers/{slug}/export',                        [WorkerBuilderController::class, 'exportSchema'])->name('admin.workers.export');
+        Route::get('/admin/workers/{slug}/personas',                      [AdminWorkerPersonaController::class, 'index'])->name('admin.workers.personas');
+        Route::get('/admin/workers/{slug}/rules',                         [AdminWorkerRulesController::class, 'index'])->name('admin.workers.rules');
+        Route::post('/admin/workers/{slug}/rules',                        [AdminWorkerRulesController::class, 'store'])->name('admin.workers.rules.store');
+        Route::delete('/admin/workers/{slug}/rules/{id}',                 [AdminWorkerRulesController::class, 'destroy'])->name('admin.workers.rules.destroy');
+        Route::post('/admin/workers/{slug}/rules/sync',                   [AdminWorkerRulesController::class, 'syncFromContract'])->name('admin.workers.rules.sync');
 
         // Integration Registry
         Route::get('/admin/messaging',                    [AdminMessagingController::class, 'index'])->name('admin.messaging');

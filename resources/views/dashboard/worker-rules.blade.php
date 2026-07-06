@@ -18,22 +18,51 @@
         ];
     @endphp
 
+    {{-- Stale rule notice --}}
+    @if($totalIssues > 0)
+    <div class="mb-5 flex items-start justify-between gap-4 bg-amber-900/10 border border-amber-700/30 rounded-xl px-5 py-4">
+        <div class="flex items-start gap-3">
+            <svg class="w-4 h-4 text-amber-400 mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            <div>
+                <p class="text-amber-300 text-sm font-medium">Your rules are out of date</p>
+                <p class="text-amber-700 text-xs mt-0.5">
+                    {{ $totalIssues }} rule{{ $totalIssues === 1 ? '' : 's' }} no longer match the latest {{ ucfirst($dep->worker_slug ?? 'AVA') }} definition — some conditions or actions have been improved.
+                    Resetting takes 2 seconds and keeps your platform rules intact.
+                </p>
+            </div>
+        </div>
+        <form method="POST" action="{{ route('workers.rules.reset', $dep->id) }}" class="shrink-0">
+            @csrf
+            <button class="text-xs px-3 py-2 rounded-lg font-semibold transition whitespace-nowrap"
+                    style="background:rgba(var(--accent-rgb),0.15);color:var(--accent-text)">
+                Reset to latest
+            </button>
+        </form>
+    </div>
+    @endif
+
     <div x-data="{ tab: '{{ $activePersona ?? 'platform' }}' }" class="space-y-6">
 
         {{-- Tab bar --}}
         <div class="flex items-center gap-1 border-b border-gray-800 pb-0 overflow-x-auto">
             @foreach($personas as $key => $p)
+            @php
+                $tabCount    = count($rulesByPersona[$key] ?? []);
+                $tabDiff     = $diffByPersona[$key] ?? ['stale' => [], 'orphaned' => [], 'missing' => []];
+                $tabHasIssue = !empty($tabDiff['stale']) || !empty($tabDiff['orphaned']) || !empty($tabDiff['missing']);
+            @endphp
             <button @click="tab = '{{ $key }}'"
                     class="px-4 py-2.5 text-sm font-medium whitespace-nowrap border-b-2 -mb-px transition-colors"
                     :class="tab === '{{ $key }}'
                         ? 'border-yellow-400 text-white'
                         : 'border-transparent text-gray-500 hover:text-gray-300'">
                 {{ $p['label'] }}
-                @php $count = count($rulesByPersona[$key] ?? []); @endphp
-                @if($count)
+                @if($tabHasIssue)
+                <span class="ml-1 inline-block w-1.5 h-1.5 rounded-full bg-amber-400 align-middle -mt-1"></span>
+                @elseif($tabCount)
                 <span class="ml-1.5 text-xs px-1.5 py-0.5 rounded-full"
                       :class="tab === '{{ $key }}' ? 'bg-yellow-400/20 text-yellow-300' : 'bg-gray-800 text-gray-600'">
-                    {{ $count }}
+                    {{ $tabCount }}
                 </span>
                 @endif
             </button>
@@ -53,7 +82,24 @@
 
         {{-- Persona tabs --}}
         @foreach($personas as $key => $p)
-        <div x-show="tab === '{{ $key }}'" x-cloak class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        @php
+            $diff     = $diffByPersona[$key] ?? ['stale' => [], 'orphaned' => [], 'missing' => []];
+            $hasIssues= !empty($diff['stale']) || !empty($diff['orphaned']) || !empty($diff['missing']);
+        @endphp
+        <div x-show="tab === '{{ $key }}'" x-cloak class="space-y-4">
+
+        @if($hasIssues)
+        <div class="bg-amber-900/10 border border-amber-700/30 rounded-xl px-5 py-3 flex items-center justify-between gap-4">
+            <p class="text-amber-400 text-xs">
+                @if(!empty($diff['stale'])) {{ count($diff['stale']) }} stale · @endif
+                @if(!empty($diff['orphaned'])) {{ count($diff['orphaned']) }} orphaned · @endif
+                @if(!empty($diff['missing'])) {{ count($diff['missing']) }} new rule{{ count($diff['missing']) === 1 ? '' : 's' }} available ·@endif
+                <span class="text-amber-600">Use "Reset to latest" above to update.</span>
+            </p>
+        </div>
+        @endif
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
             {{-- Rules list --}}
             <div class="lg:col-span-2 bg-gray-900 border border-gray-800 rounded-xl">
@@ -151,7 +197,8 @@
                 </form>
             </div>
 
-        </div>
+        </div>{{-- grid --}}
+        </div>{{-- persona tab wrapper --}}
         @endforeach
 
         {{-- Platform defaults tab --}}

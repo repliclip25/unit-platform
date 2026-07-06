@@ -615,33 +615,7 @@ class WorkerController extends Controller
         $personas = $contract->personas();
         $rules    = $personas[$persona]['capture_rules'] ?? [];
 
-        if (!empty($rules)) {
-            // Remove existing persona rules only (platform rules untouched)
-            DB::table('ava_rules')
-                ->where('deployment_id', $id)
-                ->whereNotNull('persona')
-                ->delete();
-
-            $now    = now();
-            $userId = auth()->id();
-            foreach ($rules as $rule) {
-                DB::table('ava_rules')->insertOrIgnore([
-                    'user_id'           => $userId,
-                    'deployment_id'     => $id,
-                    'persona'           => $persona,
-                    'rule_id'           => $rule['rule_id'],
-                    'condition'         => $rule['condition'],
-                    'priority'          => $rule['priority'],
-                    'action'            => $rule['action'],
-                    'approval_required' => $rule['approval_required'],
-                    'notes'             => $rule['notes'] ?? null,
-                    'active'            => true,
-                    'is_platform'       => false,
-                    'created_at'        => $now,
-                    'updated_at'        => $now,
-                ]);
-            }
-        }
+        \App\Platform\Services\PersonaRuleSeeder::seed($id, auth()->id(), $contract, $persona);
 
         return back()->with('success', 'Use case updated — your rules have been refreshed.');
     }
