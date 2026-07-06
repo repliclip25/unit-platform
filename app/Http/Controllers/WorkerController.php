@@ -616,11 +616,10 @@ class WorkerController extends Controller
         $rules    = $personas[$persona]['capture_rules'] ?? [];
 
         if (!empty($rules)) {
+            // Remove existing persona rules only (platform rules untouched)
             DB::table('ava_rules')
                 ->where('deployment_id', $id)
-                ->where(function ($q) {
-                    $q->where('is_platform', false)->orWhereNull('is_platform');
-                })
+                ->whereNotNull('persona')
                 ->delete();
 
             $now    = now();
@@ -629,6 +628,7 @@ class WorkerController extends Controller
                 DB::table('ava_rules')->insertOrIgnore([
                     'user_id'           => $userId,
                     'deployment_id'     => $id,
+                    'persona'           => $persona,
                     'rule_id'           => $rule['rule_id'],
                     'condition'         => $rule['condition'],
                     'priority'          => $rule['priority'],

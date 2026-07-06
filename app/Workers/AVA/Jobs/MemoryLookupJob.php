@@ -51,7 +51,7 @@ class MemoryLookupJob implements ShouldQueue
             'clients'  => $this->filterRecords($input->memory['clients']  ?? [], $keywords, 15),
             'contacts' => $this->filterRecords($input->memory['contacts'] ?? [], $keywords, 20),
             'assets'   => $this->filterRecords($input->memory['assets']   ?? [], $keywords, 20),
-            'ava_rules'=> $this->prepareRules($input->memory['rules'] ?? []),
+            'ava_rules'=> $this->prepareRules($input->memory['rules'] ?? [], $input->persona),
         ];
 
         $system = 'You are Ava, UNIT\'s Subscription & Renewal Coordinator. Return valid JSON only. No extra text. '
@@ -142,31 +142,42 @@ PROMPT;
     }
 
     /**
-     * Sort rules by priority (Critical → High → Medium → Low), persona rules
-     * before platform rules within the same priority tier, then cap at 10.
-     * Sends only condition + action + priority + rule_id to Claude — drops DB internals.
+     * Filter rules to active persona + platform rules, sort by priority
+     * (Critical → High → Medium → Low) with persona rules before platform
+     * rules at the same tier, cap at 10, strip DB internals.
+     *
+     * Rules with persona = null are platform rules — always included.
+     * Rules with persona = $activePersona are persona-specific — included.
+     * Rules belonging to other personas are excluded entirely.
      */
-    private function prepareRules(array $rules): array
+    private function prepareRules(array $rules, ?string $activePersona): array
     {
+        // Filter: keep platform rules (persona null) + rules matching active persona
+        $rules = array_filter($rules, function ($r) use ($activePersona) {
+            $rPersona = $this->ruleField($r, 'persona', null);
+            if ($rPersona === null) return true;           // platform rule
+            if ($activePersona === null) return false;     // no persona set — platform rules only
+            return $rPersona === $activePersona;
+        });
+
         $order = ['Critical' => 0, 'High' => 1, 'Medium' => 2, 'Low' => 3];
 
         usort($rules, function ($a, $b) use ($order) {
             $pa = $order[$this->ruleField($a, 'priority', 'Low')] ?? 3;
             $pb = $order[$this->ruleField($b, 'priority', 'Low')] ?? 3;
             if ($pa !== $pb) return $pa <=> $pb;
-            // Within same priority tier: persona rules (is_platform=false) before platform rules
+            // Within same tier: persona rules before platform rules
             $ia = (int) $this->ruleField($a, 'is_platform', 1);
             $ib = (int) $this->ruleField($b, 'is_platform', 1);
             return $ia <=> $ib;
         });
 
         return array_map(fn($r) => [
-            'rule_id'    => $this->ruleField($r, 'rule_id',    ''),
-            'condition'  => $this->ruleField($r, 'condition',  ''),
-            'action'     => $this->ruleField($r, 'action',     ''),
-            'priority'   => $this->ruleField($r, 'priority',   'Medium'),
-            'is_platform'=> (bool) $this->ruleField($r, 'is_platform', true),
-        ], array_slice($rules, 0, 10));
+            'rule_id'   => $this->ruleField($r, 'rule_id',   ''),
+            'condition' => $this->ruleField($r, 'condition', ''),
+            'action'    => $this->ruleField($r, 'action',    ''),
+            'priority'  => $this->ruleField($r, 'priority',  'Medium'),
+        ], array_slice(array_values($rules), 0, 10));
     }
 
     /**

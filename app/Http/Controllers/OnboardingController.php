@@ -385,12 +385,10 @@ class OnboardingController extends Controller
         $rules    = $personas[$persona]['capture_rules'] ?? [];
         if (empty($rules)) return;
 
-        // Remove previously seeded persona rules for this deployment only
+        // Remove any existing persona rules for this deployment (never touch platform rules)
         DB::table('ava_rules')
             ->where('deployment_id', $depId)
-            ->where(function ($q) {
-                $q->where('is_platform', false)->orWhereNull('is_platform');
-            })
+            ->whereNotNull('persona')
             ->delete();
 
         $now = now();
@@ -398,6 +396,7 @@ class OnboardingController extends Controller
             DB::table('ava_rules')->insertOrIgnore([
                 'user_id'           => $userId,
                 'deployment_id'     => $depId,
+                'persona'           => $persona,
                 'rule_id'           => $rule['rule_id'],
                 'condition'         => $rule['condition'],
                 'priority'          => $rule['priority'],

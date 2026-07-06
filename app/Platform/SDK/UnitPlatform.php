@@ -161,6 +161,7 @@ final class UnitPlatform
             deploymentId:   $tx->deployment_id ?? 0,
             userId:         $userId,
             workerSlug:     $slug,
+            persona:        $dep?->persona ?? null,
             queue:          $queue,
             source:         $rawInput['source'] ?? 'unknown',
             raw:            $rawInput,

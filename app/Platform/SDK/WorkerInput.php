@@ -13,6 +13,7 @@ final class WorkerInput
         public readonly int     $deploymentId,
         public readonly int     $userId,
         public readonly string  $workerSlug,
+        public readonly ?string $persona,          // active persona slug for this deployment
         public readonly string  $queue,            // e.g. 'ava-4' — use for dispatching next job
         public readonly string  $source,           // 'gmail_webhook' | 'fast_track_test' | 'public_demo'
         public readonly array   $raw,              // original raw_input JSON
