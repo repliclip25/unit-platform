@@ -51,10 +51,12 @@ class MemoryLookupJob implements ShouldQueue
             'clients'  => $this->filterRecords($input->memory['clients']  ?? [], $keywords, 15),
             'contacts' => $this->filterRecords($input->memory['contacts'] ?? [], $keywords, 20),
             'assets'   => $this->filterRecords($input->memory['assets']   ?? [], $keywords, 20),
-            'ava_rules'=> $input->memory['rules'] ?? [],
+            'ava_rules'=> $this->prepareRules($input->memory['rules'] ?? []),
         ];
 
-        $system = 'You are Ava, UNIT\'s Subscription & Renewal Coordinator. Return valid JSON only. No extra text.';
+        $system = 'You are Ava, UNIT\'s Subscription & Renewal Coordinator. Return valid JSON only. No extra text. '
+            . 'When selecting an ava_rule, prefer rules with priority Critical > High > Medium > Low. '
+            . 'Persona-specific rules (is_platform=false) take precedence over platform rules (is_platform=true) when both could apply.';
 
         $prompt = <<<PROMPT
 Using the extracted email information and the memory tables below, find who owns this asset and how it should be handled.
@@ -81,12 +83,13 @@ PROMPT;
 
         $output = $claude->ask($system, $prompt, $input->maxTokens('memory', 768), $this->txId, 'memory');
 
-        // Low confidence — flag but continue pipeline (AVA-006)
-        $confidence = $output['confidence'] ?? 0;
+        // Low confidence — flag but continue pipeline
+        $confidence      = $output['confidence'] ?? 0;
+        $lowConfRuleId   = $this->findLowConfidenceRuleId($input->memory['rules'] ?? []);
         if ($confidence < 70) {
             UnitPlatform::log('ava', $this->txId, 'low_confidence_flagged', [
                 'confidence' => $confidence,
-                'rule'       => 'AVA-006',
+                'rule'       => $lowConfRuleId,
                 'action'     => 'continuing_with_draft',
             ], 'warning');
 
@@ -136,6 +139,56 @@ PROMPT;
         UnitPlatform::log('ava', $this->txId, 'job_failed', [
             'job' => 'MemoryLookupJob', 'error' => $e->getMessage(),
         ], 'error');
+    }
+
+    /**
+     * Sort rules by priority (Critical → High → Medium → Low), persona rules
+     * before platform rules within the same priority tier, then cap at 10.
+     * Sends only condition + action + priority + rule_id to Claude — drops DB internals.
+     */
+    private function prepareRules(array $rules): array
+    {
+        $order = ['Critical' => 0, 'High' => 1, 'Medium' => 2, 'Low' => 3];
+
+        usort($rules, function ($a, $b) use ($order) {
+            $pa = $order[$this->ruleField($a, 'priority', 'Low')] ?? 3;
+            $pb = $order[$this->ruleField($b, 'priority', 'Low')] ?? 3;
+            if ($pa !== $pb) return $pa <=> $pb;
+            // Within same priority tier: persona rules (is_platform=false) before platform rules
+            $ia = (int) $this->ruleField($a, 'is_platform', 1);
+            $ib = (int) $this->ruleField($b, 'is_platform', 1);
+            return $ia <=> $ib;
+        });
+
+        return array_map(fn($r) => [
+            'rule_id'    => $this->ruleField($r, 'rule_id',    ''),
+            'condition'  => $this->ruleField($r, 'condition',  ''),
+            'action'     => $this->ruleField($r, 'action',     ''),
+            'priority'   => $this->ruleField($r, 'priority',   'Medium'),
+            'is_platform'=> (bool) $this->ruleField($r, 'is_platform', true),
+        ], array_slice($rules, 0, 10));
+    }
+
+    /**
+     * Find the rule_id of the low-confidence / human-confirmation rule for this deployment.
+     * Matches on condition keywords; falls back to 'AVA-006' if none found.
+     */
+    private function findLowConfidenceRuleId(array $rules): string
+    {
+        foreach ($rules as $r) {
+            $condition = strtolower($this->ruleField($r, 'condition', ''));
+            if (str_contains($condition, 'confidence')) {
+                return $this->ruleField($r, 'rule_id', 'AVA-006');
+            }
+        }
+        return 'AVA-006';
+    }
+
+    /** Read a field from a rule that may be stdClass (DB row) or array. */
+    private function ruleField(mixed $rule, string $field, mixed $default): mixed
+    {
+        if (is_object($rule)) return $rule->{$field} ?? $default;
+        return $rule[$field] ?? $default;
     }
 
     /**
