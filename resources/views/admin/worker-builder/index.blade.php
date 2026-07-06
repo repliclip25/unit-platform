@@ -84,6 +84,14 @@
                         style="font-size:11px;font-weight:600;padding:5px 12px;border-radius:8px;background:var(--accent);color:#000;text-decoration:none">
                         Edit DNA
                     </a>
+                    <a href="{{ route('admin.workers.personas', $w->slug) }}"
+                        style="font-size:11px;font-weight:600;padding:5px 12px;border-radius:8px;border:1px solid var(--border);color:var(--text-primary);background:transparent;text-decoration:none">
+                        Personas
+                    </a>
+                    <a href="{{ route('admin.workers.rules', $w->slug) }}"
+                        style="font-size:11px;font-weight:600;padding:5px 12px;border-radius:8px;border:1px solid var(--border);color:var(--text-primary);background:transparent;text-decoration:none">
+                        Rules
+                    </a>
                     @if($w->status === 'registered' || $w->status === 'scaffolded')
                     <form method="POST" action="{{ route('admin.workers.scaffold', $w->slug) }}" style="margin:0">
                         @csrf
