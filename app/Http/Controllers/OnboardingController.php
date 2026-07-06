@@ -148,7 +148,7 @@ class OnboardingController extends Controller
         if ($wos) WorkerOnboardingService::complete($wos->id);
 
         $user->forceFill(['onboarding_completed_at' => now()])->save();
-        return redirect()->route('dashboard')->with('success', 'You\'re all set! Your workspace is ready.');
+        return redirect()->route('dashboard')->with('success', 'Welcome to your AI workforce. Ava is now monitoring your inbox.');
     }
 
     public function skip()

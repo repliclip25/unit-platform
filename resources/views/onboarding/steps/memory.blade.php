@@ -21,11 +21,14 @@
 @endphp
 
 <div class="mb-6">
-    <p class="text-xs font-semibold uppercase tracking-widest mb-3" style="color:var(--accent-text)">Step 3 of 4 — Memory</p>
-    <h1 class="text-2xl font-black text-white mb-2">Load your book of business</h1>
-    <p class="text-gray-400 text-sm leading-relaxed">
-        AVA matches incoming renewal emails to your {{ $mc['client_noun'] }}s. The more you add here, the higher her confidence — and the less you'll need to correct after each draft.
+    <p class="text-xs font-bold uppercase tracking-widest mb-4" style="color:var(--accent-text)">Step 3 of 4 &nbsp;·&nbsp; Build memory</p>
+    <h1 class="text-2xl font-black text-white mb-3 leading-snug">Introduce Ava to your clients.</h1>
+    <p class="text-gray-400 text-sm leading-relaxed">A new employee becomes more useful after learning who your customers are.</p>
+    <p class="text-gray-400 text-sm leading-relaxed mt-1">The same is true here.</p>
+    <p class="text-gray-400 text-sm leading-relaxed mt-2">
+        Each client you add helps Ava recognize future renewal emails automatically and write more accurate drafts.
     </p>
+    <p class="text-gray-400 text-sm leading-relaxed mt-2">You only need one client to get started.</p>
 </div>
 
 {{-- Success flash --}}
@@ -45,10 +48,9 @@
 {{-- Memory health bar --}}
 <div class="mb-6 bg-gray-900 border border-gray-800 rounded-xl px-5 py-4">
     <div class="flex items-center justify-between mb-2">
-        <span class="text-xs font-semibold text-gray-400">Memory coverage</span>
+        <span class="text-xs font-semibold text-gray-400">Memory Coverage</span>
         <span class="text-xs font-bold {{ $isHealthy ? 'text-green-400' : ($score >= 40 ? 'text-yellow-400' : 'text-gray-500') }}">
             {{ $score }}%
-            @if($isHealthy) · Healthy @elseif($score > 0) · {{ $needed }} more to go @endif
         </span>
     </div>
     <div class="h-2 rounded-full overflow-hidden bg-gray-800">
@@ -57,18 +59,19 @@
     </div>
     <p class="text-xs text-gray-600 mt-2">
         @if($isHealthy)
-            AVA has enough context to produce reliable drafts for your top clients.
+            Ava has enough context to produce reliable drafts for your clients.
         @elseif($complete > 0)
-            {{ $complete }} of {{ $threshold }} complete records — add {{ $needed }} more client{{ $needed === 1 ? '' : 's' }} with a contact email and a policy to reach reliable confidence.
+            Ava currently knows <strong class="text-gray-400">{{ $complete }} {{ $mc['client_noun'] }}{{ $complete === 1 ? '' : 's' }}</strong>.
+            Add a few more to unlock high-confidence drafting.
         @else
-            Add {{ $threshold }} clients with a contact email and a policy each — that's when AVA starts producing reliable drafts.
+            Add your first {{ $mc['client_noun'] }} below to get started.
         @endif
     </p>
 </div>
 
 {{-- ── Quick-add form ── --}}
 <div class="mb-5">
-    <p class="text-xs font-semibold text-gray-500 uppercase tracking-widest mb-3">Add a {{ $mc['client_noun'] }}</p>
+    <p class="text-xs font-semibold text-gray-500 uppercase tracking-widest mb-3">Add a {{ $mc['client_noun'] }} to Ava's memory</p>
     <form method="POST" action="{{ route('onboarding.memory.quickadd') }}"
           class="bg-gray-900 border border-gray-800 rounded-xl p-5 space-y-3">
         @csrf
@@ -166,8 +169,8 @@
        class="flex items-center gap-3 bg-gray-900/60 border border-gray-800 hover:border-gray-700 rounded-xl px-4 py-3 group transition-colors">
         <span class="text-lg shrink-0">📥</span>
         <div class="flex-1 min-w-0">
-            <p class="text-gray-300 text-sm font-medium group-hover:text-white transition-colors">Import via CSV</p>
-            <p class="text-gray-600 text-xs">Download our template, fill it in, upload — covers your whole book at once</p>
+            <p class="text-gray-300 text-sm font-medium group-hover:text-white transition-colors">Already have a client list?</p>
+            <p class="text-gray-600 text-xs">Import everyone in one click.</p>
         </div>
         <svg class="w-3.5 h-3.5 text-gray-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
     </a>
@@ -178,8 +181,8 @@
                 class="w-full flex items-center gap-3 bg-gray-900/40 border border-gray-800/60 hover:border-gray-700 rounded-xl px-4 py-3 group transition-colors text-left">
             <span class="text-lg shrink-0">🧪</span>
             <div class="flex-1 min-w-0">
-                <p class="text-gray-500 text-sm group-hover:text-gray-400 transition-colors">Load demo data instead</p>
-                <p class="text-gray-700 text-xs">Fake clients for testing only — replace before going live</p>
+                <p class="text-gray-500 text-sm group-hover:text-gray-400 transition-colors">Just exploring?</p>
+                <p class="text-gray-700 text-xs">Load sample clients and replace them later.</p>
             </div>
         </button>
     </form>
@@ -203,24 +206,24 @@
         <button type="submit"
                 class="w-full font-bold text-base py-4 rounded-xl transition"
                 style="background:var(--accent);color:#111">
-            Continue →
+            Continue
         </button>
     @elseif($hasAny)
         <button type="submit"
                 class="w-full font-bold text-base py-4 rounded-xl transition"
                 style="background:var(--accent);color:#111">
-            Continue with {{ $complete }} complete record{{ $complete === 1 ? '' : 's' }} →
+            Continue
         </button>
         <p class="text-center text-xs text-gray-600 mt-2">
-            AVA will run but confidence may be low — we'll send you a reminder to finish loading your book.
+            Ava will start working — we'll remind you to add more clients to improve her accuracy.
         </p>
     @else
         <button type="submit"
                 class="w-full font-semibold text-base py-4 rounded-xl transition border border-gray-700 text-gray-400 hover:text-white hover:border-gray-500">
-            Continue without memory
+            Continue
         </button>
         <p class="text-center text-xs text-gray-600 mt-2">
-            AVA will still run, but won't recognise your clients — every draft will need manual correction until you add your book of business.
+            Ava will still run — but she won't recognize your clients until you add them.
         </p>
     @endif
 </form>

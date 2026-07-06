@@ -19,13 +19,13 @@
 
     {{-- Dynamic header — updates with pipeline state --}}
     <div class="mb-8">
-        <h1 class="text-2xl font-black text-white mb-2 transition-all duration-300">
-            <span x-show="!success">{{ $workerName }} is running your email through the pipeline.</span>
-            <span x-show="success" x-cloak>Your first deal, handled.</span>
+        <h1 class="text-2xl font-black text-white mb-2 transition-all duration-300 leading-snug">
+            <span x-show="!success">Ava is working...</span>
+            <span x-show="success" x-cloak>Ava completed her first assignment.</span>
         </h1>
-        <p class="text-sm transition-all duration-300">
-            <span x-show="!success" class="text-gray-400">Watch each stage complete in real time — this is exactly what happens to every renewal that hits your inbox.</span>
-            <span x-show="success" x-cloak class="text-green-400/80">AVA read it, understood it, matched it to your contacts, and prepared a response — without you touching a thing.</span>
+        <p class="text-sm transition-all duration-300 leading-relaxed">
+            <span x-show="!success" class="text-gray-400">Here's everything happening behind the scenes.</span>
+            <span x-show="success" x-cloak class="text-green-400/80">Your first renewal has already been processed from start to finish.</span>
         </p>
     </div>
 
@@ -63,15 +63,15 @@
                     </svg>
                 </div>
                 <div>
-                    <p class="text-white font-black text-lg leading-snug mb-1">{{ $outcome['headline'] ?? 'Your worker just completed its first run.' }}</p>
-                    <p class="text-green-400/70 text-sm">Here's what happened behind the scenes.</p>
+                    <p class="text-white font-black text-lg leading-snug mb-1">{{ $outcome['headline'] ?? 'Ava completed her first assignment.' }}</p>
+                    <p class="text-green-400/70 text-sm">Your first renewal has already been processed from start to finish.</p>
                 </div>
             </div>
         </div>
 
         {{-- What happened --}}
         <div class="rounded-2xl border border-gray-800 bg-gray-900 px-6 py-5 mb-4">
-            <p class="text-gray-500 text-xs font-semibold uppercase tracking-widest mb-4">What {{ $workerName }} did</p>
+            <p class="text-gray-500 text-xs font-semibold uppercase tracking-widest mb-4">Without any manual work, Ava:</p>
             <div class="space-y-4">
                 @foreach($outcome['what_happened'] ?? [] as $i => $item)
                 <div class="flex items-start gap-3">
@@ -101,7 +101,7 @@
         <a href="{{ route('onboarding.complete') }}"
            class="block w-full text-center font-black text-base py-4 rounded-xl transition-all mb-4"
            style="background:var(--accent);color:#1a1404">
-            Go to dashboard →
+            See My Draft
         </a>
 
         {{-- Going forward --}}
@@ -119,7 +119,7 @@
     {{-- Skip link — hide once success card appears --}}
     <a x-show="!success" href="{{ route('onboarding.complete') }}"
        class="block text-center text-gray-600 hover:text-gray-400 text-sm transition-colors mt-4">
-        Skip — go straight to dashboard
+        Skip for now
     </a>
 </div>
 
@@ -127,9 +127,17 @@
 {{-- ── NOT YET RUN ── --}}
 
 <div class="mb-6">
-    <p class="text-xs font-semibold uppercase tracking-widest mb-3" style="color:var(--accent-text)">Final step — Live test</p>
-    <h1 class="text-2xl font-black text-white mb-2">See {{ $workerName }} work — before you commit to anything.</h1>
-    <p class="text-gray-400 text-sm leading-relaxed">You've connected Gmail and loaded your clients. Now fire a renewal email through AVA's pipeline and watch her classify it, match it to memory, and draft a response — in real time.</p>
+    <p class="text-xs font-bold uppercase tracking-widest mb-4" style="color:var(--accent-text)">Step 4 of 4 &nbsp;·&nbsp; First assignment</p>
+    <h1 class="text-2xl font-black text-white mb-3 leading-snug">Watch Ava handle her first job.</h1>
+    <p class="text-gray-400 text-sm leading-relaxed">Rather than explaining what Ava does...</p>
+    <p class="text-gray-400 text-sm leading-relaxed mt-1">Let's watch her work.</p>
+    <p class="text-gray-400 text-sm leading-relaxed mt-2">
+        We'll run one safe test renewal through her workflow so you can see exactly how she reads, understands, and prepares a response.
+    </p>
+    <div class="flex items-center gap-4 mt-3">
+        <p class="text-gray-500 text-sm">No emails are sent.</p>
+        <p class="text-gray-500 text-sm">Nothing changes inside your inbox.</p>
+    </div>
 </div>
 
 @php
@@ -227,12 +235,12 @@
     <button type="submit" id="run-btn"
         class="w-full font-bold text-base py-4 rounded-xl transition-colors mb-3"
         style="background:var(--accent);color:#1a1404">
-        &#9889; Run live test
+        Run Test
     </button>
 </form>
 
 <a href="{{ route('onboarding.complete') }}" class="block text-center text-gray-600 hover:text-gray-400 text-sm transition-colors">
-    Skip — go straight to dashboard
+    Skip for now
 </a>
 
 <script>
