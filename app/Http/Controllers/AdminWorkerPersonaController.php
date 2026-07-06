@@ -101,7 +101,7 @@ class AdminWorkerPersonaController extends Controller
             'updated_at'    => now(),
         ]);
 
-        return back()->with('success', "Persona "{$request->label}" created.");
+        return back()->with('success', 'Persona "' . $request->label . '" created.');
     }
 
     public function update(string $slug, int $id, Request $request)
@@ -132,7 +132,7 @@ class AdminWorkerPersonaController extends Controller
             'updated_at'  => now(),
         ]);
 
-        return back()->with('success', "Persona "{$row->label}" updated.");
+        return back()->with('success', 'Persona "' . $row->label . '" updated.');
     }
 
     public function destroy(string $slug, int $id)
@@ -145,12 +145,12 @@ class AdminWorkerPersonaController extends Controller
             ->count();
 
         if ($inUse > 0) {
-            return back()->withErrors(['delete' => "Cannot remove "{$row->label}" — {$inUse} deployment(s) are using this persona."]);
+            return back()->withErrors(['delete' => 'Cannot remove "' . $row->label . '" — ' . $inUse . ' deployment(s) are using this persona.']);
         }
 
         DB::table('worker_personas')->where('id', $id)->delete();
 
-        return back()->with('success', "Persona "{$row->label}" removed.");
+        return back()->with('success', 'Persona "' . $row->label . '" removed.');
     }
 
     // ── Helpers ────────────────────────────────────────────────────────────────
