@@ -1,57 +1,71 @@
 @props(['pageKey', 'title' => null, 'body' => null])
 
 @php
-    if (!auth()->check()) return;
+    $slEntry          = null;
+    $slTitle          = $title;
+    $slBody           = $body;
+    $slVersion        = 1;
+    $slShouldShow     = false;
 
-    $userId = auth()->id();
+    if (auth()->check()) {
+        $userId = auth()->id();
 
-    // Load DB entry — fall back to props if not seeded yet
-    $entry = \Illuminate\Support\Facades\DB::table('platform_self_learn')
-        ->where('page_key', $pageKey)
-        ->where('active', true)
-        ->first();
+        try {
+            $slEntry = \Illuminate\Support\Facades\DB::table('platform_self_learn')
+                ->where('page_key', $pageKey)
+                ->where('active', true)
+                ->first();
+        } catch (\Throwable) {}
 
-    if (!$entry && !$title) return; // nothing to show
+        if ($slEntry || $title) {
+            $slTitle   = $slEntry?->title ?? $title;
+            $slBody    = $slEntry?->body  ?? $body;
+            $slVersion = (int) ($slEntry?->version ?? 1);
 
-    $displayTitle   = $entry?->title   ?? $title;
-    $displayBody    = $entry?->body    ?? $body;
-    $currentVersion = (int) ($entry?->version ?? 1);
+            try {
+                $dismissedVersion = \Illuminate\Support\Facades\DB::table('user_self_learn_dismissed')
+                    ->where('user_id', $userId)
+                    ->where('page_key', $pageKey)
+                    ->value('version');
 
-    // Check if dismissed at current version
-    $dismissedVersion = \Illuminate\Support\Facades\DB::table('user_self_learn_dismissed')
-        ->where('user_id', $userId)
-        ->where('page_key', $pageKey)
-        ->value('version');
+                $dismissed = $dismissedVersion !== null && (int) $dismissedVersion >= $slVersion;
+            } catch (\Throwable) {
+                $dismissed = false;
+            }
 
-    $dismissed = $dismissedVersion !== null && (int) $dismissedVersion >= $currentVersion;
+            if (!$dismissed) {
+                $slShouldShow = true;
 
-    if ($dismissed) return;
+                // Track shown (deduplicated — once per user per version per day)
+                try {
+                    $alreadyTracked = \Illuminate\Support\Facades\DB::table('user_self_learn_events')
+                        ->where('user_id', $userId)
+                        ->where('page_key', $pageKey)
+                        ->where('event', 'shown')
+                        ->where('version', $slVersion)
+                        ->where('created_at', '>=', now()->subDay())
+                        ->exists();
 
-    // Track shown event (deduplicated — once per user per page_key per version per day)
-    $alreadyTracked = \Illuminate\Support\Facades\DB::table('user_self_learn_events')
-        ->where('user_id', $userId)
-        ->where('page_key', $pageKey)
-        ->where('event', 'shown')
-        ->where('version', $currentVersion)
-        ->where('created_at', '>=', now()->subDay())
-        ->exists();
-
-    if (!$alreadyTracked) {
-        \Illuminate\Support\Facades\DB::table('user_self_learn_events')->insert([
-            'user_id'    => $userId,
-            'page_key'   => $pageKey,
-            'event'      => 'shown',
-            'version'    => $currentVersion,
-            'created_at' => now(),
-        ]);
+                    if (!$alreadyTracked) {
+                        \Illuminate\Support\Facades\DB::table('user_self_learn_events')->insert([
+                            'user_id'    => $userId,
+                            'page_key'   => $pageKey,
+                            'event'      => 'shown',
+                            'version'    => $slVersion,
+                            'created_at' => now(),
+                        ]);
+                    }
+                } catch (\Throwable) {}
+            }
+        }
     }
 @endphp
 
+@if($slShouldShow)
 <div id="self-learn-{{ $pageKey }}"
      class="mt-8 rounded-xl px-5 py-4 flex gap-4 items-start"
      style="background:var(--bg-raised);border:1px solid var(--border-subtle)">
 
-    {{-- Icon --}}
     <div class="shrink-0 mt-0.5">
         <svg class="w-4 h-4" style="color:var(--accent-text)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -59,14 +73,12 @@
         </svg>
     </div>
 
-    {{-- Content --}}
     <div class="flex-1 min-w-0">
-        <p class="text-xs font-bold uppercase tracking-widest mb-1" style="color:var(--accent-text)">Self Learn · v{{ $currentVersion }}</p>
-        <p class="text-sm font-semibold mb-1" style="color:var(--text-primary)">{{ $displayTitle }}</p>
-        <p class="text-xs leading-relaxed" style="color:var(--text-muted)">{{ $displayBody }}</p>
+        <p class="text-xs font-bold uppercase tracking-widest mb-1" style="color:var(--accent-text)">Self Learn · v{{ $slVersion }}</p>
+        <p class="text-sm font-semibold mb-1" style="color:var(--text-primary)">{{ $slTitle }}</p>
+        <p class="text-xs leading-relaxed" style="color:var(--text-muted)">{{ $slBody }}</p>
     </div>
 
-    {{-- Dismiss --}}
     <button onclick="selfLearnDismiss('{{ $pageKey }}')"
             class="shrink-0 mt-0.5 rounded-md p-1 transition hover:opacity-70"
             title="Dismiss"
@@ -91,3 +103,4 @@ function selfLearnDismiss(key) {
     });
 }
 </script>
+@endif

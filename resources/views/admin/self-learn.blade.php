@@ -129,13 +129,16 @@
         <div class="px-5 py-4 border-b border-gray-800">
             <p class="text-white text-sm font-semibold">How Self Learn works</p>
         </div>
+        @php
+            $howItWorks = [
+                ['Component',     'Add <x-self-learn page-key="your.key" /> to any page. Title and body are read live from this registry — no redeploy needed.'],
+                ['Versioning',    'Each entry has a version number. Bump it and every user who dismissed the old version will see the updated content again.'],
+                ['Tracking',      'Shown and dismissed events are recorded per user per version. Dismiss rate = unique dismissals ÷ unique impressions.'],
+                ['Active toggle', 'Hiding an entry removes it instantly for all users. Their dismissed state is preserved when you re-activate.'],
+            ];
+        @endphp
         <div class="divide-y divide-gray-800">
-            @foreach([
-                ['Component', 'Add <x-self-learn page-key="your.key" title="Fallback" body="Fallback..." /> to any page. The component reads live content from this registry.'],
-                ['Versioning', 'Each entry has a version number. When you bump the version, all users who previously dismissed it will see the updated content again.'],
-                ['Tracking', 'Shown and dismissed events are recorded per user per version. Dismiss rate = unique dismissals ÷ unique impressions.'],
-                ['Active toggle', 'Hiding an entry removes it from the UI instantly for all users — their dismissed state is preserved if you re-activate later.'],
-            ] as [$label, $desc])
+            @foreach($howItWorks as [$label, $desc])
             <div class="px-5 py-3.5 flex items-start gap-4">
                 <span class="w-2 h-2 rounded-full shrink-0 mt-1.5 bg-green-400"></span>
                 <div>
