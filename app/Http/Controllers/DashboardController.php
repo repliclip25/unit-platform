@@ -171,13 +171,26 @@ class DashboardController extends Controller
     // ── Dismiss a Self Learn panel ─────────────────────────────────────────────
     public function selfLearnDismiss(Request $request)
     {
-        $key = $request->input('page_key');
+        $key    = $request->input('page_key');
+        $userId = auth()->id();
         if (!$key) return response()->json(['ok' => false], 422);
 
+        $version = (int) DB::table('platform_self_learn')
+            ->where('page_key', $key)
+            ->value('version') ?: 1;
+
         DB::table('user_self_learn_dismissed')->updateOrInsert(
-            ['user_id' => auth()->id(), 'page_key' => $key],
-            ['dismissed_at' => now()]
+            ['user_id' => $userId, 'page_key' => $key],
+            ['version' => $version, 'dismissed_at' => now()]
         );
+
+        DB::table('user_self_learn_events')->insert([
+            'user_id'    => $userId,
+            'page_key'   => $key,
+            'event'      => 'dismissed',
+            'version'    => $version,
+            'created_at' => now(),
+        ]);
 
         return response()->json(['ok' => true]);
     }

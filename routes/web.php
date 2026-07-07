@@ -33,6 +33,7 @@ use App\Http\Controllers\AdminWorkerLifecycleController;
 use App\Http\Controllers\AdminWorkerPersonaController;
 use App\Http\Controllers\AdminWorkerRulesController;
 use App\Http\Controllers\NuxController;
+use App\Http\Controllers\AdminSelfLearnController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -398,6 +399,12 @@ Route::middleware(['auth', 'verified', 'onboarded', 'not-pending-del'])->group(f
         Route::get('/admin/blog/{id}/edit',    [AdminBlogController::class, 'edit'])->name('admin.blog.edit');
         Route::put('/admin/blog/{id}',         [AdminBlogController::class, 'update'])->name('admin.blog.update');
         Route::delete('/admin/blog/{id}',      [AdminBlogController::class, 'destroy'])->name('admin.blog.destroy');
+
+        // ── Self Learn content registry ──────────────────────────────────────
+        Route::get( '/admin/self-learn',                      [AdminSelfLearnController::class, 'index'])->name('admin.self-learn');
+        Route::post('/admin/self-learn/{pageKey}',            [AdminSelfLearnController::class, 'update'])->name('admin.self-learn.update');
+        Route::post('/admin/self-learn/{pageKey}/toggle',     [AdminSelfLearnController::class, 'toggle'])->name('admin.self-learn.toggle');
+        Route::post('/admin/self-learn/{pageKey}/bump',       [AdminSelfLearnController::class, 'bumpVersion'])->name('admin.self-learn.bump');
 
         // ── Platform Token Usage ─────────────────────────────────────────────
         Route::get('/admin/platform-usage', [AdminPlatformUsageController::class, 'index'])->name('admin.platform-usage');

@@ -1,15 +1,52 @@
-@props(['pageKey', 'title', 'body'])
+@props(['pageKey', 'title' => null, 'body' => null])
 
 @php
-    $dismissed = auth()->check()
-        ? \Illuminate\Support\Facades\DB::table('user_self_learn_dismissed')
-            ->where('user_id', auth()->id())
-            ->where('page_key', $pageKey)
-            ->exists()
-        : false;
+    if (!auth()->check()) return;
+
+    $userId = auth()->id();
+
+    // Load DB entry — fall back to props if not seeded yet
+    $entry = \Illuminate\Support\Facades\DB::table('platform_self_learn')
+        ->where('page_key', $pageKey)
+        ->where('active', true)
+        ->first();
+
+    if (!$entry && !$title) return; // nothing to show
+
+    $displayTitle   = $entry?->title   ?? $title;
+    $displayBody    = $entry?->body    ?? $body;
+    $currentVersion = (int) ($entry?->version ?? 1);
+
+    // Check if dismissed at current version
+    $dismissedVersion = \Illuminate\Support\Facades\DB::table('user_self_learn_dismissed')
+        ->where('user_id', $userId)
+        ->where('page_key', $pageKey)
+        ->value('version');
+
+    $dismissed = $dismissedVersion !== null && (int) $dismissedVersion >= $currentVersion;
+
+    if ($dismissed) return;
+
+    // Track shown event (deduplicated — once per user per page_key per version per day)
+    $alreadyTracked = \Illuminate\Support\Facades\DB::table('user_self_learn_events')
+        ->where('user_id', $userId)
+        ->where('page_key', $pageKey)
+        ->where('event', 'shown')
+        ->where('version', $currentVersion)
+        ->where('created_at', '>=', now()->subDay())
+        ->exists();
+
+    if (!$alreadyTracked) {
+        \Illuminate\Support\Facades\DB::table('user_self_learn_events')->insert([
+            'user_id'    => $userId,
+            'page_key'   => $pageKey,
+            'event'      => 'shown',
+            'version'    => $currentVersion,
+            'created_at' => now(),
+        ]);
+    }
 @endphp
 
-@if(!$dismissed)
 <div id="self-learn-{{ $pageKey }}"
      class="mt-8 rounded-xl px-5 py-4 flex gap-4 items-start"
      style="background:var(--bg-raised);border:1px solid var(--border-subtle)">
@@ -24,9 +61,9 @@
 
     {{-- Content --}}
     <div class="flex-1 min-w-0">
-        <p class="text-xs font-bold uppercase tracking-widest mb-1" style="color:var(--accent-text)">Self Learn</p>
-        <p class="text-sm font-semibold mb-1" style="color:var(--text-primary)">{{ $title }}</p>
-        <p class="text-xs leading-relaxed" style="color:var(--text-muted)">{{ $body }}</p>
+        <p class="text-xs font-bold uppercase tracking-widest mb-1" style="color:var(--accent-text)">Self Learn · v{{ $currentVersion }}</p>
+        <p class="text-sm font-semibold mb-1" style="color:var(--text-primary)">{{ $displayTitle }}</p>
+        <p class="text-xs leading-relaxed" style="color:var(--text-muted)">{{ $displayBody }}</p>
     </div>
 
     {{-- Dismiss --}}
@@ -54,4 +91,3 @@ function selfLearnDismiss(key) {
     });
 }
 </script>
-@endif
