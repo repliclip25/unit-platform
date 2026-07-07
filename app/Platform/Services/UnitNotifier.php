@@ -95,14 +95,13 @@ class UnitNotifier
 
             if ($alreadySent) return;
 
-            // Confirm this is actually the first completed non-fast-track transaction
-            $realCount = DB::table('transactions')
+            // Confirm this is the first completed draft_ready transaction for this user (any source)
+            $totalCompleted = DB::table('transactions')
                 ->where('user_id', $user->id)
                 ->where('status', 'draft_ready')
-                ->whereRaw("JSON_EXTRACT(input, '$.fast_track') IS NULL OR JSON_EXTRACT(input, '$.fast_track') = false")
                 ->count();
 
-            if ($realCount !== 1) return;
+            if ($totalCompleted !== 1) return;
 
             $appUrl = config('app.url');
             $tpl = DB::table('platform_email_templates')

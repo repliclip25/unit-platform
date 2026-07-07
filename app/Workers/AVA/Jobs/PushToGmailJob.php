@@ -151,11 +151,15 @@ class PushToGmailJob implements ShouldQueue
 
         UnitPlatform::emit($this->txId, new WorkerEvent('renewal.draft_ready', $eventPayload));
 
-        // Notify tenant via email — only for production runs (not fast track tests)
+        // draft_ready notification — only for production runs (not fast track)
         if (!$input->isFastTrack()) {
             UnitNotifier::draftReady($this->txId, $eventPayload);
-            UnitNotifier::maybeFirstRealRenewal($this->txId);
         }
+
+        // First Value Email — fires after fast-track AND after first real renewal.
+        // Fast-track is Ava's first completed job. The email lands in the user's inbox
+        // while they're still engaged, reinforcing what just happened before they close the tab.
+        UnitNotifier::maybeFirstRealRenewal($this->txId);
     }
 
     public function failed(\Throwable $e): void
