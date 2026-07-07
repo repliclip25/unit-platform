@@ -357,18 +357,18 @@
                                         <div class="flex items-center">
                                             <div class="w-36">
                                                 <div class="border border-gray-700 bg-gray-800/60 rounded-xl px-3 py-3 text-center">
-                                                    <p class="text-gray-400 text-xs font-mono mb-1">Step {{ $step['step'] }}</p>
-                                                    <p class="text-white text-xs font-bold">{{ str_replace('Job', '', $step['job']) }}</p>
+                                                    <p class="text-gray-400 text-xs font-mono mb-1">Step {{ $step['step'] ?? '?' }}</p>
+                                                    <p class="text-white text-xs font-bold">{{ str_replace('Job', '', $step['job'] ?? '—') }}</p>
                                                     <div class="mt-2 pt-2 border-t border-gray-700/60">
-                                                        <p class="text-xs truncate" style="color:#93c5fd" title="{{ $step['input'] }}">in: {{ $step['input'] }}</p>
-                                                        @if($step['output_column'])
+                                                        <p class="text-xs truncate" style="color:#93c5fd" title="{{ $step['input'] ?? '' }}">in: {{ $step['input'] ?? '—' }}</p>
+                                                        @if($step['output_column'] ?? null)
                                                             <p class="text-xs truncate" style="color:#86efac" title="{{ $step['output_column'] }}">out: {{ $step['output_column'] }}</p>
                                                         @else
                                                             <p class="text-xs" style="color:#4b5563">out: —</p>
                                                         @endif
                                                     </div>
                                                 </div>
-                                                <p class="text-gray-500 text-xs text-center mt-1.5 leading-snug px-1">{{ $step['description'] }}</p>
+                                                <p class="text-gray-500 text-xs text-center mt-1.5 leading-snug px-1">{{ $step['description'] ?? '' }}</p>
                                             </div>
                                             @if(!$loop->last)
                                                 <div class="flex flex-col items-center w-8 shrink-0 pb-8">
