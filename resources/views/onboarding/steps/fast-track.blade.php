@@ -53,6 +53,29 @@
         </a>
     </div>
 
+    {{-- What happened — shown ABOVE pipeline after success --}}
+    @if(!empty($outcome))
+    <div x-show="success" x-cloak
+         x-transition:enter="transition ease-out duration-500"
+         x-transition:enter-start="opacity-0 translate-y-4"
+         x-transition:enter-end="opacity-100 translate-y-0"
+         class="mb-5">
+
+        <div class="rounded-2xl border border-gray-800 bg-gray-900 px-6 py-5">
+            <p class="text-gray-500 text-xs font-semibold uppercase tracking-widest mb-4">Without any manual work, Ava:</p>
+            <div class="space-y-4">
+                @foreach($outcome['what_happened'] ?? [] as $i => $item)
+                <div class="flex items-start gap-3">
+                    <div class="w-6 h-6 rounded-full flex items-center justify-center shrink-0 mt-0.5 text-xs font-bold text-gray-950"
+                         style="background:var(--accent)">{{ $i + 1 }}</div>
+                    <p class="text-gray-300 text-sm leading-relaxed">{{ $item['text'] }}</p>
+                </div>
+                @endforeach
+            </div>
+        </div>
+    </div>
+    @endif
+
     {{-- ── PIPELINE TRACKER — always visible ── --}}
     <div class="bg-gray-900 border border-gray-800 rounded-2xl px-6 pt-5 pb-4 mb-5">
         <div class="flex items-center gap-2 mb-4">
@@ -73,34 +96,15 @@
         />
     </div>
 
-    {{-- What happened — shown below pipeline after success --}}
-    @if(!empty($outcome))
-    <div x-show="success" x-cloak
-         x-transition:enter="transition ease-out duration-500"
-         x-transition:enter-start="opacity-0 translate-y-4"
-         x-transition:enter-end="opacity-100 translate-y-0">
-
-        <div class="rounded-2xl border border-gray-800 bg-gray-900 px-6 py-5 mb-4">
-            <p class="text-gray-500 text-xs font-semibold uppercase tracking-widest mb-4">Without any manual work, Ava:</p>
-            <div class="space-y-4">
-                @foreach($outcome['what_happened'] ?? [] as $i => $item)
-                <div class="flex items-start gap-3">
-                    <div class="w-6 h-6 rounded-full flex items-center justify-center shrink-0 mt-0.5 text-xs font-bold text-gray-950"
-                         style="background:var(--accent)">{{ $i + 1 }}</div>
-                    <p class="text-gray-300 text-sm leading-relaxed">{{ $item['text'] }}</p>
-                </div>
-                @endforeach
-            </div>
-        </div>
-
-        @if(!empty($outcome['going_forward']))
-        <div class="rounded-2xl border border-gray-800 bg-gray-900/50 px-5 py-4 mb-4 flex items-start gap-3">
+    {{-- Going forward — below pipeline --}}
+    @if(!empty($outcome['going_forward'] ?? null))
+    <div x-show="success" x-cloak class="mb-4">
+        <div class="rounded-2xl border border-gray-800 bg-gray-900/50 px-5 py-4 flex items-start gap-3">
             <svg class="w-5 h-5 text-gray-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/>
             </svg>
             <p class="text-gray-400 text-sm leading-relaxed">{{ $outcome['going_forward'] }}</p>
         </div>
-        @endif
     </div>
     @endif
 

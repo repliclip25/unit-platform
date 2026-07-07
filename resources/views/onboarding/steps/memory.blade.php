@@ -64,28 +64,20 @@
     </p>
 </div>
 
-{{-- Continue button — right below the progress bar --}}
+{{-- Continue button — only shown above form when client has been added --}}
+@if($displayHealthy)
 <form method="POST" action="{{ route('onboarding.step.handle', 'memory') }}" class="mb-6">
     @csrf
-    @if($displayHealthy)
-        <button type="submit"
-                class="w-full font-bold text-base py-4 rounded-xl transition"
-                style="background:var(--accent);color:#111">
-            Continue
-        </button>
-        <p class="text-center text-xs text-gray-600 mt-2">
-            You can add more clients from your dashboard to improve Ava's accuracy.
-        </p>
-    @else
-        <button type="submit"
-                class="w-full font-semibold text-base py-4 rounded-xl transition border border-gray-700 text-gray-400 hover:text-white hover:border-gray-500">
-            Continue without adding a client
-        </button>
-        <p class="text-center text-xs text-gray-600 mt-2">
-            Ava will still run — but she won't recognize your clients until you add them.
-        </p>
-    @endif
+    <button type="submit"
+            class="w-full font-bold text-base py-4 rounded-xl transition"
+            style="background:var(--accent);color:#111">
+        Continue
+    </button>
+    <p class="text-center text-xs text-gray-600 mt-2">
+        You can add more clients from your dashboard to improve Ava's accuracy.
+    </p>
 </form>
+@endif
 
 {{-- ── Quick-add form ── --}}
 <div class="mb-5">
@@ -217,5 +209,18 @@
     </p>
 </div>
 
+{{-- Ghost continue — only shown at bottom when no client added yet --}}
+@if(!$displayHealthy)
+<form method="POST" action="{{ route('onboarding.step.handle', 'memory') }}">
+    @csrf
+    <button type="submit"
+            class="w-full font-semibold text-base py-4 rounded-xl transition border border-gray-700/60 text-gray-500 hover:text-gray-300 hover:border-gray-600">
+        Continue without adding a client
+    </button>
+    <p class="text-center text-xs text-gray-700 mt-2">
+        Ava will still run — but she won't recognize your clients until you add them.
+    </p>
+</form>
+@endif
 
 </x-onboarding-layout>
