@@ -357,7 +357,10 @@ class WorkerController extends Controller
         }
 
         try {
-            UnitNotifier::workerDeployed($depId);
+            $deployingUser = DB::table('users')->where('id', auth()->id())->first();
+            if ($deployingUser && $deployingUser->onboarding_completed_at) {
+                UnitNotifier::workerDeployed($depId);
+            }
         } catch (\Throwable $e) {
             Log::error('Worker deploy: notifier failed', ['dep_id' => $depId, 'error' => $e->getMessage()]);
         }

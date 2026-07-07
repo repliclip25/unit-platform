@@ -90,9 +90,9 @@ class GmailController extends Controller
             }
         }
 
-        // Only send the Gmail-connected confirmation outside of onboarding
-        // During onboarding the user is still in the app — the email is noise
-        if (!session('onboarding_gmail_return') && $user->onboarding_completed_at) {
+        // Only send the Gmail-connected confirmation when onboarding is already done.
+        // During onboarding the user is still in the app — the email is noise.
+        if ($user->onboarding_completed_at && !session('onboarding_gmail_return')) {
             \App\Platform\Services\EmailDispatcher::send('gmail_connected', $user->email, $user->name, $user->id, [
                 '{gmail_address}' => $email,
             ]);
