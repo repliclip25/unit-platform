@@ -104,7 +104,10 @@ class UnitNotifier
                 ->where('active', true)
                 ->first();
 
-            if (!$tpl) return;
+            if (!$tpl) {
+                Log::warning('[UnitNotifier] maybeFirstRealRenewal: template ava_first_real_renewal not found or inactive in DB — run php artisan migrate --force');
+                return;
+            }
 
             $body    = str_replace(['{name}', '{app_url}'], [$user->name, $appUrl], $tpl->body);
             $subject = str_replace(['{name}', '{app_url}'], [$user->name, $appUrl], $tpl->subject);

@@ -430,7 +430,7 @@ class AdminMessagingController extends Controller
                 'day_offset'  => null,
                 'trigger_state' => null,
                 'subject'     => 'Welcome to UNIT.',
-                'body'        => "Hi {name},\n\nWelcome to UNIT.\n\nYou're one step away from hiring your first AI employee.\n\nStart setup and we'll have your worker running in under a minute.\n\n{app_url}/onboarding\n\nFranklin at UNIT",
+                'body'        => "Hi {name},\n\nWelcome to UNIT.\n\nThe best teams don't try to do everything themselves.\n\nThey hire the right people.\n\nThat's why we built UNIT.\n\nUNIT gives you access to a growing workforce of AI workers, each recruited, trained, and ready for a specific job.\n\nYour next step is simple.\n\nChoose the first worker you'd like to bring onto your team.\n\nWe'll guide you through the rest.\n\n{app_url}/onboarding\n\nIf you're not sure which worker is the right fit, simply reply to this email. We'll help you find the right one.\n\nSee you inside,\n\nFranklin\nFounder, UNIT",
                 'from_name'   => 'Franklin at UNIT',
                 'sort_order'  => 1,
             ],
