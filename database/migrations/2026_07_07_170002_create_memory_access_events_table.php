@@ -8,6 +8,8 @@ return new class extends Migration
 {
     public function up(): void
     {
+        if (Schema::hasTable('memory_access_events')) return;
+
         Schema::create('memory_access_events', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('grant_id');

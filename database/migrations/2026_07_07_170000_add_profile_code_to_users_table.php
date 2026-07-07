@@ -9,9 +9,11 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->string('profile_code', 12)->nullable()->unique()->after('email');
-        });
+        if (!Schema::hasColumn('users', 'profile_code')) {
+            Schema::table('users', function (Blueprint $table) {
+                $table->string('profile_code', 12)->nullable()->unique()->after('email');
+            });
+        }
 
         // Backfill existing users
         $users = DB::table('users')->whereNull('profile_code')->pluck('id');

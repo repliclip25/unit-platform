@@ -8,6 +8,8 @@ return new class extends Migration
 {
     public function up(): void
     {
+        if (Schema::hasTable('memory_copy_tags')) return;
+
         // Tracks provenance of records copied via memory access grants.
         // When a grantee copies a record into their own deployment, a tag is written here.
         // This allows: grantee can delete their own copy (it has a tag), original is untouched.
