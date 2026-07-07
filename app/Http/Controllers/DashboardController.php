@@ -168,6 +168,20 @@ class DashboardController extends Controller
         return response()->json(['ok' => true]);
     }
 
+    // ── Dismiss a Self Learn panel ─────────────────────────────────────────────
+    public function selfLearnDismiss(Request $request)
+    {
+        $key = $request->input('page_key');
+        if (!$key) return response()->json(['ok' => false], 422);
+
+        DB::table('user_self_learn_dismissed')->updateOrInsert(
+            ['user_id' => auth()->id(), 'page_key' => $key],
+            ['dismissed_at' => now()]
+        );
+
+        return response()->json(['ok' => true]);
+    }
+
     // ── Dismiss a one-time card ────────────────────────────────────────────────
     public function deskDismiss(Request $request)
     {

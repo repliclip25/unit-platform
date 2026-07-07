@@ -103,10 +103,10 @@
 @endif
 @endforeach
 
-<div class="mt-2 text-xs" style="color:var(--text-faint)">
-    Pipeline cards are declared by each WorkerContract::deskCards() — they appear here only when at least one matching worker is deployed.
-    Toggling "Active" hides the card from all users immediately. Toggling "Default on" affects new users only; existing users keep their own preference.
-</div>
+<x-self-learn
+    page-key="admin.desk-cards"
+    title="How desk cards work"
+    body="Pipeline cards are declared by each WorkerContract::deskCards() and appear here only when at least one matching worker is deployed. Toggling 'Active' hides the card from all users immediately. Toggling 'Default on' affects new users only — existing users keep their own saved preference." />
 
 <script>
 function adminToggle(key, checkbox, type) {
