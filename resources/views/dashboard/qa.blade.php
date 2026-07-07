@@ -338,8 +338,8 @@
                                                 @endif
                                                 <span class="text-xs font-bold" style="color:{{ $rc['color'] }}">{{ $fname }}</span>
                                             </div>
-                                            <span class="text-xs px-2 py-0.5 rounded-full font-semibold text-center" style="background:{{ $rc['bg'] }};color:{{ $rc['color'] }}">{{ $file['role'] }}</span>
-                                            <span class="text-xs leading-relaxed" style="color:#9ca3af">{{ $file['description'] }}</span>
+                                            <span class="text-xs px-2 py-0.5 rounded-full font-semibold text-center" style="background:{{ $rc['bg'] }};color:{{ $rc['color'] }}">{{ $file['role'] ?? '' }}</span>
+                                            <span class="text-xs leading-relaxed" style="color:#9ca3af">{{ $file['description'] ?? '' }}</span>
                                         </div>
                                     @endforeach
                                 </div>
@@ -402,11 +402,11 @@
                                     @foreach($memShared as $mem)
                                         <div class="px-4 py-3 border-b border-gray-800/60 last:border-0">
                                             <div class="flex items-center gap-2 mb-0.5">
-                                                <span class="text-xs font-bold font-mono" style="color:#6ee7b7">{{ $mem['table'] }}</span>
+                                                <span class="text-xs font-bold font-mono" style="color:#6ee7b7">{{ $mem['table'] ?? '—' }}</span>
                                                 <span class="text-xs border border-gray-700 rounded px-1.5" style="color:#9ca3af">{{ $mem['scope'] ?? '' }}</span>
                                                 <span class="text-xs ml-auto px-1.5 rounded" style="background:rgba(16,185,129,0.15);color:#6ee7b7">{{ $mem['access'] ?? 'read' }}</span>
                                             </div>
-                                            <p class="text-gray-400 text-xs">{{ $mem['description'] }}</p>
+                                            <p class="text-gray-400 text-xs">{{ $mem['description'] ?? '' }}</p>
                                         </div>
                                     @endforeach
                                     @endif
@@ -417,11 +417,11 @@
                                     @foreach($memOwned as $mem)
                                         <div class="px-4 py-3 border-b border-gray-800/60 last:border-0">
                                             <div class="flex items-center gap-2 mb-0.5">
-                                                <span class="text-xs font-bold font-mono" style="color:#c4b5fd">{{ $mem['table'] }}</span>
+                                                <span class="text-xs font-bold font-mono" style="color:#c4b5fd">{{ $mem['table'] ?? '—' }}</span>
                                                 <span class="text-xs border border-gray-700 rounded px-1.5" style="color:#9ca3af">{{ $mem['scope'] ?? '' }}</span>
                                                 <span class="text-xs ml-auto px-1.5 rounded" style="background:rgba(75,85,99,0.2);color:#9ca3af">{{ $mem['access'] ?? 'read' }}</span>
                                             </div>
-                                            <p class="text-gray-400 text-xs">{{ $mem['description'] }}</p>
+                                            <p class="text-gray-400 text-xs">{{ $mem['description'] ?? '' }}</p>
                                         </div>
                                     @endforeach
                                     @endif
@@ -434,12 +434,12 @@
                             <div>
                                 <p class="text-gray-500 text-xs font-semibold uppercase tracking-wider mb-3">Config Requirements</p>
                                 <div class="bg-gray-950 border border-gray-800 rounded-xl overflow-hidden">
-                                    @foreach($bp['config']['required'] as $cfg)
+                                    @foreach(($bp['config']['required'] ?? []) as $cfg)
                                         <div class="px-4 py-3 border-b border-gray-800/60 last:border-0 flex items-start gap-3">
                                             <span class="w-1.5 h-1.5 rounded-full bg-red-500 shrink-0 mt-1.5"></span>
                                             <div class="min-w-0">
-                                                <p class="text-xs font-mono" style="color:#fde68a">{{ $cfg['key'] }}</p>
-                                                <p class="text-gray-400 text-xs">{{ $cfg['description'] }}</p>
+                                                <p class="text-xs font-mono" style="color:#fde68a">{{ $cfg['key'] ?? '' }}</p>
+                                                <p class="text-gray-400 text-xs">{{ $cfg['description'] ?? '' }}</p>
                                             </div>
                                         </div>
                                     @endforeach
@@ -447,8 +447,8 @@
                                         <div class="px-4 py-3 border-b border-gray-800/60 last:border-0 flex items-start gap-3">
                                             <span class="w-1.5 h-1.5 rounded-full bg-gray-600 shrink-0 mt-1.5"></span>
                                             <div class="min-w-0">
-                                                <p class="text-gray-400 text-xs font-mono">{{ $cfg['key'] }}</p>
-                                                <p class="text-gray-400 text-xs">{{ $cfg['description'] }} <span class="text-gray-500">(optional)</span></p>
+                                                <p class="text-gray-400 text-xs font-mono">{{ $cfg['key'] ?? '' }}</p>
+                                                <p class="text-gray-400 text-xs">{{ $cfg['description'] ?? '' }} <span class="text-gray-500">(optional)</span></p>
                                             </div>
                                         </div>
                                     @endforeach
@@ -635,7 +635,7 @@
 
                     {{-- Identity + Memory --}}
                     @php
-                        $watchExpiry  = $w->credential?->watch_expiry ? \Carbon\Carbon::parse($w->credential->watch_expiry) : null;
+                        $watchExpiry  = $w->credential?->watch_expires_at ? \Carbon\Carbon::parse($w->credential->watch_expires_at) : null;
                         $watchDaysLeft = $watchExpiry ? now()->diffInDays($watchExpiry, false) : null;
                         $watchWarning = $watchDaysLeft !== null && $watchDaysLeft <= 3;
                         $watchCritical= $watchDaysLeft !== null && $watchDaysLeft <= 0;
@@ -774,8 +774,8 @@
                                     <summary class="px-4 py-3 flex items-start gap-3 cursor-pointer list-none hover:bg-gray-800/40">
                                         <span class="mt-0.5 text-gray-600 group-open:text-gray-400 text-xs select-none">▶</span>
                                         <div class="flex-1 min-w-0">
-                                            <p class="text-gray-300 text-xs font-medium">{{ $section['title'] }}</p>
-                                            <p class="text-gray-600 text-xs mt-0.5">{{ $section['description'] }}</p>
+                                            <p class="text-gray-300 text-xs font-medium">{{ $section['title'] ?? '' }}</p>
+                                            <p class="text-gray-600 text-xs mt-0.5">{{ $section['description'] ?? '' }}</p>
                                         </div>
                                     </summary>
                                     <div class="px-4 pb-3">
@@ -801,8 +801,8 @@
                                     <summary class="px-4 py-3 flex items-start gap-3 cursor-pointer list-none hover:bg-gray-800/40">
                                         <span class="mt-0.5 text-gray-600 group-open:text-gray-400 text-xs select-none">▶</span>
                                         <div class="flex-1 min-w-0">
-                                            <p class="text-gray-300 text-xs font-medium">{{ $section['title'] }}</p>
-                                            <p class="text-gray-600 text-xs mt-0.5">{{ $section['description'] }}</p>
+                                            <p class="text-gray-300 text-xs font-medium">{{ $section['title'] ?? '' }}</p>
+                                            <p class="text-gray-600 text-xs mt-0.5">{{ $section['description'] ?? '' }}</p>
                                         </div>
                                     </summary>
                                     <div class="px-4 pb-3">
