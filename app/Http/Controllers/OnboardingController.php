@@ -143,7 +143,25 @@ class OnboardingController extends Controller
 
     public function gmailDraft()
     {
-        return view('onboarding.steps.gmail-draft');
+        $txId = session('onboarding_fast_track_tx') ?? session('onboarding_fast_track_tx');
+        $draft = null;
+
+        if ($txId) {
+            $tx = DB::table('transactions')->where('tx_id', $txId)->first();
+            if ($tx) {
+                $draftOutput = json_decode($tx->draft_output ?? '{}', true) ?: [];
+                $memoryOutput = json_decode($tx->memory_output ?? '{}', true) ?: [];
+                $draft = [
+                    'subject'      => $draftOutput['subject'] ?? null,
+                    'body_snippet' => $draftOutput['body'] ? substr(strip_tags($draftOutput['body']), 0, 160) . '...' : null,
+                    'to_name'      => $memoryOutput['primary_contact_name'] ?? null,
+                    'client'       => $memoryOutput['matched_client'] ?? null,
+                    'gmail_draft_id' => $tx->gmail_draft_id ?? null,
+                ];
+            }
+        }
+
+        return view('onboarding.steps.gmail-draft', compact('draft'));
     }
 
     public function complete()

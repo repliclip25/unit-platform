@@ -90,22 +90,28 @@
                     </div>
                     <div class="flex-1 min-w-0">
                         <div class="flex items-center gap-2 mb-1">
-                            <span class="text-white text-sm font-semibold truncate">Domain Renewal — Ava's draft</span>
+                            <span class="text-white text-sm font-semibold truncate">
+                                {{ $draft['subject'] ?? 'Renewal Reply — Ava\'s draft' }}
+                            </span>
                             <span class="text-xs px-1.5 py-0.5 rounded font-semibold shrink-0"
                                   style="background:rgba(var(--accent-rgb),.15);color:var(--accent-text)">Draft</span>
                         </div>
-                        <p class="text-gray-500 text-xs truncate">AVA drafted this reply for your review — no real email was sent.</p>
+                        <p class="text-gray-500 text-xs truncate">
+                            {{ $draft['client'] ? 'For ' . $draft['client'] . ' — ' : '' }}Ava drafted this reply for your review — no real email was sent.
+                        </p>
                     </div>
                     <span class="text-gray-700 text-xs shrink-0 mt-0.5">Just now</span>
                 </div>
 
                 {{-- Draft preview --}}
                 <div class="px-5 py-4 space-y-1.5">
-                    <p class="text-gray-500 text-xs">Hi Gregory,</p>
+                    @if($draft['to_name'] ?? null)
+                    <p class="text-gray-500 text-xs">Hi {{ $draft['to_name'] }},</p>
+                    @endif
                     <p class="text-gray-500 text-xs leading-relaxed">
-                        This is a friendly reminder that your domain renewal is coming up. Please confirm if you'd like to proceed...
+                        {{ $draft['body_snippet'] ?? 'Ava has prepared a professional renewal response based on your client data and email templates.' }}
                     </p>
-                    <p class="text-gray-600 text-xs italic mt-2">— AVA drafted this for your review</p>
+                    <p class="text-gray-600 text-xs italic mt-2">— Ava drafted this for your review</p>
                 </div>
 
                 {{-- Bottom bar --}}
