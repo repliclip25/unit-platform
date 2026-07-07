@@ -128,7 +128,10 @@ class AdminTenantController extends Controller
         // Deployments with billing info
         $deployments = DB::table('worker_deployments as wd')
             ->leftJoin('deployment_billing as db', 'db.deployment_id', '=', 'wd.id')
-            ->leftJoin('worker_pricing as wp', 'wp.worker_slug', '=', 'wd.worker_slug')
+            ->leftJoin('worker_pricing as wp', function ($join) {
+                $join->on('wp.worker_slug', '=', 'wd.worker_slug')
+                     ->on('wp.plan_slug', '=', 'db.plan_slug');
+            })
             ->where('wd.user_id', $id)
             ->select(
                 'wd.id', 'wd.name', 'wd.worker_slug', 'wd.status', 'wd.created_at as deployed_at',
