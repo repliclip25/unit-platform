@@ -55,18 +55,7 @@
          PLATFORM LAYER
     ══════════════════════════════════════════════════════════════════ --}}
     <div id="layer-platform" class="layer-panel space-y-4">
-        @php
-            $stuckCount = DB::table('transactions')
-                ->where('user_id', auth()->id())
-                ->whereNotIn('status', ['draft_ready','approved','sent','failed'])
-                ->where('updated_at', '<', now()->subMinutes(5))
-                ->count();
-            $pendingReview = DB::table('transactions')
-                ->where('user_id', auth()->id())
-                ->where('status', 'draft_ready')
-                ->whereNull('human_decision')
-                ->count();
-        @endphp
+        {{-- $stuckCount and $pendingReview passed from controller --}}
 
         {{-- Operational alerts --}}
         @if($stuckCount > 0 || $pendingReview > 0)
@@ -710,12 +699,8 @@
                                     </div>
                                 @endforeach
                             </div>
-                            @php
-                                $workerContribs = DB::table('memory_contributions')
-                                    ->where('deployment_id', $w->dep->id)
-                                    ->count();
-                            @endphp
-                            @if($workerContribs > 0)
+                            @if($w->contributionCount > 0)
+                            @php $workerContribs = $w->contributionCount; @endphp
                             <div class="px-4 py-2 border-t border-gray-800/60" style="background:rgba(99,102,241,0.05)">
                                 <p class="text-xs" style="color:#818cf8">
                                     ↑ {{ $workerContribs }} contribution{{ $workerContribs !== 1 ? 's' : '' }} to shared pool
@@ -961,7 +946,7 @@
                                             ['renewal_price',     'Renewal Price',        $sc->renewal_price     ?? '$12.98/year'],
                                             ['sender_name',       'Sender Name',          $sc->sender_name       ?? 'Namecheap Renewals Team'],
                                             ['sender_email',      'Sender Email',         $sc->sender_email      ?? 'renewals@namecheap.com'],
-                                            ['contact_name',      'Contact / Client',     $sc->contact_name      ?? auth()->user()->name],
+                                            ['contact_name',      'Contact / Client',     $sc->contact_name      ?? $authUserName],
                                             ['days_until_expiry', 'Days Until Expiry',    (string)($sc->days_until_expiry ?? 14)],
                                         ];
                                     @endphp
@@ -979,7 +964,7 @@
                                         class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-brand transition">{{ $sc->custom_note ?? '' }}</textarea>
                                 </div>
                                 <div class="flex items-center justify-between pt-1">
-                                    <p class="text-gray-600 text-xs">Draft & email → <span class="text-gray-400">{{ auth()->user()->email }}</span></p>
+                                    <p class="text-gray-600 text-xs">Draft & email → <span class="text-gray-400">{{ $authUserEmail }}</span></p>
                                     <button type="submit" class="text-sm font-bold px-5 py-2 rounded-lg text-gray-900 hover:opacity-90" style="background:var(--accent)">Save Scenario</button>
                                 </div>
                             </form>

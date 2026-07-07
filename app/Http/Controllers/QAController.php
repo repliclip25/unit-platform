@@ -14,15 +14,33 @@ class QAController extends Controller
     {
         $userId = $request->user()->id;
 
+        $authUser = $request->user();
+
+        $stuckCount = DB::table('transactions')
+            ->where('user_id', $userId)
+            ->whereNotIn('status', ['draft_ready', 'approved', 'sent', 'failed'])
+            ->where('updated_at', '<', now()->subMinutes(5))
+            ->count();
+
+        $pendingReview = DB::table('transactions')
+            ->where('user_id', $userId)
+            ->where('status', 'draft_ready')
+            ->whereNull('human_decision')
+            ->count();
+
         return view('dashboard.qa', [
-            'platform'           => $this->checkPlatform(),
-            'security'           => $this->checkSecurity($userId),
-            'marketplaceWorkers' => $this->getMarketplaceWorkers(),
-            'deployedWorkers'    => $this->getWorkerHealth($userId),
-            'deployedCount'      => DB::table('worker_deployments')->where('user_id', $userId)->where('status', '!=', 'decommissioned')->count(),
-            'scenarios'          => DB::table('fast_track_scenarios')->where('user_id', $userId)->get()->keyBy('deployment_id'),
-            'memoryMap'          => $this->buildMemoryMap($userId),
+            'platform'              => $this->checkPlatform(),
+            'security'              => $this->checkSecurity($userId),
+            'marketplaceWorkers'    => $this->getMarketplaceWorkers(),
+            'deployedWorkers'       => $this->getWorkerHealth($userId),
+            'deployedCount'         => DB::table('worker_deployments')->where('user_id', $userId)->where('status', '!=', 'decommissioned')->count(),
+            'scenarios'             => DB::table('fast_track_scenarios')->where('user_id', $userId)->get()->keyBy('deployment_id'),
+            'memoryMap'             => $this->buildMemoryMap($userId),
             'contributionsByWorker' => $this->buildContributionsByWorker($userId),
+            'stuckCount'            => $stuckCount,
+            'pendingReview'         => $pendingReview,
+            'authUserName'          => $authUser->name ?? '—',
+            'authUserEmail'         => $authUser->email ?? '—',
         ]);
     }
 
@@ -1150,7 +1168,13 @@ MD;
             // ── Billing
             $billing = DB::table('deployment_billing')->where('deployment_id', $dep->id)->first();
 
-            return (object) compact('dep', 'credential', 'identity', 'jobMap', 'memory', 'schema', 'activity', 'billing', 'workerDef');
+            // ── Memory contributions for this deployment
+            $contributionCount = 0;
+            try {
+                $contributionCount = DB::table('memory_contributions')->where('deployment_id', $dep->id)->count();
+            } catch (\Throwable) {}
+
+            return (object) compact('dep', 'credential', 'identity', 'jobMap', 'memory', 'schema', 'activity', 'billing', 'workerDef', 'contributionCount');
         });
     }
 
