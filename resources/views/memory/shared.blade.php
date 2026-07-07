@@ -25,8 +25,8 @@
 
     @php
         $tables = [
-            'clients'  => ['label' => 'Clients',  'icon' => '◉', 'cols' => ['name', 'email', 'phone', 'company']],
-            'contacts' => ['label' => 'Contacts', 'icon' => '◎', 'cols' => ['name', 'email', 'role', 'company']],
+            'clients'  => ['label' => 'Clients',  'icon' => '◉', 'cols' => ['name', 'email', 'phone', 'company', 'status', 'renewal_date', 'address']],
+            'contacts' => ['label' => 'Contacts', 'icon' => '◎', 'cols' => ['name', 'email', 'phone', 'role', 'company', 'department']],
             'assets'   => ['label' => 'Assets',   'icon' => '◈', 'cols' => ['name', 'type', 'value']],
         ];
     @endphp
@@ -85,16 +85,27 @@
                 @endphp
                 <div class="px-5 py-3.5 flex flex-wrap items-start gap-3">
                     <div class="flex-1 min-w-0">
-                        <p class="text-white text-sm font-semibold">{{ $record->name ?? '—' }}</p>
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <p class="text-white text-sm font-semibold">{{ $record->name ?? '—' }}</p>
+                            @if($tableName === 'contacts' && !empty($record->is_decision_maker))
+                            <span class="text-xs px-1.5 py-0.5 rounded bg-yellow-900/40 text-yellow-400 font-medium">Decision Maker</span>
+                            @endif
+                            @if($tableName === 'clients' && !empty($record->status))
+                            <span class="text-xs px-1.5 py-0.5 rounded bg-gray-800 text-gray-400">{{ $record->status }}</span>
+                            @endif
+                        </div>
                         <div class="flex flex-wrap gap-x-4 gap-y-0.5 mt-0.5">
                             @foreach(array_slice($meta['cols'], 1) as $col)
-                                @if(!empty($record->$col))
+                                @if(!empty($record->$col) && $col !== 'status')
                                 <span class="text-gray-500 text-xs">{{ $record->$col }}</span>
                                 @endif
                             @endforeach
                         </div>
                         @if(!empty($record->notes))
                         <p class="text-gray-600 text-xs mt-1 italic">{{ Str::limit($record->notes, 80) }}</p>
+                        @endif
+                        @if(!empty($record->meta) && $record->meta !== 'null')
+                        <p class="text-gray-700 text-xs mt-0.5 font-mono">+ extended data</p>
                         @endif
                     </div>
                     <div class="flex items-center gap-2 shrink-0">

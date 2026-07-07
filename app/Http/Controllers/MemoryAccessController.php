@@ -445,9 +445,9 @@ class MemoryAccessController extends Controller
     private function allowedFields(string $table): array
     {
         return match($table) {
-            'clients'  => ['name', 'email', 'phone', 'company', 'notes', 'deployment_id', 'user_id', 'created_at', 'updated_at'],
-            'contacts' => ['name', 'email', 'phone', 'role', 'company', 'notes', 'client_id', 'deployment_id', 'user_id', 'created_at', 'updated_at'],
-            'assets'   => ['name', 'type', 'value', 'notes', 'client_id', 'deployment_id', 'user_id', 'created_at', 'updated_at'],
+            'clients'  => ['name', 'email', 'phone', 'company', 'status', 'renewal_date', 'address', 'notes', 'meta', 'deployment_id', 'user_id', 'created_at', 'updated_at'],
+            'contacts' => ['name', 'email', 'phone', 'role', 'company', 'department', 'is_decision_maker', 'notes', 'meta', 'client_id', 'deployment_id', 'user_id', 'created_at', 'updated_at'],
+            'assets'   => ['name', 'type', 'value', 'notes', 'meta', 'client_id', 'deployment_id', 'user_id', 'created_at', 'updated_at'],
             default    => [],
         };
     }
