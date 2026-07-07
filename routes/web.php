@@ -251,20 +251,20 @@ Route::middleware(['auth', 'verified', 'onboarded', 'not-pending-del'])->group(f
         // Reset fast track trial counter for a deployment
         Route::post('/workers/{id}/fast-track/reset', [AdminTenantController::class, 'fastTrackReset'])->name('workers.fast-track.reset');
 
-        // System QA
-        Route::get('/qa', [QAController::class, 'index'])->name('qa');
-        Route::post('/qa/fast-track/{deployment}', [QAController::class, 'fastTrack'])->name('qa.fast-track');
-        Route::post('/qa/transactions/recover-stuck', [QAController::class, 'recoverStuck'])->name('qa.recover-stuck');
-        Route::post('/qa/worker/{deployment}/renew-watch', [QAController::class, 'renewGmailWatch'])->name('qa.renew-watch');
-        Route::post('/qa/scenario/{deployment}', [QAController::class, 'updateScenario'])->name('qa.scenario-update');
-        Route::post('/qa/worker/{deployment}/pause', [QAController::class, 'pauseWorker'])->name('qa.worker-pause');
-        Route::post('/qa/worker/{deployment}/resume', [QAController::class, 'resumeWorker'])->name('qa.worker-resume');
-        Route::post('/qa/worker/{deployment}/drain', [QAController::class, 'drainWorker'])->name('qa.worker-drain');
-        Route::get('/qa/worker/{deployment}/queue-status', [QAController::class, 'queueStatus'])->name('qa.queue-status');
-        Route::post('/qa/horizon/restart', [QAController::class, 'restartHorizon'])->name('qa.horizon-restart');
-        Route::post('/qa/worker/{deployment}/pipeline-config', [QAController::class, 'updatePipelineConfig'])->name('qa.pipeline-config');
-        Route::post('/qa/marketplace/{worker}/publish', [QAController::class, 'publishWorker'])->name('qa.marketplace-publish');
-        Route::post('/qa/marketplace/{worker}/status', [QAController::class, 'updateMarketplaceStatus'])->name('qa.marketplace-status');
+        // System QA (admin-only — moved to /admin/qa)
+        Route::get('/admin/qa', [QAController::class, 'index'])->name('qa');
+        Route::post('/admin/qa/fast-track/{deployment}', [QAController::class, 'fastTrack'])->name('qa.fast-track');
+        Route::post('/admin/qa/transactions/recover-stuck', [QAController::class, 'recoverStuck'])->name('qa.recover-stuck');
+        Route::post('/admin/qa/worker/{deployment}/renew-watch', [QAController::class, 'renewGmailWatch'])->name('qa.renew-watch');
+        Route::post('/admin/qa/scenario/{deployment}', [QAController::class, 'updateScenario'])->name('qa.scenario-update');
+        Route::post('/admin/qa/worker/{deployment}/pause', [QAController::class, 'pauseWorker'])->name('qa.worker-pause');
+        Route::post('/admin/qa/worker/{deployment}/resume', [QAController::class, 'resumeWorker'])->name('qa.worker-resume');
+        Route::post('/admin/qa/worker/{deployment}/drain', [QAController::class, 'drainWorker'])->name('qa.worker-drain');
+        Route::get('/admin/qa/worker/{deployment}/queue-status', [QAController::class, 'queueStatus'])->name('qa.queue-status');
+        Route::post('/admin/qa/horizon/restart', [QAController::class, 'restartHorizon'])->name('qa.horizon-restart');
+        Route::post('/admin/qa/worker/{deployment}/pipeline-config', [QAController::class, 'updatePipelineConfig'])->name('qa.pipeline-config');
+        Route::post('/admin/qa/marketplace/{worker}/publish', [QAController::class, 'publishWorker'])->name('qa.marketplace-publish');
+        Route::post('/admin/qa/marketplace/{worker}/status', [QAController::class, 'updateMarketplaceStatus'])->name('qa.marketplace-status');
         Route::get('/qa/marketplace/{worker}/blueprint', [QAController::class, 'downloadBlueprint'])->name('qa.marketplace-blueprint');
         Route::get('/qa/platform-blueprint', [QAController::class, 'downloadPlatformBlueprint'])->name('qa.platform-blueprint');
         Route::get('/qa/worker/{worker}/markdown-blueprint', [QAController::class, 'downloadWorkerBlueprint'])->name('qa.worker-blueprint');

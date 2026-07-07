@@ -15,14 +15,74 @@ class QAController extends Controller
         $userId = $request->user()->id;
 
         return view('dashboard.qa', [
-            'platform'       => $this->checkPlatform(),
-            'security'       => $this->checkSecurity($userId),
+            'platform'           => $this->checkPlatform(),
+            'security'           => $this->checkSecurity($userId),
             'marketplaceWorkers' => $this->getMarketplaceWorkers(),
-            'deployedWorkers'=> $this->getWorkerHealth($userId),
-            'deployedCount'  => DB::table('worker_deployments')->where('user_id', $userId)->where('status', '!=', 'decommissioned')->count(),
-            'scenarios'      => DB::table('fast_track_scenarios')
-                                    ->where('user_id', $userId)->get()->keyBy('deployment_id'),
+            'deployedWorkers'    => $this->getWorkerHealth($userId),
+            'deployedCount'      => DB::table('worker_deployments')->where('user_id', $userId)->where('status', '!=', 'decommissioned')->count(),
+            'scenarios'          => DB::table('fast_track_scenarios')->where('user_id', $userId)->get()->keyBy('deployment_id'),
+            'memoryMap'          => $this->buildMemoryMap($userId),
+            'contributionsByWorker' => $this->buildContributionsByWorker($userId),
         ]);
+    }
+
+    private function buildMemoryMap(int $userId): array
+    {
+        $sharedTables = ['clients', 'contacts', 'assets'];
+        $memoryMap    = [];
+
+        try {
+            $deployedWorkers = DB::table('worker_deployments as wd')
+                ->join('workers as w', 'w.slug', '=', 'wd.worker_slug')
+                ->where('wd.user_id', $userId)
+                ->where('wd.status', '!=', 'decommissioned')
+                ->select('wd.id', 'wd.name', 'wd.worker_slug', 'w.blueprint')
+                ->get();
+        } catch (\Throwable) {
+            $deployedWorkers = collect();
+        }
+
+        foreach ($sharedTables as $tbl) {
+            try {
+                $count       = DB::table($tbl)->where('user_id', $userId)->count();
+                $recentC     = DB::table('memory_contributions')->where('user_id', $userId)->where('table_name', $tbl)->orderByDesc('id')->limit(3)->get();
+                $totalC      = DB::table('memory_contributions')->where('user_id', $userId)->where('table_name', $tbl)->count();
+            } catch (\Throwable) {
+                $count   = 0;
+                $recentC = collect();
+                $totalC  = 0;
+            }
+            $memoryMap[$tbl] = ['count' => $count, 'readers' => [], 'writers' => [], 'recent_contributions' => $recentC, 'total_contributions' => $totalC];
+        }
+
+        foreach ($deployedWorkers as $dep) {
+            $bp     = json_decode($dep->blueprint ?? '{}', true);
+            $shared = $bp['memory']['shared'] ?? [];
+            foreach ($shared as $mem) {
+                $tbl = $mem['table'] ?? null;
+                if (!$tbl || !isset($memoryMap[$tbl])) continue;
+                $memoryMap[$tbl]['readers'][] = $dep->name;
+                if (str_contains($mem['access'] ?? 'read', 'write')) {
+                    $memoryMap[$tbl]['writers'][] = $dep->name;
+                }
+            }
+        }
+
+        return $memoryMap;
+    }
+
+    private function buildContributionsByWorker(int $userId): \Illuminate\Support\Collection
+    {
+        try {
+            return DB::table('memory_contributions')
+                ->where('user_id', $userId)
+                ->selectRaw('worker_slug, table_name, action, count(*) as total')
+                ->groupBy('worker_slug', 'table_name', 'action')
+                ->get()
+                ->groupBy('worker_slug');
+        } catch (\Throwable) {
+            return collect();
+        }
     }
 
     public function updateScenario(Request $request, int $deploymentId)

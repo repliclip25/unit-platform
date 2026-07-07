@@ -998,66 +998,11 @@
          SHARED MEMORY MAP (bottom of Platform tab)
     ══════════════════════════════════════════════════════════════════ --}}
     @php
-        $userId = auth()->id();
-
-        // All shared tables and which deployed workers touch them
-        $sharedTables = ['clients', 'contacts', 'assets'];
-
-        $deployedWorkers = DB::table('worker_deployments as wd')
-            ->join('workers as w', 'w.slug', '=', 'wd.worker_slug')
-            ->where('wd.user_id', $userId)
-            ->where('wd.status', '!=', 'decommissioned')
-            ->select('wd.id', 'wd.name', 'wd.worker_slug', 'w.blueprint')
-            ->get();
-
-        // Build memory map: table → [workers that read/write]
-        $memoryMap = [];
-        foreach ($sharedTables as $tbl) {
-            $memoryMap[$tbl] = [
-                'count'       => DB::table($tbl)->where('user_id', $userId)->count(),
-                'readers'     => [],
-                'writers'     => [],
-                'recent_contributions' => DB::table('memory_contributions')
-                    ->where('user_id', $userId)
-                    ->where('table_name', $tbl)
-                    ->orderByDesc('id')
-                    ->limit(3)
-                    ->get(),
-                'total_contributions' => DB::table('memory_contributions')
-                    ->where('user_id', $userId)
-                    ->where('table_name', $tbl)
-                    ->count(),
-            ];
-        }
-
-        foreach ($deployedWorkers as $dep) {
-            $bp = json_decode($dep->blueprint ?? '{}', true);
-            $shared = $bp['memory']['shared'] ?? [];
-            $owned  = $bp['memory']['owned']  ?? [];
-            foreach ($shared as $mem) {
-                $tbl = $mem['table'] ?? null;
-                if (!$tbl || !isset($memoryMap[$tbl])) continue;
-                $access = $mem['access'] ?? 'read';
-                $memoryMap[$tbl]['readers'][] = $dep->name;
-                if (str_contains($access, 'write')) {
-                    $memoryMap[$tbl]['writers'][] = $dep->name;
-                }
-            }
-        }
-
         $tableLabels = [
             'clients'  => ['icon' => '◈', 'color' => '#6366f1', 'label' => 'Clients'],
             'contacts' => ['icon' => '◉', 'color' => '#06b6d4', 'label' => 'Contacts'],
             'assets'   => ['icon' => '◆', 'color' => '#10b981', 'label' => 'Assets'],
         ];
-
-        // Contribution activity per worker
-        $contributionsByWorker = DB::table('memory_contributions')
-            ->where('user_id', $userId)
-            ->selectRaw('worker_slug, table_name, action, count(*) as total')
-            ->groupBy('worker_slug', 'table_name', 'action')
-            ->get()
-            ->groupBy('worker_slug');
     @endphp
 
     <div class="bg-gray-900 border border-gray-800 rounded-xl overflow-hidden">
@@ -1066,7 +1011,7 @@
                 <p class="text-white text-sm font-semibold">Shared Memory Map</p>
                 <p class="text-gray-600 text-xs mt-0.5">Tables shared across all deployed workers for this tenant — any worker can read, contributing workers write back discoveries</p>
             </div>
-            @php $totalContributions = DB::table('memory_contributions')->where('user_id',$userId)->count(); @endphp
+            @php $totalContributions = collect($memoryMap)->sum('total_contributions'); @endphp
             @if($totalContributions > 0)
             <span class="text-xs px-2 py-1 rounded-full" style="background:rgba(99,102,241,0.15);color:#818cf8">
                 {{ $totalContributions }} total contributions
