@@ -897,7 +897,8 @@ MD;
     // ── SECURITY LAYER ─────────────────────────────────────────────────────
     private function checkSecurity(int $userId): array
     {
-        $checks = [];
+        $checks     = [];
+        $authUser   = DB::table('users')->where('id', $userId)->first();
 
         // Encryption at rest
         $checks['encryption'] = [
@@ -921,7 +922,7 @@ MD;
             'category' => 'Auth',
             'label'    => 'Session Driver',
             'status'   => 'ok',
-            'detail'   => 'Driver: ' . config('session.driver') . ' · Authenticated as ' . auth()->user()->email,
+            'detail'   => 'Driver: ' . config('session.driver') . ' · Authenticated as ' . ($authUser->email ?? '—'),
         ];
 
         // Gmail credential storage
