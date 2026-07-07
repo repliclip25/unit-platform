@@ -95,13 +95,8 @@ class UnitNotifier
 
             if ($alreadySent) return;
 
-            // Confirm this is the first completed draft_ready transaction for this user (any source)
-            $totalCompleted = DB::table('transactions')
-                ->where('user_id', $user->id)
-                ->where('status', 'draft_ready')
-                ->count();
-
-            if ($totalCompleted !== 1) return;
+            // Already sent — stop here (log check is the only gate needed)
+            // Don't count transactions — user may have run fast-track multiple times
 
             $appUrl = config('app.url');
             $tpl = DB::table('platform_email_templates')

@@ -122,7 +122,6 @@ class OAuthController extends Controller
                 'updated_at'  => now(),
             ]);
 
-            \App\Platform\Services\EmailDispatcher::send('welcome_tenant', $user->email, $user->name, $user->id ?? null);
         }
 
         Auth::login($user, remember: true);
@@ -135,6 +134,7 @@ class OAuthController extends Controller
         }
 
         if ($isNewUser) {
+            \App\Platform\Services\EmailDispatcher::send('welcome_tenant', $user->email, $user->name, $user->id);
             return redirect()->route('onboarding');
         }
 
