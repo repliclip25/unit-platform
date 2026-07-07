@@ -22,7 +22,7 @@ class MemoryController extends Controller
     public function storeClient(Request $request)
     {
         $request->validate(['name' => 'required']);
-        DB::table('clients')->insert(['user_id' => auth()->id(), 'name' => $request->name, 'industry' => $request->industry, 'preferred_style' => $request->preferred_style, 'notes' => $request->notes, 'created_at' => now(), 'updated_at' => now()]);
+        DB::table('clients')->insert(['user_id' => auth()->id(), 'name' => $request->name, 'industry' => $request->industry, 'preferred_style' => $request->preferred_style, 'status' => $request->status ?: 'active', 'address' => $request->address, 'notes' => $request->notes, 'created_at' => now(), 'updated_at' => now()]);
         return back()->with('success', 'Client added.');
     }
 
@@ -35,7 +35,7 @@ class MemoryController extends Controller
     public function storeContact(Request $request)
     {
         $request->validate(['name' => 'required', 'email' => 'required|email']);
-        DB::table('contacts')->insert(['user_id' => auth()->id(), 'client_id' => $request->client_id ?: null, 'name' => $request->name, 'email' => $request->email, 'phone' => $request->phone, 'role' => $request->role, 'is_primary' => $request->boolean('is_primary'), 'created_at' => now(), 'updated_at' => now()]);
+        DB::table('contacts')->insert(['user_id' => auth()->id(), 'client_id' => $request->client_id ?: null, 'name' => $request->name, 'email' => $request->email, 'phone' => $request->phone, 'role' => $request->role, 'department' => $request->department, 'is_decision_maker' => $request->boolean('is_decision_maker'), 'is_primary' => $request->boolean('is_primary'), 'created_at' => now(), 'updated_at' => now()]);
         return back()->with('success', 'Contact added.');
     }
 
@@ -48,7 +48,7 @@ class MemoryController extends Controller
     public function storeAsset(Request $request)
     {
         $request->validate(['name' => 'required', 'type' => 'required', 'client_id' => 'required']);
-        DB::table('assets')->insert(['user_id' => auth()->id(), 'name' => $request->name, 'type' => $request->type, 'client_id' => $request->client_id ?: null, 'vendor' => $request->vendor, 'renewal_date' => $request->renewal_date, 'cost_per_year' => $request->cost_per_year ?: null, 'service_owner' => $request->service_owner, 'notes' => $request->notes, 'created_at' => now(), 'updated_at' => now()]);
+        DB::table('assets')->insert(['user_id' => auth()->id(), 'name' => $request->name, 'type' => $request->type, 'client_id' => $request->client_id ?: null, 'vendor' => $request->vendor, 'renewal_date' => $request->renewal_date, 'cost_per_year' => $request->cost_per_year ?: null, 'status' => $request->status ?: 'active', 'service_owner' => $request->service_owner, 'notes' => $request->notes, 'created_at' => now(), 'updated_at' => now()]);
         return back()->with('success', 'Asset added.');
     }
 
@@ -64,6 +64,7 @@ class MemoryController extends Controller
                 'vendor'       => $request->vendor,
                 'renewal_date' => $request->renewal_date ?: null,
                 'cost_per_year'=> $request->cost_per_year ?: null,
+                'status'       => $request->status ?: 'active',
                 'client_id'    => $request->client_id ?: null,
                 'notes'        => $request->notes,
                 'updated_at'   => now(),

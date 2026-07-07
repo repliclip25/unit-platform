@@ -136,8 +136,17 @@
                         {{-- Display row --}}
                         <div class="flex items-start justify-between" id="client-row-{{ $client->id }}">
                             <div>
-                                <p class="text-white text-sm font-medium">{{ $client->name }}</p>
+                                <div class="flex items-center gap-2 flex-wrap">
+                                    <p class="text-white text-sm font-medium">{{ $client->name }}</p>
+                                    @if(!empty($client->status) && $client->status !== 'active')
+                                    <span class="text-xs px-1.5 py-0.5 rounded font-medium
+                                        {{ $client->status === 'prospect' ? 'bg-blue-900/40 text-blue-400' : ($client->status === 'inactive' ? 'bg-gray-800 text-gray-500' : 'bg-red-900/40 text-red-400') }}">
+                                        {{ ucfirst($client->status) }}
+                                    </span>
+                                    @endif
+                                </div>
                                 <p class="text-gray-500 text-xs mt-0.5">{{ $client->preferred_style }}{{ $client->industry ? ' · ' . $client->industry : '' }}</p>
+                                @if(!empty($client->address))<p class="text-gray-600 text-xs mt-0.5">{{ $client->address }}</p>@endif
                                 @if($client->notes)<p class="text-gray-600 text-xs mt-1">{{ $client->notes }}</p>@endif
                             </div>
                             <div class="flex items-center gap-3 shrink-0">
@@ -161,7 +170,14 @@
                                     <option {{ $client->preferred_style === $s ? 'selected' : '' }}>{{ $s }}</option>
                                 @endforeach
                             </select>
-                            <textarea name="notes" rows="1" placeholder="Notes" class="bg-gray-800 text-white text-xs rounded-lg px-3 py-2 border border-gray-700 focus:outline-none focus:border-yellow-400">{{ $client->notes }}</textarea>
+                            <select name="status" class="bg-gray-800 text-white text-xs rounded-lg px-3 py-2 border border-gray-700 focus:outline-none focus:border-yellow-400">
+                                @foreach(['active','prospect','inactive','churned'] as $s)
+                                    <option {{ ($client->status ?? 'active') === $s ? 'selected' : '' }}>{{ $s }}</option>
+                                @endforeach
+                            </select>
+                            <input type="text" name="address" value="{{ $client->address }}" placeholder="Address"
+                                class="bg-gray-800 text-white text-xs rounded-lg px-3 py-2 border border-gray-700 focus:outline-none focus:border-yellow-400 sm:col-span-2">
+                            <textarea name="notes" rows="1" placeholder="Notes" class="bg-gray-800 text-white text-xs rounded-lg px-3 py-2 border border-gray-700 focus:outline-none focus:border-yellow-400 sm:col-span-2">{{ $client->notes }}</textarea>
                             <div class="sm:col-span-2 flex gap-2">
                                 <button type="submit" class="text-xs font-medium rounded-lg px-4 py-1.5 transition" style="background:var(--accent);color:#000;">Save</button>
                                 <button type="button" onclick="toggleEdit('client', {{ $client->id }})" class="text-gray-400 hover:text-white text-xs px-2">Cancel</button>
@@ -184,6 +200,13 @@
                         <option>Professional</option><option>Friendly</option><option>Formal</option><option>Concise</option>
                     </select>
                 </div>
+                <div><label class="text-gray-400 text-xs block mb-1">Status</label>
+                    <select name="status" class="w-full bg-gray-800 text-white text-sm rounded-lg px-3 py-2 border border-gray-700 focus:outline-none focus:border-yellow-400">
+                        <option value="active">Active</option><option value="prospect">Prospect</option>
+                        <option value="inactive">Inactive</option><option value="churned">Churned</option>
+                    </select>
+                </div>
+                <div><label class="text-gray-400 text-xs block mb-1">Address</label><input type="text" name="address" placeholder="Street, City, State…" class="w-full bg-gray-800 text-white text-sm rounded-lg px-3 py-2 border border-gray-700 focus:outline-none focus:border-yellow-400"></div>
                 <div><label class="text-gray-400 text-xs block mb-1">Notes</label><textarea name="notes" rows="2" class="w-full bg-gray-800 text-white text-sm rounded-lg px-3 py-2 border border-gray-700 focus:outline-none focus:border-yellow-400"></textarea></div>
                 <button type="submit" class="w-full text-sm rounded-lg py-2 transition font-medium" style="background:var(--accent);color:#000;">Add Client</button>
             </form>
@@ -198,9 +221,14 @@
                     <div class="px-5 py-4">
                         <div class="flex items-start justify-between" id="contact-row-{{ $contact->id }}">
                             <div>
-                                <p class="text-white text-sm font-medium">{{ $contact->name }}</p>
+                                <div class="flex items-center gap-2 flex-wrap">
+                                    <p class="text-white text-sm font-medium">{{ $contact->name }}</p>
+                                    @if(!empty($contact->is_decision_maker))
+                                    <span class="text-xs px-1.5 py-0.5 rounded bg-yellow-900/40 text-yellow-400 font-medium">Decision Maker</span>
+                                    @endif
+                                </div>
                                 <p class="text-xs mt-0.5" style="color:var(--accent-text)">{{ $contact->email }}</p>
-                                <p class="text-gray-500 text-xs">{{ $contact->phone }}{{ $contact->role ? ' · ' . $contact->role : '' }}</p>
+                                <p class="text-gray-500 text-xs">{{ implode(' · ', array_filter([$contact->phone, $contact->role, $contact->department])) }}</p>
                                 @php $cn = $clients->firstWhere('id', $contact->client_id); @endphp
                                 @if($cn)<p class="text-gray-600 text-xs">{{ $cn->name }}</p>@endif
                             </div>
@@ -223,6 +251,20 @@
                                 class="bg-gray-800 text-white text-xs rounded-lg px-3 py-2 border border-gray-700 focus:outline-none focus:border-yellow-400">
                             <input type="text" name="role" value="{{ $contact->role }}" placeholder="Role / Title"
                                 class="bg-gray-800 text-white text-xs rounded-lg px-3 py-2 border border-gray-700 focus:outline-none focus:border-yellow-400">
+                            <input type="text" name="department" value="{{ $contact->department }}" placeholder="Department"
+                                class="bg-gray-800 text-white text-xs rounded-lg px-3 py-2 border border-gray-700 focus:outline-none focus:border-yellow-400">
+                            <label class="flex items-center gap-2 cursor-pointer px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg">
+                                <div class="relative shrink-0">
+                                    <input type="checkbox" name="is_decision_maker" value="1"
+                                        {{ !empty($contact->is_decision_maker) ? 'checked' : '' }}
+                                        class="sr-only peer">
+                                    <div class="w-8 h-4 rounded-full transition peer-checked:bg-yellow-400 bg-gray-600
+                                                after:content-[''] after:absolute after:top-0 after:left-0
+                                                after:w-4 after:h-4 after:rounded-full after:bg-white after:transition-all
+                                                peer-checked:after:translate-x-4"></div>
+                                </div>
+                                <span class="text-gray-400 text-xs">Decision Maker</span>
+                            </label>
                             <div class="sm:col-span-2">
                                 @php $selClient = $clients->firstWhere('id', $contact->client_id); @endphp
                                 @include('partials.client-picker', ['pickerId' => 'contact-edit-'.$contact->id, 'selectedId' => $contact->client_id, 'selectedName' => $selClient?->name ?? ''])
@@ -246,9 +288,23 @@
                 <div><label class="text-gray-400 text-xs block mb-1">Email</label><input type="email" name="email" required class="w-full bg-gray-800 text-white text-sm rounded-lg px-3 py-2 border border-gray-700 focus:outline-none focus:border-yellow-400"></div>
                 <div><label class="text-gray-400 text-xs block mb-1">Phone</label><input type="text" name="phone" class="w-full bg-gray-800 text-white text-sm rounded-lg px-3 py-2 border border-gray-700 focus:outline-none focus:border-yellow-400"></div>
                 <div><label class="text-gray-400 text-xs block mb-1">Role</label><input type="text" name="role" class="w-full bg-gray-800 text-white text-sm rounded-lg px-3 py-2 border border-gray-700 focus:outline-none focus:border-yellow-400"></div>
+                <div><label class="text-gray-400 text-xs block mb-1">Department</label><input type="text" name="department" placeholder="e.g. Procurement, IT" class="w-full bg-gray-800 text-white text-sm rounded-lg px-3 py-2 border border-gray-700 focus:outline-none focus:border-yellow-400"></div>
                 <div><label class="text-gray-400 text-xs block mb-1">Client</label>
                     @include('partials.client-picker', ['pickerId' => 'contact-add', 'selectedId' => '', 'selectedName' => ''])
                 </div>
+                <label class="flex items-center justify-between gap-3 px-3 py-2.5 rounded-lg border border-gray-700 cursor-pointer bg-gray-800">
+                    <div>
+                        <p class="text-white text-xs font-semibold">Decision Maker</p>
+                        <p class="text-gray-500 text-xs">Key decision authority for this client</p>
+                    </div>
+                    <div class="relative shrink-0">
+                        <input type="checkbox" name="is_decision_maker" value="1" class="sr-only peer">
+                        <div class="w-9 h-5 rounded-full transition peer-checked:bg-yellow-400 bg-gray-700
+                                    after:content-[''] after:absolute after:top-0.5 after:left-0.5
+                                    after:w-4 after:h-4 after:rounded-full after:bg-white after:transition-all
+                                    peer-checked:after:translate-x-4"></div>
+                    </div>
+                </label>
                 <button type="submit" class="w-full text-sm rounded-lg py-2 transition font-medium" style="background:var(--accent);color:#000;">Add Contact</button>
             </form>
         </div>
@@ -265,7 +321,15 @@
                     <div class="px-5 py-4">
                         <div class="flex items-start justify-between" id="asset-row-{{ $asset->id }}">
                             <div>
-                                <p class="text-white text-sm font-medium">{{ $asset->name }}</p>
+                                <div class="flex items-center gap-2 flex-wrap">
+                                    <p class="text-white text-sm font-medium">{{ $asset->name }}</p>
+                                    @if(!empty($asset->status) && $asset->status !== 'active')
+                                    <span class="text-xs px-1.5 py-0.5 rounded font-medium
+                                        {{ $asset->status === 'expiring' ? 'bg-amber-900/40 text-amber-400' : ($asset->status === 'expired' ? 'bg-red-900/40 text-red-400' : 'bg-gray-800 text-gray-500') }}">
+                                        {{ ucfirst($asset->status) }}
+                                    </span>
+                                    @endif
+                                </div>
                                 <p class="text-gray-500 text-xs mt-0.5">{{ $asset->type }}{{ $asset->vendor ? ' · ' . $asset->vendor : '' }}</p>
                                 @php $cn = $clients->firstWhere('id', $asset->client_id); @endphp
                                 @if($cn)<p class="text-gray-600 text-xs">{{ $cn->name }}</p>@endif
@@ -304,6 +368,11 @@
                                 class="bg-gray-800 text-white text-xs rounded-lg px-3 py-2 border border-gray-700 focus:outline-none focus:border-yellow-400">
                             <input type="number" name="cost_per_year" value="{{ $asset->cost_per_year }}" step="0.01" placeholder="Cost / year ($)"
                                 class="bg-gray-800 text-white text-xs rounded-lg px-3 py-2 border border-gray-700 focus:outline-none focus:border-yellow-400">
+                            <select name="status" class="bg-gray-800 text-white text-xs rounded-lg px-3 py-2 border border-gray-700 focus:outline-none focus:border-yellow-400">
+                                @foreach(['active','expiring','expired','cancelled'] as $s)
+                                    <option {{ ($asset->status ?? 'active') === $s ? 'selected' : '' }}>{{ $s }}</option>
+                                @endforeach
+                            </select>
                             @php $selClient = $clients->firstWhere('id', $asset->client_id); @endphp
                             @include('partials.client-picker', ['pickerId' => 'asset-edit-'.$asset->id, 'selectedId' => $asset->client_id, 'selectedName' => $selClient?->name ?? ''])
                             <div class="sm:col-span-2 flex gap-2">
@@ -336,6 +405,12 @@
                 </div>
                 <div><label class="text-gray-400 text-xs block mb-1">Vendor</label><input type="text" name="vendor" class="w-full bg-gray-800 text-white text-sm rounded-lg px-3 py-2 border border-gray-700 focus:outline-none focus:border-yellow-400"></div>
                 <div><label class="text-gray-400 text-xs block mb-1">Renewal Date</label><input type="date" name="renewal_date" class="w-full bg-gray-800 text-white text-sm rounded-lg px-3 py-2 border border-gray-700 focus:outline-none focus:border-yellow-400"></div>
+                <div><label class="text-gray-400 text-xs block mb-1">Status</label>
+                    <select name="status" class="w-full bg-gray-800 text-white text-sm rounded-lg px-3 py-2 border border-gray-700 focus:outline-none focus:border-yellow-400">
+                        <option value="active">Active</option><option value="expiring">Expiring</option>
+                        <option value="expired">Expired</option><option value="cancelled">Cancelled</option>
+                    </select>
+                </div>
                 <div><label class="text-gray-400 text-xs block mb-1">Client</label>
                     @include('partials.client-picker', ['pickerId' => 'asset-add', 'selectedId' => '', 'selectedName' => ''])
                 </div>

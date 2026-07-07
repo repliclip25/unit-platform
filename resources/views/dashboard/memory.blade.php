@@ -72,8 +72,19 @@
                 @forelse($clients as $client)
                     <div class="px-5 py-4 flex items-start justify-between gap-4">
                         <div class="min-w-0">
-                            <p class="text-sm font-medium" style="color:var(--text-primary)">{{ $client->name }}</p>
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <p class="text-sm font-medium" style="color:var(--text-primary)">{{ $client->name }}</p>
+                                @if(!empty($client->status) && $client->status !== 'active')
+                                <span class="text-xs px-1.5 py-0.5 rounded font-medium
+                                    {{ $client->status === 'prospect' ? 'bg-blue-900/40 text-blue-400' : ($client->status === 'inactive' ? 'bg-gray-800 text-gray-500' : 'bg-red-900/40 text-red-400') }}">
+                                    {{ ucfirst($client->status) }}
+                                </span>
+                                @endif
+                            </div>
                             <p class="text-xs mt-0.5" style="color:var(--text-muted)">{{ $client->preferred_style }}{{ $client->industry ? ' · ' . $client->industry : '' }}</p>
+                            @if(!empty($client->address))
+                                <p class="text-xs mt-0.5" style="color:var(--text-faint)">{{ $client->address }}</p>
+                            @endif
                             @if($client->notes)
                                 <p class="text-xs mt-1 line-clamp-2" style="color:var(--text-faint)">{{ $client->notes }}</p>
                             @endif
@@ -102,10 +113,22 @@
                     <input type="text" name="name" required class="w-full text-sm rounded-lg px-3 py-2 border focus:outline-none"
                            style="background:var(--bg-raised);color:var(--text-primary);border-color:var(--border)">
                 </div>
-                <div>
-                    <label class="text-xs block mb-1" style="color:var(--text-muted)">Industry</label>
-                    <input type="text" name="industry" class="w-full text-sm rounded-lg px-3 py-2 border focus:outline-none"
-                           style="background:var(--bg-raised);color:var(--text-primary);border-color:var(--border)">
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="text-xs block mb-1" style="color:var(--text-muted)">Industry</label>
+                        <input type="text" name="industry" class="w-full text-sm rounded-lg px-3 py-2 border focus:outline-none"
+                               style="background:var(--bg-raised);color:var(--text-primary);border-color:var(--border)">
+                    </div>
+                    <div>
+                        <label class="text-xs block mb-1" style="color:var(--text-muted)">Status</label>
+                        <select name="status" class="w-full text-sm rounded-lg px-3 py-2 border focus:outline-none"
+                                style="background:var(--bg-raised);color:var(--text-primary);border-color:var(--border)">
+                            <option value="active">Active</option>
+                            <option value="prospect">Prospect</option>
+                            <option value="inactive">Inactive</option>
+                            <option value="churned">Churned</option>
+                        </select>
+                    </div>
                 </div>
                 <div>
                     <label class="text-xs block mb-1" style="color:var(--text-muted)">Preferred Style</label>
@@ -118,8 +141,14 @@
                     </select>
                 </div>
                 <div>
+                    <label class="text-xs block mb-1" style="color:var(--text-muted)">Address</label>
+                    <input type="text" name="address" placeholder="Street, City, State…"
+                           class="w-full text-sm rounded-lg px-3 py-2 border focus:outline-none"
+                           style="background:var(--bg-raised);color:var(--text-primary);border-color:var(--border)">
+                </div>
+                <div>
                     <label class="text-xs block mb-1" style="color:var(--text-muted)">Notes</label>
-                    <textarea name="notes" rows="3" class="w-full text-sm rounded-lg px-3 py-2 border focus:outline-none resize-none"
+                    <textarea name="notes" rows="2" class="w-full text-sm rounded-lg px-3 py-2 border focus:outline-none resize-none"
                               style="background:var(--bg-raised);color:var(--text-primary);border-color:var(--border)"></textarea>
                 </div>
                 <button type="submit" class="w-full text-sm rounded-lg py-2 font-semibold transition hover:opacity-90"
@@ -140,10 +169,15 @@
                     @php $cn = $clients->firstWhere('id', $contact->client_id); @endphp
                     <div class="px-5 py-4 flex items-start justify-between gap-4">
                         <div class="min-w-0">
-                            <p class="text-sm font-medium" style="color:var(--text-primary)">{{ $contact->name }}</p>
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <p class="text-sm font-medium" style="color:var(--text-primary)">{{ $contact->name }}</p>
+                                @if(!empty($contact->is_decision_maker))
+                                <span class="text-xs px-1.5 py-0.5 rounded font-medium bg-yellow-900/40 text-yellow-400">Decision Maker</span>
+                                @endif
+                            </div>
                             <p class="text-xs mt-0.5 truncate" style="color:var(--accent-text)">{{ $contact->email }}</p>
                             <p class="text-xs" style="color:var(--text-muted)">
-                                {{ implode(' · ', array_filter([$contact->phone, $contact->role])) }}
+                                {{ implode(' · ', array_filter([$contact->phone, $contact->role, $contact->department])) }}
                             </p>
                             @if($cn)
                                 <p class="text-xs mt-0.5" style="color:var(--text-faint)">{{ $cn->name }}</p>
@@ -190,6 +224,12 @@
                     </div>
                 </div>
                 <div>
+                    <label class="text-xs block mb-1" style="color:var(--text-muted)">Department</label>
+                    <input type="text" name="department" placeholder="e.g. Procurement, IT, Finance"
+                           class="w-full text-sm rounded-lg px-3 py-2 border focus:outline-none"
+                           style="background:var(--bg-raised);color:var(--text-primary);border-color:var(--border)">
+                </div>
+                <div>
                     <label class="text-xs block mb-1" style="color:var(--text-muted)">Client</label>
                     <select name="client_id" class="w-full text-sm rounded-lg px-3 py-2 border focus:outline-none"
                             style="background:var(--bg-raised);color:var(--text-primary);border-color:var(--border)">
@@ -199,6 +239,20 @@
                         @endforeach
                     </select>
                 </div>
+                <label class="flex items-center justify-between gap-3 px-3 py-2.5 rounded-lg border cursor-pointer"
+                       style="border-color:var(--border);background:var(--bg-raised)">
+                    <div>
+                        <p class="text-xs font-semibold" style="color:var(--text-primary)">Decision Maker</p>
+                        <p class="text-xs mt-0.5" style="color:var(--text-muted)">Key decision authority for this client</p>
+                    </div>
+                    <div class="relative shrink-0">
+                        <input type="checkbox" name="is_decision_maker" value="1" class="sr-only peer">
+                        <div class="w-9 h-5 rounded-full transition peer-checked:bg-yellow-400 bg-gray-700
+                                    after:content-[''] after:absolute after:top-0.5 after:left-0.5
+                                    after:w-4 after:h-4 after:rounded-full after:bg-white after:transition-all
+                                    peer-checked:after:translate-x-4"></div>
+                    </div>
+                </label>
                 <button type="submit" class="w-full text-sm rounded-lg py-2 font-semibold transition hover:opacity-90"
                         style="background:var(--accent);color:#000">Add Contact</button>
             </form>
@@ -223,7 +277,15 @@
                     {{-- Summary row --}}
                     <div class="px-5 py-4 flex items-start justify-between gap-4">
                         <div class="min-w-0 flex-1">
-                            <p class="text-sm font-medium" style="color:var(--text-primary)">{{ $asset->name }}</p>
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <p class="text-sm font-medium" style="color:var(--text-primary)">{{ $asset->name }}</p>
+                                @if(!empty($asset->status) && $asset->status !== 'active')
+                                <span class="text-xs px-1.5 py-0.5 rounded font-medium
+                                    {{ $asset->status === 'expiring' ? 'bg-amber-900/40 text-amber-400' : ($asset->status === 'expired' ? 'bg-red-900/40 text-red-400' : 'bg-gray-800 text-gray-500') }}">
+                                    {{ ucfirst($asset->status) }}
+                                </span>
+                                @endif
+                            </div>
                             <p class="text-xs mt-0.5" style="color:var(--text-muted)">
                                 {{ $asset->type }}{{ $asset->vendor ? ' · ' . $asset->vendor : '' }}
                             </p>
@@ -288,6 +350,15 @@
                                     <input type="number" name="cost_per_year" step="0.01" value="{{ $asset->cost_per_year }}"
                                            class="w-full text-sm rounded-lg px-3 py-2 border focus:outline-none"
                                            style="background:var(--bg-card);color:var(--text-primary);border-color:var(--border)">
+                                </div>
+                                <div>
+                                    <label class="text-xs block mb-1" style="color:var(--text-muted)">Status</label>
+                                    <select name="status" class="w-full text-sm rounded-lg px-3 py-2 border focus:outline-none"
+                                            style="background:var(--bg-card);color:var(--text-primary);border-color:var(--border)">
+                                        @foreach(['active','expiring','expired','cancelled'] as $s)
+                                            <option @if(($asset->status ?? 'active') === $s) selected @endif>{{ $s }}</option>
+                                        @endforeach
+                                    </select>
                                 </div>
                                 <div class="sm:col-span-2">
                                     <label class="text-xs block mb-1" style="color:var(--text-muted)">Client</label>
@@ -359,6 +430,16 @@
                                class="w-full text-sm rounded-lg px-3 py-2 border focus:outline-none"
                                style="background:var(--bg-raised);color:var(--text-primary);border-color:var(--border)">
                     </div>
+                </div>
+                <div>
+                    <label class="text-xs block mb-1" style="color:var(--text-muted)">Status</label>
+                    <select name="status" class="w-full text-sm rounded-lg px-3 py-2 border focus:outline-none"
+                            style="background:var(--bg-raised);color:var(--text-primary);border-color:var(--border)">
+                        <option value="active">Active</option>
+                        <option value="expiring">Expiring</option>
+                        <option value="expired">Expired</option>
+                        <option value="cancelled">Cancelled</option>
+                    </select>
                 </div>
                 <div>
                     <label class="text-xs block mb-1" style="color:var(--text-muted)">Client</label>

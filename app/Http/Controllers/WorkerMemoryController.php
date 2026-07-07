@@ -57,7 +57,7 @@ class WorkerMemoryController extends Controller
     {
         DB::table('worker_deployments')->where('id', $id)->where('user_id', auth()->id())->firstOrFail();
         $request->validate(['name' => 'required']);
-        DB::table('clients')->insert(['user_id' => auth()->id(), 'name' => $request->name, 'industry' => $request->industry, 'preferred_style' => $request->preferred_style, 'notes' => $request->notes, 'created_at' => now(), 'updated_at' => now()]);
+        DB::table('clients')->insert(['user_id' => auth()->id(), 'name' => $request->name, 'industry' => $request->industry, 'preferred_style' => $request->preferred_style, 'status' => $request->status ?: 'active', 'address' => $request->address, 'notes' => $request->notes, 'created_at' => now(), 'updated_at' => now()]);
         return back()->with('success', 'Client added.');
     }
 
@@ -69,6 +69,8 @@ class WorkerMemoryController extends Controller
             'name'            => $request->name,
             'industry'        => $request->industry,
             'preferred_style' => $request->preferred_style,
+            'status'          => $request->status ?: 'active',
+            'address'         => $request->address,
             'notes'           => $request->notes,
             'updated_at'      => now(),
         ]);
@@ -86,7 +88,7 @@ class WorkerMemoryController extends Controller
     {
         DB::table('worker_deployments')->where('id', $id)->where('user_id', auth()->id())->firstOrFail();
         $request->validate(['name' => 'required', 'email' => 'required|email']);
-        DB::table('contacts')->insert(['user_id' => auth()->id(), 'client_id' => $request->client_id ?: null, 'name' => $request->name, 'email' => $request->email, 'phone' => $request->phone, 'role' => $request->role, 'is_primary' => false, 'created_at' => now(), 'updated_at' => now()]);
+        DB::table('contacts')->insert(['user_id' => auth()->id(), 'client_id' => $request->client_id ?: null, 'name' => $request->name, 'email' => $request->email, 'phone' => $request->phone, 'role' => $request->role, 'department' => $request->department, 'is_decision_maker' => $request->boolean('is_decision_maker'), 'is_primary' => false, 'created_at' => now(), 'updated_at' => now()]);
         return back()->with('success', 'Contact added.');
     }
 
@@ -95,12 +97,14 @@ class WorkerMemoryController extends Controller
         DB::table('worker_deployments')->where('id', $id)->where('user_id', auth()->id())->firstOrFail();
         $request->validate(['name' => 'required', 'email' => 'required|email']);
         DB::table('contacts')->where('id', $cid)->where('user_id', auth()->id())->update([
-            'name'       => $request->name,
-            'email'      => $request->email,
-            'phone'      => $request->phone,
-            'role'       => $request->role,
-            'client_id'  => $request->client_id ?: null,
-            'updated_at' => now(),
+            'name'              => $request->name,
+            'email'             => $request->email,
+            'phone'             => $request->phone,
+            'role'              => $request->role,
+            'department'        => $request->department,
+            'is_decision_maker' => $request->boolean('is_decision_maker'),
+            'client_id'         => $request->client_id ?: null,
+            'updated_at'        => now(),
         ]);
         return back()->with('success', 'Contact updated.');
     }
@@ -116,7 +120,7 @@ class WorkerMemoryController extends Controller
     {
         DB::table('worker_deployments')->where('id', $id)->where('user_id', auth()->id())->firstOrFail();
         $request->validate(['name' => 'required', 'type' => 'required']);
-        DB::table('assets')->insert(['user_id' => auth()->id(), 'client_id' => $request->client_id ?: null, 'name' => $request->name, 'type' => $request->type, 'vendor' => $request->vendor, 'renewal_date' => $request->renewal_date, 'cost_per_year' => $request->cost_per_year ?: null, 'created_at' => now(), 'updated_at' => now()]);
+        DB::table('assets')->insert(['user_id' => auth()->id(), 'client_id' => $request->client_id ?: null, 'name' => $request->name, 'type' => $request->type, 'vendor' => $request->vendor, 'renewal_date' => $request->renewal_date, 'cost_per_year' => $request->cost_per_year ?: null, 'status' => $request->status ?: 'active', 'created_at' => now(), 'updated_at' => now()]);
         return back()->with('success', 'Asset added.');
     }
 
@@ -130,6 +134,7 @@ class WorkerMemoryController extends Controller
             'vendor'        => $request->vendor,
             'renewal_date'  => $request->renewal_date ?: null,
             'cost_per_year' => $request->cost_per_year ?: null,
+            'status'        => $request->status ?: 'active',
             'client_id'     => $request->client_id ?: null,
             'updated_at'    => now(),
         ]);
