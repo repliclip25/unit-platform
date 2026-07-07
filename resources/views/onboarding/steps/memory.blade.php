@@ -2,15 +2,13 @@
 
 @php
     $health    = $memoryHealth;
-    $isHealthy = $health['healthy'];
-    $score     = $health['score'];
     $complete  = $health['complete'];
-    $needed    = $health['needed'];
     $hasAny    = ($clientCount + $contactCount + $assetCount) > 0;
-    $threshold = \App\Platform\Services\MemoryHealthService::HEALTHY_THRESHOLD;
 
-    // Persona definition comes from the contract via the controller
-    // Falls back to sensible defaults when no persona is set
+    // Onboarding UX: 1 client = ready. Show 100% once any client exists.
+    $displayScore   = $complete >= 1 ? 100 : 0;
+    $displayHealthy = $complete >= 1;
+
     $mc = $personaDef['memory_copy'] ?? [
         'client_noun'    => 'client',
         'asset_noun'     => 'asset',
@@ -46,28 +44,48 @@
 @endif
 
 {{-- Memory health bar --}}
-<div class="mb-6 bg-gray-900 border border-gray-800 rounded-xl px-5 py-4">
+<div class="mb-4 bg-gray-900 border border-gray-800 rounded-xl px-5 py-4">
     <div class="flex items-center justify-between mb-2">
         <span class="text-xs font-semibold text-gray-400">Memory Coverage</span>
-        <span class="text-xs font-bold {{ $isHealthy ? 'text-green-400' : ($score >= 40 ? 'text-yellow-400' : 'text-gray-500') }}">
-            {{ $score }}%
+        <span class="text-xs font-bold {{ $displayHealthy ? 'text-green-400' : 'text-gray-500' }}">
+            {{ $displayScore }}%
         </span>
     </div>
     <div class="h-2 rounded-full overflow-hidden bg-gray-800">
-        <div class="h-full rounded-full transition-all duration-500"
-             style="width:{{ $score }}%;background:{{ $isHealthy ? '#4ade80' : ($score >= 40 ? '#f59e0b' : 'var(--accent)') }}"></div>
+        <div class="h-full rounded-full transition-all duration-700"
+             style="width:{{ $displayScore }}%;background:{{ $displayHealthy ? '#4ade80' : 'rgba(255,255,255,0.1)' }}"></div>
     </div>
-    <p class="text-xs text-gray-600 mt-2">
-        @if($isHealthy)
-            Ava has enough context to produce reliable drafts for your clients.
-        @elseif($complete > 0)
-            Ava currently knows <strong class="text-gray-400">{{ $complete }} {{ $mc['client_noun'] }}{{ $complete === 1 ? '' : 's' }}</strong>.
-            Add a few more to unlock high-confidence drafting.
+    <p class="text-xs mt-2 {{ $displayHealthy ? 'text-green-400/70' : 'text-gray-600' }}">
+        @if($displayHealthy)
+            Ava knows <strong>{{ $complete }} {{ $mc['client_noun'] }}{{ $complete === 1 ? '' : 's' }}</strong>. She's ready.
         @else
             Add your first {{ $mc['client_noun'] }} below to get started.
         @endif
     </p>
 </div>
+
+{{-- Continue button — right below the progress bar --}}
+<form method="POST" action="{{ route('onboarding.step.handle', 'memory') }}" class="mb-6">
+    @csrf
+    @if($displayHealthy)
+        <button type="submit"
+                class="w-full font-bold text-base py-4 rounded-xl transition"
+                style="background:var(--accent);color:#111">
+            Continue
+        </button>
+        <p class="text-center text-xs text-gray-600 mt-2">
+            You can add more clients from your dashboard to improve Ava's accuracy.
+        </p>
+    @else
+        <button type="submit"
+                class="w-full font-semibold text-base py-4 rounded-xl transition border border-gray-700 text-gray-400 hover:text-white hover:border-gray-500">
+            Continue without adding a client
+        </button>
+        <p class="text-center text-xs text-gray-600 mt-2">
+            Ava will still run — but she won't recognize your clients until you add them.
+        </p>
+    @endif
+</form>
 
 {{-- ── Quick-add form ── --}}
 <div class="mb-5">
@@ -199,33 +217,5 @@
     </p>
 </div>
 
-{{-- Continue / soft-gate --}}
-<form method="POST" action="{{ route('onboarding.step.handle', 'memory') }}">
-    @csrf
-    @if($isHealthy)
-        <button type="submit"
-                class="w-full font-bold text-base py-4 rounded-xl transition"
-                style="background:var(--accent);color:#111">
-            Continue
-        </button>
-    @elseif($hasAny)
-        <button type="submit"
-                class="w-full font-bold text-base py-4 rounded-xl transition"
-                style="background:var(--accent);color:#111">
-            Continue
-        </button>
-        <p class="text-center text-xs text-gray-600 mt-2">
-            Ava will start working — we'll remind you to add more clients to improve her accuracy.
-        </p>
-    @else
-        <button type="submit"
-                class="w-full font-semibold text-base py-4 rounded-xl transition border border-gray-700 text-gray-400 hover:text-white hover:border-gray-500">
-            Continue
-        </button>
-        <p class="text-center text-xs text-gray-600 mt-2">
-            Ava will still run — but she won't recognize your clients until you add them.
-        </p>
-    @endif
-</form>
 
 </x-onboarding-layout>
