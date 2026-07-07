@@ -43,14 +43,29 @@ class ClaudeService
     }
 
     // ── Circuit breaker ───────────────────────────────────────────────────────
-    // If the AI provider fails 3 times within 5 minutes, open the circuit for
-    // 10 minutes — jobs throw immediately instead of burning retries on a dead API.
+    // If the AI provider fails N times within the window, open the circuit for
+    // the timeout period — jobs throw immediately instead of burning retries on a dead API.
+    // Thresholds are configurable from admin → Platform → AI Engine.
 
     private const CB_FAILURES_KEY = 'ai_circuit_failures';
     private const CB_OPEN_KEY     = 'ai_circuit_open';
-    private const CB_THRESHOLD    = 3;   // failures before opening
-    private const CB_WINDOW       = 300; // 5 min failure window
-    private const CB_TIMEOUT      = 600; // 10 min open period
+    private const CB_OPEN_AT_KEY  = 'ai_circuit_open_at';
+
+    private function cbConfig(): array
+    {
+        try {
+            $rows = DB::table('platform_configs')
+                ->whereIn('key', ['cb_threshold', 'cb_window', 'cb_timeout'])
+                ->pluck('value', 'key');
+            return [
+                'threshold' => (int) ($rows['cb_threshold'] ?? 3),
+                'window'    => (int) ($rows['cb_window']    ?? 300),
+                'timeout'   => (int) ($rows['cb_timeout']   ?? 600),
+            ];
+        } catch (\Throwable) {
+            return ['threshold' => 3, 'window' => 300, 'timeout' => 600];
+        }
+    }
 
     private function circuitOpen(): bool
     {
@@ -61,14 +76,17 @@ class ClaudeService
     {
         Cache::forget(self::CB_FAILURES_KEY);
         Cache::forget(self::CB_OPEN_KEY);
+        Cache::forget(self::CB_OPEN_AT_KEY);
     }
 
     private function recordFailure(): void
     {
+        $cfg      = $this->cbConfig();
         $failures = (int) Cache::get(self::CB_FAILURES_KEY, 0) + 1;
-        Cache::put(self::CB_FAILURES_KEY, $failures, self::CB_WINDOW);
-        if ($failures >= self::CB_THRESHOLD) {
-            Cache::put(self::CB_OPEN_KEY, true, self::CB_TIMEOUT);
+        Cache::put(self::CB_FAILURES_KEY, $failures, $cfg['window']);
+        if ($failures >= $cfg['threshold']) {
+            Cache::put(self::CB_OPEN_KEY,    true,  $cfg['timeout']);
+            Cache::put(self::CB_OPEN_AT_KEY, time(), $cfg['timeout']);
             Log::critical('ClaudeService: circuit breaker opened — AI provider unreachable', ['failures' => $failures]);
         }
     }

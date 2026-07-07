@@ -15,20 +15,21 @@ class AdminPlatformController extends Controller
     public function index()
     {
         return view('admin.platform', [
-            'alerts'       => $this->alerts(),
-            'aiHealth'     => $this->aiHealth(),
-            'queueHealth'  => $this->queueHealth(),
-            'stripeHealth' => $this->stripeHealth(),
-            'smtpHealth'   => $this->smtpHealth(),
-            'tenantStats'  => $this->tenantStats(),
-            'workerStats'  => $this->workerStats(),
-            'pipelineStats'=> $this->pipelineStats(),
-            'gmailWatches' => $this->gmailWatches(),
-            'connectors'   => $this->connectors(),
-            'businessStats'=> $this->businessStats(),
-            'recentAlerts' => $this->recentPolicyEvents(),
-            'failedJobs'   => $this->failedJobs(),
-            'msgTemplates' => $this->messagingTemplates(),
+            'alerts'          => $this->alerts(),
+            'aiHealth'        => $this->aiHealth(),
+            'circuitBreaker'  => $this->circuitBreakerStatus(),
+            'queueHealth'     => $this->queueHealth(),
+            'stripeHealth'    => $this->stripeHealth(),
+            'smtpHealth'      => $this->smtpHealth(),
+            'tenantStats'     => $this->tenantStats(),
+            'workerStats'     => $this->workerStats(),
+            'pipelineStats'   => $this->pipelineStats(),
+            'gmailWatches'    => $this->gmailWatches(),
+            'connectors'      => $this->connectors(),
+            'businessStats'   => $this->businessStats(),
+            'recentAlerts'    => $this->recentPolicyEvents(),
+            'failedJobs'      => $this->failedJobs(),
+            'msgTemplates'    => $this->messagingTemplates(),
         ]);
     }
 
@@ -42,6 +43,11 @@ class AdminPlatformController extends Controller
         $ai = $this->aiHealth();
         if ($ai['credit_usd'] !== null && $ai['credit_usd'] < 10) {
             $alerts[] = ['level' => 'critical', 'icon' => '🤖', 'message' => 'Anthropic balance critical: $' . number_format($ai['credit_usd'], 2) . ' remaining', 'action' => 'https://console.anthropic.com/settings/billing', 'action_label' => 'Add credits'];
+        }
+
+        // Circuit breaker
+        if (Cache::get('ai_circuit_open')) {
+            $alerts[] = ['level' => 'critical', 'icon' => '⚡', 'message' => 'AI circuit breaker is OPEN — all pipeline jobs are failing immediately', 'action' => route('admin.platform') . '#circuit-breaker', 'action_label' => 'Reset now'];
         }
 
         // Failed jobs
@@ -163,6 +169,66 @@ class AdminPlatformController extends Controller
             'custom_keys'   => $customKeys,
             'custom_models' => $customModels,
         ];
+    }
+
+    // ── Circuit Breaker ──────────────────────────────────────────────────────
+
+    private function circuitBreakerStatus(): array
+    {
+        $isOpen   = (bool) Cache::get('ai_circuit_open');
+        $failures = (int)  Cache::get('ai_circuit_failures', 0);
+
+        $threshold = (int) (DB::table('platform_configs')->where('key', 'cb_threshold')->value('value') ?? 3);
+        $window    = (int) (DB::table('platform_configs')->where('key', 'cb_window')->value('value')    ?? 300);
+        $timeout   = (int) (DB::table('platform_configs')->where('key', 'cb_timeout')->value('value')   ?? 600);
+
+        // Estimate time remaining if open (cache TTL isn't directly readable, so we track open_at)
+        $openAt    = Cache::get('ai_circuit_open_at');
+        $remainingSec = null;
+        if ($isOpen && $openAt) {
+            $remainingSec = max(0, $timeout - (time() - $openAt));
+        }
+
+        return compact('isOpen', 'failures', 'threshold', 'window', 'timeout', 'openAt', 'remainingSec');
+    }
+
+    public function circuitBreakerReset()
+    {
+        Cache::forget('ai_circuit_open');
+        Cache::forget('ai_circuit_open_at');
+        Cache::forget('ai_circuit_failures');
+
+        DB::table('platform_events')->insert([
+            'user_id'     => auth()->id(),
+            'worker_slug' => 'platform',
+            'event'       => 'admin_circuit_breaker_reset',
+            'payload'     => json_encode(['by' => auth()->user()->email ?? 'admin']),
+            'level'       => 'info',
+            'created_at'  => now(),
+            'updated_at'  => now(),
+        ]);
+
+        return back()->with('ct_success', 'Circuit breaker reset — AI pipeline is open.');
+    }
+
+    public function circuitBreakerSettings(Request $request)
+    {
+        $threshold = max(1, (int) $request->input('cb_threshold', 3));
+        $window    = max(60, (int) $request->input('cb_window', 300));
+        $timeout   = max(60, (int) $request->input('cb_timeout', 600));
+
+        foreach ([
+            'cb_threshold' => $threshold,
+            'cb_window'    => $window,
+            'cb_timeout'   => $timeout,
+        ] as $key => $value) {
+            DB::table('platform_configs')->updateOrInsert(
+                ['key' => $key],
+                ['value' => (string) $value, 'updated_at' => now()]
+            );
+        }
+
+        return back()->with('ct_success', 'Circuit breaker settings saved.');
     }
 
     // ── Queue Health ─────────────────────────────────────────────────────────

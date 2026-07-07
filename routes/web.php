@@ -278,8 +278,10 @@ Route::middleware(['auth', 'verified', 'onboarded', 'not-pending-del'])->group(f
         Route::post('/admin/platform/queue/clear-failed',                [AdminPlatformController::class, 'queueClearFailed'])->name('admin.platform.queue.clear-failed');
         Route::post('/admin/platform/queue/clear-stuck',                 [AdminPlatformController::class, 'queueClearStuck'])->name('admin.platform.queue.clear-stuck');
 
-        // AI model
+        // AI model + circuit breaker
         Route::post('/admin/platform/ai/switch-model',                   [AdminPlatformController::class, 'switchModel'])->name('admin.platform.ai.switch-model');
+        Route::post('/admin/platform/ai/circuit-breaker/reset',          [AdminPlatformController::class, 'circuitBreakerReset'])->name('admin.platform.ai.circuit-reset');
+        Route::post('/admin/platform/ai/circuit-breaker/settings',       [AdminPlatformController::class, 'circuitBreakerSettings'])->name('admin.platform.ai.circuit-settings');
 
         // Gmail watches
         Route::post('/admin/platform/watches/{id}/renew',                [AdminPlatformController::class, 'renewWatch'])->name('admin.platform.watch.renew');

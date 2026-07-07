@@ -204,6 +204,100 @@ details summary::-webkit-details-marker { display:none; }
             </div>
         </div>
 
+        {{-- Circuit Breaker --}}
+        <div class="ct-card p-5 section-anchor" id="circuit-breaker">
+            <div class="flex items-center justify-between mb-4">
+                <p class="ct-section-title" style="margin:0">
+                    <span class="ct-dot {{ $circuitBreaker['isOpen'] ? 'dot-red' : 'dot-green' }}"></span> AI Circuit Breaker
+                </p>
+                @if($circuitBreaker['isOpen'])
+                    <span class="ct-pill pill-red" style="animation:pulse 1.5s infinite">OPEN</span>
+                @else
+                    <span class="ct-pill pill-green">CLOSED</span>
+                @endif
+            </div>
+
+            <div class="space-y-3">
+                <div class="flex justify-between items-center">
+                    <span class="ct-label">State</span>
+                    <span style="font-size:12px;font-weight:700;color:{{ $circuitBreaker['isOpen'] ? '#f87171' : '#4ade80' }}">
+                        {{ $circuitBreaker['isOpen'] ? 'Open — AI blocked' : 'Closed — AI operational' }}
+                    </span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="ct-label">Failures (window)</span>
+                    <span style="font-size:12px;color:var(--text-secondary)">
+                        {{ $circuitBreaker['failures'] }} / {{ $circuitBreaker['threshold'] }}
+                    </span>
+                </div>
+                @if($circuitBreaker['isOpen'] && $circuitBreaker['remainingSec'] !== null)
+                <div class="flex justify-between items-center">
+                    <span class="ct-label">Auto-closes in</span>
+                    <span style="font-size:12px;color:var(--text-secondary)" id="cb-countdown">
+                        {{ floor($circuitBreaker['remainingSec'] / 60) }}m {{ $circuitBreaker['remainingSec'] % 60 }}s
+                    </span>
+                </div>
+                @endif
+                <div class="flex justify-between items-center">
+                    <span class="ct-label">Threshold</span>
+                    <span style="font-size:12px;color:var(--text-secondary)">{{ $circuitBreaker['threshold'] }} failures</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="ct-label">Window</span>
+                    <span style="font-size:12px;color:var(--text-secondary)">{{ $circuitBreaker['window'] / 60 }} min</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="ct-label">Open duration</span>
+                    <span style="font-size:12px;color:var(--text-secondary)">{{ $circuitBreaker['timeout'] / 60 }} min</span>
+                </div>
+            </div>
+
+            {{-- Reset button (only useful when open) --}}
+            <div class="mt-4 pt-4" style="border-top:1px solid var(--border-soft)">
+                <form method="POST" action="{{ route('admin.platform.ai.circuit-reset') }}">
+                    @csrf
+                    <button type="submit"
+                        style="width:100%;padding:8px;border-radius:8px;border:none;cursor:pointer;font-size:12px;font-weight:700;
+                               background:{{ $circuitBreaker['isOpen'] ? 'var(--accent)' : 'var(--bg-raised)' }};
+                               color:{{ $circuitBreaker['isOpen'] ? '#000' : 'var(--text-muted)' }}"
+                        {{ $circuitBreaker['isOpen'] ? '' : 'disabled' }}>
+                        {{ $circuitBreaker['isOpen'] ? '⚡ Reset Circuit Breaker Now' : 'Circuit is already closed' }}
+                    </button>
+                </form>
+            </div>
+
+            {{-- Settings --}}
+            <div class="mt-3">
+                <button onclick="document.getElementById('cb-settings').style.display = document.getElementById('cb-settings').style.display === 'none' ? 'block' : 'none'"
+                    style="font-size:11px;color:var(--text-faint);background:none;border:none;cursor:pointer;padding:0">
+                    ⚙ Adjust thresholds
+                </button>
+                <div id="cb-settings" style="display:none;margin-top:10px;padding:12px;background:var(--bg-raised);border:1px solid var(--border);border-radius:10px">
+                    <form method="POST" action="{{ route('admin.platform.ai.circuit-settings') }}" class="space-y-3">
+                        @csrf
+                        <div>
+                            <label style="font-size:11px;color:var(--text-muted);display:block;margin-bottom:4px">Failures before opening</label>
+                            <input type="number" name="cb_threshold" value="{{ $circuitBreaker['threshold'] }}" min="1" max="20"
+                                style="width:100%;background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:5px 8px;font-size:12px;color:var(--text-primary)">
+                        </div>
+                        <div>
+                            <label style="font-size:11px;color:var(--text-muted);display:block;margin-bottom:4px">Failure window (seconds)</label>
+                            <input type="number" name="cb_window" value="{{ $circuitBreaker['window'] }}" min="60" max="3600"
+                                style="width:100%;background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:5px 8px;font-size:12px;color:var(--text-primary)">
+                        </div>
+                        <div>
+                            <label style="font-size:11px;color:var(--text-muted);display:block;margin-bottom:4px">Open duration (seconds)</label>
+                            <input type="number" name="cb_timeout" value="{{ $circuitBreaker['timeout'] }}" min="60" max="7200"
+                                style="width:100%;background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:5px 8px;font-size:12px;color:var(--text-primary)">
+                        </div>
+                        <button type="submit" style="width:100%;padding:7px;border-radius:8px;border:none;cursor:pointer;font-size:12px;font-weight:700;background:var(--accent);color:#000">
+                            Save Settings
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
         {{-- Queue Health --}}
         <div class="ct-card p-5 section-anchor" id="queue">
             <div class="flex items-center justify-between mb-4">
@@ -1125,5 +1219,25 @@ details summary::-webkit-details-marker { display:none; }
     </div>
 
 </div>
+
+@if($circuitBreaker['isOpen'] && $circuitBreaker['remainingSec'] !== null)
+<script>
+(function () {
+    var remaining = {{ (int) $circuitBreaker['remainingSec'] }};
+    var el = document.getElementById('cb-countdown');
+    if (!el || remaining <= 0) return;
+    var iv = setInterval(function () {
+        remaining--;
+        if (remaining <= 0) {
+            clearInterval(iv);
+            el.textContent = 'closing soon…';
+            return;
+        }
+        var m = Math.floor(remaining / 60), s = remaining % 60;
+        el.textContent = m + 'm ' + s + 's';
+    }, 1000);
+})();
+</script>
+@endif
 
 </x-app-layout>

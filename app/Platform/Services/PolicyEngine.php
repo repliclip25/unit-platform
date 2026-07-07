@@ -2,7 +2,9 @@
 
 namespace App\Platform\Services;
 
+use App\Platform\Services\EmailDispatcher;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 /**
  * PolicyEngine — defines every gate, what it blocks, and how the tenant resolves it.
@@ -272,9 +274,28 @@ class PolicyEngine
                 if ($txUsedUp || $expired) {
                     // Auto-transition status to trial_exhausted so future checks are instant
                     try {
+                        $wasAlreadyExhausted = DB::table('deployment_billing')
+                            ->where('id', $billing->id)
+                            ->value('status') === 'trial_exhausted';
+
                         DB::table('deployment_billing')
                             ->where('id', $billing->id)
                             ->update(['status' => 'trial_exhausted', 'updated_at' => now()]);
+
+                        // Fire exhausted nudge exactly once — on the transition, not on every subsequent check
+                        if (!$wasAlreadyExhausted) {
+                            try {
+                                $user = DB::table('users')->where('id', $billing->user_id)->first();
+                                if ($user) {
+                                    $templateKey = ($billing->worker_slug ?? 'ava') . '_trial_exhausted';
+                                    EmailDispatcher::send($templateKey, $user->email, $user->name, $user->id, [
+                                        '{limit}' => $limit,
+                                    ]);
+                                }
+                            } catch (\Throwable $e) {
+                                Log::error('[PolicyEngine] trial_exhausted nudge failed', ['error' => $e->getMessage()]);
+                            }
+                        }
                     } catch (\Throwable) {}
 
                     $violations[] = self::violation('TRIAL_EXHAUSTED', [

@@ -2,7 +2,9 @@
 
 namespace App\Platform\Services;
 
+use App\Platform\Services\EmailDispatcher;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class TransactionService
@@ -47,6 +49,24 @@ class TransactionService
                             ->where('user_id', $billing->user_id)
                             ->where('worker_slug', $billing->worker_slug)
                             ->update(['used' => $billing->trial_transactions_used + 1, 'updated_at' => now()]);
+                    }
+
+                    // Fire 50% nudge exactly once when trial crosses the halfway point
+                    $newUsed = $billing->trial_transactions_used + 1;
+                    $limit   = (int) ($billing->trial_transactions_limit ?? 0);
+                    if ($limit > 0 && $newUsed === (int) ceil($limit / 2)) {
+                        try {
+                            $user = DB::table('users')->where('id', $billing->user_id)->first();
+                            if ($user) {
+                                $templateKey = $billing->worker_slug . '_trial_halfway';
+                                EmailDispatcher::send($templateKey, $user->email, $user->name, $user->id, [
+                                    '{used}'  => $newUsed,
+                                    '{limit}' => $limit,
+                                ]);
+                            }
+                        } catch (\Throwable $e) {
+                            Log::error('[TransactionService] trial_halfway nudge failed', ['error' => $e->getMessage()]);
+                        }
                     }
                 }
             }
