@@ -190,27 +190,45 @@
                     </select>
                 </div>
 
+                @php
+                    $permOptions = [
+                        ['view',   'View',   'Read memory records — clients, contacts, assets'],
+                        ['copy',   'Copy',   'Duplicate records into their own workspace'],
+                        ['upload', 'Upload', 'Add new records to your memory'],
+                        ['modify', 'Modify', 'Edit existing records in your memory'],
+                    ];
+                @endphp
                 <div>
                     <label class="block text-xs text-gray-500 mb-2 font-medium">Permissions</label>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                        @foreach([
-                            ['view',   'View',   'Read memory records — clients, contacts, assets'],
-                            ['copy',   'Copy',   'Duplicate records into their own workspace'],
-                            ['upload', 'Upload', 'Add new records to your memory'],
-                            ['modify', 'Modify', 'Edit existing records in your memory'],
-                        ] as [$val, $label, $desc])
-                        <label class="flex items-start gap-3 p-3 rounded-lg border border-gray-700 hover:border-gray-600 cursor-pointer transition">
-                            <input type="checkbox" name="permissions[]" value="{{ $val }}"
-                                {{ in_array($val, old('permissions', ['view'])) ? 'checked' : '' }}
-                                class="mt-0.5 shrink-0 accent-yellow-400">
+                    <div class="space-y-2">
+                        @foreach($permOptions as [$val, $label, $desc])
+                        @php $checked = in_array($val, old('permissions', ['view'])); @endphp
+                        <label class="flex items-center justify-between gap-4 p-3 rounded-lg border border-gray-700 hover:border-gray-600 cursor-pointer transition">
                             <div>
                                 <p class="text-white text-xs font-semibold">{{ $label }}</p>
                                 <p class="text-gray-500 text-xs mt-0.5">{{ $desc }}</p>
                             </div>
+                            <div class="relative shrink-0">
+                                <input type="checkbox" name="permissions[]" value="{{ $val }}"
+                                    {{ $checked ? 'checked' : '' }}
+                                    class="sr-only peer">
+                                <div class="w-9 h-5 rounded-full transition peer-checked:bg-yellow-400 bg-gray-700
+                                            after:content-[''] after:absolute after:top-0.5 after:left-0.5
+                                            after:w-4 after:h-4 after:rounded-full after:bg-white after:transition-all
+                                            peer-checked:after:translate-x-4"></div>
+                            </div>
                         </label>
                         @endforeach
+                        <div class="flex items-center justify-between gap-4 p-3 rounded-lg border border-gray-800 opacity-40">
+                            <div>
+                                <p class="text-white text-xs font-semibold">Delete</p>
+                                <p class="text-gray-500 text-xs mt-0.5">Never available to collaborators</p>
+                            </div>
+                            <div class="w-9 h-5 rounded-full bg-gray-800 relative shrink-0">
+                                <div class="absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-gray-600"></div>
+                            </div>
+                        </div>
                     </div>
-                    <p class="text-gray-600 text-xs mt-2">Delete is never available to collaborators.</p>
                 </div>
 
                 <button type="submit"
