@@ -526,48 +526,6 @@ class OnboardingController extends Controller
                 'updated_at'  => now(),
             ]);
 
-            // Only seed demo memory when the user has no real clients yet.
-            // If they added data during the memory step, skip — we'll use their real data.
-            $hasRealClients = DB::table('clients')
-                ->where('user_id', $userId)
-                ->whereNull('deleted_at')
-                ->exists();
-
-            if (!$hasRealClients) {
-                $clientId = DB::table('clients')->insertGetId([
-                    'user_id'         => $userId,
-                    'name'            => 'Acme Corp',
-                    'industry'        => 'Technology',
-                    'role'            => 'Client',
-                    'preferred_style' => 'Professional',
-                    'notes'           => 'Demo client — added for the fast track sample email.',
-                    'created_at'      => now(),
-                    'updated_at'      => now(),
-                ]);
-
-                DB::table('contacts')->insert([
-                    'user_id'    => $userId,
-                    'client_id'  => $clientId,
-                    'name'       => 'John Smith',
-                    'role'       => 'IT Manager',
-                    'email'      => 'john@acmecorp.com',
-                    'is_primary' => true,
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ]);
-
-                DB::table('assets')->insert([
-                    'user_id'      => $userId,
-                    'client_id'    => $clientId,
-                    'name'         => 'yourdomain.com',
-                    'type'         => 'Domain',
-                    'vendor'       => 'Domain Registrar',
-                    'renewal_date' => now()->addDays(30)->toDateString(),
-                    'notes'        => 'Demo asset — matches the fast track sample renewal email.',
-                    'created_at'   => now(),
-                    'updated_at'   => now(),
-                ]);
-            }
 
             // Copy platform default rules (AVA-specific — each worker manages its own rule tables)
             if ($workerSlug === 'ava') {
@@ -792,25 +750,6 @@ class OnboardingController extends Controller
             'fast-track' => (function () use ($contract, $depId) {
                 $userId  = auth()->id();
                 $persona = DB::table('users')->where('id', $userId)->value('persona');
-
-                // Auto-clean Acme Corp demo data if the user has added real clients
-                $hasRealClients = DB::table('clients')
-                    ->where('user_id', $userId)
-                    ->whereNull('deleted_at')
-                    ->where('name', '!=', 'Acme Corp')
-                    ->exists();
-                if ($hasRealClients) {
-                    $demo = DB::table('clients')
-                        ->where('user_id', $userId)
-                        ->where('name', 'Acme Corp')
-                        ->whereNull('deleted_at')
-                        ->first();
-                    if ($demo) {
-                        DB::table('assets')->where('user_id', $userId)->where('client_id', $demo->id)->delete();
-                        DB::table('contacts')->where('user_id', $userId)->where('client_id', $demo->id)->delete();
-                        DB::table('clients')->where('id', $demo->id)->delete();
-                    }
-                }
 
                 // Try to build a personalised sample from real memory
                 $sample  = null;

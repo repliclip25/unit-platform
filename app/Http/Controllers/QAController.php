@@ -634,22 +634,33 @@ MD;
             }
         }
 
-        // Mark the first pending stage as 'active'
-        $seenPending = false;
-        foreach ($stages as &$s) {
-            if ($s['status'] === 'pending' && !$seenPending) { $s['status'] = 'active'; $seenPending = true; }
-        }
-
         $terminalStatuses = ['draft_ready', 'human_review', 'approved', 'sent', 'failed', 'blocked', 'dismissed'];
         $isTerminal = in_array($tx->status, $terminalStatuses);
         $allResolved = collect($stages)->every(fn($s) => in_array($s['status'], ['done', 'fail']));
+
+        // Only mark the first pending stage 'active' while the pipeline is still running.
+        // When terminal, pending stages stay pending — they did not run or their output is missing.
+        if (!$isTerminal) {
+            $seenPending = false;
+            foreach ($stages as &$s) {
+                if ($s['status'] === 'pending' && !$seenPending) { $s['status'] = 'active'; $seenPending = true; }
+            }
+        }
+
+        // Pipeline is genuinely failed if: terminal status is failed/blocked, OR any stage
+        // shows 'fail', OR the transaction reached draft_ready but no gmail_draft_id was written
+        // (PushToGmailJob failed after DraftEmailJob already set an intermediate status).
+        $stagesCollection = collect($stages);
+        $hasStageFail = $stagesCollection->contains(fn($s) => $s['status'] === 'fail');
+        $pushStage = $stagesCollection->firstWhere('key', 'push_draft');
+        $pushMissing = $isTerminal && $pushStage && $pushStage['status'] !== 'done' && !$tx->gmail_draft_id;
 
         return response()->json([
             'tx_id'   => $txId,
             'status'  => $tx->status,
             'stages'  => $stages,
             'done'    => $isTerminal || $allResolved,
-            'failed'  => in_array($tx->status, ['failed', 'blocked']) || collect($stages)->contains(fn($s) => $s['status'] === 'fail'),
+            'failed'  => in_array($tx->status, ['failed', 'blocked']) || $hasStageFail || $pushMissing,
             'blocked' => $tx->status === 'blocked',
         ], 200, [], JSON_INVALID_UTF8_SUBSTITUTE);
     }
