@@ -100,6 +100,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/onboarding/memory/seed',         [\App\Http\Controllers\OnboardingController::class, 'seedMemory'])->name('onboarding.memory.seed');
     Route::post('/onboarding/memory/quickadd',     [\App\Http\Controllers\OnboardingController::class, 'quickAddMemory'])->name('onboarding.memory.quickadd');
 
+    Route::get('/onboarding/gmail-draft',           [\App\Http\Controllers\OnboardingController::class, 'gmailDraft'])->name('onboarding.gmail-draft');
     Route::get('/onboarding/complete',             [\App\Http\Controllers\OnboardingController::class, 'complete'])->name('onboarding.complete');
     Route::get('/onboarding/skip',                 [\App\Http\Controllers\OnboardingController::class, 'skip'])->name('onboarding.skip');
 

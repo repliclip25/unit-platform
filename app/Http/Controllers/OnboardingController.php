@@ -141,6 +141,11 @@ class OnboardingController extends Controller
 
     // ── Complete / Skip ───────────────────────────────────────────────────────
 
+    public function gmailDraft()
+    {
+        return view('onboarding.steps.gmail-draft');
+    }
+
     public function complete()
     {
         $user = auth()->user();

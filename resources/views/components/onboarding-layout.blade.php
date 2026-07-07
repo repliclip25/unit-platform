@@ -36,43 +36,11 @@
 <div class="min-h-screen flex flex-col">
 
     {{-- Top bar --}}
-    <div class="flex items-center justify-between px-8 py-5 border-b border-gray-800 shrink-0">
+    <div class="flex items-center justify-between px-8 py-5 border-b border-gray-800/60 shrink-0">
         <div class="flex items-center gap-2.5">
             <img src="/logo.png" alt="UNIT" class="w-8 h-8 rounded-md">
             <span style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.1rem;color:var(--accent)">UNIT</span>
         </div>
-
-        {{-- Progress pills — only when a sequence is available --}}
-        @if(count($sequence) > 0)
-        <div class="hidden sm:flex items-center gap-1.5">
-            @foreach($sequence as $i => $step)
-                @php
-                    $isActive   = $i === $stepIndex;
-                    $isComplete = $i < $stepIndex;
-                @endphp
-                <div class="flex items-center gap-1.5">
-                    <div class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold
-                        {{ $isComplete ? 'bg-yellow-400 text-gray-950' : ($isActive ? 'bg-gray-900 border-2 border-yellow-400 text-yellow-400' : 'bg-gray-900 border border-gray-700 text-gray-600') }}">
-                        @if($isComplete)
-                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
-                        @else
-                            {{ $i + 1 }}
-                        @endif
-                    </div>
-                    @if($i < count($sequence) - 1)
-                        <div class="w-5 h-px {{ $isComplete ? 'bg-yellow-400' : 'bg-gray-800' }}"></div>
-                    @endif
-                </div>
-            @endforeach
-        </div>
-
-        {{-- Mobile step count --}}
-        <div class="sm:hidden text-gray-600 text-sm">
-            @if($stepIndex >= 0) Step {{ $stepIndex + 1 }} of {{ count($sequence) }} @endif
-        </div>
-        @else
-        <div></div>
-        @endif
 
         <div class="flex items-center gap-4">
             {{-- Theme toggle --}}
@@ -93,6 +61,42 @@
             </a>
         </div>
     </div>
+
+    {{-- Step progress — centered, prominent, below header --}}
+    @if(count($sequence) > 0 && $stepIndex >= 0)
+    <div class="flex justify-center py-5 border-b border-gray-800/40 shrink-0">
+        <div class="flex items-center gap-0">
+            @foreach($sequence as $i => $step)
+                @php
+                    $isActive   = $i === $stepIndex;
+                    $isComplete = $i < $stepIndex;
+                @endphp
+                <div class="flex items-center">
+                    {{-- Circle --}}
+                    <div class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all"
+                         style="
+                            {{ $isComplete
+                                ? 'background:var(--accent);color:#1a1404;'
+                                : ($isActive
+                                    ? 'background:transparent;border:2px solid var(--accent);color:var(--accent-text);'
+                                    : 'background:transparent;border:1px solid rgba(255,255,255,0.12);color:#4b5563;') }}
+                         ">
+                        @if($isComplete)
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                        @else
+                            {{ $i + 1 }}
+                        @endif
+                    </div>
+                    {{-- Connector --}}
+                    @if($i < count($sequence) - 1)
+                        <div class="w-10 h-px mx-1 transition-all"
+                             style="{{ $isComplete ? 'background:var(--accent);' : 'background:rgba(255,255,255,0.1);' }}"></div>
+                    @endif
+                </div>
+            @endforeach
+        </div>
+    </div>
+    @endif
 
     {{-- Content --}}
     <div class="flex-1 flex items-start justify-center px-4 py-10">

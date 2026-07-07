@@ -41,7 +41,7 @@
         <x-pipeline-tracker
             :txId="$activeTxId"
             :autoStart="true"
-            :onCompleteUrl="route('onboarding.complete')"
+            :onCompleteUrl="route('onboarding.gmail-draft')"
             context="onboarding"
         />
     </div>
@@ -98,7 +98,7 @@
         @endif
 
         {{-- CTA --}}
-        <a href="{{ route('onboarding.complete') }}"
+        <a href="{{ route('onboarding.gmail-draft') }}"
            class="block w-full text-center font-black text-base py-4 rounded-xl transition-all mb-4"
            style="background:var(--accent);color:#1a1404">
             See My Draft
@@ -117,7 +117,7 @@
     @endif
 
     {{-- Skip link — hide once success card appears --}}
-    <a x-show="!success" href="{{ route('onboarding.complete') }}"
+    <a x-show="!success" href="{{ route('onboarding.gmail-draft') }}"
        class="block text-center text-gray-600 hover:text-gray-400 text-sm transition-colors mt-4">
         Skip for now
     </a>
