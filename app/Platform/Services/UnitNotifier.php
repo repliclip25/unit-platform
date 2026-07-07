@@ -5,6 +5,7 @@ namespace App\Platform\Services;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
+use App\Platform\Services\EmailDispatcher;
 
 class UnitNotifier
 {
@@ -85,48 +86,41 @@ class UnitNotifier
         try {
             $tx   = DB::table('transactions')->where('tx_id', $txId)->first();
             $user = $tx ? DB::table('users')->where('id', $tx->user_id)->first() : null;
-            if (!$user || !$tx) return;
 
-            // Only fire once ever — check the log
+            if (!$user || !$tx) {
+                Log::warning('[UnitNotifier] maybeFirstRealRenewal: tx or user not found', ['tx_id' => $txId]);
+                return;
+            }
+
+            // Only fire once ever
             $alreadySent = DB::table('tenant_email_log')
                 ->where('user_id', $user->id)
                 ->where('template_key', 'ava_first_real_renewal')
                 ->exists();
 
-            if ($alreadySent) return;
-
-            // Already sent — stop here (log check is the only gate needed)
-            // Don't count transactions — user may have run fast-track multiple times
-
-            $appUrl = config('app.url');
-            $tpl = DB::table('platform_email_templates')
-                ->where('key', 'ava_first_real_renewal')
-                ->where('active', true)
-                ->first();
-
-            if (!$tpl) {
-                Log::warning('[UnitNotifier] maybeFirstRealRenewal: template ava_first_real_renewal not found or inactive in DB — run php artisan migrate --force');
+            if ($alreadySent) {
+                Log::info('[UnitNotifier] maybeFirstRealRenewal: already sent, skipping', ['user_id' => $user->id]);
                 return;
             }
 
-            $body    = str_replace(['{name}', '{app_url}'], [$user->name, $appUrl], $tpl->body);
-            $subject = str_replace(['{name}', '{app_url}'], [$user->name, $appUrl], $tpl->subject);
+            // Verify template exists before attempting send
+            $tplExists = DB::table('platform_email_templates')
+                ->where('key', 'ava_first_real_renewal')
+                ->where('active', true)
+                ->exists();
 
-            \Illuminate\Support\Facades\Mail::raw($body, fn($m) => $m
-                ->to($user->email, $user->name)
-                ->subject($subject)
-                ->replyTo(config('services.unit.noreply_email'), $tpl->from_name)
-            );
+            if (!$tplExists) {
+                Log::warning('[UnitNotifier] maybeFirstRealRenewal: template missing from DB — run php artisan migrate --force', ['tx_id' => $txId]);
+                return;
+            }
 
-            DB::table('tenant_email_log')->insert([
-                'user_id'      => $user->id,
-                'template_key' => 'ava_first_real_renewal',
-                'sent_at'      => now(),
-            ]);
+            Log::info('[UnitNotifier] maybeFirstRealRenewal: sending to ' . $user->email, ['tx_id' => $txId, 'user_id' => $user->id]);
 
-            Log::info('[UnitNotifier] First real renewal email sent', ['user_id' => $user->id, 'tx_id' => $txId]);
+            // Route through EmailDispatcher so SMTP config, logging, and error handling are consistent
+            EmailDispatcher::send('ava_first_real_renewal', $user->email, $user->name, $user->id);
+
         } catch (\Throwable $e) {
-            Log::error('[UnitNotifier] maybeFirstRealRenewal failed', ['tx_id' => $txId, 'error' => $e->getMessage()]);
+            Log::error('[UnitNotifier] maybeFirstRealRenewal failed', ['tx_id' => $txId, 'error' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
         }
     }
 }
