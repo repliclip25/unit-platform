@@ -15,6 +15,27 @@
                 ->where('page_key', $pageKey)
                 ->where('active', true)
                 ->first();
+
+            // Also check inactive so we know the row exists (for auto-register guard)
+            $slEntryExists = !$slEntry && \Illuminate\Support\Facades\DB::table('platform_self_learn')
+                ->where('page_key', $pageKey)
+                ->exists();
+
+            // Auto-register on first render if no DB entry exists yet (not even inactive)
+            if (!$slEntry && !($slEntryExists ?? false) && $title) {
+                \Illuminate\Support\Facades\DB::table('platform_self_learn')->insert([
+                    'page_key'   => $pageKey,
+                    'title'      => $title,
+                    'body'       => $body ?? '',
+                    'active'     => true,
+                    'version'    => 1,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+                $slEntry = \Illuminate\Support\Facades\DB::table('platform_self_learn')
+                    ->where('page_key', $pageKey)
+                    ->first();
+            }
         } catch (\Throwable) {}
 
         if ($slEntry || $title) {
