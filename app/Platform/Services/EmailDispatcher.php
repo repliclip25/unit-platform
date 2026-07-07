@@ -35,8 +35,9 @@ class EmailDispatcher
         string  $toEmail,
         string  $toName,
         ?int    $userId,
-        array   $vars    = [],
-        array   $fallback = []
+        array   $vars     = [],
+        array   $fallback = [],
+        array   $override = []  // ['subject' => ..., 'body' => ...] forces these values post-lookup
     ): void {
         try {
             // Hard dedup for one-time emails — prevent double-sends regardless of call site
@@ -65,8 +66,8 @@ class EmailDispatcher
                 '{app_url}' => $appUrl,
             ], $vars);
 
-            $subject = str_replace(array_keys($baseVars), array_values($baseVars), $tpl->subject);
-            $body    = str_replace(array_keys($baseVars), array_values($baseVars), $tpl->body);
+            $subject = str_replace(array_keys($baseVars), array_values($baseVars), $override['subject'] ?? $tpl->subject);
+            $body    = str_replace(array_keys($baseVars), array_values($baseVars), $override['body']    ?? $tpl->body);
             $from    = $tpl->from_name ?? 'UNIT Universe';
 
             Mail::raw($body, fn($m) => $m

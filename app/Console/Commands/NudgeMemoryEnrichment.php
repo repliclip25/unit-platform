@@ -8,7 +8,6 @@ use App\Platform\Services\WorkerRegistry;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Mail;
 
 class NudgeMemoryEnrichment extends Command
 {
@@ -60,27 +59,15 @@ class NudgeMemoryEnrichment extends Command
                     $health
                 );
 
-                if ($personaCopy) {
-                    // Per-persona copy — send directly via Mail::raw()
-                    Mail::raw($personaCopy['body'], function ($m) use ($user, $personaCopy) {
-                        $m->to($user->email, $user->name)->subject($personaCopy['subject']);
-                    });
+                $vars = [
+                    '{score}'     => $health['score'],
+                    '{complete}'  => $health['complete'],
+                    '{needed}'    => $health['needed'],
+                    '{threshold}' => MemoryHealthService::HEALTHY_THRESHOLD,
+                ];
 
-                    // Log so we don't re-send
-                    DB::table('tenant_email_log')->insert([
-                        'user_id'      => $user->id,
-                        'template_key' => $templateKey,
-                        'sent_at'      => now(),
-                    ]);
-                } else {
-                    // No persona set — fall back to generic DB template
-                    EmailDispatcher::send($templateKey, $user->email, $user->name, $user->id, [
-                        '{score}'     => $health['score'],
-                        '{complete}'  => $health['complete'],
-                        '{needed}'    => $health['needed'],
-                        '{threshold}' => MemoryHealthService::HEALTHY_THRESHOLD,
-                    ]);
-                }
+                // Per-persona copy overrides the DB template body/subject when available
+                EmailDispatcher::send($templateKey, $user->email, $user->name, $user->id, $vars, [], $personaCopy ?? []);
 
                 $sent++;
 

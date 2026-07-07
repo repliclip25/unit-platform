@@ -1080,10 +1080,11 @@ class AvaWorker implements WorkerContract
                     ['rule_id' => 'IT-006', 'condition' => 'Low confidence memory match (< 0.6)',      'priority' => 'High',     'action' => 'Do not draft — request human confirmation of client and asset',   'approval_required' => true,  'notes' => 'Halt pipeline at MemoryLookupJob until confirmed'],
                 ],
                 'memory_copy' => [
-                    'client_noun'    => 'client',
-                    'asset_noun'     => 'domain / service',
-                    'example_client' => 'Acme Corp',
-                    'example_asset'  => 'acmecorp.com',
+                    'client_noun'        => 'client',
+                    'client_noun_plural' => 'clients',
+                    'asset_noun'         => 'domain / service',
+                    'example_client'     => 'Acme Corp',
+                    'example_asset'      => 'acmecorp.com',
                 ],
                 'nudge_copy' => [
                     'd1' => [
@@ -1125,10 +1126,11 @@ class AvaWorker implements WorkerContract
                     ['rule_id' => 'IB-006', 'condition' => 'Low confidence memory match (< 0.6)',           'priority' => 'High',     'action' => 'Do not draft — request broker confirmation of insured and policy','approval_required' => true,  'notes' => 'Policy drafts without confirmed insured identity are high risk'],
                 ],
                 'memory_copy' => [
-                    'client_noun'    => 'insured',
-                    'asset_noun'     => 'policy',
-                    'example_client' => 'Rivera Auto Group',
-                    'example_asset'  => 'Commercial Auto — Markel',
+                    'client_noun'        => 'insured',
+                    'client_noun_plural' => 'insureds',
+                    'asset_noun'         => 'policy',
+                    'example_client'     => 'Rivera Auto Group',
+                    'example_asset'      => 'Commercial Auto — Markel',
                 ],
                 'nudge_copy' => [
                     'd1' => [
@@ -1168,10 +1170,11 @@ class AvaWorker implements WorkerContract
                     ['rule_id' => 'CM-006', 'condition' => 'Low confidence memory match (< 0.6)',                     'priority' => 'High',     'action' => 'Do not draft — request confirmation of client and license type',   'approval_required' => true,  'notes' => 'Wrong client on a compliance notice is a liability risk'],
                 ],
                 'memory_copy' => [
-                    'client_noun'    => 'client',
-                    'asset_noun'     => 'license / permit',
-                    'example_client' => 'Sunrise Contractors',
-                    'example_asset'  => 'General Contractor License',
+                    'client_noun'        => 'client',
+                    'client_noun_plural' => 'clients',
+                    'asset_noun'         => 'license / permit',
+                    'example_client'     => 'Sunrise Contractors',
+                    'example_asset'      => 'General Contractor License',
                 ],
                 'nudge_copy' => [
                     'd1' => [
@@ -1210,10 +1213,11 @@ class AvaWorker implements WorkerContract
                     ['rule_id' => 'OT-005', 'condition' => 'Low confidence memory match (< 0.6)',       'priority' => 'High',     'action' => 'Do not draft — request confirmation of client and asset',          'approval_required' => true,  'notes' => 'Halt pipeline until human confirms match'],
                 ],
                 'memory_copy' => [
-                    'client_noun'    => 'client',
-                    'asset_noun'     => 'asset',
-                    'example_client' => 'Riverside Auto Group',
-                    'example_asset'  => 'Service Agreement',
+                    'client_noun'        => 'client',
+                    'client_noun_plural' => 'clients',
+                    'asset_noun'         => 'asset',
+                    'example_client'     => 'Riverside Auto Group',
+                    'example_asset'      => 'Service Agreement',
                 ],
                 'nudge_copy' => [
                     'd1' => [

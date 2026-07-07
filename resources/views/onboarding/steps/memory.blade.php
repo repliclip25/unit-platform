@@ -10,23 +10,25 @@
     $displayHealthy = $complete >= 1;
 
     $mc = $personaDef['memory_copy'] ?? [
-        'client_noun'    => 'client',
-        'asset_noun'     => 'asset',
-        'example_client' => 'Acme Corp',
-        'example_asset'  => 'Service Agreement',
+        'client_noun'        => 'client',
+        'client_noun_plural' => 'clients',
+        'asset_noun'         => 'asset',
+        'example_client'     => 'Acme Corp',
+        'example_asset'      => 'Service Agreement',
     ];
+    $clientNounPlural = $mc['client_noun_plural'] ?? ($mc['client_noun'] . 's');
     $assetTypeOptions = $personaDef['asset_types'] ?? ['other' => 'Other'];
 @endphp
 
 <div class="mb-6">
     <p class="text-xs font-bold uppercase tracking-widest mb-4" style="color:var(--accent-text)">Step 3 of 4 &nbsp;·&nbsp; Build memory</p>
-    <h1 class="text-2xl font-black text-white mb-3 leading-snug">Introduce Ava to your clients.</h1>
+    <h1 class="text-2xl font-black text-white mb-3 leading-snug">Introduce Ava to your {{ $clientNounPlural }}.</h1>
     <p class="text-gray-400 text-sm leading-relaxed">A new employee becomes more useful after learning who your customers are.</p>
     <p class="text-gray-400 text-sm leading-relaxed mt-1">The same is true here.</p>
     <p class="text-gray-400 text-sm leading-relaxed mt-2">
-        Each client you add helps Ava recognize future renewal emails automatically and write more accurate drafts.
+        Each {{ $mc['client_noun'] }} you add helps Ava recognize future renewal emails automatically and write more accurate drafts.
     </p>
-    <p class="text-gray-400 text-sm leading-relaxed mt-2">You only need one client to get started.</p>
+    <p class="text-gray-400 text-sm leading-relaxed mt-2">You only need one {{ $mc['client_noun'] }} to get started.</p>
 </div>
 
 {{-- Success flash --}}
@@ -92,7 +94,7 @@
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-                <label class="block text-xs text-gray-500 mb-1">Client / Company name <span class="text-red-400">*</span></label>
+                <label class="block text-xs text-gray-500 mb-1">{{ ucfirst($mc['client_noun']) }} / Company name <span class="text-red-400">*</span></label>
                 <input type="text" name="client_name" value="{{ old('client_name') }}"
                        placeholder="e.g. {{ $mc['example_client'] }}"
                        class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-yellow-400/50">
