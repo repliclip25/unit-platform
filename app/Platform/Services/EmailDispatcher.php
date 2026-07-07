@@ -19,6 +19,16 @@ class EmailDispatcher
      * @param  array        $vars         Extra {placeholder} → value replacements
      * @param  array        $fallback     Fallback template data if key not in DB
      */
+    // Keys that must only ever be sent once per user — dedup enforced at dispatcher level
+    private const SEND_ONCE_KEYS = [
+        'welcome_tenant',
+        'referral_welcome_tenant',
+        'ava_first_real_renewal',
+        'ava_abandon_no_gmail',
+        'ava_abandon_no_clients',
+        'ava_abandon_no_fasttrack',
+    ];
+
     public static function send(
         string  $key,
         string  $toEmail,
@@ -28,6 +38,20 @@ class EmailDispatcher
         array   $fallback = []
     ): void {
         try {
+            // Hard dedup for one-time emails — prevent double-sends regardless of call site
+            if ($userId && in_array($key, self::SEND_ONCE_KEYS)) {
+                $alreadySent = DB::table('tenant_email_log')
+                    ->where('user_id', $userId)
+                    ->where('template_key', $key)
+                    ->where('status', 'sent')
+                    ->exists();
+
+                if ($alreadySent) {
+                    Log::info("EmailDispatcher: dedup blocked [{$key}]", ['user_id' => $userId]);
+                    return;
+                }
+            }
+
             $tpl = AdminMessagingController::getTemplate($key, $fallback);
             if (!$tpl) {
                 Log::warning("EmailDispatcher: no template for key [{$key}]");
