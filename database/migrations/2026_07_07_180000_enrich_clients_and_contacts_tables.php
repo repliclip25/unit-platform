@@ -13,47 +13,37 @@ return new class extends Migration
         // AVA flow: asset expires → find client → find contact → notify.
         Schema::table('clients', function (Blueprint $table) {
             if (!Schema::hasColumn('clients', 'status')) {
-                // Relationship state — every worker filters/prioritizes on this
-                $table->string('status', 50)->default('active')->after('company');
+                $table->string('status', 50)->default('active');
             }
             if (!Schema::hasColumn('clients', 'address')) {
-                // Physical location — location-based workers (DOB, FDNY, NYCSCA)
-                $table->string('address', 500)->nullable()->after('status');
+                $table->string('address', 500)->nullable();
             }
             if (!Schema::hasColumn('clients', 'meta')) {
-                // Worker-specific extended data — each worker writes its own keys
-                $table->json('meta')->nullable()->after('address');
+                $table->json('meta')->nullable();
             }
         });
 
-        // ── Contacts ─────────────────────────────────────────────────────────
         Schema::table('contacts', function (Blueprint $table) {
             if (!Schema::hasColumn('contacts', 'phone')) {
-                $table->string('phone', 50)->nullable()->after('email');
+                $table->string('phone', 50)->nullable();
             }
             if (!Schema::hasColumn('contacts', 'department')) {
-                // Org structure — helps workers understand decision chains
-                $table->string('department', 100)->nullable()->after('role');
+                $table->string('department', 100)->nullable();
             }
             if (!Schema::hasColumn('contacts', 'is_decision_maker')) {
-                // Most important flag for outreach/renewal workers
-                $table->boolean('is_decision_maker')->default(false)->after('department');
+                $table->boolean('is_decision_maker')->default(false);
             }
             if (!Schema::hasColumn('contacts', 'meta')) {
-                $table->json('meta')->nullable()->after('is_decision_maker');
+                $table->json('meta')->nullable();
             }
         });
 
-        // ── Assets ───────────────────────────────────────────────────────────
-        // renewal_date already exists from original migration.
-        // Adding: cost_per_year (already exists), status, meta.
         Schema::table('assets', function (Blueprint $table) {
             if (!Schema::hasColumn('assets', 'status')) {
-                // active / expiring / expired / cancelled — AVA uses this to triage
-                $table->string('status', 50)->default('active')->after('renewal_date');
+                $table->string('status', 50)->default('active');
             }
             if (!Schema::hasColumn('assets', 'meta')) {
-                $table->json('meta')->nullable()->after('notes');
+                $table->json('meta')->nullable();
             }
         });
     }
