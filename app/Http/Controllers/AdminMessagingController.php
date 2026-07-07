@@ -15,6 +15,24 @@ class AdminMessagingController extends Controller
     {
         return [
 
+            // ── AVA worker selected — fires when Ava is deployed during onboarding ──
+            [
+                'key'               => 'ava_worker_selected',
+                'sequence'          => 'worker_onboarding',
+                'audience'          => 'worker_specific',
+                'worker_slug'       => 'ava',
+                'label'             => 'AVA — Worker Selected',
+                'description'       => 'Fires when Ava is deployed at the start of onboarding. The "Meet Ava" moment.',
+                'trigger_condition' => 'on_ava_deployment_during_onboarding',
+                'day_offset'        => null,
+                'delay_hours'       => null,
+                'trigger_state'     => null,
+                'subject'           => 'Meet Ava — your first AI employee.',
+                'body'              => "Hi {name},\n\nYou just hired Ava.\n\nHer name is Ava.\n\nIn less than a minute you'll:\n\n• Give her access to work\n• Teach her about your business\n• Watch her complete her first assignment\n\nOnce that's done, Ava will quietly monitor your inbox, prepare renewal replies, and leave everything ready for your approval.\n\nLet's get her started.\n\n{app_url}/onboarding\n\nFranklin at UNIT",
+                'from_name'         => 'Franklin at UNIT',
+                'sort_order'        => 9,
+            ],
+
             // ── AVA worker onboarding — abandonment (worker_slug = 'ava') ──
             // These use delay_hours (not day_offset) — processed by OnboardingAbandonmentJob
             // which runs hourly and checks time elapsed since each milestone timestamp on users table.
@@ -411,8 +429,8 @@ class AdminMessagingController extends Controller
                 'trigger_condition' => 'on_registration',
                 'day_offset'  => null,
                 'trigger_state' => null,
-                'subject'     => 'Meet Ava — your first AI employee.',
-                'body'        => "Hi {name},\n\nWelcome to UNIT.\n\nToday you're hiring your first AI employee.\n\nHer name is Ava.\n\nIn less than a minute you'll:\n\n• Give her access to work\n• Teach her about your business\n• Watch her complete her first assignment\n\nOnce that's done, Ava will quietly monitor your inbox, prepare renewal replies, and leave everything ready for your approval.\n\nLet's get her started.\n\n{app_url}/onboarding\n\nFranklin at UNIT",
+                'subject'     => 'Welcome to UNIT.',
+                'body'        => "Hi {name},\n\nWelcome to UNIT.\n\nYou're one step away from hiring your first AI employee.\n\nStart setup and we'll have your worker running in under a minute.\n\n{app_url}/onboarding\n\nFranklin at UNIT",
                 'from_name'   => 'Franklin at UNIT',
                 'sort_order'  => 1,
             ],

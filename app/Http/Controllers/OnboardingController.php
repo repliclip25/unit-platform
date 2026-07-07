@@ -625,8 +625,14 @@ class OnboardingController extends Controller
                 'updated_at'               => now(),
             ]);
 
-            // worker_deployed email is suppressed during onboarding — user is still in the app
-            // It fires from WorkerController::deploy for post-onboarding deployments only
+            // Fire worker-specific introduction email — "Meet Ava" lands while user is in onboarding,
+            // reinforcing who they just hired before they move to the Gmail connection step
+            \App\Platform\Services\EmailDispatcher::send(
+                'ava_worker_selected',
+                DB::table('users')->where('id', $userId)->value('email') ?? '',
+                DB::table('users')->where('id', $userId)->value('name') ?? '',
+                $userId
+            );
         }
 
         // Start/resume WOS with fresh resolved sequence

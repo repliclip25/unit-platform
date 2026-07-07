@@ -23,6 +23,7 @@ class EmailDispatcher
     private const SEND_ONCE_KEYS = [
         'welcome_tenant',
         'referral_welcome_tenant',
+        'ava_worker_selected',
         'ava_first_real_renewal',
         'ava_abandon_no_gmail',
         'ava_abandon_no_clients',
