@@ -53,7 +53,10 @@ class RegisteredUserController extends Controller
 
         // Assign proper referral code using real user ID
         $code = ReferralService::generateCode($user->id, $user->email);
-        $user->update(['referral_code' => $code]);
+        $user->update([
+            'referral_code' => $code,
+            'profile_code'  => \App\Http\Controllers\MemoryAccessController::generateProfileCode(),
+        ]);
 
         event(new Registered($user));
         Auth::login($user);

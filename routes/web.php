@@ -34,6 +34,7 @@ use App\Http\Controllers\AdminWorkerPersonaController;
 use App\Http\Controllers\AdminWorkerRulesController;
 use App\Http\Controllers\NuxController;
 use App\Http\Controllers\AdminSelfLearnController;
+use App\Http\Controllers\MemoryAccessController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -68,6 +69,10 @@ Route::get('/marketplace',          [PublicPageController::class, 'marketplace']
 Route::post('/marketplace/request', [PublicPageController::class, 'requestWorker'])->middleware('throttle:5,1')->name('marketplace.request');
 Route::get('/blog',                 [PublicPageController::class, 'blog'])->name('blog');
 Route::get('/blog/{slug}',          [PublicPageController::class, 'blogPost'])->name('blog.show');
+
+// Memory access invite accept (public — email link may arrive before login)
+Route::get( '/memory/access/accept/{token}', [MemoryAccessController::class, 'acceptShow'])->name('memory.access.accept');
+Route::post('/memory/access/accept/{token}', [MemoryAccessController::class, 'acceptStore'])->middleware('auth')->name('memory.access.accept.store');
 
 // Gmail OAuth callback (must be public — Google redirects here)
 Route::get('/workers/ava/gmail/callback', [GmailController::class, 'callback'])->name('ava.gmail.callback');
@@ -143,6 +148,14 @@ Route::middleware(['auth', 'verified', 'onboarded', 'not-pending-del'])->group(f
     Route::delete('/memory/assets/{id}',          [MemoryController::class, 'destroyAsset'])->name('memory.assets.destroy');
     Route::post('/memory/rules',                  [MemoryController::class, 'storeRule'])->name('memory.rules.store');
     Route::delete('/memory/rules/{id}',           [MemoryController::class, 'destroyRule'])->name('memory.rules.destroy');
+
+    // ── Memory access (collaboration) ─────────────────────────────────────────
+    Route::get( '/memory/access',                        [MemoryAccessController::class, 'index'])->name('memory.access');
+    Route::post('/memory/access/invite',                 [MemoryAccessController::class, 'invite'])->name('memory.access.invite');
+    Route::post('/memory/access/{grant}/revoke',         [MemoryAccessController::class, 'revoke'])->name('memory.access.revoke');
+    Route::get( '/memory/shared/{grant}',                [MemoryAccessController::class, 'sharedMemory'])->name('memory.shared');
+    Route::post('/memory/shared/{grant}/copy',           [MemoryAccessController::class, 'copyRecord'])->name('memory.access.copy');
+    Route::post('/memory/shared/{grant}/upload',         [MemoryAccessController::class, 'uploadRecord'])->name('memory.access.upload');
 
     // ── Memory Import Templates (downloads) ────────────────────────────────
     Route::get('/memory/import/template/{type}',  [MemoryController::class, 'importTemplate'])->name('memory.import.template');
