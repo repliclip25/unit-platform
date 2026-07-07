@@ -389,6 +389,13 @@ class OnboardingController extends Controller
     {
         $wos = WorkerOnboardingService::load(auth()->id());
         if ($wos) WorkerOnboardingService::advanceStep($wos->id, 'memory');
+
+        // Stamp milestone — used by abandonment job to calculate time stuck at fast-track
+        $uid = auth()->id();
+        DB::table('users')->where('id', $uid)
+            ->whereNull('onboarding_clients_at')
+            ->update(['onboarding_clients_at' => now()]);
+
         return redirect()->route('onboarding.step', 'fast-track');
     }
 
@@ -485,6 +492,12 @@ class OnboardingController extends Controller
         $ingestJob::dispatch($txId)->onQueue('fast-track');
 
         session(['onboarding_fast_track_tx' => $txId]);
+
+        // Stamp milestone — marks that fast-track was attempted
+        $uid = auth()->id();
+        DB::table('users')->where('id', $uid)
+            ->whereNull('onboarding_fasttrack_at')
+            ->update(['onboarding_fasttrack_at' => now()]);
 
         return redirect()->route('onboarding.step', 'fast-track')
             ->with('fast_track_running', $txId);
@@ -594,7 +607,8 @@ class OnboardingController extends Controller
                 'updated_at'               => now(),
             ]);
 
-            UnitNotifier::workerDeployed($depId);
+            // worker_deployed email is suppressed during onboarding — user is still in the app
+            // It fires from WorkerController::deploy for post-onboarding deployments only
         }
 
         // Start/resume WOS with fresh resolved sequence

@@ -154,6 +154,7 @@ class PushToGmailJob implements ShouldQueue
         // Notify tenant via email — only for production runs (not fast track tests)
         if (!$input->isFastTrack()) {
             UnitNotifier::draftReady($this->txId, $eventPayload);
+            UnitNotifier::maybeFirstRealRenewal($this->txId);
         }
     }
 

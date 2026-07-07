@@ -75,4 +75,61 @@ class UnitNotifier
             Log::error('[UnitNotifier] draftReady failed', ['tx_id' => $txId, 'error' => $e->getMessage()]);
         }
     }
+
+    /**
+     * Fires the "Ava just handled your first renewal" email exactly once —
+     * when the first real (non-fast-track) transaction completes for this user.
+     */
+    public static function maybeFirstRealRenewal(string $txId): void
+    {
+        try {
+            $tx   = DB::table('transactions')->where('tx_id', $txId)->first();
+            $user = $tx ? DB::table('users')->where('id', $tx->user_id)->first() : null;
+            if (!$user || !$tx) return;
+
+            // Only fire once ever — check the log
+            $alreadySent = DB::table('tenant_email_log')
+                ->where('user_id', $user->id)
+                ->where('template_key', 'ava_first_real_renewal')
+                ->exists();
+
+            if ($alreadySent) return;
+
+            // Confirm this is actually the first completed non-fast-track transaction
+            $realCount = DB::table('transactions')
+                ->where('user_id', $user->id)
+                ->where('status', 'draft_ready')
+                ->whereRaw("JSON_EXTRACT(input, '$.fast_track') IS NULL OR JSON_EXTRACT(input, '$.fast_track') = false")
+                ->count();
+
+            if ($realCount !== 1) return;
+
+            $appUrl = config('app.url');
+            $tpl = DB::table('platform_email_templates')
+                ->where('key', 'ava_first_real_renewal')
+                ->where('active', true)
+                ->first();
+
+            if (!$tpl) return;
+
+            $body    = str_replace(['{name}', '{app_url}'], [$user->name, $appUrl], $tpl->body);
+            $subject = str_replace(['{name}', '{app_url}'], [$user->name, $appUrl], $tpl->subject);
+
+            \Illuminate\Support\Facades\Mail::raw($body, fn($m) => $m
+                ->to($user->email, $user->name)
+                ->subject($subject)
+                ->replyTo(config('services.unit.noreply_email'), $tpl->from_name)
+            );
+
+            DB::table('tenant_email_log')->insert([
+                'user_id'      => $user->id,
+                'template_key' => 'ava_first_real_renewal',
+                'sent_at'      => now(),
+            ]);
+
+            Log::info('[UnitNotifier] First real renewal email sent', ['user_id' => $user->id, 'tx_id' => $txId]);
+        } catch (\Throwable $e) {
+            Log::error('[UnitNotifier] maybeFirstRealRenewal failed', ['tx_id' => $txId, 'error' => $e->getMessage()]);
+        }
+    }
 }

@@ -90,9 +90,13 @@ class GmailController extends Controller
             }
         }
 
-        \App\Platform\Services\EmailDispatcher::send('gmail_connected', $user->email, $user->name, $user->id, [
-            '{gmail_address}' => $email,
-        ]);
+        // Only send the Gmail-connected confirmation outside of onboarding
+        // During onboarding the user is still in the app — the email is noise
+        if (!session('onboarding_gmail_return') && $user->onboarding_completed_at) {
+            \App\Platform\Services\EmailDispatcher::send('gmail_connected', $user->email, $user->name, $user->id, [
+                '{gmail_address}' => $email,
+            ]);
+        }
 
         $message = $hasActiveDeployment
             ? "Gmail connected and inbox watch activated for {$email}. Your worker is now monitoring."
@@ -126,6 +130,13 @@ class GmailController extends Controller
             }
 
             \App\Platform\Services\WorkerOnboardingService::advanceStepByName($user->id, 'credential');
+
+            // Stamp milestone — used by abandonment job to calculate time stuck at next step
+            if (!$user->onboarding_gmail_at) {
+                DB::table('users')->where('id', $user->id)
+                    ->update(['onboarding_gmail_at' => now()]);
+            }
+
             return redirect()->route('onboarding.step', 'memory')->with('success', "Gmail connected: {$email}");
         }
 

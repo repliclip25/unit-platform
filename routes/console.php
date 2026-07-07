@@ -1,6 +1,7 @@
 <?php
 
 use App\Jobs\OnboardingSequenceJob;
+use App\Jobs\OnboardingAbandonmentJob;
 use App\Platform\Services\WorkerRegistry;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
@@ -108,6 +109,10 @@ Schedule::command('ava:nudge-memory')->dailyAt('09:00')->name('ava.memory.nudge'
 
 // Runs daily at 9AM — sends Day 3 and Day 7 contextual nudges based on activation state
 Schedule::job(new OnboardingSequenceJob)->dailyAt('09:00')->name('platform.onboarding.sequence');
+
+// Runs every hour — fires abandonment emails (delay_hours based) when user gets stuck in onboarding
+// Handles: no Gmail after 1hr, no clients after 24hr, no fast-track after 24hr
+Schedule::job(new OnboardingAbandonmentJob)->hourly()->name('platform.onboarding.abandonment');
 
 // Manual trigger: php artisan onboarding:sequence
 Artisan::command('onboarding:sequence', function () {

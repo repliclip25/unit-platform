@@ -5,7 +5,7 @@ namespace App\Workers\AVA;
 use App\Platform\Contracts\WorkerContract;
 use App\Platform\Enums\QACheck;
 use App\Workers\AVA\Jobs\ClassifyEmailJob;
-use App\Workers\AVA\Jobs\DailySummaryJob;
+use App\Workers\AVA\Jobs\WeeklySummaryJob;
 use App\Workers\AVA\Jobs\DraftEmailJob;
 use App\Workers\AVA\Jobs\FastTrackIngestJob;
 use App\Workers\AVA\Jobs\FilterEmailJob;
@@ -967,11 +967,11 @@ class AvaWorker implements WorkerContract
     {
         return [
             [
-                'job'            => DailySummaryJob::class,
-                'cron'           => '0 * * * *',
+                'job'            => WeeklySummaryJob::class,
+                'cron'           => '0 8 * * 1',  // Every Monday at 8AM
                 'queue'          => 'ava',
                 'per_deployment' => true,
-                'name'           => 'daily_summary',
+                'name'           => 'weekly_summary',
             ],
         ];
     }
