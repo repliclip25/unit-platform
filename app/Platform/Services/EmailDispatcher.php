@@ -97,6 +97,9 @@ class EmailDispatcher
         string  $status = 'sent',
         ?string $resendId = null
     ): void {
+        if ($userId === null) {
+            return; // No user row to attach to (e.g. account_deleted after user purge)
+        }
         try {
             DB::table('tenant_email_log')->insert([
                 'user_id'      => $userId,
