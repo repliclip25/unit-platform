@@ -4,9 +4,9 @@ namespace App\Jobs;
 
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
+use App\Platform\Services\EmailDispatcher;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Mail;
 
 /**
  * Runs hourly. Fires abandonment emails when a user gets stuck mid-onboarding.
@@ -32,8 +32,7 @@ class OnboardingAbandonmentJob implements ShouldQueue
 
     public function handle(): void
     {
-        $now    = now();
-        $appUrl = config('app.url');
+        $now = now();
 
         // Load all active abandonment templates (delay_hours based, not day_offset)
         $templates = DB::table('platform_email_templates')
@@ -93,33 +92,15 @@ class OnboardingAbandonmentJob implements ShouldQueue
 
                 if (!$eligible) continue;
 
-                $this->sendTemplate($tpl, $user, $appUrl);
+                $this->sendTemplate($tpl, $user);
                 break; // one abandonment email per run per user
             }
         }
     }
 
-    private function sendTemplate(object $tpl, object $user, string $appUrl): void
+    private function sendTemplate(object $tpl, object $user): void
     {
-        $body    = str_replace(['{name}', '{app_url}'], [$user->name, $appUrl], $tpl->body);
-        $subject = str_replace(['{name}', '{app_url}'], [$user->name, $appUrl], $tpl->subject);
-
-        try {
-            Mail::raw($body, fn($m) => $m
-                ->to($user->email, $user->name)
-                ->subject($subject)
-                ->replyTo(config('services.unit.noreply_email'), $tpl->from_name)
-            );
-
-            DB::table('tenant_email_log')->insert([
-                'user_id'      => $user->id,
-                'template_key' => $tpl->key,
-                'sent_at'      => now(),
-            ]);
-
-            Log::info("Abandonment email sent [{$tpl->key}]", ['user_id' => $user->id]);
-        } catch (\Throwable $e) {
-            Log::error("Abandonment email failed [{$tpl->key}]", ['user_id' => $user->id, 'error' => $e->getMessage()]);
-        }
+        EmailDispatcher::send($tpl->key, $user->email, $user->name, $user->id);
+        Log::info("Abandonment email sent [{$tpl->key}]", ['user_id' => $user->id]);
     }
 }
