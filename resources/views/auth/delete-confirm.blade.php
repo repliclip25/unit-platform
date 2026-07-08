@@ -11,7 +11,7 @@
         .card { max-width: 440px; width: 100%; background: #0d1117; border: 1px solid rgba(255,255,255,0.08); border-radius: 20px; padding: 40px 36px; }
         .logo { display: flex; align-items: center; gap: 10px; margin-bottom: 32px; }
         .logo img { width: 32px; height: 32px; border-radius: 8px; }
-        .logo-text { font-weight: 700; font-size: 1.1rem; color: #f1d362; }
+        .logo-text { font-weight: 700; font-size: 1.1rem; color: #142C74; }
     </style>
 </head>
 <body>

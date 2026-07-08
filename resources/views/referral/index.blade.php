@@ -55,7 +55,7 @@
             </div>
             <button @click="navigator.clipboard.writeText('{{ $referralUrl }}'); copied=true; setTimeout(()=>copied=false,2500)"
                     class="shrink-0 text-sm px-5 py-2.5 rounded-lg font-bold transition"
-                    style="background:var(--accent);color:#1a1404">
+                    style="background:var(--accent);color:#ffffff">
                 <span x-show="!copied">Copy Link</span>
                 <span x-show="copied">Copied &#10003;</span>
             </button>

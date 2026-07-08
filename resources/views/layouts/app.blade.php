@@ -20,20 +20,20 @@
         /* ── Badge tokens (tier / status chips) ──────────── */
         :root, [data-theme="dark"] {
             --badge-fast-bg:       rgba(6,182,212,0.15);    --badge-fast-text:       #67e8f9;
-            --badge-balanced-bg:   rgba(241,211,98,0.15);   --badge-balanced-text:   #fde68a;
+            --badge-balanced-bg:   rgba(20,44,116,0.18);    --badge-balanced-text:   #93aee8;
             --badge-powerful-bg:   rgba(168,85,247,0.15);   --badge-powerful-text:   #c4b5fd;
             --badge-reasoning-bg:  rgba(239,68,68,0.15);    --badge-reasoning-text:  #fca5a5;
             --badge-platform-bg:   rgba(16,185,129,0.12);   --badge-platform-text:   #6ee7b7;
-            --badge-yourkey-bg:    rgba(241,211,98,0.12);   --badge-yourkey-text:    #fde68a;
+            --badge-yourkey-bg:    rgba(20,44,116,0.15);    --badge-yourkey-text:    #93aee8;
             --badge-custom-bg:     rgba(156,163,175,0.1);   --badge-custom-text:     #9ca3af;
         }
         [data-theme="light"] {
             --badge-fast-bg:       rgba(6,182,212,0.12);    --badge-fast-text:       #0369a1;
-            --badge-balanced-bg:   rgba(241,211,98,0.18);   --badge-balanced-text:   #7a5c00;
+            --badge-balanced-bg:   rgba(20,44,116,0.10);    --badge-balanced-text:   #142C74;
             --badge-powerful-bg:   rgba(124,58,237,0.12);   --badge-powerful-text:   #6d28d9;
             --badge-reasoning-bg:  rgba(239,68,68,0.12);    --badge-reasoning-text:  #b91c1c;
             --badge-platform-bg:   rgba(5,150,105,0.10);    --badge-platform-text:   #047857;
-            --badge-yourkey-bg:    rgba(241,211,98,0.15);   --badge-yourkey-text:    #7a5c00;
+            --badge-yourkey-bg:    rgba(20,44,116,0.10);    --badge-yourkey-text:    #142C74;
             --badge-custom-bg:     rgba(107,114,128,0.10);  --badge-custom-text:     #4b5563;
         }
 
@@ -52,10 +52,10 @@
             --mob-bar-bg:  rgba(0,0,0,0.94);
             --scrollbar-track: #111111;
             --scrollbar-thumb: #333333;
-            --accent:      #f1d362;
-            --accent-rgb:  241, 211, 98;
-            --accent-dark: #c9a800;
-            --accent-text: #f1d362;
+            --accent:      #142C74;
+            --accent-rgb:  20, 44, 116;
+            --accent-dark: #0e2260;
+            --accent-text: #ffffff;
         }
         [data-theme="light"] {
             --bg-base:     #f9f9f7;
@@ -72,14 +72,16 @@
             --mob-bar-bg:  rgba(249,249,247,0.94);
             --scrollbar-track: #f0f0ee;
             --scrollbar-thumb: #cccccc;
-            --accent:      #f1d362;
-            --accent-rgb:  241, 211, 98;
-            --accent-dark: #c9a800;
-            --accent-text: #7a5c00;
+            --accent:      #142C74;
+            --accent-rgb:  20, 44, 116;
+            --accent-dark: #0e2260;
+            --accent-text: #ffffff;
         }
 
         /* ── Base ───────────────────────────────────────── */
         html, body { background: var(--bg-base); color: var(--text-primary); font-size: 16px; line-height: 1.6; }
+        .text-xs { font-size: 13px !important; }
+        .text-sm { font-size: 15px !important; }
 
         /* ── Sidebar ────────────────────────────────────── */
         #sidebar         { background: var(--bg-surface); border-right: 1px solid var(--border); }
@@ -385,7 +387,7 @@
                        style="{{ $isActive ? 'background:var(--accent);color:#000000' : '' }}">
                         <div class="relative shrink-0">
                             <div class="worker-avatar w-6 h-6 rounded-md flex items-center justify-center text-xs font-bold"
-                                 style="{{ $isActive ? 'background:rgba(26,20,4,0.2);color:#1a1404' : '' }}">
+                                 style="{{ $isActive ? 'background:rgba(20,44,116,0.15);color:#142C74' : '' }}">
                                 {{ strtoupper(substr($dep->worker_slug, 0, 1)) }}
                             </div>
                             <span class="absolute -bottom-0.5 -right-0.5 w-2 h-2 rounded-full"
@@ -756,7 +758,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 ? options.filter(o => o.label.toLowerCase().includes(lower))
                 : options;
             drop.innerHTML = matches.slice(0, 80).map(o =>
-                `<div class="ss-opt px-3 py-2 text-sm cursor-pointer hover:bg-gray-700 ${o.value === sel.value ? 'text-yellow-400' : (o.value === '' ? 'text-gray-500' : 'text-white')}"
+                `<div class="ss-opt px-3 py-2 text-sm cursor-pointer hover:bg-gray-700 ${o.value === sel.value ? 'text-blue-400' : (o.value === '' ? 'text-gray-500' : 'text-white')}"
                     data-val="${o.value}" data-lbl="${o.label.replace(/"/g,'&quot;')}">${o.label}</div>`
             ).join('');
             if (!matches.length) {
