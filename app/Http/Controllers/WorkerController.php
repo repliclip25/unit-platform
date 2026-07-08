@@ -154,12 +154,74 @@ class WorkerController extends Controller
             ->orderBy('sort_order')
             ->get();
 
+        // ── Observe data (last 7 days, embedded in detail page) ───────────────
+        $observeDays = 7;
+        $observeFrom = now()->subDays($observeDays - 1)->startOfDay();
+
+        $pubsubHits = DB::table('platform_events')
+            ->where('type', 'gmail.pubsub.hit')
+            ->where('created_at', '>=', $observeFrom)
+            ->whereRaw("JSON_UNQUOTE(JSON_EXTRACT(payload, '$.gmail_address')) IN (
+                SELECT ugc.gmail_address FROM user_gmail_credentials ugc
+                JOIN deployment_credentials dc ON dc.credential_id = ugc.id
+                WHERE dc.deployment_id = ?
+            )", [$id])
+            ->selectRaw('DATE(created_at) as day, COUNT(*) as hits')
+            ->groupBy('day')->orderBy('day')->get()->keyBy('day');
+
+        $observeFunnel = DB::table('transactions')
+            ->where('deployment_id', $id)
+            ->where('created_at', '>=', $observeFrom)
+            ->selectRaw("COUNT(*) as total, SUM(status='filtered_out') as filtered_out,
+                SUM(status='dismissed') as dismissed,
+                SUM(status IN ('draft_ready','approved','sent')) as completed,
+                SUM(status='failed') as failed")
+            ->first();
+
+        $txPerDay = DB::table('transactions')
+            ->where('deployment_id', $id)
+            ->where('created_at', '>=', $observeFrom)
+            ->selectRaw('DATE(created_at) as day, COUNT(*) as total,
+                SUM(status = "filtered_out") as filtered,
+                SUM(status IN ("draft_ready","approved","sent")) as completed')
+            ->groupBy('day')->orderBy('day')->get()->keyBy('day');
+
+        $stageSpend = DB::table('usage_events')
+            ->where('deployment_id', $id)
+            ->where('created_at', '>=', $observeFrom)
+            ->whereNotNull('stage')
+            ->groupBy('stage')
+            ->selectRaw('stage, COUNT(*) as calls, SUM(cost_usd) as cost, SUM(tokens_input+tokens_output) as tokens')
+            ->orderByRaw('SUM(cost_usd) DESC')
+            ->get();
+
+        $avgDuration = DB::table('transactions')
+            ->where('deployment_id', $id)
+            ->where('created_at', '>=', $observeFrom)
+            ->whereIn('status', ['draft_ready', 'approved', 'sent', 'failed'])
+            ->selectRaw('AVG(TIMESTAMPDIFF(SECOND, created_at, updated_at)) as avg_seconds')
+            ->value('avg_seconds');
+
+        $chartDays = collect();
+        for ($i = $observeDays - 1; $i >= 0; $i--) {
+            $day = now()->subDays($i)->format('Y-m-d');
+            $chartDays->push([
+                'day'       => $day,
+                'label'     => now()->subDays($i)->format('M d'),
+                'hits'      => $pubsubHits->get($day)?->hits ?? 0,
+                'total'     => $txPerDay->get($day)?->total ?? 0,
+                'filtered'  => $txPerDay->get($day)?->filtered ?? 0,
+                'completed' => $txPerDay->get($day)?->completed ?? 0,
+            ]);
+        }
+
         return view('dashboard.worker-detail', compact(
             'dep', 'contract', 'credential', 'credentials', 'connectedInboxes', 'availableCredentials',
             'txCount', 'recentTx', 'usage', 'pendingReview', 'stuckCount',
             'customModels', 'policyViolations', 'registryRow',
             'isMultiCredential', 'productionReadiness', 'overviewPanels', 'overviewMeta',
-            'pricingTiers'
+            'pricingTiers',
+            'observeFunnel', 'stageSpend', 'avgDuration', 'chartDays'
         ));
     }
 
@@ -816,127 +878,6 @@ class WorkerController extends Controller
         $id      = $dep->id;
         $entries = DB::table('renewal_register')->where('deployment_id', $id)->orderByDesc('created_at')->paginate(25);
         return view('dashboard.worker-log', compact('dep', 'entries'));
-    }
-
-    public function schema(string $slug)
-    {
-        $dep = DB::table('worker_deployments')->where('user_id', auth()->id())
-            ->where(fn($q) => $q->where('worker_slug', $slug)->when(is_numeric($slug), fn($q2) => $q2->orWhere('id', (int)$slug)))
-            ->firstOrFail();
-        $id       = $dep->id;
-        $contract = \App\Platform\Services\WorkerRegistry::resolve($dep->worker_slug);
-        if (!$contract) abort(404, 'No contract registered for worker: ' . $dep->worker_slug);
-        return view('dashboard.worker-schema', [
-            'dep'      => $dep,
-            'identity' => $contract->identity(),
-            'org'      => $contract->org(),
-            'input'    => $contract->input(),
-            'pipeline' => $contract->pipeline(),
-            'emits'    => $contract->emit(),
-            'commit'   => $contract->commit(),
-            'output'   => $contract->output(),
-            'prompts'  => $contract->prompts(),
-            'owner'    => $contract->owner(),
-        ]);
-    }
-
-    public function observe(string $slug)
-    {
-        $dep = DB::table('worker_deployments')->where('user_id', auth()->id())
-            ->where(fn($q) => $q->where('worker_slug', $slug)->when(is_numeric($slug), fn($q2) => $q2->orWhere('id', (int)$slug)))
-            ->firstOrFail();
-        $id = $dep->id;
-
-        $days = (int) request('days', 7);
-        $days = in_array($days, [1, 7, 14, 30]) ? $days : 7;
-        $from = now()->subDays($days - 1)->startOfDay();
-
-        // ── Pub/Sub hits per day ──────────────────────────────────────────────
-        $pubsubHits = DB::table('platform_events')
-            ->where('type', 'gmail.pubsub.hit')
-            ->where('created_at', '>=', $from)
-            ->whereRaw("JSON_UNQUOTE(JSON_EXTRACT(payload, '$.gmail_address')) IN (
-                SELECT ugc.gmail_address FROM user_gmail_credentials ugc
-                JOIN deployment_credentials dc ON dc.credential_id = ugc.id
-                WHERE dc.deployment_id = ?
-            )", [$id])
-            ->selectRaw('DATE(created_at) as day, COUNT(*) as hits')
-            ->groupBy('day')->orderBy('day')->get()->keyBy('day');
-
-        // ── Transaction funnel ────────────────────────────────────────────────
-        $funnel = DB::table('transactions')
-            ->where('deployment_id', $id)
-            ->where('created_at', '>=', $from)
-            ->selectRaw("
-                COUNT(*) as total,
-                SUM(status = 'filtered_out') as filtered_out,
-                SUM(status = 'dismissed') as dismissed,
-                SUM(status IN ('draft_ready','approved','sent')) as completed,
-                SUM(status = 'failed') as failed,
-                SUM(status = 'blocked') as blocked
-            ")->first();
-
-        // ── Transactions per day ──────────────────────────────────────────────
-        $txPerDay = DB::table('transactions')
-            ->where('deployment_id', $id)
-            ->where('created_at', '>=', $from)
-            ->selectRaw('DATE(created_at) as day, COUNT(*) as total,
-                SUM(status = "filtered_out") as filtered,
-                SUM(status IN ("draft_ready","approved","sent")) as completed')
-            ->groupBy('day')->orderBy('day')->get()->keyBy('day');
-
-        // ── AI spend per stage ────────────────────────────────────────────────
-        $stageSpend = DB::table('usage_events')
-            ->where('deployment_id', $id)
-            ->where('created_at', '>=', $from)
-            ->whereNotNull('stage')
-            ->groupBy('stage')
-            ->selectRaw('stage, COUNT(*) as calls, SUM(cost_usd) as cost, SUM(tokens_input+tokens_output) as tokens')
-            ->orderByRaw('SUM(cost_usd) DESC')
-            ->get();
-
-        // ── Average transaction duration ──────────────────────────────────────
-        $avgDuration = DB::table('transactions')
-            ->where('deployment_id', $id)
-            ->where('created_at', '>=', $from)
-            ->whereIn('status', ['draft_ready', 'approved', 'sent', 'failed'])
-            ->selectRaw('AVG(TIMESTAMPDIFF(SECOND, created_at, updated_at)) as avg_seconds')
-            ->value('avg_seconds');
-
-        // ── Per-inbox hit breakdown ───────────────────────────────────────────
-        $inboxBreakdown = DB::table('transactions')
-            ->where('deployment_id', $id)
-            ->where('created_at', '>=', $from)
-            ->selectRaw('COUNT(*) as total,
-                SUM(status = "filtered_out") as filtered,
-                SUM(status IN ("draft_ready","approved","sent")) as completed')
-            ->first();
-
-        // ── Connected inboxes ─────────────────────────────────────────────────
-        $inboxes = DB::table('deployment_credentials')
-            ->join('user_gmail_credentials', 'user_gmail_credentials.id', '=', 'deployment_credentials.credential_id')
-            ->where('deployment_credentials.deployment_id', $id)
-            ->select('user_gmail_credentials.gmail_address')
-            ->get();
-
-        // Build day-by-day chart data for last N days
-        $chartDays = collect();
-        for ($i = $days - 1; $i >= 0; $i--) {
-            $day = now()->subDays($i)->format('Y-m-d');
-            $chartDays->push([
-                'day'       => $day,
-                'label'     => now()->subDays($i)->format('M d'),
-                'hits'      => $pubsubHits->get($day)?->hits ?? 0,
-                'total'     => $txPerDay->get($day)?->total ?? 0,
-                'filtered'  => $txPerDay->get($day)?->filtered ?? 0,
-                'completed' => $txPerDay->get($day)?->completed ?? 0,
-            ]);
-        }
-
-        return view('dashboard.worker-observe', compact(
-            'dep', 'days', 'funnel', 'stageSpend',
-            'avgDuration', 'chartDays', 'inboxes'
-        ));
     }
 
     public function billing(string $slug)

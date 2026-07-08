@@ -1473,4 +1473,141 @@
         </div>
     </div>
 
+    {{-- ── Inbox Intelligence (last 7 days) ──────────────────────────────── --}}
+    @php
+        $obTotal     = $observeFunnel->total ?? 0;
+        $obFiltered  = $observeFunnel->filtered_out ?? 0;
+        $obDismissed = $observeFunnel->dismissed ?? 0;
+        $obCompleted = $observeFunnel->completed ?? 0;
+        $obFailed    = $observeFunnel->failed ?? 0;
+        $obHits      = $chartDays->sum('hits');
+        $obPassRate  = $obTotal > 0 ? round(($obCompleted / $obTotal) * 100) : 0;
+        $obAvgSecs   = $avgDuration ? round($avgDuration) : null;
+        $obAvgLabel  = $obAvgSecs ? ($obAvgSecs < 60 ? "{$obAvgSecs}s" : round($obAvgSecs/60,1).'m') : '—';
+        $obMaxVal    = $chartDays->max(fn($d) => max($d['hits'], $d['total']));
+        $obMaxVal    = max($obMaxVal, 1);
+    @endphp
+    <div class="mt-6 rounded-2xl overflow-hidden" style="background:var(--bg-card);border:1px solid var(--border)">
+        <button onclick="this.nextElementSibling.classList.toggle('hidden');this.querySelector('svg').classList.toggle('rotate-180')"
+                class="w-full px-5 py-4 flex items-center justify-between transition hover:opacity-80">
+            <div class="flex items-center gap-3">
+                <p class="text-sm font-semibold" style="color:var(--text-primary)">Inbox Intelligence</p>
+                <span class="text-xs px-2 py-0.5 rounded" style="background:var(--bg-raised);color:var(--text-muted)">7d</span>
+                @if($obTotal > 0)
+                <span class="text-xs" style="color:var(--text-muted)">{{ number_format($obTotal) }} ingested · {{ $obPassRate }}% drafted</span>
+                @else
+                <span class="text-xs" style="color:var(--text-faint)">No activity in the last 7 days</span>
+                @endif
+            </div>
+            <svg class="w-4 h-4 transition-transform shrink-0" style="color:var(--text-faint)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+            </svg>
+        </button>
+        <div class="hidden" style="border-top:1px solid var(--border)">
+            {{-- Stat strip --}}
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-0 divide-x" style="border-bottom:1px solid var(--border);divide-color:var(--border)">
+                @foreach([['Pub/Sub Hits', number_format($obHits), 'raw signals'], ['Ingested', number_format($obTotal), 'entered pipeline'], ['Drafted', number_format($obCompleted), $obPassRate.'% pass rate'], ['Avg Duration', $obAvgLabel, 'per transaction']] as [$label, $val, $sub])
+                <div class="px-5 py-4">
+                    <p class="text-xs mb-1" style="color:var(--text-muted)">{{ $label }}</p>
+                    <p class="text-xl font-bold" style="color:var(--text-primary)">{{ $val }}</p>
+                    <p class="text-xs mt-0.5" style="color:var(--text-faint)">{{ $sub }}</p>
+                </div>
+                @endforeach
+            </div>
+
+            {{-- Bar chart --}}
+            <div class="px-5 py-4" style="border-bottom:1px solid var(--border)">
+                <p class="text-xs font-semibold mb-3" style="color:var(--text-muted)">Activity Timeline</p>
+                <div class="flex items-end gap-1 h-20">
+                    @foreach($chartDays as $day)
+                    @php
+                        $hitH  = round(($day['hits']      / $obMaxVal) * 100);
+                        $txH   = round(($day['total']     / $obMaxVal) * 100);
+                        $doneH = round(($day['completed'] / $obMaxVal) * 100);
+                    @endphp
+                    <div class="flex-1 flex flex-col items-center gap-0.5 group relative">
+                        <div class="absolute bottom-full mb-1 left-1/2 -translate-x-1/2 hidden group-hover:block z-10 pointer-events-none">
+                            <div class="rounded px-2 py-1 text-xs whitespace-nowrap" style="background:var(--bg-raised);border:1px solid var(--border);color:var(--text-primary)">
+                                {{ $day['label'] }}: {{ $day['hits'] }}h · {{ $day['total'] }}in · {{ $day['completed'] }}d
+                            </div>
+                        </div>
+                        <div class="w-full flex items-end gap-px" style="height:72px">
+                            <div class="flex-1 rounded-sm opacity-30" style="height:{{ $hitH }}%;background:#6366f1;min-height:{{ $day['hits']>0?'2px':'0' }}"></div>
+                            <div class="flex-1 rounded-sm opacity-60" style="height:{{ $txH }}%;background:var(--accent);min-height:{{ $day['total']>0?'2px':'0' }}"></div>
+                            <div class="flex-1 rounded-sm" style="height:{{ $doneH }}%;background:#22c55e;min-height:{{ $day['completed']>0?'2px':'0' }}"></div>
+                        </div>
+                        <span class="text-xs" style="color:var(--text-faint);font-size:9px">{{ now()->parse($day['day'])->format('d') }}</span>
+                    </div>
+                    @endforeach
+                </div>
+                <div class="flex items-center gap-4 mt-2">
+                    <div class="flex items-center gap-1.5"><div class="w-2.5 h-2.5 rounded-sm opacity-30" style="background:#6366f1"></div><span class="text-xs" style="color:var(--text-muted)">Hits</span></div>
+                    <div class="flex items-center gap-1.5"><div class="w-2.5 h-2.5 rounded-sm opacity-60" style="background:var(--accent)"></div><span class="text-xs" style="color:var(--text-muted)">Ingested</span></div>
+                    <div class="flex items-center gap-1.5"><div class="w-2.5 h-2.5 rounded-sm" style="background:#22c55e"></div><span class="text-xs" style="color:var(--text-muted)">Drafted</span></div>
+                </div>
+            </div>
+
+            {{-- Funnel + AI spend --}}
+            <div class="grid grid-cols-1 sm:grid-cols-2 divide-y sm:divide-y-0 sm:divide-x" style="border-bottom:1px solid var(--border);divide-color:var(--border)">
+                <div class="px-5 py-4">
+                    <p class="text-xs font-semibold mb-3" style="color:var(--text-muted)">Pipeline Funnel</p>
+                    @php
+                        $funnelSteps = [
+                            ['Ingested',      $obTotal,                          'var(--accent)', 100],
+                            ['Passed Filter', $obTotal - $obFiltered,            '#818cf8', $obTotal>0?round((($obTotal-$obFiltered)/$obTotal)*100):0],
+                            ['Classified',    $obTotal-$obFiltered-$obDismissed, '#38bdf8', $obTotal>0?round((($obTotal-$obFiltered-$obDismissed)/$obTotal)*100):0],
+                            ['Drafted',       $obCompleted,                      '#22c55e', $obTotal>0?round(($obCompleted/$obTotal)*100):0],
+                        ];
+                    @endphp
+                    <div class="space-y-2.5">
+                        @foreach($funnelSteps as [$label, $val, $color, $pct])
+                        <div>
+                            <div class="flex items-center justify-between mb-1">
+                                <span class="text-xs" style="color:var(--text-muted)">{{ $label }}</span>
+                                <span class="text-xs font-medium" style="color:var(--text-primary)">{{ number_format($val) }}</span>
+                            </div>
+                            <div class="h-1.5 rounded-full" style="background:var(--bg-raised)">
+                                <div class="h-1.5 rounded-full" style="width:{{ $pct }}%;background:{{ $color }}"></div>
+                            </div>
+                        </div>
+                        @endforeach
+                    </div>
+                    <div class="mt-3 pt-3 grid grid-cols-3 gap-2 text-center" style="border-top:1px solid var(--border-subtle)">
+                        <div><p class="text-xs font-semibold" style="color:var(--text-primary)">{{ $obFiltered }}</p><p class="text-xs" style="color:var(--text-faint)">filtered</p></div>
+                        <div><p class="text-xs font-semibold" style="color:var(--text-primary)">{{ $obDismissed }}</p><p class="text-xs" style="color:var(--text-faint)">dismissed</p></div>
+                        <div><p class="text-xs font-semibold" style="color:#f87171">{{ $obFailed }}</p><p class="text-xs" style="color:var(--text-faint)">failed</p></div>
+                    </div>
+                </div>
+                <div class="px-5 py-4">
+                    <p class="text-xs font-semibold mb-3" style="color:var(--text-muted)">AI Spend by Stage</p>
+                    @if($stageSpend->isEmpty())
+                    <p class="text-xs" style="color:var(--text-faint)">No AI usage in this period.</p>
+                    @else
+                    @php $maxCost = $stageSpend->max('cost') ?: 1; @endphp
+                    <div class="space-y-2.5">
+                        @foreach($stageSpend as $s)
+                        <div>
+                            <div class="flex items-center justify-between mb-1">
+                                <span class="text-xs font-mono" style="color:var(--text-muted)">{{ $s->stage }}</span>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-xs" style="color:var(--text-faint)">{{ $s->calls }}x</span>
+                                    <span class="text-xs font-medium" style="color:var(--text-primary)">${{ number_format($s->cost,4) }}</span>
+                                </div>
+                            </div>
+                            <div class="h-1.5 rounded-full" style="background:var(--bg-raised)">
+                                <div class="h-1.5 rounded-full" style="width:{{ round(($s->cost/$maxCost)*100) }}%;background:var(--accent)"></div>
+                            </div>
+                        </div>
+                        @endforeach
+                    </div>
+                    <div class="mt-3 pt-3 flex items-center justify-between" style="border-top:1px solid var(--border-subtle)">
+                        <span class="text-xs" style="color:var(--text-muted)">Total this period</span>
+                        <span class="text-sm font-bold" style="color:var(--text-primary)">${{ number_format($stageSpend->sum('cost'),4) }}</span>
+                    </div>
+                    @endif
+                </div>
+            </div>
+        </div>
+    </div>
+
 </x-app-layout>
