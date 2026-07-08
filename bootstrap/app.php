@@ -23,7 +23,6 @@ return Application::configure(basePath: dirname(__DIR__))
             'not-pending-del'  => \App\Http\Middleware\EnsureNotPendingDeletion::class,
         ]);
 
-        $middleware->appendToGroup('web', \App\Http\Middleware\TrackTenantActivity::class);
         $middleware->appendToGroup('web', \App\Http\Middleware\CaptureReferralCode::class);
         $middleware->appendToGroup('web', \App\Http\Middleware\RedirectGuestWorkerPage::class);
     })

@@ -114,7 +114,7 @@
             ['l'=>'Est. MRR',      'v'=>'$'.number_format($monthlyMrr,2),       's'=>$paidDepCount.' paid plan(s)'],
             ['l'=>'AI Spend',      'v'=>'$'.number_format($totalSpend,4),       's'=>'all time · avg $'.number_format($usageAvg->avg_cost ?? 0, 4).'/call'],
             ['l'=>'Success Rate',  'v'=>$txSuccessRate !== null ? $txSuccessRate.'%' : '—', 's'=>$txTotal.' total · '.$txFailed.' failed'],
-            ['l'=>'Page Views',    'v'=>number_format($totalViews),              's'=>$viewsThisWeek.' this week'],
+            ['l'=>'Tx This Week',  'v'=>number_format($viewsThisWeek),           's'=>'transactions processed'],
         ]; @endphp
         @foreach($kpis as $k)
         <div class="bg-gray-900 border border-gray-800 rounded-xl px-3.5 py-3">
@@ -355,55 +355,53 @@
                 </div>
             </div>
 
-            {{-- Usage Map --}}
+            {{-- Engagement Signals --}}
             <div class="bg-gray-900 border border-gray-800 rounded-2xl overflow-hidden">
                 <div class="px-5 py-4 border-b border-gray-800 flex items-center justify-between">
                     <div>
-                        <h2 class="text-white text-sm font-semibold">Usage Map</h2>
-                        <p class="text-gray-500 text-xs mt-0.5">30-day page activity · {{ $totalViews }} lifetime views</p>
+                        <h2 class="text-white text-sm font-semibold">Engagement</h2>
+                        <p class="text-gray-500 text-xs mt-0.5">Real platform actions — transactions, memory, last event</p>
                     </div>
-                    <div class="text-right">
-                        <p class="text-brand text-xs font-semibold">{{ $viewsThisWeek }} this week</p>
-                        @if($lastActivity)
-                        <p class="text-gray-600 text-xs">Last: {{ \Carbon\Carbon::parse($lastActivity)->diffForHumans() }}</p>
-                        @endif
+                    @if($lastActivity)
+                    <p class="text-gray-600 text-xs">Last active {{ \Carbon\Carbon::parse($lastActivity)->diffForHumans() }}</p>
+                    @endif
+                </div>
+                @php
+                    $memCount = DB::table('clients')->where('user_id', $tenant->id)->whereNull('deleted_at')->count()
+                              + DB::table('contacts')->where('user_id', $tenant->id)->whereNull('deleted_at')->count()
+                              + DB::table('assets')->where('user_id', $tenant->id)->whereNull('deleted_at')->count();
+                    $recentTx = DB::table('transactions')->where('user_id', $tenant->id)->orderByDesc('created_at')->limit(5)->get();
+                    $recentEvents = DB::table('platform_events')->where('user_id', $tenant->id)->orderByDesc('created_at')->limit(5)->get();
+                @endphp
+                <div class="px-5 py-4 grid grid-cols-3 gap-4 border-b border-gray-800">
+                    <div class="text-center">
+                        <p class="text-lg font-bold text-white">{{ $txTotal }}</p>
+                        <p class="text-gray-500 text-xs mt-0.5">Total transactions</p>
+                    </div>
+                    <div class="text-center">
+                        <p class="text-lg font-bold text-white">{{ $viewsThisWeek }}</p>
+                        <p class="text-gray-500 text-xs mt-0.5">Tx this week</p>
+                    </div>
+                    <div class="text-center">
+                        <p class="text-lg font-bold text-white">{{ $memCount }}</p>
+                        <p class="text-gray-500 text-xs mt-0.5">Memory records</p>
                     </div>
                 </div>
-                @if($usageMap->isEmpty())
-                    <div class="px-5 py-8 text-center">
-                        <p class="text-gray-500 text-sm">No activity tracked yet</p>
-                        <p class="text-gray-600 text-xs mt-1">Tracking begins on next page visit</p>
+                @if($recentTx->isNotEmpty())
+                <div class="divide-y divide-gray-800">
+                    @foreach($recentTx as $tx)
+                    <div class="px-5 py-2.5 flex items-center gap-3">
+                        <span class="w-1.5 h-1.5 rounded-full shrink-0
+                            {{ in_array($tx->status,['approved','sent','draft_ready']) ? 'bg-green-500' : (in_array($tx->status,['failed','rejected']) ? 'bg-red-500' : 'bg-gray-600') }}"></span>
+                        <span class="text-gray-400 text-xs flex-1 truncate font-mono">{{ $tx->tx_id }}</span>
+                        <span class="text-gray-600 text-xs">{{ $tx->status }}</span>
+                        <span class="text-gray-700 text-xs">{{ \Carbon\Carbon::parse($tx->created_at)->diffForHumans(null,true,true) }}</span>
                     </div>
+                    @endforeach
+                </div>
                 @else
-                @php
-                    $sections = $usageMap->groupBy('section');
-                    $maxV = $usageMap->max('visits') ?: 1;
-                    $sColors = ['dashboard'=>'var(--accent)','workers'=>'#4ade80','billing'=>'#60a5fa','transactions'=>'#f97316','settings'=>'#a78bfa','admin'=>'#f43f5e'];
-                @endphp
-                <div class="px-5 py-4 space-y-5">
-                    <div class="grid grid-cols-3 md:grid-cols-6 gap-2">
-                        @foreach($sections as $sec => $pages)
-                        @php $c = $sColors[$sec ?? ''] ?? '#8e8ea0'; $sv = $pages->sum('visits'); @endphp
-                        <div class="rounded-xl px-3 py-2.5 text-center" style="background:{{ $c }}18;border:1px solid {{ $c }}30">
-                            <p class="text-sm font-bold" style="color:{{ $c }}">{{ $sv }}</p>
-                            <p class="text-gray-500 text-xs capitalize mt-0.5">{{ $sec ?? 'other' }}</p>
-                        </div>
-                        @endforeach
-                    </div>
-                    <div class="space-y-1.5">
-                        @foreach($usageMap->take(15) as $row)
-                        @php $pct = min(100,($row->visits/$maxV)*100); $c = $sColors[$row->section ?? ''] ?? '#8e8ea0'; @endphp
-                        <div class="flex items-center gap-3">
-                            <div class="w-2 h-2 rounded-full shrink-0" style="background:{{ $c }}"></div>
-                            <span class="text-gray-400 text-xs w-44 truncate font-mono shrink-0">{{ $row->page }}</span>
-                            <div class="flex-1 h-1.5 rounded-full bg-gray-800 overflow-hidden">
-                                <div class="h-full rounded-full" style="width:{{ $pct }}%;background:{{ $c }}"></div>
-                            </div>
-                            <span class="text-gray-500 text-xs w-6 text-right shrink-0">{{ $row->visits }}</span>
-                            <span class="text-gray-700 text-xs w-16 text-right shrink-0">{{ \Carbon\Carbon::parse($row->last_seen)->diffForHumans(null,true,true) }}</span>
-                        </div>
-                        @endforeach
-                    </div>
+                <div class="px-5 py-8 text-center">
+                    <p class="text-gray-600 text-xs">No transactions yet</p>
                 </div>
                 @endif
             </div>

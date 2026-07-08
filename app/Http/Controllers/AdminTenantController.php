@@ -224,20 +224,12 @@ class AdminTenantController extends Controller
             ->limit(5)
             ->get();
 
-        // Usage map — page visit breakdown (last 30 days)
-        $usageMap = DB::table('tenant_activity_log')
-            ->where('user_id', $id)
-            ->whereDate('created_at', '>=', now()->subDays(30))
-            ->selectRaw("section, page, COUNT(*) as visits, MAX(created_at) as last_seen")
-            ->groupBy('section', 'page')
-            ->orderByDesc('visits')
-            ->limit(30)
-            ->get();
-
-        // Total page views + device breakdown
-        $totalViews    = DB::table('tenant_activity_log')->where('user_id', $id)->count();
-        $viewsThisWeek = DB::table('tenant_activity_log')->where('user_id', $id)->whereDate('created_at', '>=', now()->subDays(7))->count();
-        $lastActivity  = DB::table('tenant_activity_log')->where('user_id', $id)->max('created_at');
+        // Engagement signals — derived from real platform actions, not page views
+        $usageMap      = collect(); // removed: was page-view counts, not meaningful engagement
+        $totalViews    = 0;
+        $viewsThisWeek = 0;
+        $lastActivity  = DB::table('platform_events')->where('user_id', $id)->max('created_at')
+                      ?? DB::table('transactions')->where('user_id', $id)->max('created_at');
         $lastLogin     = DB::table('sessions')->where('user_id', $id)->max('last_activity');
         $daysSinceLogin = $lastLogin ? now()->diffInDays(\Carbon\Carbon::createFromTimestamp($lastLogin)) : null;
 
@@ -435,7 +427,7 @@ class AdminTenantController extends Controller
         $totalSpend = DB::table('usage_events')->where('user_id', $id)->sum('cost_usd');
         $lastLogin  = DB::table('sessions')->where('user_id', $id)->max('last_activity');
         $daysSince  = $lastLogin ? now()->diffInDays(\Carbon\Carbon::createFromTimestamp($lastLogin)) : 'unknown';
-        $viewsWeek  = DB::table('tenant_activity_log')->where('user_id', $id)->whereDate('created_at', '>=', now()->subDays(7))->count();
+        $viewsWeek  = DB::table('transactions')->where('user_id', $id)->whereDate('created_at', '>=', now()->subDays(7))->count();
 
         $context = "Tenant: {$tenant->name} ({$tenant->email})\n"
             . "Member since: {$tenant->created_at}\n"

@@ -44,7 +44,6 @@ class PurgeTenants extends Command
                 'platform_verifications',
                 'policy_enforcement_log',
                 'processed_messages',
-                'tenant_activity_log',
                 'tenant_api_keys',
                 'tenant_custom_models',
                 'tenant_email_log',
