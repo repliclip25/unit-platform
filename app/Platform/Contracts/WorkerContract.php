@@ -707,4 +707,19 @@ interface WorkerContract
      *                 Placeholders: {name} {score} {complete} {needed} {threshold} {app_url}
      */
     public function personas(): array;
+
+    /**
+     * Declare the asset group types this worker supports.
+     *
+     * Groups are worker-scoped — they let a deployment organise platform memory
+     * assets into logical bundles meaningful to that worker's context.
+     *
+     * Return an array of group type definitions:
+     *   value   — stored in asset_groups.type
+     *   label   — shown in the UI dropdown
+     *   description — one line explaining what this group type means
+     *
+     * Return [] if this worker does not use asset grouping.
+     */
+    public function groupTypes(): array;
 }

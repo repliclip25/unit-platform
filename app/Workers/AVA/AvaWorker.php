@@ -1236,4 +1236,30 @@ class AvaWorker implements WorkerContract
             ],
         ];
     }
+
+    public function groupTypes(): array
+    {
+        return [
+            [
+                'value'       => 'service_bundle',
+                'label'       => 'Service Bundle',
+                'description' => 'All assets tied to one client service (e.g. domain + SSL + hosting for one website)',
+            ],
+            [
+                'value'       => 'vendor_cluster',
+                'label'       => 'Vendor Cluster',
+                'description' => 'Multiple assets from the same vendor across one or more clients',
+            ],
+            [
+                'value'       => 'expiry_window',
+                'label'       => 'Expiry Window',
+                'description' => 'Assets expiring in the same period, batched for a single renewal push',
+            ],
+            [
+                'value'       => 'contract_scope',
+                'label'       => 'Contract Scope',
+                'description' => 'All assets covered under one master agreement or contract',
+            ],
+        ];
+    }
 }

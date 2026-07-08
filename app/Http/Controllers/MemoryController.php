@@ -75,6 +75,7 @@ class MemoryController extends Controller
     public function destroyAsset(int $id)
     {
         DB::table('assets')->where('id', $id)->where('user_id', auth()->id())->update(['deleted_at' => now()]);
+        DB::table('asset_group_items')->where('asset_id', $id)->delete();
         return back()->with('success', 'Asset removed.');
     }
 

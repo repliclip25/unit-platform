@@ -35,6 +35,7 @@ use App\Http\Controllers\AdminWorkerRulesController;
 use App\Http\Controllers\NuxController;
 use App\Http\Controllers\AdminSelfLearnController;
 use App\Http\Controllers\MemoryAccessController;
+use App\Http\Controllers\AssetGroupController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -206,6 +207,15 @@ Route::middleware(['auth', 'verified', 'onboarded', 'not-pending-del'])->group(f
     Route::patch('/workers/{id}/memory/assets/{aid}',               [WorkerMemoryController::class, 'updateAsset'])->name('workers.memory.assets.update');
     Route::post('/workers/{id}/memory/assets/{aid}/approve',        [WorkerMemoryController::class, 'approveAsset'])->name('workers.memory.assets.approve');
     Route::delete('/workers/{id}/memory/assets/{aid}',               [WorkerMemoryController::class, 'destroyAsset'])->name('workers.memory.assets.destroy');
+
+    // Asset Groups (worker-scoped)
+    Route::get('/workers/{id}/memory/groups',                        [AssetGroupController::class, 'index'])->name('workers.memory.groups');
+    Route::post('/workers/{id}/memory/groups',                       [AssetGroupController::class, 'store'])->name('workers.memory.groups.store');
+    Route::patch('/workers/{id}/memory/groups/{gid}',               [AssetGroupController::class, 'update'])->name('workers.memory.groups.update');
+    Route::delete('/workers/{id}/memory/groups/{gid}',               [AssetGroupController::class, 'destroy'])->name('workers.memory.groups.destroy');
+    Route::post('/workers/{id}/memory/groups/{gid}/items',           [AssetGroupController::class, 'addItem'])->name('workers.memory.groups.items.add');
+    Route::delete('/workers/{id}/memory/groups/{gid}/items/{aid}',   [AssetGroupController::class, 'removeItem'])->name('workers.memory.groups.items.remove');
+    Route::post('/workers/{id}/memory/groups/{gid}/reorder',         [AssetGroupController::class, 'reorder'])->name('workers.memory.groups.reorder');
 
     // ── Worker: Templates ───────────────────────────────────────────────────
     Route::get('/workers/{slug}/templates',                          [WorkerTemplateController::class, 'workerIndex'])->name('workers.templates');

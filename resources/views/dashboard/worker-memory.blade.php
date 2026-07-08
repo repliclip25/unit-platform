@@ -121,10 +121,18 @@
     </div>
 
     {{-- Tab nav --}}
-    <div class="flex gap-1 mb-6 border-b border-gray-800">
-        <button onclick="showTab('clients')" id="tab-clients" class="tab-btn px-4 py-2 text-sm font-medium text-white border-b-2 border-yellow-400">Clients</button>
-        <button onclick="showTab('contacts')" id="tab-contacts" class="tab-btn px-4 py-2 text-sm font-medium text-gray-400 border-b-2 border-transparent hover:text-white">Contacts</button>
-        <button onclick="showTab('assets')" id="tab-assets" class="tab-btn px-4 py-2 text-sm font-medium text-gray-400 border-b-2 border-transparent hover:text-white">Assets</button>
+    <div class="flex gap-1 mb-6 border-b border-gray-800 overflow-x-auto">
+        <button onclick="showTab('clients')" id="tab-clients" class="tab-btn px-4 py-2 text-sm font-medium text-white border-b-2 border-yellow-400 whitespace-nowrap">Clients</button>
+        <button onclick="showTab('contacts')" id="tab-contacts" class="tab-btn px-4 py-2 text-sm font-medium text-gray-400 border-b-2 border-transparent hover:text-white whitespace-nowrap">Contacts</button>
+        <button onclick="showTab('assets')" id="tab-assets" class="tab-btn px-4 py-2 text-sm font-medium text-gray-400 border-b-2 border-transparent hover:text-white whitespace-nowrap">Assets</button>
+        <a href="{{ route('workers.memory.groups', $dep->id) }}"
+           class="px-4 py-2 text-sm font-medium text-gray-400 border-b-2 border-transparent hover:text-white whitespace-nowrap transition flex items-center gap-1.5">
+            Groups
+            @php $groupCount = \Illuminate\Support\Facades\DB::table('asset_groups')->where('deployment_id',$dep->id)->where('user_id',auth()->id())->count(); @endphp
+            @if($groupCount)
+            <span class="text-xs bg-gray-800 text-gray-400 rounded-full px-1.5 py-0.5">{{ $groupCount }}</span>
+            @endif
+        </a>
     </div>
 
     {{-- CLIENTS --}}

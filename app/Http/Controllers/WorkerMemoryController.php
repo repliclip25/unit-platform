@@ -161,6 +161,7 @@ class WorkerMemoryController extends Controller
     {
         DB::table('worker_deployments')->where('id', $id)->where('user_id', auth()->id())->firstOrFail();
         DB::table('assets')->where('id', $aid)->where('user_id', auth()->id())->update(['deleted_at' => now()]);
+        DB::table('asset_group_items')->where('asset_id', $aid)->delete();
         return back()->with('success', 'Asset removed.');
     }
 }

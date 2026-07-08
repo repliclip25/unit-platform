@@ -875,4 +875,10 @@ class NuxWorker implements WorkerContract
         // NUX does not have a persona selection step — skip by returning []
         return [];
     }
+
+    public function groupTypes(): array
+    {
+        // NUX does not use asset grouping
+        return [];
+    }
 }
