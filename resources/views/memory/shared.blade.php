@@ -11,7 +11,7 @@
     <div class="mb-6 flex flex-wrap items-start justify-between gap-3">
         <div>
             <div class="flex items-center gap-2 mb-1">
-                <a href="{{ route('memory.access') }}" class="text-gray-600 hover:text-gray-400 text-xs transition">← Memory Access</a>
+                <a href="{{ route('memory') }}#shared" class="text-xs transition hover:opacity-80" style="color:var(--text-faint)">← Memory</a>
             </div>
             <h1 class="text-white text-lg font-bold">{{ $grant->owner_name }}'s Memory</h1>
             <p class="text-gray-500 text-xs mt-0.5">{{ $grant->deployment_name }} · {{ $grant->worker_slug }}</p>
@@ -134,6 +134,48 @@
         </div>
     @endforeach
     </div>
+
+    {{-- ── Groups ─────────────────────────────────────────────────────────── --}}
+    @if(isset($ownerGroups) && $ownerGroups->isNotEmpty())
+    <div class="mt-6">
+        <div class="flex items-center gap-2 mb-3">
+            <p class="text-sm font-semibold" style="color:var(--text-primary)">Asset Groups</p>
+            <span class="text-xs" style="color:var(--text-faint)">{{ $ownerGroups->count() }} group{{ $ownerGroups->count()!==1?'s':'' }}</span>
+        </div>
+        <div class="space-y-3">
+            @foreach($ownerGroups as $group)
+            <div class="rounded-xl" style="background:var(--bg-card);border:1px solid var(--border)">
+                <div class="px-5 py-3.5 flex flex-wrap items-center gap-3">
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <p class="text-sm font-semibold" style="color:var(--text-primary)">{{ $group->name }}</p>
+                            @if($group->type)
+                            <span class="text-xs px-2 py-0.5 rounded-full" style="background:var(--bg-raised);color:var(--accent-text);border:1px solid var(--border)">{{ $group->type }}</span>
+                            @endif
+                        </div>
+                        <p class="text-xs mt-0.5" style="color:var(--text-muted)">
+                            {{ $group->items->count() }} asset{{ $group->items->count()!==1?'s':'' }}
+                            @if(!empty($group->client_name)) · {{ $group->client_name }} @endif
+                        </p>
+                    </div>
+                </div>
+                @if($group->items->isNotEmpty())
+                <div class="px-5 pb-3 flex flex-wrap gap-2">
+                    @foreach($group->items as $item)
+                    @php $iDays = $item->renewal_date ? (int) now()->diffInDays($item->renewal_date, false) : null; @endphp
+                    <span class="text-xs px-2.5 py-1 rounded-lg flex items-center gap-1.5" style="background:var(--bg-raised);color:var(--text-muted)">
+                        <span class="w-1.5 h-1.5 rounded-full shrink-0 {{ $iDays !== null && $iDays <= 0 ? 'bg-red-400' : ($iDays !== null && $iDays <= 30 ? 'bg-amber-400' : 'bg-gray-600') }}"></span>
+                        {{ $item->name }}
+                        @if($item->renewal_date)<span style="color:var(--text-faint)">· {{ $item->renewal_date }}</span>@endif
+                    </span>
+                    @endforeach
+                </div>
+                @endif
+            </div>
+            @endforeach
+        </div>
+    </div>
+    @endif
 
     <x-self-learn
         page-key="memory.shared"

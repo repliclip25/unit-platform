@@ -11,12 +11,88 @@ class MemoryController extends Controller
 {
     public function index()
     {
-        $userId   = auth()->id();
+        $userId = auth()->id();
+
+        // ── My Memory ────────────────────────────────────────────────────────
         $clients  = DB::table('clients')->where('user_id', $userId)->whereNull('deleted_at')->orderBy('name')->get();
         $contacts = DB::table('contacts')->where('user_id', $userId)->whereNull('deleted_at')->get();
-        $assets   = DB::table('assets')->where('user_id', $userId)->whereNull('deleted_at')->orderBy('renewal_date')->get();
+        $assets   = DB::table('assets')->where('user_id', $userId)->whereNull('deleted_at')->where('type', '!=', 'discovered')->orderBy('renewal_date')->get();
         $rules    = DB::table('ava_rules')->where('user_id', $userId)->orderBy('rule_id')->get();
-        return view('dashboard.memory', compact('clients', 'contacts', 'assets', 'rules'));
+
+        // ── Groups across all my deployments ─────────────────────────────────
+        $myDeployments = DB::table('worker_deployments')
+            ->where('user_id', $userId)
+            ->where('status', '!=', 'decommissioned')
+            ->orderBy('name')
+            ->get();
+
+        $myGroups = collect();
+        if ($myDeployments->isNotEmpty()) {
+            $depIds   = $myDeployments->pluck('id')->toArray();
+            $groups   = DB::table('asset_groups as g')
+                ->leftJoin('clients as c', 'c.id', '=', 'g.client_id')
+                ->whereIn('g.deployment_id', $depIds)
+                ->where('g.user_id', $userId)
+                ->select('g.*', 'c.name as client_name')
+                ->orderBy('g.deployment_id')->orderBy('g.name')
+                ->get();
+
+            foreach ($groups as $group) {
+                $group->items = DB::table('asset_group_items as gi')
+                    ->join('assets as a', 'a.id', '=', 'gi.asset_id')
+                    ->where('gi.group_id', $group->id)
+                    ->whereNull('a.deleted_at')
+                    ->orderBy('gi.sort_order')
+                    ->select('a.id', 'a.name', 'a.type', 'a.vendor', 'a.renewal_date', 'a.status')
+                    ->get();
+                $group->deployment_name = $myDeployments->firstWhere('id', $group->deployment_id)?->name;
+                $group->worker_slug     = $myDeployments->firstWhere('id', $group->deployment_id)?->worker_slug;
+                $myGroups->push($group);
+            }
+        }
+
+        // ── Shared With Me (incoming grants) ─────────────────────────────────
+        $incoming = DB::table('memory_access_grants as g')
+            ->join('users as u', 'u.id', '=', 'g.owner_user_id')
+            ->join('worker_deployments as d', 'd.id', '=', 'g.deployment_id')
+            ->where('g.grantee_user_id', $userId)
+            ->where('g.status', 'accepted')
+            ->select('g.*', 'u.name as owner_name', 'u.email as owner_email',
+                     'd.name as deployment_name', 'd.worker_slug')
+            ->orderByDesc('g.accepted_at')
+            ->get()
+            ->map(function ($g) use ($userId) {
+                // Attach memory summary counts for preview
+                $g->client_count  = DB::table('clients')->where('user_id', $g->owner_user_id)->whereNull('deleted_at')->count();
+                $g->contact_count = DB::table('contacts')->where('user_id', $g->owner_user_id)->whereNull('deleted_at')->count();
+                $g->asset_count   = DB::table('assets')->where('user_id', $g->owner_user_id)->whereNull('deleted_at')->where('type', '!=', 'discovered')->count();
+                $g->group_count   = DB::table('asset_groups')->where('deployment_id', $g->deployment_id)->where('user_id', $g->owner_user_id)->count();
+                return $g;
+            });
+
+        // ── Access Management (outgoing grants) ───────────────────────────────
+        $outgoing = DB::table('memory_access_grants as g')
+            ->join('users as u', 'u.id', '=', 'g.grantee_user_id')
+            ->join('worker_deployments as d', 'd.id', '=', 'g.deployment_id')
+            ->where('g.owner_user_id', $userId)
+            ->whereIn('g.status', ['pending', 'accepted'])
+            ->select('g.*', 'u.name as grantee_name', 'u.email as grantee_email',
+                     'u.profile_code as grantee_code', 'd.name as deployment_name', 'd.worker_slug')
+            ->orderByDesc('g.created_at')
+            ->get()
+            ->map(function ($g) {
+                $g->event_count = DB::table('memory_access_events')->where('grant_id', $g->id)->count();
+                $g->last_action = DB::table('memory_access_events')->where('grant_id', $g->id)->orderByDesc('created_at')->value('created_at');
+                return $g;
+            });
+
+        $myProfileCode = DB::table('users')->where('id', $userId)->value('profile_code');
+
+        return view('dashboard.memory', compact(
+            'clients', 'contacts', 'assets', 'rules',
+            'myDeployments', 'myGroups',
+            'incoming', 'outgoing', 'myProfileCode'
+        ));
     }
 
     public function storeClient(Request $request)

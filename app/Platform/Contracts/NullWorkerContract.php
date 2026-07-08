@@ -77,4 +77,5 @@ class NullWorkerContract implements WorkerContract
     public function aiStages(): array          { return []; }
     public function memoryRequirements(): array { return []; }
     public function personas(): array          { return []; }
+    public function groupTypes(): array        { return []; }
 }

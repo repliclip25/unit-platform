@@ -25,7 +25,7 @@ return new class extends Migration
             $table->index('owner_user_id');
             $table->index('grantee_user_id');
             $table->index('deployment_id');
-            $table->unique(['owner_user_id', 'grantee_user_id', 'deployment_id']);
+            $table->unique(['owner_user_id', 'grantee_user_id', 'deployment_id'], 'mag_owner_grantee_dep_unique');
         });
     }
 

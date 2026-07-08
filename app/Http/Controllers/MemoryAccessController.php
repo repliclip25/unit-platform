@@ -268,7 +268,26 @@ class MemoryAccessController extends Controller
             ->select('id', 'name')
             ->get();
 
-        return view('memory.shared', compact('grant', 'permissions', 'memory', 'copiedIds', 'granteeDeployments'));
+        // Load owner's groups for this deployment
+        $ownerGroups = DB::table('asset_groups as g')
+            ->leftJoin('clients as c', 'c.id', '=', 'g.client_id')
+            ->where('g.deployment_id', $grant->deployment_id)
+            ->where('g.user_id', $grant->owner_user_id)
+            ->select('g.*', 'c.name as client_name')
+            ->orderBy('g.name')
+            ->get()
+            ->map(function ($group) {
+                $group->items = DB::table('asset_group_items as gi')
+                    ->join('assets as a', 'a.id', '=', 'gi.asset_id')
+                    ->where('gi.group_id', $group->id)
+                    ->whereNull('a.deleted_at')
+                    ->orderBy('gi.sort_order')
+                    ->select('a.id', 'a.name', 'a.type', 'a.vendor', 'a.renewal_date', 'a.status')
+                    ->get();
+                return $group;
+            });
+
+        return view('memory.shared', compact('grant', 'permissions', 'memory', 'copiedIds', 'granteeDeployments', 'ownerGroups'));
     }
 
     // ── Grantee: copy a record ─────────────────────────────────────────────────
