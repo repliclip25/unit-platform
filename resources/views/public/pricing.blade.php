@@ -154,7 +154,7 @@
         {{-- WORKER CARDS --}}
         @foreach($plans as $plan)
         @php
-            $accent = $plan->accent_color ?? '#f1d362';
+            $accent = $plan->accent_color ?? '#142C74';
             $hex = ltrim($accent, '#');
             $r = hexdec(substr($hex,0,2)); $g = hexdec(substr($hex,2,2)); $b = hexdec(substr($hex,4,2));
             // Short name: take part before — or -
@@ -192,7 +192,7 @@
                     @endforeach
                 </ul>
                 <div class="pc-cta">
-                    <a href="{{ route('register') }}" class="pc-btn" style="background:{{ $accent }};color:#12100a">Deploy {{ $shortName }}</a>
+                    <a href="{{ route('register') }}" class="pc-btn" style="background:{{ $accent }};color:#ffffff">Deploy {{ $shortName }}</a>
                     @if($plan->worker_url)
                     <a href="{{ $plan->worker_url }}" class="pc-worker-link">Learn more about {{ $shortName }} →</a>
                     @endif

@@ -105,7 +105,7 @@ textarea.req-in{resize:vertical;min-height:100px;line-height:1.6}
     <div class="wk-card" data-tags="renewal ava gmail nycsca dob fdny mta">
       <div class="wk-card-head">
         <div class="wk-card-identity">
-          <div class="wk-av" style="background:linear-gradient(135deg,#1a1207,#c9a800);color:#f1d362">A</div>
+          <div class="wk-av" style="background:linear-gradient(135deg,#0a1535,#142C74);color:#142C74">A</div>
           <div>
             <div class="wk-card-name">AVA</div>
             <div class="wk-card-role">Renewal Coordinator</div>

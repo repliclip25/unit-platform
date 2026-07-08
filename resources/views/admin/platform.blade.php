@@ -471,8 +471,8 @@ details summary::-webkit-details-marker { display:none; }
                     $trialDays   = (int) (\Illuminate\Support\Facades\DB::table('platform_configs')->where('key', 'trial_days')->value('value') ?? 14);
                 @endphp
                 <div class="connector-row" style="flex-wrap:wrap;gap:12px">
-                    <div class="ct-icon" style="background:#f1d36220">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 1a11 11 0 100 22A11 11 0 0012 1zm0 4a1.5 1.5 0 110 3 1.5 1.5 0 010-3zm3 13H9v-2h2v-5H9v-2h4v7h2v2z" fill="#f1d362"/></svg>
+                    <div class="ct-icon" style="background:#142C7420">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 1a11 11 0 100 22A11 11 0 0012 1zm0 4a1.5 1.5 0 110 3 1.5 1.5 0 010-3zm3 13H9v-2h2v-5H9v-2h4v7h2v2z" fill="#142C74"/></svg>
                     </div>
                     <div class="flex-1">
                         <p style="font-size:13px;font-weight:600;color:var(--text-primary)">Trial Payment Gate</p>
@@ -736,7 +736,7 @@ details summary::-webkit-details-marker { display:none; }
             <div class="space-y-2">
                 @foreach([
                     ['label' => 'Successful', 'count' => $pipelineStats['successful'], 'color' => '#22c55e'],
-                    ['label' => 'Processing', 'count' => $pipelineStats['processing'], 'color' => '#f1d362'],
+                    ['label' => 'Processing', 'count' => $pipelineStats['processing'], 'color' => '#142C74'],
                     ['label' => 'Failed',     'count' => $pipelineStats['failed'],     'color' => '#ef4444'],
                 ] as $stat)
                 <div class="flex items-center gap-3">

@@ -11,13 +11,13 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
         :root{
-            --accent:#f1d362;--accent-rgb:241,211,98;--accent-text:#f1d362;
+            --accent:#142C74;--accent-rgb:20,44,116;--accent-text:#ffffff;
             --bg-card:#0d1117;--bg-surface:#111827;--bg-raised:#1a2230;
             --border:rgba(255,255,255,0.10);--border-subtle:rgba(255,255,255,0.07);
             --text-primary:#f9fafb;--text-secondary:#9ca3af;--text-muted:#6b7280;--text-faint:#374151;
         }
         [data-theme="light"]{
-            --accent:#f1d362;--accent-rgb:241,211,98;--accent-text:#7a5c00;
+            --accent:#142C74;--accent-rgb:20,44,116;--accent-text:#ffffff;
             --bg-card:#ffffff;--bg-surface:#f8fafc;--bg-raised:#f1f5f9;
             --border:rgba(0,0,0,0.09);--border-subtle:#e8e8e6;
             --text-primary:#0f172a;--text-secondary:#475569;--text-muted:#64748b;--text-faint:#cbd5e1;
@@ -129,7 +129,7 @@
             <div class="fade-up-4">
                 <a href="{{ route('onboarding.complete') }}"
                    class="block w-full text-center font-black text-base py-4 rounded-xl transition-all"
-                   style="background:var(--accent);color:#1a1404">
+                   style="background:var(--accent);color:#ffffff">
                     Enter Workspace
                 </a>
                 <p class="text-center text-xs text-gray-600 mt-3">

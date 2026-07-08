@@ -26,11 +26,11 @@
             --input-border: rgba(255,255,255,0.15);
             --input-text:   #ffffff;
             --input-ph:     #555555;
-            --link-color:   #f1d362;
-            --accent:      #f1d362;
+            --link-color:   #142C74;
+            --accent:      #142C74;
             --accent-rgb:  241, 211, 98;
-            --accent-dark: #c9a800;
-            --accent-text: #f1d362;
+            --accent-dark: #0e2260;
+            --accent-text: #142C74;
         }
         [data-theme="light"] {
             --bg-base:      #f9f9f7;
@@ -48,9 +48,9 @@
             --input-text:   #000000;
             --input-ph:     #999999;
             --link-color:   #7a5c00;
-            --accent:      #f1d362;
+            --accent:      #142C74;
             --accent-rgb:  241, 211, 98;
-            --accent-dark: #c9a800;
+            --accent-dark: #0e2260;
             --accent-text: #7a5c00;
         }
 

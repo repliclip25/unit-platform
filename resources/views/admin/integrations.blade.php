@@ -189,7 +189,7 @@
 <div id="tab-workers" style="display:none">
     @forelse($workers as $slug => $ints)
     @php
-        $workerColors = ['ava'=>'#f1d362','nova'=>'#818cf8','rex'=>'#34d399','lena'=>'#fb923c'];
+        $workerColors = ['ava'=>'#142C74','nova'=>'#818cf8','rex'=>'#34d399','lena'=>'#fb923c'];
         $wColor = $workerColors[$slug] ?? '#60a5fa';
     @endphp
     <div class="ir-card mb-4">

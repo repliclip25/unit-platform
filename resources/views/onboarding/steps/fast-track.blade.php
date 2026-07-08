@@ -48,7 +48,7 @@
         {{-- CTA — immediately below success card --}}
         <a href="{{ route('onboarding.gmail-draft') }}"
            class="block w-full text-center font-black text-base py-4 rounded-xl transition-all mb-5"
-           style="background:var(--accent);color:#1a1404">
+           style="background:var(--accent);color:#ffffff">
             See My Draft
         </a>
     </div>
@@ -226,7 +226,7 @@
 
     <button type="submit" id="run-btn"
         class="w-full font-bold text-base py-4 rounded-xl transition-colors mb-3"
-        style="background:var(--accent);color:#1a1404">
+        style="background:var(--accent);color:#ffffff">
         Run Test
     </button>
 </form>

@@ -11,8 +11,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Space+Grotesk:wght@500;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root{
-  --gold:#f1d362;--gold-d:#c9a800;--glow:rgba(241,211,98,0.18);--gold-text:#f1d362;
-  --accent:var(--gold);--accent-rgb:241,211,98;
+  --gold:#142C74;--gold-d:#0e2260;--glow:rgba(20,44,116,0.22);--gold-text:#ffffff;
+  --accent:var(--gold);--accent-rgb:20,44,116;
   --green:#22c55e;--green-bg:rgba(34,197,94,0.1);--green-border:rgba(34,197,94,0.25);
   --text:#ffffff;--t2:#cccccc;--t3:#999999;--t4:#555555;
   --line:rgba(255,255,255,0.12);--line2:rgba(255,255,255,0.18);
@@ -44,7 +44,7 @@ header#nav{position:sticky;top:0;left:0;right:0;z-index:300;transition:backgroun
 .nl a{font-size:14px;color:rgba(255,255,255,0.45);transition:color .15s;font-weight:500}
 .nl a:hover,.nl a.active{color:#fff}
 .nr{display:flex;align-items:center;gap:14px}
-.btn-g{display:inline-flex;align-items:center;gap:7px;background:var(--gold);color:#12100a;font-weight:700;font-size:14px;padding:10px 22px;border-radius:8px;border:none;cursor:pointer;transition:transform .15s,box-shadow .2s;white-space:nowrap;font-family:var(--fb)}
+.btn-g{display:inline-flex;align-items:center;gap:7px;background:var(--gold);color:#ffffff;font-weight:700;font-size:14px;padding:10px 22px;border-radius:8px;border:none;cursor:pointer;transition:transform .15s,box-shadow .2s;white-space:nowrap;font-family:var(--fb)}
 .btn-g:hover{transform:translateY(-1px);box-shadow:0 8px 32px var(--glow)}
 .btn-gh{font-size:14px;color:rgba(255,255,255,0.4);cursor:pointer;border:none;background:none;font-family:var(--fb);transition:color .15s}
 .btn-gh:hover{color:#fff}

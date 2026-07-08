@@ -87,7 +87,7 @@
 .wf-verify-err { background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.25);color:#f87171 }
 
 .wp-btn      { font-size:12px;font-weight:600;padding:6px 14px;border-radius:8px;cursor:pointer;transition:all .15s;white-space:nowrap }
-.wp-btn-gold { background:var(--accent);color:#12100a;border:none }
+.wp-btn-gold { background:var(--accent);color:#ffffff;border:none }
 .wp-btn-gold:hover { opacity:.88 }
 .wp-btn-out  { background:transparent;border:1px solid var(--border);color:var(--text-secondary) }
 .wp-btn-out:hover  { border-color:var(--accent);color:var(--text-primary) }
@@ -143,7 +143,7 @@
 
             @foreach($workerPlans as $plan)
             @php
-                $accent = $plan->accent_color ?? '#f1d362';
+                $accent = $plan->accent_color ?? '#142C74';
                 $hex = ltrim($accent,'#');
                 $r=hexdec(substr($hex,0,2));$g=hexdec(substr($hex,2,2));$b=hexdec(substr($hex,4,2));
                 $hasPromo = !empty($plan->discount_pct) || !empty($plan->promo_label);
@@ -246,8 +246,8 @@
                             <div class="wf-full">
                                 <div class="wf-lbl">Accent Color</div>
                                 <div class="wf-color-row">
-                                    <input type="color" id="ef-cp" value="#f1d362" class="wf-swatch" oninput="document.getElementById('ef-accent_color').value=this.value">
-                                    <input type="text" id="ef-accent_color" name="accent_color" class="wf-input" value="#f1d362" style="font-family:monospace" oninput="document.getElementById('ef-cp').value=this.value">
+                                    <input type="color" id="ef-cp" value="#142C74" class="wf-swatch" oninput="document.getElementById('ef-accent_color').value=this.value">
+                                    <input type="text" id="ef-accent_color" name="accent_color" class="wf-input" value="#142C74" style="font-family:monospace" oninput="document.getElementById('ef-cp').value=this.value">
                                 </div>
                             </div>
                         </div>
@@ -539,7 +539,7 @@ const PLANS = {
         transaction_label:    @json($plan->transaction_label ?? ''),
         worker_url:           @json($plan->worker_url ?? ''),
         sort_order:           {{ $plan->sort_order ?? 0 }},
-        accent_color:         @json($plan->accent_color ?? '#f1d362'),
+        accent_color:         @json($plan->accent_color ?? '#142C74'),
         free_transactions:    {{ $plan->free_transactions ?? 0 }},
         included_transactions: {{ $plan->included_transactions ?? 0 }},
         monthly_flat_rate:    {{ $plan->monthly_flat_rate ?? 0 }},

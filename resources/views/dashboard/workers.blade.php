@@ -5,7 +5,7 @@ $totalInboxes = DB::table('user_gmail_credentials')->where('user_id', auth()->id
 
 $workerMeta = [
     'ava' => [
-        'color'    => '#f1d362',
+        'color'    => '#142C74',
         'rgb'      => '241,211,98',
         'icon'     => '✉',
         'badge'    => 'Live',
@@ -184,7 +184,7 @@ $depBySlug = $deployments->groupBy('worker_slug');
 
         {{-- Category label — bottom of portrait --}}
         <div style="position:absolute;bottom:16px;left:18px">
-            <span style="font-size:9px;font-weight:900;letter-spacing:.14em;padding:4px 12px;border-radius:4px;background:{{ $color }};color:#12100a;text-transform:uppercase">{{ $m['category'] }}</span>
+            <span style="font-size:9px;font-weight:900;letter-spacing:.14em;padding:4px 12px;border-radius:4px;background:{{ $color }};color:#ffffff;text-transform:uppercase">{{ $m['category'] }}</span>
         </div>
     </div>
 
@@ -270,7 +270,7 @@ $depBySlug = $deployments->groupBy('worker_slug');
                 id="deploy-btn-{{ $worker->slug }}"
                 data-color="{{ $color }}"
                 data-rgb="{{ $m['rgb'] }}"
-                style="width:100%;padding:12px;border-radius:12px;border:none;background:{{ $color }};color:#12100a;font-size:13px;font-weight:800;cursor:pointer;transition:opacity .15s"
+                style="width:100%;padding:12px;border-radius:12px;border:none;background:{{ $color }};color:#ffffff;font-size:13px;font-weight:800;cursor:pointer;transition:opacity .15s"
                 onmouseover="this.style.opacity='.88'" onmouseout="this.style.opacity='1'">
             Hire Now →
         </button>
@@ -302,7 +302,7 @@ $depBySlug = $deployments->groupBy('worker_slug');
                         Cancel
                     </button>
                     <button type="submit"
-                        style="padding:10px;border-radius:8px;border:none;background:{{ $color }};color:#12100a;font-size:12px;font-weight:800;cursor:pointer">
+                        style="padding:10px;border-radius:8px;border:none;background:{{ $color }};color:#ffffff;font-size:12px;font-weight:800;cursor:pointer">
                         Confirm Hire
                     </button>
                 </div>
@@ -318,7 +318,7 @@ $depBySlug = $deployments->groupBy('worker_slug');
             </div>
             @php $connectRoute = $worker->slug === 'nux' ? route('nux.connect.linkedin') : route('ava.gmail.authorize'); @endphp
             <a href="{{ $connectRoute }}"
-               style="font-size:11px;font-weight:700;padding:8px 14px;border-radius:8px;background:{{ $color }};color:#12100a;text-decoration:none;white-space:nowrap;flex-shrink:0">
+               style="font-size:11px;font-weight:700;padding:8px 14px;border-radius:8px;background:{{ $color }};color:#ffffff;text-decoration:none;white-space:nowrap;flex-shrink:0">
                 + Connect
             </a>
         </div>
@@ -431,7 +431,7 @@ function toggleDeploy(slug) {
     } else {
         btn.textContent = 'Hire Now →';
         btn.style.background = color;
-        btn.style.color = '#12100a';
+        btn.style.color = '#ffffff';
         btn.style.border = 'none';
     }
 }

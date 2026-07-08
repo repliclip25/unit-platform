@@ -25,7 +25,7 @@ $statusStr   = $status ?? null;
     @elseif($filledCount !== null && $totalCount !== null)
     @php
         $pct = $totalCount > 0 ? round($filledCount / $totalCount * 100) : 0;
-        $indicatorColor = $pct >= 100 ? '#4ade80' : ($pct >= 50 ? '#f1d362' : '#94a3b8');
+        $indicatorColor = $pct >= 100 ? '#4ade80' : ($pct >= 50 ? '#142C74' : '#94a3b8');
     @endphp
     <div style="display:flex;align-items:center;gap:6px;flex-shrink:0">
         <div style="width:48px;height:4px;background:var(--bg-raised);border-radius:2px;overflow:hidden">

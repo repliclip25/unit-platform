@@ -51,7 +51,7 @@
 <form method="POST" action="{{ route('onboarding.1') }}">
     @csrf
     <button type="submit" class="w-full font-bold text-base py-4 rounded-xl transition-colors"
-            style="background:{{ $intentMeta['color'] }};color:#12100a">
+            style="background:{{ $intentMeta['color'] }};color:#ffffff">
         Set up {{ $intentMeta['label'] }} →
     </button>
 </form>

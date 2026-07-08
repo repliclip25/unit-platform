@@ -84,7 +84,7 @@
 
 /* ── buttons ── */
 .m-btn       { font-size:12px;font-weight:600;padding:7px 14px;border-radius:9px;cursor:pointer;transition:all .15s;white-space:nowrap }
-.m-btn-gold  { background:var(--accent);color:#12100a;border:none }
+.m-btn-gold  { background:var(--accent);color:#ffffff;border:none }
 .m-btn-gold:hover { opacity:.88 }
 .m-btn-out   { background:transparent;border:1px solid var(--border);color:var(--text-secondary) }
 .m-btn-out:hover { border-color:var(--accent);color:var(--text-primary) }

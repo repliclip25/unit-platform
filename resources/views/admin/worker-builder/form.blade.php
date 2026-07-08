@@ -325,8 +325,8 @@
                 <div class="wb-field">
                     <label class="wb-label">BRAND COLOR</label>
                     <div style="display:flex;gap:8px;align-items:center;margin-top:6px">
-                        <input type="color" name="media_color" id="media-color-picker" value="{{ old('media_color', $worker->media['color'] ?? '#f1d362') }}" style="width:40px;height:32px;border:none;cursor:pointer;border-radius:6px;background:none" oninput="document.getElementById('media-color-text').value=this.value">
-                        <input type="text" id="media-color-text" value="{{ old('media_color', $worker->media['color'] ?? '#f1d362') }}" oninput="document.getElementById('media-color-picker').value=this.value;document.querySelector('[name=media_color]').value=this.value" style="flex:1;background:var(--bg-raised);border:1px solid var(--border);border-radius:8px;padding:6px 10px;font-size:12px;color:var(--text-primary);font-family:monospace" placeholder="#f1d362">
+                        <input type="color" name="media_color" id="media-color-picker" value="{{ old('media_color', $worker->media['color'] ?? '#142C74') }}" style="width:40px;height:32px;border:none;cursor:pointer;border-radius:6px;background:none" oninput="document.getElementById('media-color-text').value=this.value">
+                        <input type="text" id="media-color-text" value="{{ old('media_color', $worker->media['color'] ?? '#142C74') }}" oninput="document.getElementById('media-color-picker').value=this.value;document.querySelector('[name=media_color]').value=this.value" style="flex:1;background:var(--bg-raised);border:1px solid var(--border);border-radius:8px;padding:6px 10px;font-size:12px;color:var(--text-primary);font-family:monospace" placeholder="#142C74">
                     </div>
                 </div>
                 <div class="wb-field">

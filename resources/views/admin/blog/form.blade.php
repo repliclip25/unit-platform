@@ -18,11 +18,11 @@
 .ql-snow .ql-fill,.ql-snow .ql-stroke.ql-fill{fill:#7070a0}
 .ql-snow .ql-picker{color:#7070a0}
 .ql-snow .ql-picker-options{background:#1e1e2e;border:1px solid #2e2e40;border-radius:8px}
-.ql-snow .ql-picker-item:hover,.ql-snow .ql-picker-item.ql-selected{color:#f1d362}
-.ql-snow button:hover .ql-stroke,.ql-snow button.ql-active .ql-stroke{stroke:#f1d362}
-.ql-snow button:hover .ql-fill,.ql-snow button.ql-active .ql-fill{fill:#f1d362}
-.ql-snow button:hover,.ql-snow .ql-picker-label:hover{color:#f1d362}
-.ql-snow .ql-active{color:#f1d362}
+.ql-snow .ql-picker-item:hover,.ql-snow .ql-picker-item.ql-selected{color:#142C74}
+.ql-snow button:hover .ql-stroke,.ql-snow button.ql-active .ql-stroke{stroke:#142C74}
+.ql-snow button:hover .ql-fill,.ql-snow button.ql-active .ql-fill{fill:#142C74}
+.ql-snow button:hover,.ql-snow .ql-picker-label:hover{color:#142C74}
+.ql-snow .ql-active{color:#142C74}
 .ql-snow .ql-formats{margin-right:10px}
 </style>
 
@@ -138,12 +138,12 @@
         <label class="block text-gray-500 text-xs font-semibold uppercase tracking-widest">Body *</label>
         <button type="button" id="ai-rewrite-btn"
           class="flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg transition"
-          style="background:rgba(241,211,98,0.12);color:#f1d362;border:1px solid rgba(241,211,98,0.25)">
+          style="background:rgba(241,211,98,0.12);color:#142C74;border:1px solid rgba(241,211,98,0.25)">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
           AI Rewrite
         </button>
       </div>
-      <div id="ai-status" class="hidden text-xs mb-3 flex items-center gap-2" style="color:#f1d362">
+      <div id="ai-status" class="hidden text-xs mb-3 flex items-center gap-2" style="color:#142C74">
         <svg class="animate-spin shrink-0" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
         Rewriting with Claude...
       </div>
@@ -202,7 +202,7 @@ document.getElementById('cover_image_input').addEventListener('change', function
 
 // Drag-and-drop
 const zone = document.getElementById('img-drop-zone');
-zone.addEventListener('dragover', e => { e.preventDefault(); zone.style.borderColor = '#f1d362'; });
+zone.addEventListener('dragover', e => { e.preventDefault(); zone.style.borderColor = '#142C74'; });
 zone.addEventListener('dragleave', () => { zone.style.borderColor = ''; });
 zone.addEventListener('drop', e => {
   e.preventDefault();

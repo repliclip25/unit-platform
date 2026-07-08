@@ -10,7 +10,7 @@
         $config       = json_decode($dep->config, true) ?? [];
         $coverImg     = $registryRow?->cover_image   ? asset('storage/' . $registryRow->cover_image)   : null;
         $profileImg   = $registryRow?->profile_image ? asset('storage/' . $registryRow->profile_image) : null;
-        $mediaColor   = $registryRow ? (json_decode($registryRow->media ?? '{}', true)['color'] ?? '#f1d362') : '#f1d362';
+        $mediaColor   = $registryRow ? (json_decode($registryRow->media ?? '{}', true)['color'] ?? '#142C74') : '#142C74';
         $mediaQuote   = $registryRow ? (json_decode($registryRow->media ?? '{}', true)['quote'] ?? '') : '';
         $rawGallery   = json_decode($registryRow?->gallery ?? '[]', true) ?? [];
         $galleryItems = array_values(array_filter($rawGallery, fn($g) => !in_array($g['type']??'', ['profile','cover'])));
@@ -148,7 +148,7 @@
             <div class="flex items-start justify-between gap-4">
                 <div>
                     <div class="flex items-center gap-2 mb-1">
-                        <svg class="w-4 h-4" fill="none" stroke="#f1d362" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                        <svg class="w-4 h-4" fill="none" stroke="#142C74" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
                         <p class="text-sm font-bold" style="color:var(--accent)">Trial {{ $trialReason === 'expired' ? 'Expired' : 'Complete' }}</p>
                     </div>
                     <p class="text-xs" style="color:var(--text-muted)">
@@ -308,7 +308,7 @@
                     @csrf
                     <input type="hidden" name="plan" value="{{ $sp->plan_slug }}">
                     <button type="submit" class="text-sm font-semibold px-4 py-2 rounded-lg border transition"
-                        style="{{ $sp->plan_slug === 'pro' ? 'background:var(--accent);color:#12100a;border-color:var(--accent)' : 'background:rgba(255,255,255,0.04);color:var(--text-primary);border-color:var(--border)' }}">
+                        style="{{ $sp->plan_slug === 'pro' ? 'background:var(--accent);color:#ffffff;border-color:var(--accent)' : 'background:rgba(255,255,255,0.04);color:var(--text-primary);border-color:var(--border)' }}">
                         {{ $sp->display_name }}
                         @if($sp->monthly_flat_rate > 0) · ${{ number_format($sp->monthly_flat_rate, 0) }}/mo @else · Custom @endif
                     </button>
@@ -490,9 +490,9 @@
          onclick="if(event.target===this)document.getElementById('value-card-modal').style.display='none'">
         <div style="max-width:420px;width:90vw">
             <div class="rounded-2xl p-8 text-center"
-                 style="background:linear-gradient(135deg,#1a1404 0%,#2a1f08 50%,#1a1404 100%);border:2px solid rgba(var(--accent-rgb),0.4)">
+                 style="background:linear-gradient(135deg,#0a1535 0%,#142C74 50%,#0a1535 100%);border:2px solid rgba(var(--accent-rgb),0.4)">
                 <p style="font-size:11px;font-weight:700;letter-spacing:.12em;color:rgba(241,211,98,.5);text-transform:uppercase;margin-bottom:16px">UNIT Platform · {{ $workerName }}</p>
-                <p style="font-size:72px;font-weight:900;line-height:1;color:#f1d362;letter-spacing:-0.03em;margin-bottom:8px">
+                <p style="font-size:72px;font-weight:900;line-height:1;color:#142C74;letter-spacing:-0.03em;margin-bottom:8px">
                     {{ is_float($clock['value']) ? number_format($clock['value'], 1) : number_format($clock['value']) }}
                 </p>
                 <p style="font-size:16px;color:rgba(255,255,255,.8);margin-bottom:20px">{{ $clock['label'] ?? '' }}</p>
@@ -500,7 +500,7 @@
                 <p style="font-size:11px;color:rgba(255,255,255,.35)">{{ now()->format('F Y') }} · Automated by {{ $workerName }}</p>
             </div>
             <div class="flex justify-center gap-3 mt-4">
-                <button onclick="copyValueCard()" class="text-xs px-4 py-2 rounded-xl font-semibold" style="background:var(--accent);color:#1a1404">Copy text</button>
+                <button onclick="copyValueCard()" class="text-xs px-4 py-2 rounded-xl font-semibold" style="background:var(--accent);color:#ffffff">Copy text</button>
                 <button onclick="document.getElementById('value-card-modal').style.display='none'" class="text-xs px-4 py-2 rounded-xl font-medium" style="background:var(--bg-raised);color:var(--text-muted);border:1px solid var(--border)">Close</button>
             </div>
         </div>
@@ -591,7 +591,7 @@
                 @foreach($items as $item)
                 <div class="flex items-center gap-3 px-5 py-3.5">
                     <div class="w-1.5 h-1.5 rounded-full shrink-0"
-                        style="background:{{ $item['status'] === 'approved' || $item['status'] === 'sent' ? '#22c55e' : ($item['status'] === 'failed' ? '#ef4444' : '#f1d362') }}">
+                        style="background:{{ $item['status'] === 'approved' || $item['status'] === 'sent' ? '#22c55e' : ($item['status'] === 'failed' ? '#ef4444' : '#142C74') }}">
                     </div>
                     <p class="text-sm flex-1 min-w-0 truncate" style="color:var(--text-secondary)">{{ $item['sentence'] }}</p>
                     <p class="text-xs shrink-0" style="color:var(--text-faint)">{{ \Carbon\Carbon::parse($item['created_at'])->diffForHumans(null, true) }}</p>
@@ -700,7 +700,7 @@
                         @endforeach
                         <button type="submit" id="idea-submit-btn"
                                 class="ml-auto text-xs font-bold px-4 py-2 rounded-xl hover:opacity-90 transition"
-                                style="background:var(--accent);color:#1a1404">
+                                style="background:var(--accent);color:#ffffff">
                             Submit Idea
                         </button>
                     </div>
@@ -994,7 +994,7 @@
                 <button type="submit" form="ft-form" id="ft-submit-btn"
                         onclick="startFtAnimation();this.disabled=true;this.innerHTML='<span style=\'opacity:.6\'>Running…</span>';document.getElementById(\'ft-form\').submit();"
                         class="flex-1 text-sm font-bold px-4 py-2 rounded-xl hover:opacity-90 flex items-center justify-center gap-2 transition"
-                        style="background:var(--accent);color:#1a1404">
+                        style="background:var(--accent);color:#ffffff">
                     <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
                     Run Fast Track
                 </button>
@@ -1017,7 +1017,7 @@
                 <p class="text-sm font-semibold text-red-400">Trial runs used up</p>
                 <a href="{{ route('workers.billing', $dep->worker_slug) }}"
                    class="inline-block text-sm font-bold px-5 py-2 rounded-xl hover:opacity-90 transition"
-                   style="background:var(--accent);color:#1a1404">Choose a plan →</a>
+                   style="background:var(--accent);color:#ffffff">Choose a plan →</a>
             </div>
         @endif
         </div>

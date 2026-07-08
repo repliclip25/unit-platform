@@ -693,7 +693,7 @@
                                     <input type="hidden" name="cta_url"   :value="ctaUrl">
                                     <div class="flex items-center gap-2">
                                         <span class="text-gray-600 text-xs">Preview:</span>
-                                        <span class="text-xs px-3 py-1 rounded-md font-semibold" style="background:var(--accent);color:#1a1404" x-text="ctaLabel"></span>
+                                        <span class="text-xs px-3 py-1 rounded-md font-semibold" style="background:var(--accent);color:#ffffff" x-text="ctaLabel"></span>
                                     </div>
                                     <input type="text" x-model="ctaUrl" class="w-full text-xs px-2 py-1.5 rounded border border-gray-800 bg-gray-800 text-gray-400 focus:outline-none focus:border-brand font-mono">
                                 </div>

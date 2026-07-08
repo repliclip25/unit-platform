@@ -59,7 +59,7 @@
           <tbody>
             @foreach($byKey as $row)
             <tr class="transition" style="border-bottom:1px solid var(--border-subtle)">
-              <td class="px-5 py-3 font-mono text-xs" style="color:#f1d362">{{ $row->prompt_key }}</td>
+              <td class="px-5 py-3 font-mono text-xs" style="color:#142C74">{{ $row->prompt_key }}</td>
               <td class="px-5 py-3 text-right text-xs" style="color:var(--text-secondary)">{{ number_format($row->calls) }}</td>
               <td class="px-5 py-3 text-right font-mono text-xs" style="color:var(--text-muted)">{{ number_format($row->tokens_in) }}</td>
               <td class="px-5 py-3 text-right font-mono text-xs" style="color:var(--text-muted)">{{ number_format($row->tokens_out) }}</td>
@@ -155,7 +155,7 @@
               @foreach($byWorker as $row)
               <tr style="border-bottom:1px solid var(--border-subtle)">
                 <td class="px-5 py-3">
-                  <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-bold uppercase" style="background:rgba(241,211,98,0.12);color:#f1d362">{{ $row->worker_slug }}</span>
+                  <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-bold uppercase" style="background:rgba(241,211,98,0.12);color:#142C74">{{ $row->worker_slug }}</span>
                 </td>
                 <td class="px-5 py-3 text-right text-xs" style="color:var(--text-muted)">{{ number_format($row->calls) }}</td>
                 <td class="px-5 py-3 text-right font-mono text-xs" style="color:var(--text-muted)">{{ number_format($row->tokens_in + $row->tokens_out) }}</td>
@@ -176,7 +176,7 @@
     <div class="flex items-center gap-3 mb-4">
       <div class="text-xs font-bold uppercase tracking-widest" style="color:var(--text-faint)">By Pipeline Stage</div>
       <div class="flex-1 h-px" style="background:var(--border)"></div>
-      <span class="text-xs px-2 py-0.5 rounded-full font-semibold" style="background:rgba(241,211,98,0.12);color:#f1d362">Microscopic</span>
+      <span class="text-xs px-2 py-0.5 rounded-full font-semibold" style="background:rgba(241,211,98,0.12);color:#142C74">Microscopic</span>
     </div>
     <p class="text-xs mb-4" style="color:var(--text-faint)">
       Every AI call broken down by the pipeline stage that triggered it. Stage names are declared in each worker's <code class="font-mono px-1 py-0.5 rounded" style="background:var(--bg-raised)">prompts()</code> contract method and will be linked to their endpoint definitions as the platform matures.
@@ -205,7 +205,7 @@
             @foreach($byStage as $row)
             <tr style="border-bottom:1px solid var(--border-subtle)">
               <td class="px-5 py-2.5">
-                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-bold uppercase" style="background:rgba(241,211,98,0.12);color:#f1d362">{{ $row->worker_slug }}</span>
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-bold uppercase" style="background:rgba(241,211,98,0.12);color:#142C74">{{ $row->worker_slug }}</span>
               </td>
               <td class="px-5 py-2.5 font-mono text-xs" style="color:var(--text-secondary)">{{ $row->stage ?? '—' }}</td>
               <td class="px-5 py-2.5 font-mono text-xs" style="color:var(--text-faint)">{{ $row->model ? \App\Platform\Services\LLM\ModelCatalog::modelName($row->model) : '—' }}</td>
@@ -257,7 +257,7 @@
               <td class="px-5 py-2 text-xs whitespace-nowrap" style="color:var(--text-faint)">{{ \Carbon\Carbon::parse($e->created_at)->format('M j, g:ia') }}</td>
               <td class="px-5 py-2 text-xs" style="color:var(--text-muted)">{{ $e->tenant_name }}</td>
               <td class="px-5 py-2">
-                <span class="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-bold uppercase" style="background:rgba(241,211,98,0.10);color:#f1d362">{{ $e->worker_slug }}</span>
+                <span class="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-bold uppercase" style="background:rgba(241,211,98,0.10);color:#142C74">{{ $e->worker_slug }}</span>
               </td>
               <td class="px-5 py-2 font-mono text-xs" style="color:var(--text-secondary)">{{ $e->stage ?? '—' }}</td>
               <td class="px-5 py-2 font-mono text-xs" style="color:var(--text-faint)">{{ $e->model ? \App\Platform\Services\LLM\ModelCatalog::modelName($e->model) : '—' }}</td>
@@ -303,7 +303,7 @@
             @foreach($recent as $e)
             <tr style="border-bottom:1px solid var(--border-subtle)">
               <td class="px-5 py-2 text-xs whitespace-nowrap" style="color:var(--text-faint)">{{ \Carbon\Carbon::parse($e->created_at)->format('M j, g:ia') }}</td>
-              <td class="px-5 py-2 font-mono text-xs" style="color:#f1d362">{{ $e->prompt_key }}</td>
+              <td class="px-5 py-2 font-mono text-xs" style="color:#142C74">{{ $e->prompt_key }}</td>
               <td class="px-5 py-2 text-xs" style="color:var(--text-muted)">{{ $e->triggered_by ?? '—' }}</td>
               <td class="px-5 py-2 font-mono text-xs" style="color:var(--text-faint)">{{ $e->model }}</td>
               <td class="px-5 py-2 text-right font-mono text-xs" style="color:var(--text-faint)">{{ number_format($e->tokens_input) }}</td>

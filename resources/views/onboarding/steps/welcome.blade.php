@@ -60,7 +60,7 @@
 <form method="POST" action="{{ route('onboarding.step.handle', 'welcome') }}">
     @csrf
     <button type="submit" class="w-full font-bold text-base py-4 rounded-xl transition-colors"
-            style="background:var(--accent);color:#12100a">
+            style="background:var(--accent);color:#ffffff">
         Hire Ava
     </button>
 </form>

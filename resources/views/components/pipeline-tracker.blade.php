@@ -148,7 +148,7 @@
         <div class="flex items-center gap-3">
             <a x-show="done && !failed" href="{{ $onCompleteUrl }}"
                class="text-sm font-bold px-4 py-1.5 rounded-lg transition"
-               style="background:var(--accent);color:#1a1404">
+               style="background:var(--accent);color:#ffffff">
                 Go to dashboard →
             </a>
             <a x-show="done && failed" href="{{ $onCompleteUrl }}"

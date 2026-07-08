@@ -22,7 +22,7 @@ $initials    = collect(explode(' ', $user->name))->map(fn($w) => strtoupper($w[0
     cursor:pointer;font-family:inherit;transition:opacity .15s;
 }
 .pf-btn:hover { opacity:.88; }
-.pf-btn-primary { background:var(--accent);color:#12100a; }
+.pf-btn-primary { background:var(--accent);color:#ffffff; }
 .pf-btn-ghost   { background:transparent;border:1px solid var(--border);color:var(--text-secondary); }
 .pf-btn-danger  { background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.25);color:#f87171; }
 .pf-card        { background:var(--bg-card);border:1px solid var(--border);border-radius:16px;overflow:hidden;margin-bottom:16px; }
@@ -217,7 +217,7 @@ $initials    = collect(explode(' ', $user->name))->map(fn($w) => strtoupper($w[0
             <div style="text-align:center;padding:20px 0">
                 <p style="font-size:13px;color:var(--text-muted);margin-bottom:10px">No employees hired yet.</p>
                 <a href="{{ route('workers.deploy') }}"
-                   style="font-size:12px;font-weight:700;padding:8px 16px;border-radius:9px;background:var(--accent);color:#12100a;text-decoration:none">
+                   style="font-size:12px;font-weight:700;padding:8px 16px;border-radius:9px;background:var(--accent);color:#ffffff;text-decoration:none">
                     Hire your first employee →
                 </a>
             </div>

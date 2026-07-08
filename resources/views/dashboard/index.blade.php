@@ -230,7 +230,7 @@
 
             $profileImg = $registryRow?->profile_image ? asset('storage/' . $registryRow->profile_image) : null;
             $mediaJson  = json_decode($registryRow?->media ?? '{}', true);
-            $accentHex  = $mediaJson['color'] ?? '#f1d362';
+            $accentHex  = $mediaJson['color'] ?? '#142C74';
 
             $isActive = $dep->status === 'active';
         @endphp

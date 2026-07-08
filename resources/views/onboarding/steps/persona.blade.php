@@ -41,7 +41,7 @@
 <form method="POST" action="{{ route('onboarding.step.handle', 'persona') }}">
     @csrf
     <input type="hidden" name="persona" value="other">
-    <button type="submit" class="w-full font-bold text-base py-4 rounded-xl" style="background:var(--accent);color:#1a1404">Continue</button>
+    <button type="submit" class="w-full font-bold text-base py-4 rounded-xl" style="background:var(--accent);color:#ffffff">Continue</button>
 </form>
 @else
 
@@ -94,7 +94,7 @@
 
     <button type="submit"
             class="w-full font-bold text-base py-4 rounded-xl transition-all"
-            style="background:var(--accent);color:#1a1404"
+            style="background:var(--accent);color:#ffffff"
             :disabled="!selected"
             :class="selected ? 'opacity-100' : 'opacity-50 cursor-not-allowed'">
         Continue
