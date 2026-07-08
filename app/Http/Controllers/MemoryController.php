@@ -101,9 +101,27 @@ class MemoryController extends Controller
     public function importTemplate(string $type)
     {
         abort_unless(in_array($type, ['clients', 'contacts', 'assets']), 404);
-        $path = storage_path("app/templates/{$type}_template.csv");
-        return response()->download($path, "{$type}_import_template.csv", [
-            'Content-Type' => 'text/csv',
+
+        $headers = [
+            'clients'  => ['name', 'industry', 'preferred_style', 'status', 'address', 'notes'],
+            'contacts' => ['name', 'email', 'phone', 'role', 'department', 'is_decision_maker', 'client_name', 'notes'],
+            'assets'   => ['name', 'type', 'vendor', 'renewal_date', 'cost_per_year', 'status', 'client_name', 'notes'],
+        ];
+
+        $examples = [
+            'clients'  => [['Acme Corp', 'Technology', 'Professional', 'active', '123 Main St, New York NY', 'Key account']],
+            'contacts' => [['Jane Smith', 'jane@acmecorp.com', '555-1234', 'IT Manager', 'IT', '1', 'Acme Corp', 'Primary contact']],
+            'assets'   => [['acmecorp.com', 'Domain', 'Namecheap', '2026-12-01', '15.99', 'active', 'Acme Corp', '']],
+        ];
+
+        $csv  = implode(',', $headers[$type]) . "\r\n";
+        foreach ($examples[$type] as $row) {
+            $csv .= implode(',', array_map(fn($v) => '"' . str_replace('"', '""', $v) . '"', $row)) . "\r\n";
+        }
+
+        return response($csv, 200, [
+            'Content-Type'        => 'text/csv',
+            'Content-Disposition' => "attachment; filename=\"{$type}_import_template.csv\"",
         ]);
     }
 
