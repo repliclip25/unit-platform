@@ -232,10 +232,17 @@
 
         {{-- Add asset to group --}}
         @php
-            $groupItemIds = $group->items->pluck('id')->toArray();
-            $availableAssets = $assets->whereNotIn('id', $groupItemIds);
+            $groupItemIds    = $group->items->pluck('id')->toArray();
+            $availableAssets = $assets
+                ->where('client_id', $group->client_id)   // client-scoped
+                ->where('type', '!=', 'discovered')        // confirmed assets only
+                ->whereNotIn('id', $groupItemIds);
         @endphp
-        @if($availableAssets->isNotEmpty())
+        @if(!$group->client_id)
+        <div class="px-5 py-3 rounded-b-xl text-xs" style="border-top:1px solid var(--border-subtle);color:var(--text-faint)">
+            Assign a client to this group to add assets.
+        </div>
+        @elseif($availableAssets->isNotEmpty())
         <div class="px-5 py-3 rounded-b-xl" style="border-top:1px solid var(--border-subtle);background:var(--bg-raised)">
             <form method="POST" action="{{ route('workers.memory.groups.items.add', [$dep->id, $group->id]) }}"
                   class="flex items-center gap-2 flex-wrap">
