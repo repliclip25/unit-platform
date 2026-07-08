@@ -613,20 +613,6 @@ final class UnitPlatform
         }
 
         if ($recordId) {
-            DB::table('memory_contributions')->insert([
-                'tx_id'         => $txId,
-                'worker_slug'   => $dep?->worker_slug ?? 'unknown',
-                'deployment_id' => $tx->deployment_id,
-                'user_id'       => $userId,
-                'table_name'    => $table,
-                'record_id'     => $recordId,
-                'action'        => $action,
-                'data'          => json_encode($safe),
-                'status'        => 'active',
-                'created_at'    => now(),
-                'updated_at'    => now(),
-            ]);
-
             self::log($dep?->worker_slug ?? 'unknown', $txId, 'memory_contributed', [
                 'table'  => $table,
                 'action' => $action,

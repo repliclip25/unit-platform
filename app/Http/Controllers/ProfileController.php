@@ -242,7 +242,7 @@ class ProfileController extends Controller
             $userTables = [
                 'transactions', 'transaction_stage_log', 'renewal_register',
                 'usage_events', 'user_gmail_credentials', 'clients', 'contacts',
-                'assets', 'memory_contributions', 'platform_verifications',
+                'assets', 'platform_verifications',
                 'policy_enforcement_log', 'processed_messages',
                 'tenant_api_keys', 'tenant_custom_models', 'tenant_email_log',
                 'subscriptions', 'worker_onboarding_sessions', 'ava_rules',

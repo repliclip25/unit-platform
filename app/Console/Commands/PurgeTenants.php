@@ -40,7 +40,6 @@ class PurgeTenants extends Command
                 'clients',
                 'contacts',
                 'assets',
-                'memory_contributions',
                 'platform_verifications',
                 'policy_enforcement_log',
                 'processed_messages',

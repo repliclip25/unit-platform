@@ -52,15 +52,11 @@ class QAController extends Controller
 
         foreach ($sharedTables as $tbl) {
             try {
-                $count       = DB::table($tbl)->where('user_id', $userId)->count();
-                $recentC     = DB::table('memory_contributions')->where('user_id', $userId)->where('table_name', $tbl)->orderByDesc('id')->limit(3)->get();
-                $totalC      = DB::table('memory_contributions')->where('user_id', $userId)->where('table_name', $tbl)->count();
+                $count = DB::table($tbl)->where('user_id', $userId)->count();
             } catch (\Throwable) {
-                $count   = 0;
-                $recentC = collect();
-                $totalC  = 0;
+                $count = 0;
             }
-            $memoryMap[$tbl] = ['count' => $count, 'readers' => [], 'writers' => [], 'recent_contributions' => $recentC, 'total_contributions' => $totalC];
+            $memoryMap[$tbl] = ['count' => $count, 'readers' => [], 'writers' => []];
         }
 
         foreach ($deployedWorkers as $dep) {
@@ -79,19 +75,6 @@ class QAController extends Controller
         return $memoryMap;
     }
 
-    private function buildContributionsByWorker(int $userId): \Illuminate\Support\Collection
-    {
-        try {
-            return DB::table('memory_contributions')
-                ->where('user_id', $userId)
-                ->selectRaw('worker_slug, table_name, action, count(*) as total')
-                ->groupBy('worker_slug', 'table_name', 'action')
-                ->get()
-                ->groupBy('worker_slug');
-        } catch (\Throwable) {
-            return collect();
-        }
-    }
 
     public function updateScenario(Request $request, int $deploymentId)
     {
@@ -1158,11 +1141,10 @@ MD;
             // ── Billing
             $billing = DB::table('deployment_billing')->where('deployment_id', $dep->id)->first();
 
-            // ── Memory contributions for this deployment
-            $contributionCount = 0;
-            try {
-                $contributionCount = DB::table('memory_contributions')->where('deployment_id', $dep->id)->count();
-            } catch (\Throwable) {}
+            // ── Memory record count for this deployment's owner
+            $contributionCount = DB::table('clients')->where('user_id', $dep->user_id)->whereNull('deleted_at')->count()
+                               + DB::table('contacts')->where('user_id', $dep->user_id)->whereNull('deleted_at')->count()
+                               + DB::table('assets')->where('user_id', $dep->user_id)->whereNull('deleted_at')->count();
 
             return (object) compact('dep', 'credential', 'identity', 'jobMap', 'memory', 'schema', 'activity', 'billing', 'workerDef', 'contributionCount');
         });
