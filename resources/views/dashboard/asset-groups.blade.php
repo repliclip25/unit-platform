@@ -30,8 +30,8 @@
     </div>
 
     {{-- New Group Form --}}
-    <div id="new-group-form" class="hidden mb-6 rounded-xl overflow-hidden" style="background:var(--bg-card);border:1px solid var(--border)">
-        <div class="px-5 py-4" style="border-bottom:1px solid var(--border-subtle)">
+    <div id="new-group-form" class="hidden mb-6 rounded-xl" style="background:var(--bg-card);border:1px solid var(--border)">
+        <div class="px-5 py-4 rounded-t-xl" style="border-bottom:1px solid var(--border-subtle)">
             <p class="text-sm font-semibold" style="color:var(--text-primary)">Create a new group</p>
         </div>
         <form method="POST" action="{{ route('workers.memory.groups.store', $dep->id) }}" class="px-5 py-4 space-y-3">
@@ -103,10 +103,10 @@
         $nearestExpiry = $group->items->whereNotNull('renewal_date')->sortBy('renewal_date')->first();
         $days = $nearestExpiry ? (int) now()->diffInDays($nearestExpiry->renewal_date, false) : null;
     @endphp
-    <div class="mb-4 rounded-xl overflow-hidden" style="background:var(--bg-card);border:1px solid var(--border)">
+    <div class="mb-4 rounded-xl" style="background:var(--bg-card);border:1px solid var(--border)">
 
         {{-- Group header --}}
-        <div class="px-5 py-4 flex flex-wrap items-start gap-3" style="border-bottom:1px solid var(--border-subtle)">
+        <div class="px-5 py-4 rounded-t-xl flex flex-wrap items-start gap-3" style="border-bottom:1px solid var(--border-subtle)">
             <div class="flex-1 min-w-0">
                 <div class="flex items-center gap-2 flex-wrap">
                     <p class="text-sm font-bold" style="color:var(--text-primary)">{{ $group->name }}</p>
@@ -144,7 +144,7 @@
         </div>
 
         {{-- Inline edit form --}}
-        <div id="group-edit-{{ $group->id }}" class="hidden px-5 py-4" style="background:var(--bg-raised);border-bottom:1px solid var(--border-subtle)">
+        <div id="group-edit-{{ $group->id }}" class="hidden px-5 py-4 overflow-visible" style="background:var(--bg-raised);border-bottom:1px solid var(--border-subtle)">
             <form method="POST" action="{{ route('workers.memory.groups.update', [$dep->id, $group->id]) }}"
                   class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 @csrf @method('PATCH')
@@ -236,7 +236,7 @@
             $availableAssets = $assets->whereNotIn('id', $groupItemIds);
         @endphp
         @if($availableAssets->isNotEmpty())
-        <div class="px-5 py-3" style="border-top:1px solid var(--border-subtle);background:var(--bg-raised)">
+        <div class="px-5 py-3 rounded-b-xl" style="border-top:1px solid var(--border-subtle);background:var(--bg-raised)">
             <form method="POST" action="{{ route('workers.memory.groups.items.add', [$dep->id, $group->id]) }}"
                   class="flex items-center gap-2 flex-wrap">
                 @csrf
@@ -259,7 +259,7 @@
 
     </div>
     @empty
-    <div class="rounded-xl px-5 py-16 text-center" style="background:var(--bg-card);border:1px solid var(--border)">
+    <div class="rounded-xl px-5 py-16 text-center" style="background:var(--bg-card);border:1px solid var(--border);overflow:hidden">
         <p class="text-sm font-medium mb-1" style="color:var(--text-primary)">No groups yet</p>
         <p class="text-xs mb-4" style="color:var(--text-muted)">
             Group related assets together — e.g. all assets for one client's website, or all policies under one contract.
