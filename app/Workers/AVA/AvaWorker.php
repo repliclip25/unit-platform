@@ -1032,31 +1032,6 @@ class AvaWorker implements WorkerContract
 
     public function personas(): array
     {
-        $rows = \Illuminate\Support\Facades\DB::table('worker_personas')
-            ->where('worker_slug', 'ava')
-            ->where('is_active', true)
-            ->orderBy('sort_order')
-            ->get();
-
-        if ($rows->isNotEmpty()) {
-            $result = [];
-            foreach ($rows as $row) {
-                $result[$row->key] = [
-                    'label'         => $row->label,
-                    'tagline'       => $row->tagline,
-                    'detail'        => $row->detail,
-                    'icon'          => $row->icon,
-                    'asset_types'   => json_decode($row->asset_types, true) ?? [],
-                    'examples'      => json_decode($row->examples, true) ?? [],
-                    'memory_copy'   => json_decode($row->memory_copy, true) ?? [],
-                    'nudge_copy'    => json_decode($row->nudge_copy, true) ?? [],
-                    'capture_rules' => json_decode($row->capture_rules, true) ?? [],
-                ];
-            }
-            return $result;
-        }
-
-        // Fallback to hardcoded until table is seeded
         return [
             'it_agency' => [
                 'label'   => 'IT / Digital Agency',

@@ -1,7 +1,6 @@
 @php
     $tabs = [
         ['label' => 'Edit',      'route' => 'admin.workers.edit',     'active' => 'edit'],
-        ['label' => 'Personas',  'route' => 'admin.workers.personas', 'active' => 'personas'],
         ['label' => 'Rules',     'route' => 'admin.workers.rules',    'active' => 'rules'],
     ];
 @endphp

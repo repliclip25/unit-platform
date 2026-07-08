@@ -30,7 +30,6 @@ use App\Http\Controllers\AdminPipelineHealthController;
 use App\Http\Controllers\AdminPricingController;
 use App\Http\Controllers\AdminMessagingController;
 use App\Http\Controllers\AdminWorkerLifecycleController;
-use App\Http\Controllers\AdminWorkerPersonaController;
 use App\Http\Controllers\AdminWorkerRulesController;
 use App\Http\Controllers\NuxController;
 use App\Http\Controllers\AdminSelfLearnController;
@@ -346,10 +345,6 @@ Route::middleware(['auth', 'verified', 'onboarded', 'not-pending-del'])->group(f
         Route::post('/admin/workers/{slug}/status',                       [WorkerBuilderController::class, 'updateStatus'])->name('admin.workers.status');
         Route::delete('/admin/workers/{slug}',                            [WorkerBuilderController::class, 'destroy'])->name('admin.workers.destroy');
         Route::get('/admin/workers/{slug}/export',                        [WorkerBuilderController::class, 'exportSchema'])->name('admin.workers.export');
-        Route::get('/admin/workers/{slug}/personas',                      [AdminWorkerPersonaController::class, 'index'])->name('admin.workers.personas');
-        Route::post('/admin/workers/{slug}/personas',                     [AdminWorkerPersonaController::class, 'store'])->name('admin.workers.personas.store');
-        Route::patch('/admin/workers/{slug}/personas/{id}',              [AdminWorkerPersonaController::class, 'update'])->name('admin.workers.personas.update');
-        Route::delete('/admin/workers/{slug}/personas/{id}',             [AdminWorkerPersonaController::class, 'destroy'])->name('admin.workers.personas.destroy');
         Route::get('/admin/workers/{slug}/rules',                         [AdminWorkerRulesController::class, 'index'])->name('admin.workers.rules');
         Route::post('/admin/workers/{slug}/rules',                        [AdminWorkerRulesController::class, 'store'])->name('admin.workers.rules.store');
         Route::delete('/admin/workers/{slug}/rules/{id}',                 [AdminWorkerRulesController::class, 'destroy'])->name('admin.workers.rules.destroy');
