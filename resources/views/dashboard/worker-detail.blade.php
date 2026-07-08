@@ -149,7 +149,7 @@
                 <div>
                     <div class="flex items-center gap-2 mb-1">
                         <svg class="w-4 h-4" fill="none" stroke="#142C74" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-                        <p class="text-sm font-bold" style="color:var(--accent)">Trial {{ $trialReason === 'expired' ? 'Expired' : 'Complete' }}</p>
+                        <p class="text-sm font-bold" class="ac-text">Trial {{ $trialReason === 'expired' ? 'Expired' : 'Complete' }}</p>
                     </div>
                     <p class="text-xs" style="color:var(--text-muted)">
                         @if($trialReason === 'expired')
@@ -160,7 +160,7 @@
                     </p>
                 </div>
                 <div class="text-right shrink-0">
-                    <p class="text-2xl font-bold" style="color:var(--accent)">{{ $ftBillingForPaywall?->trial_transactions_used ?? 0 }}/{{ $ftBillingForPaywall?->trial_transactions_limit ?? 25 }}</p>
+                    <p class="text-2xl font-bold" class="ac-text">{{ $ftBillingForPaywall?->trial_transactions_used ?? 0 }}/{{ $ftBillingForPaywall?->trial_transactions_limit ?? 25 }}</p>
                     <p class="text-xs" style="color:var(--text-faint)">{{ $contract ? ($contract->billing()['unit_label_plural'] ?? 'transactions') : 'transactions' }} used</p>
                 </div>
             </div>
@@ -179,7 +179,7 @@
                 <div class="rounded-xl border p-4 relative"
                      style="background:{{ $isRecommended ? 'rgba(241,211,98,0.06)' : 'rgba(255,255,255,0.02)' }};border-color:{{ $isRecommended ? 'rgba(241,211,98,0.35)' : 'rgba(255,255,255,0.08)' }}">
                     @if($isRecommended)
-                    <span class="absolute -top-2.5 left-4 text-xs font-bold px-2.5 py-0.5 rounded-full" style="background:var(--accent);color:#000">Most popular</span>
+                    <span class="absolute -top-2.5 left-4 text-xs font-bold px-2.5 py-0.5 rounded-full" class="ac-on">Most popular</span>
                     @endif
                     <div class="mb-3">
                         <p class="text-sm font-bold" style="color:var(--text-primary)">{{ $tier->display_name }}</p>
@@ -220,7 +220,7 @@
         @else
         <div class="px-6 py-5 text-center">
             <p class="text-sm mb-3" style="color:var(--text-muted)">Contact us to set up your subscription.</p>
-            <a href="mailto:{{ config('services.unit.support_email') }}" class="text-sm font-semibold" style="color:var(--accent)">{{ config('services.unit.support_email') }} →</a>
+            <a href="mailto:{{ config('services.unit.support_email') }}" class="text-sm font-semibold" class="ac-text">{{ config('services.unit.support_email') }} →</a>
         </div>
         @endif
 
@@ -296,7 +296,7 @@
         @if($isCanceled)
         <div class="rounded-2xl border overflow-hidden mb-2" style="background:rgba(0,0,0,0.35);border-color:rgba(241,211,98,0.2)">
             <div class="px-5 py-4 border-b" style="background:rgba(241,211,98,0.04);border-color:rgba(241,211,98,0.12)">
-                <p class="font-bold text-sm" style="color:var(--accent)">Subscription Canceled</p>
+                <p class="font-bold text-sm" class="ac-text">Subscription Canceled</p>
                 <p class="text-xs mt-1" style="color:var(--text-muted)">
                     This worker is stopped. Reactivate by choosing a plan — you'll go through a fresh checkout and your worker will resume immediately.
                 </p>
@@ -409,7 +409,7 @@
                 @if($ovDraftsCount > 0)
                 <a href="{{ $gmailUrl }}" target="_blank" rel="noopener"
                    class="text-xs font-semibold flex items-center gap-1 shrink-0 ml-4 transition hover:opacity-80"
-                   style="color:var(--accent-text)">
+                   class="ac-text">
                     Open Gmail
                     <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
                 </a>
@@ -500,7 +500,7 @@
                 <p style="font-size:11px;color:rgba(255,255,255,.35)">{{ now()->format('F Y') }} · Automated by {{ $workerName }}</p>
             </div>
             <div class="flex justify-center gap-3 mt-4">
-                <button onclick="copyValueCard()" class="text-xs px-4 py-2 rounded-xl font-semibold" style="background:var(--accent);color:#ffffff">Copy text</button>
+                <button onclick="copyValueCard()" class="text-xs px-4 py-2 rounded-xl font-semibold" class="ac-on">Copy text</button>
                 <button onclick="document.getElementById('value-card-modal').style.display='none'" class="text-xs px-4 py-2 rounded-xl font-medium" style="background:var(--bg-raised);color:var(--text-muted);border:1px solid var(--border)">Close</button>
             </div>
         </div>
@@ -617,7 +617,7 @@
                     <p class="text-sm flex-1 min-w-0" style="color:var(--text-primary)">{{ $alert['message'] }}</p>
                     @if(!empty($alert['action']) && !empty($alert['route']))
                     <a href="{{ route($alert['route'], $alert['params'] ?? []) }}"
-                       class="text-xs font-medium shrink-0 transition" style="color:var(--accent-text)">
+                       class="text-xs font-medium shrink-0 transition" class="ac-text">
                         {{ $alert['action'] }} →
                     </a>
                     @endif
@@ -642,7 +642,7 @@
             {{-- Status bar --}}
             <div class="rounded-xl p-4 sm:p-5 flex flex-wrap items-center justify-between gap-3" style="background:var(--bg-card);border:1px solid var(--border)">
                 <div class="flex items-center gap-4">
-                    <div class="w-10 h-10 rounded-lg flex items-center justify-center shrink-0" style="background:var(--accent)">
+                    <div class="w-10 h-10 rounded-lg flex items-center justify-center shrink-0" class="ac-bg">
                         <span class="font-bold text-sm" style="color:#000000">{{ strtoupper(substr($dep->worker_slug, 0, 1)) }}</span>
                     </div>
                     <div>
@@ -700,7 +700,7 @@
                         @endforeach
                         <button type="submit" id="idea-submit-btn"
                                 class="ml-auto text-xs font-bold px-4 py-2 rounded-xl hover:opacity-90 transition"
-                                style="background:var(--accent);color:#ffffff">
+                                class="ac-on">
                             Submit Idea
                         </button>
                     </div>
@@ -937,7 +937,7 @@
                         <svg class="ftstage-check w-5 h-5 hidden absolute" style="color:#4ade80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
                         </svg>
-                        <svg class="ftstage-spin w-5 h-5 hidden absolute animate-spin" style="color:var(--accent)" fill="none" viewBox="0 0 24 24">
+                        <svg class="ftstage-spin w-5 h-5 hidden absolute animate-spin" class="ac-text" fill="none" viewBox="0 0 24 24">
                             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3"/>
                             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
                         </svg>
@@ -994,7 +994,7 @@
                 <button type="submit" form="ft-form" id="ft-submit-btn"
                         onclick="startFtAnimation();this.disabled=true;this.innerHTML='<span style=\'opacity:.6\'>Running…</span>';document.getElementById(\'ft-form\').submit();"
                         class="flex-1 text-sm font-bold px-4 py-2 rounded-xl hover:opacity-90 flex items-center justify-center gap-2 transition"
-                        style="background:var(--accent);color:#ffffff">
+                        class="ac-on">
                     <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
                     Run Fast Track
                 </button>
@@ -1017,7 +1017,7 @@
                 <p class="text-sm font-semibold text-red-400">Trial runs used up</p>
                 <a href="{{ route('workers.billing', $dep->worker_slug) }}"
                    class="inline-block text-sm font-bold px-5 py-2 rounded-xl hover:opacity-90 transition"
-                   style="background:var(--accent);color:#ffffff">Choose a plan →</a>
+                   class="ac-on">Choose a plan →</a>
             </div>
         @endif
         </div>
@@ -1151,7 +1151,7 @@
             <div class="mx-6 mb-5 rounded-xl border px-5 py-3 flex items-center gap-3 transition-all duration-500"
                  id="pipeline-status-bar" style="background:rgba(255,255,255,0.02);border-color:#1f2937">
                 <div id="pipeline-spinner" class="{{ $watchTxId ? '' : 'hidden' }} shrink-0">
-                    <svg class="animate-spin w-4 h-4" style="color:var(--accent)" fill="none" viewBox="0 0 24 24">
+                    <svg class="animate-spin w-4 h-4" class="ac-text" fill="none" viewBox="0 0 24 24">
                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
                         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
                     </svg>
@@ -1542,7 +1542,7 @@
                 </div>
                 <div class="flex items-center gap-4 mt-2">
                     <div class="flex items-center gap-1.5"><div class="w-2.5 h-2.5 rounded-sm opacity-30" style="background:#6366f1"></div><span class="text-xs" style="color:var(--text-muted)">Hits</span></div>
-                    <div class="flex items-center gap-1.5"><div class="w-2.5 h-2.5 rounded-sm opacity-60" style="background:var(--accent)"></div><span class="text-xs" style="color:var(--text-muted)">Ingested</span></div>
+                    <div class="flex items-center gap-1.5"><div class="w-2.5 h-2.5 rounded-sm opacity-60" class="ac-bg"></div><span class="text-xs" style="color:var(--text-muted)">Ingested</span></div>
                     <div class="flex items-center gap-1.5"><div class="w-2.5 h-2.5 rounded-sm" style="background:#22c55e"></div><span class="text-xs" style="color:var(--text-muted)">Drafted</span></div>
                 </div>
             </div>

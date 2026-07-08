@@ -60,7 +60,7 @@
                     @endforeach
                 </div>
                 <p class="text-gray-600 text-xs">Changing use case will re-seed your rules from the latest definition. Custom rules you added will be removed.</p>
-                <button type="submit" class="text-xs px-4 py-2 rounded-lg font-semibold transition" style="background:var(--accent);color:#111">
+                <button type="submit" class="text-xs px-4 py-2 rounded-lg font-semibold transition" class="ac-on">
                     Save use case
                 </button>
             </form>
@@ -82,7 +82,7 @@
                     </label>
                     @endforeach
                 </div>
-                <button type="submit" class="text-xs px-4 py-2 rounded-lg font-semibold transition" style="background:var(--accent);color:#111">
+                <button type="submit" class="text-xs px-4 py-2 rounded-lg font-semibold transition" class="ac-on">
                     Set use case
                 </button>
             </form>
@@ -170,7 +170,7 @@
                             <div x-show="!editing" class="flex items-start justify-between gap-4">
                                 <div class="flex-1 min-w-0">
                                     <div class="flex items-center gap-2 mb-1.5 flex-wrap">
-                                        <span class="font-mono text-xs" style="color:var(--accent-text)">{{ $rule->rule_id }}</span>
+                                        <span class="font-mono text-xs" class="ac-text">{{ $rule->rule_id }}</span>
                                         <span class="text-xs px-1.5 py-0.5 rounded {{ $priorityBadge[$rule->priority] ?? $priorityBadge['Medium'] }}">
                                             {{ $rule->priority }}
                                         </span>
@@ -231,7 +231,7 @@
                                         <span class="text-gray-500 text-xs">Require human approval</span>
                                     </label>
                                     <div class="flex items-center gap-3">
-                                        <button type="submit" class="text-xs px-4 py-2 rounded-lg font-semibold transition" style="background:var(--accent);color:#111">Save</button>
+                                        <button type="submit" class="text-xs px-4 py-2 rounded-lg font-semibold transition" class="ac-on">Save</button>
                                         <button type="button" @click="editing = false" class="text-xs text-gray-600 hover:text-gray-400 transition">Cancel</button>
                                     </div>
                                 </form>
@@ -287,7 +287,7 @@
                         </label>
                         <button type="submit"
                                 class="w-full text-sm font-semibold rounded-lg py-2.5 transition"
-                                style="background:var(--accent);color:#111">
+                                class="ac-on">
                             Add rule
                         </button>
                     </form>

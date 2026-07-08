@@ -81,7 +81,7 @@
                 {{-- Actions --}}
                 <div class="flex items-center gap-2 flex-wrap">
                     <a href="{{ route('admin.workers.edit', $w->slug) }}"
-                        style="font-size:11px;font-weight:600;padding:5px 12px;border-radius:8px;background:var(--accent);color:#000;text-decoration:none">
+                        style="font-size:11px;font-weight:600;padding:5px 12px;border-radius:8px;background:var(--accent);color:var(--accent-text);text-decoration:none">
                         Edit DNA
                     </a>
                     <a href="{{ route('admin.workers.rules', $w->slug) }}"

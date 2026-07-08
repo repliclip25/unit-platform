@@ -10,7 +10,7 @@
 @endphp
 
 {{-- Eyebrow --}}
-<p class="text-xs font-bold uppercase tracking-widest mb-5" style="color:var(--accent-text)">
+<p class="text-xs font-bold uppercase tracking-widest mb-5" class="ac-text">
     Step 2 of 4 &nbsp;·&nbsp; Teach Ava your business
 </p>
 
@@ -41,7 +41,7 @@
 <form method="POST" action="{{ route('onboarding.step.handle', 'persona') }}">
     @csrf
     <input type="hidden" name="persona" value="other">
-    <button type="submit" class="w-full font-bold text-base py-4 rounded-xl" style="background:var(--accent);color:#ffffff">Continue</button>
+    <button type="submit" class="w-full font-bold text-base py-4 rounded-xl" class="ac-on">Continue</button>
 </form>
 @else
 
@@ -71,7 +71,7 @@
                             </p>
                             <div x-show="selected === '{{ $key }}'" x-cloak
                                  class="w-4 h-4 rounded-full flex items-center justify-center shrink-0"
-                                 style="background:var(--accent)">
+                                 class="ac-bg">
                                 <svg class="w-2.5 h-2.5" viewBox="0 0 12 12" fill="none">
                                     <path d="M2 6l3 3 5-5" stroke="#111" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
                                 </svg>
@@ -94,7 +94,7 @@
 
     <button type="submit"
             class="w-full font-bold text-base py-4 rounded-xl transition-all"
-            style="background:var(--accent);color:#ffffff"
+            class="ac-on"
             :disabled="!selected"
             :class="selected ? 'opacity-100' : 'opacity-50 cursor-not-allowed'">
         Continue

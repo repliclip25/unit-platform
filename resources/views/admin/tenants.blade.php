@@ -31,10 +31,10 @@
                 @forelse($topSpenders as $i => $u)
                 <a href="{{ route('admin.tenants.show', $u->user_id) }}" class="flex items-center gap-2 group">
                     <span class="text-xs w-4 shrink-0" style="color:var(--text-faint)">{{ $i+1 }}</span>
-                    <div class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold shrink-0" style="background:var(--accent);color:#000">{{ strtoupper(substr($u->name,0,1)) }}</div>
+                    <div class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold shrink-0" class="ac-on">{{ strtoupper(substr($u->name,0,1)) }}</div>
                     <div class="min-w-0 flex-1">
                         <p class="text-xs truncate group-hover:underline" style="color:var(--text-primary)">{{ $u->name }}</p>
-                        <p class="text-xs font-semibold" style="color:var(--accent-text)">${{ number_format($u->total_spend,4) }}</p>
+                        <p class="text-xs font-semibold" class="ac-text">${{ number_format($u->total_spend,4) }}</p>
                     </div>
                 </a>
                 @empty

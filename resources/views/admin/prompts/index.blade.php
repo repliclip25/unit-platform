@@ -64,7 +64,7 @@
                   <button type="submit" class="text-xs text-gray-500 hover:text-white transition px-3 py-1.5 rounded-lg border border-gray-700 hover:border-gray-500">Reset to default</button>
                 </form>
               @endif
-              <button type="submit" class="text-xs font-semibold px-4 py-1.5 rounded-lg" style="background:var(--accent);color:#000">Save</button>
+              <button type="submit" class="text-xs font-semibold px-4 py-1.5 rounded-lg" class="ac-on">Save</button>
             </div>
           </form>
         </div>

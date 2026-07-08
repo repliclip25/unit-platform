@@ -64,7 +64,7 @@
                         @endforeach
                     </div>
                     <div class="flex gap-2">
-                        <button type="submit" class="text-xs px-4 py-2 rounded-lg font-semibold" style="background:var(--accent);color:#000">Add to Memory</button>
+                        <button type="submit" class="text-xs px-4 py-2 rounded-lg font-semibold" class="ac-on">Add to Memory</button>
                         <button type="button" onclick="toggleUpload('{{ $tableName }}')"
                             class="text-xs px-4 py-2 rounded-lg border border-gray-700 text-gray-400 hover:text-white transition">Cancel</button>
                     </div>

@@ -101,7 +101,7 @@
             <div class="flex items-center gap-3 min-w-0">
                 <div class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
                      style="background:rgba(var(--accent-rgb),0.15)">
-                    <span class="font-bold text-sm" style="color:var(--accent-text)">{{ strtoupper(substr($dep->worker_slug,0,1)) }}</span>
+                    <span class="font-bold text-sm" class="ac-text">{{ strtoupper(substr($dep->worker_slug,0,1)) }}</span>
                 </div>
                 <div class="min-w-0">
                     <div class="flex items-center gap-2 flex-wrap">
@@ -277,7 +277,7 @@
                         display:flex;flex-direction:column;gap:12px;position:relative;
                     ">
                         @if($isPro)
-                        <span style="position:absolute;top:-10px;left:14px;font-size:10px;padding:2px 10px;border-radius:99px;font-weight:700;letter-spacing:.04em;color:#111;background:var(--accent)">RECOMMENDED</span>
+                        <span style="position:absolute;top:-10px;left:14px;font-size:10px;padding:2px 10px;border-radius:99px;font-weight:700;letter-spacing:.04em;color:var(--accent-text);background:var(--accent)">RECOMMENDED</span>
                         @endif
 
                         <div>
@@ -313,14 +313,14 @@
                                 <input type="hidden" name="plan" value="{{ $tier->plan_slug }}">
                                 <button type="submit"
                                         style="display:block;width:100%;text-align:center;font-size:12px;font-weight:700;padding:9px 12px;border-radius:9px;cursor:pointer;border:none;
-                                               {{ $isPro ? 'background:var(--accent);color:#111' : 'background:transparent;border:1px solid var(--border);color:var(--text-secondary)' }}">
+                                               {{ $isPro ? 'background:var(--accent);color:var(--accent-text)' : 'background:transparent;border:1px solid var(--border);color:var(--text-secondary)' }}">
                                     Reactivate {{ ucfirst($tier->plan_slug) }} →
                                 </button>
                             </form>
                         @else
                             <a href="{{ route('billing.checkout', $dep->id) }}?plan={{ $tier->plan_slug }}"
                                style="display:block;text-align:center;font-size:12px;font-weight:700;padding:9px 12px;border-radius:9px;text-decoration:none;
-                                      {{ $isPro ? 'background:var(--accent);color:#111' : 'border:1px solid var(--border);color:var(--text-secondary)' }}">
+                                      {{ $isPro ? 'background:var(--accent);color:var(--accent-text)' : 'border:1px solid var(--border);color:var(--text-secondary)' }}">
                                 Get {{ ucfirst($tier->plan_slug) }} →
                             </a>
                         @endif

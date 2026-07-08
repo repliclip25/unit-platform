@@ -104,7 +104,7 @@
                     <div class="flex gap-2">
                         <button type="submit"
                             class="text-xs px-4 py-2 rounded-lg font-semibold transition"
-                            style="background:var(--accent);color:#000">
+                            class="ac-on">
                             Save
                         </button>
                         <button type="button" onclick="toggleEdit('{{ $entry->page_key }}')"

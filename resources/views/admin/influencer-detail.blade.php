@@ -36,7 +36,7 @@
         @if($influencer->status === 'pending')
         <form action="{{ route('admin.influencers.approve', $influencer->id) }}" method="POST">
             @csrf
-            <button type="submit" class="px-4 py-2 rounded-lg text-sm font-bold" style="background:var(--accent);color:#ffffff">
+            <button type="submit" class="px-4 py-2 rounded-lg text-sm font-bold" class="ac-on">
                 Approve & Activate
             </button>
         </form>
@@ -110,7 +110,7 @@
                 <div class="mt-4">
                     <button @click="payoutOpen = !payoutOpen"
                             class="w-full py-2 rounded-lg text-sm font-bold"
-                            style="background:var(--accent);color:#ffffff">
+                            class="ac-on">
                         Record Payout
                     </button>
                 </div>
@@ -183,7 +183,7 @@
                                   style="background:var(--bg-raised);color:var(--text-primary);border:1px solid var(--border-subtle)">{{ $influencer->notes }}</textarea>
                     </div>
                     <button type="submit" class="w-full py-2 rounded-lg text-sm font-bold"
-                            style="background:var(--accent);color:#ffffff">
+                            class="ac-on">
                         Save Changes
                     </button>
                 </form>

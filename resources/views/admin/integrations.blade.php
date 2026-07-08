@@ -167,7 +167,7 @@
                 {{-- Console link --}}
                 @if(!empty($int->meta['console']))
                 <div class="mt-2">
-                    <a href="{{ $int->meta['console'] }}" target="_blank" class="text-xs font-semibold" style="color:var(--accent-text)">
+                    <a href="{{ $int->meta['console'] }}" target="_blank" class="text-xs font-semibold" class="ac-text">
                         Open Console ↗
                     </a>
                 </div>
@@ -264,7 +264,7 @@
 
                 @if(!empty($int->meta['console']))
                 <div class="mt-2">
-                    <a href="{{ $int->meta['console'] }}" target="_blank" class="text-xs font-semibold" style="color:var(--accent-text)">Open Console ↗</a>
+                    <a href="{{ $int->meta['console'] }}" target="_blank" class="text-xs font-semibold" class="ac-text">Open Console ↗</a>
                 </div>
                 @endif
             </div>

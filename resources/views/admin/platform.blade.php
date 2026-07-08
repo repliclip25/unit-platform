@@ -552,9 +552,9 @@ details summary::-webkit-details-marker { display:none; }
         <div class="ct-card overflow-hidden">
             <div class="px-4 py-3 flex items-center justify-between" style="background:var(--bg-raised);border-bottom:1px solid var(--border-soft)">
                 <p style="font-size:11px;color:var(--text-muted)">
-                    Pub/Sub: <code style="color:var(--accent-text)">{{ $gmailWatches['pubsub_topic'] }}</code>
+                    Pub/Sub: <code class="ac-text">{{ $gmailWatches['pubsub_topic'] }}</code>
                     &nbsp;·&nbsp;
-                    Webhook: <code style="color:var(--accent-text)">{{ $gmailWatches['webhook_url'] }}</code>
+                    Webhook: <code class="ac-text">{{ $gmailWatches['webhook_url'] }}</code>
                 </p>
                 <form method="POST" action="{{ route('admin.platform.watches.renew-all') }}">@csrf
                     <button type="submit" style="background:var(--accent);color:#000;font-size:11px;font-weight:700;padding:5px 12px;border-radius:8px;border:none;cursor:pointer">↻ Renew All Watches</button>
@@ -631,7 +631,7 @@ details summary::-webkit-details-marker { display:none; }
     <div class="ct-section section-anchor" id="workers">
         <div class="flex items-center justify-between">
             <p class="ct-section-title"><span class="ct-dot dot-green"></span> Worker Registry</p>
-            <a href="{{ route('admin.workers.index') }}" style="font-size:11px;font-weight:600;padding:5px 12px;border-radius:8px;background:var(--accent);color:#000;text-decoration:none">+ Register Worker</a>
+            <a href="{{ route('admin.workers.index') }}" style="font-size:11px;font-weight:600;padding:5px 12px;border-radius:8px;background:var(--accent);color:var(--accent-text);text-decoration:none">+ Register Worker</a>
         </div>
         <div class="ct-card overflow-hidden">
             <table class="ct-table">
@@ -658,7 +658,7 @@ details summary::-webkit-details-marker { display:none; }
                     <tr>
                         <td>
                             <div class="flex items-center gap-2">
-                                <div class="w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold" style="background:var(--accent);color:#000">{{ strtoupper(substr($w['slug'],0,1)) }}</div>
+                                <div class="w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold" class="ac-on">{{ strtoupper(substr($w['slug'],0,1)) }}</div>
                                 <div>
                                     <p style="font-weight:600;color:var(--text-primary)">{{ $w['name'] }}</p>
                                     <p style="font-size:10px;font-family:monospace;color:var(--text-faint)">{{ $w['slug'] }}</p>
@@ -963,7 +963,7 @@ details summary::-webkit-details-marker { display:none; }
                             </div>
                         </div>
                         <div class="flex items-center justify-between">
-                            <button type="submit" style="background:var(--accent);color:#000;font-size:11px;font-weight:700;padding:6px 16px;border-radius:8px;border:none;cursor:pointer">Save Route</button>
+                            <button type="submit" style="background:var(--accent);color:var(--accent-text);font-size:11px;font-weight:700;padding:6px 16px;border-radius:8px;border:none;cursor:pointer">Save Route</button>
                             <form method="POST" action="{{ route('admin.platform.smtp.delete', $route['key']) }}" onsubmit="return confirm('Delete this route?')" style="margin:0">
                                 @csrf
                                 <button type="submit" style="background:transparent;border:1px solid #f87171;color:#f87171;font-size:11px;font-weight:600;padding:5px 12px;border-radius:8px;cursor:pointer">Delete</button>
@@ -1031,7 +1031,7 @@ details summary::-webkit-details-marker { display:none; }
                         <input type="text" name="from_name" value="{{ config('mail.from.name') }}" style="width:100%;background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:6px 10px;font-size:12px;color:var(--text-primary)">
                     </div>
                     <div class="flex gap-2">
-                        <button type="submit" style="background:var(--accent);color:#000;font-size:11px;font-weight:700;padding:6px 16px;border-radius:8px;border:none;cursor:pointer">Add Route</button>
+                        <button type="submit" style="background:var(--accent);color:var(--accent-text);font-size:11px;font-weight:700;padding:6px 16px;border-radius:8px;border:none;cursor:pointer">Add Route</button>
                         <button type="button" onclick="document.getElementById('smtp-add-form').style.display='none'" style="background:transparent;border:1px solid var(--border);color:var(--text-secondary);font-size:11px;font-weight:600;padding:5px 12px;border-radius:8px;cursor:pointer">Cancel</button>
                     </div>
                 </form>
@@ -1166,7 +1166,7 @@ details summary::-webkit-details-marker { display:none; }
                 @foreach($workerStats['workers'] as $w)
                 <div class="flex items-center justify-between p-3 rounded-xl" style="background:var(--bg-raised)">
                     <div class="flex items-center gap-2">
-                        <div class="w-6 h-6 rounded flex items-center justify-center text-xs font-bold" style="background:var(--accent);color:#000">{{ strtoupper(substr($w['slug'],0,1)) }}</div>
+                        <div class="w-6 h-6 rounded flex items-center justify-center text-xs font-bold" class="ac-on">{{ strtoupper(substr($w['slug'],0,1)) }}</div>
                         <div>
                             <p style="font-size:12px;font-weight:600;color:var(--text-primary)">{{ $w['name'] }} <span style="font-size:10px;font-family:monospace;color:var(--text-faint)">v{{ $w['version'] }}</span></p>
                             <p style="font-size:10px;color:var(--text-muted)">{{ $w['tx_total'] }} transactions · ${{ number_format($w['cost_month'], 4) }}/mo cost</p>

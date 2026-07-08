@@ -24,7 +24,7 @@
         </div>
         <button onclick="document.getElementById('new-group-form').classList.toggle('hidden')"
                 class="text-sm px-4 py-2 rounded-lg font-semibold transition hover:opacity-90 shrink-0"
-                style="background:var(--accent);color:#000">
+                class="ac-on">
             + New Group
         </button>
     </div>
@@ -74,7 +74,7 @@
             </div>
             <div class="flex gap-2">
                 <button type="submit" class="text-sm px-5 py-2 rounded-lg font-semibold transition hover:opacity-90"
-                        style="background:var(--accent);color:#000">Create Group</button>
+                        class="ac-on">Create Group</button>
                 <button type="button" onclick="document.getElementById('new-group-form').classList.add('hidden')"
                         class="text-sm px-4 py-2 rounded-lg border transition hover:opacity-80"
                         style="border-color:var(--border);color:var(--text-muted)">Cancel</button>
@@ -134,7 +134,7 @@
             <div class="flex items-center gap-2 shrink-0">
                 <button onclick="toggleGroupEdit({{ $group->id }})"
                         class="text-xs font-medium transition hover:opacity-80"
-                        style="color:var(--accent-text)">Edit</button>
+                        class="ac-text">Edit</button>
                 <form method="POST" action="{{ route('workers.memory.groups.destroy', [$dep->id, $group->id]) }}"
                       onsubmit="return confirm('Remove group \'{{ addslashes($group->name) }}\'? Assets are not deleted.')">
                     @csrf @method('DELETE')
@@ -188,7 +188,7 @@
                 </div>
                 <div class="sm:col-span-2 flex gap-2">
                     <button type="submit" class="text-sm px-4 py-2 rounded-lg font-semibold transition hover:opacity-90"
-                            style="background:var(--accent);color:#000">Save</button>
+                            class="ac-on">Save</button>
                     <button type="button" onclick="toggleGroupEdit({{ $group->id }})"
                             class="text-sm px-4 py-2 rounded-lg border transition hover:opacity-80"
                             style="border-color:var(--border);color:var(--text-muted)">Cancel</button>
@@ -273,7 +273,7 @@
         </p>
         <button onclick="document.getElementById('new-group-form').classList.remove('hidden'); window.scrollTo({top:0,behavior:'smooth'})"
                 class="text-sm px-5 py-2 rounded-lg font-semibold transition hover:opacity-90"
-                style="background:var(--accent);color:#000">Create your first group</button>
+                class="ac-on">Create your first group</button>
     </div>
     @endforelse
 

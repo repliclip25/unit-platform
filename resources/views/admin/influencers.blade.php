@@ -124,7 +124,7 @@
                 @empty
                 <tr>
                     <td colspan="10" class="px-4 py-12 text-center" style="color:var(--text-muted)">
-                        No influencer partners yet. Share the <a href="{{ route('influencer.apply') }}" class="underline" style="color:var(--accent)">application page</a> to get started.
+                        No influencer partners yet. Share the <a href="{{ route('influencer.apply') }}" class="underline" class="ac-text">application page</a> to get started.
                     </td>
                 </tr>
                 @endforelse

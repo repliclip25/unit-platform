@@ -48,7 +48,7 @@
     ] as $item)
     <div class="flex items-center gap-3">
         <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"
-             style="color:var(--accent-text)">
+             class="ac-text">
             <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
         </svg>
         <p class="text-gray-300 text-sm">{{ $item }}</p>
@@ -60,7 +60,7 @@
 <form method="POST" action="{{ route('onboarding.step.handle', 'welcome') }}">
     @csrf
     <button type="submit" class="w-full font-bold text-base py-4 rounded-xl transition-colors"
-            style="background:var(--accent);color:#ffffff">
+            class="ac-on">
         Hire Ava
     </button>
 </form>

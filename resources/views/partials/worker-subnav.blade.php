@@ -25,7 +25,7 @@
         <span class="text-xs" style="color:var(--text-faint)">·</span>
         <a href="{{ route('workers.show', $dep->worker_slug) }}#fast-track"
            class="flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-lg transition hover:opacity-90"
-           style="background:var(--accent);color:#ffffff">
+           class="ac-on">
             <svg class="w-3 h-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
             Fast Track
         </a>

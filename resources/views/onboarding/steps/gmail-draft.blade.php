@@ -51,7 +51,7 @@
         <div class="w-full max-w-lg">
 
             {{-- Eyebrow --}}
-            <p class="fade-up text-center text-xs font-bold uppercase tracking-widest mb-6" style="color:var(--accent-text)">
+            <p class="fade-up text-center text-xs font-bold uppercase tracking-widest mb-6" class="ac-text">
                 Draft ready
             </p>
 
@@ -84,7 +84,7 @@
                 <div class="px-5 py-4 border-b border-gray-800/60 flex items-start gap-3">
                     <div class="w-8 h-8 rounded-full flex items-center justify-center shrink-0 mt-0.5"
                          style="background:rgba(var(--accent-rgb),.12)">
-                        <svg class="w-4 h-4" style="color:var(--accent-text)" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8">
+                        <svg class="w-4 h-4" class="ac-text" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
                         </svg>
                     </div>
@@ -129,7 +129,7 @@
             <div class="fade-up-4">
                 <a href="{{ route('onboarding.complete') }}"
                    class="block w-full text-center font-black text-base py-4 rounded-xl transition-all"
-                   style="background:var(--accent);color:#ffffff">
+                   class="ac-on">
                     Enter Workspace
                 </a>
                 <p class="text-center text-xs text-gray-600 mt-3">

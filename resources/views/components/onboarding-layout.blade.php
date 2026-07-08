@@ -76,7 +76,7 @@
                     <div class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all"
                          style="
                             {{ $isComplete
-                                ? 'background:var(--accent);color:#ffffff;'
+                                ? 'background:var(--accent);color:var(--accent-text);'
                                 : ($isActive
                                     ? 'background:transparent;border:2px solid var(--accent);color:var(--accent-text);'
                                     : 'background:transparent;border:1px solid rgba(255,255,255,0.12);color:#4b5563;') }}

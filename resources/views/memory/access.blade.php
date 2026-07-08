@@ -122,7 +122,7 @@
         @empty
         <div class="bg-gray-900 border border-gray-800 rounded-xl px-5 py-12 text-center">
             <p class="text-gray-500 text-sm">You haven't shared any memory yet.</p>
-            <button onclick="switchTab('invite')" class="mt-2 text-xs font-semibold" style="color:var(--accent-text)">Invite someone →</button>
+            <button onclick="switchTab('invite')" class="mt-2 text-xs font-semibold" class="ac-text">Invite someone →</button>
         </div>
         @endforelse
     </div>
@@ -143,7 +143,7 @@
             </div>
             <a href="{{ route('memory.shared', $grant->id) }}"
                class="text-xs px-4 py-2 rounded-lg font-semibold transition shrink-0"
-               style="background:var(--accent);color:#000">
+               class="ac-on">
                 Open Memory →
             </a>
         </div>
@@ -233,7 +233,7 @@
 
                 <button type="submit"
                     class="w-full sm:w-auto text-sm px-6 py-2.5 rounded-lg font-semibold transition"
-                    style="background:var(--accent);color:#000">
+                    class="ac-on">
                     Send Invitation
                 </button>
             </form>

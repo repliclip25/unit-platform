@@ -163,7 +163,7 @@
       </div>
       <div class="flex items-center gap-3">
         <a href="{{ route('admin.blog') }}" class="text-xs text-gray-500 hover:text-white transition px-3 py-2">Cancel</a>
-        <button type="submit" class="text-sm px-5 py-2.5 rounded-lg font-semibold" style="background:var(--accent);color:#000">
+        <button type="submit" class="text-sm px-5 py-2.5 rounded-lg font-semibold" class="ac-on">
           {{ $post ? 'Save Changes' : 'Create Post' }}
         </button>
       </div>

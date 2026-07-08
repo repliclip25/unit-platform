@@ -157,7 +157,7 @@
                             <input type="checkbox" name="approval_required" value="1" checked class="rounded border-gray-700 bg-gray-800">
                             <span class="text-gray-400 text-xs">Require human approval</span>
                         </label>
-                        <button type="submit" class="w-full text-sm font-semibold rounded-lg py-2.5 transition" style="background:var(--accent);color:#111">
+                        <button type="submit" class="w-full text-sm font-semibold rounded-lg py-2.5 transition" class="ac-on">
                             Add to {{ $p['label'] }}
                         </button>
                     </form>

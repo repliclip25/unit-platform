@@ -12,14 +12,14 @@
     <div class="text-center mb-7">
         @if($wm)
             <div class="inline-flex items-center gap-2 border rounded-full px-4 py-1.5 text-xs font-semibold mb-4 tracking-wide" style="border-color:rgba(var(--accent-rgb),0.4);color:var(--accent);background:rgba(var(--accent-rgb),0.08)">
-                <span class="w-1.5 h-1.5 rounded-full inline-block animate-pulse" style="background:var(--accent)"></span>
+                <span class="w-1.5 h-1.5 rounded-full inline-block animate-pulse" class="ac-bg"></span>
                 DEPLOYING {{ strtoupper($wm['label']) }}
             </div>
             <h1 class="font-display font-bold text-xl mb-1">Set up {{ $wm['label'] }} in minutes</h1>
             <p class="auth-muted text-sm auth-text-dark">{{ $wm['role'] }} — free to start, no card needed</p>
         @else
             <div class="inline-flex items-center gap-2 border rounded-full px-4 py-1.5 text-xs font-semibold mb-4 tracking-wide" style="border-color:rgba(var(--accent-rgb),0.5);color:var(--accent);background:rgba(var(--accent-rgb),0.08)">
-                <span class="w-1.5 h-1.5 rounded-full inline-block" style="background:var(--accent)"></span>
+                <span class="w-1.5 h-1.5 rounded-full inline-block" class="ac-bg"></span>
                 AI WORKFORCE PLATFORM
             </div>
             <h1 class="font-display font-bold text-xl mb-1">Hire your first employee</h1>

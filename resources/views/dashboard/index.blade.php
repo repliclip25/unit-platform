@@ -34,7 +34,7 @@
         <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
     </svg>
     <p class="flex-1 text-sm" style="color:var(--text-secondary)">
-        Earn <span class="font-semibold" style="color:var(--accent-text)">$25 credit</span> for every colleague you bring to UNIT.
+        Earn <span class="font-semibold" class="ac-text">$25 credit</span> for every colleague you bring to UNIT.
     </p>
     <a href="{{ route('referral.index') }}"
        class="shrink-0 text-xs font-bold px-3 py-1.5 rounded-lg transition hover:opacity-90"
@@ -104,7 +104,7 @@
                     <a href="{{ $card['action']['url'] }}"
                        @if($card['action']['external'] ?? false) target="_blank" rel="noopener" @endif
                        class="text-xs font-semibold whitespace-nowrap transition hover:opacity-80"
-                       style="color:var(--accent-text)">
+                       class="ac-text">
                         {{ $card['action']['label'] }} →
                     </a>
                     @endif
@@ -293,7 +293,7 @@
             <div class="px-5 py-3 flex items-center justify-between gap-3" style="border-top:1px solid var(--border-subtle)">
                 <a href="{{ route('workers.show', $dep->worker_slug) }}#fast-track"
                    class="text-xs font-semibold transition hover:opacity-80"
-                   style="color:var(--accent-text)">
+                   class="ac-text">
                     Fast Track →
                 </a>
                 <span class="text-xs" style="color:var(--text-faint)">
@@ -312,7 +312,7 @@
             <p class="text-xs mt-1 mb-4" style="color:var(--text-faint)">Deploy a worker to get started.</p>
             <a href="{{ route('workers.deploy') }}"
                class="text-xs px-4 py-2 rounded-lg font-semibold transition hover:opacity-90"
-               style="background:var(--accent);color:#000">
+               class="ac-on">
                 Deploy a Worker →
             </a>
         </div>

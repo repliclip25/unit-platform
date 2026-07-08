@@ -880,7 +880,7 @@ footer .foot-btm{color:#555555!important;border-color:rgba(255,255,255,0.08)!imp
       </div>
       {{-- caption bar --}}
       <div style="background:#111;padding:14px 20px;display:flex;align-items:center;gap:10px;border-top:1px solid rgba(255,255,255,0.07)">
-        <div style="width:32px;height:32px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;color:#000;flex-shrink:0">A</div>
+        <div style="width:32px;height:32px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;color:var(--gold-text);flex-shrink:0">A</div>
         <div>
           <div style="font-size:13px;font-weight:600;color:#fff">AVA — Renewal &amp; Subscription Coordinator</div>
           <div style="font-size:12px;color:#888">Live walkthrough · NYCSCA workflow · 3 min</div>

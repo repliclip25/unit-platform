@@ -36,7 +36,7 @@
         <input type="hidden" name="slot" value="{{ $slot['key'] }}">
         <button type="submit"
                 class="text-xs font-semibold px-4 py-2 rounded-lg transition-colors"
-                style="background:var(--accent);color:#1a1a1a">
+                class="ac-on">
             Connect →
         </button>
     </form>
@@ -49,7 +49,7 @@
         @csrf
         <button type="submit"
                 class="w-full font-bold text-base py-4 rounded-xl transition-colors"
-                style="background:var(--accent);color:#1a1a1a">
+                class="ac-on">
             Continue →
         </button>
     </form>
@@ -73,7 +73,7 @@
 @endphp
 
 <div class="mb-6">
-    <p class="text-xs font-semibold uppercase tracking-widest mb-3" style="color:var(--accent-text)">Step 1 of 4 — Inbox access</p>
+    <p class="text-xs font-semibold uppercase tracking-widest mb-3" class="ac-text">Step 1 of 4 — Inbox access</p>
     <h1 class="text-2xl font-black text-white mb-2">Connect your {{ $credLabel }}</h1>
     <p class="text-sm leading-relaxed" style="color:var(--text-muted)">{{ $credHint }} AVA watches your inbox 24/7 — every renewal email that arrives gets classified, matched to a client, and drafted automatically.</p>
 </div>
@@ -94,7 +94,7 @@
     @csrf
     <button type="submit"
             class="w-full font-bold text-base py-4 rounded-xl transition-colors"
-            style="background:var(--accent);color:#1a1a1a">
+            class="ac-on">
         Continue →
     </button>
 </form>

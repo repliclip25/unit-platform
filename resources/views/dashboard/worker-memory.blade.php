@@ -18,7 +18,7 @@
             <div class="flex items-center gap-3">
                 {{-- Brain / enrichment icon --}}
                 <div class="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style="background:rgba(241,211,98,0.12)">
-                    <svg class="w-4 h-4" style="color:var(--accent-text)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-4 h-4" class="ac-text" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
                             d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
                     </svg>
@@ -82,7 +82,7 @@
                             @include('partials.client-picker', ['pickerId' => 'da-'.$da->id, 'selectedId' => $da->client_id, 'selectedName' => $selClient?->name ?? ''])
                         </div>
                     </div>
-                    <button type="submit" class="w-full text-sm font-semibold rounded-lg py-2.5 transition" style="background:var(--accent);color:#000;">
+                    <button type="submit" class="w-full text-sm font-semibold rounded-lg py-2.5 transition" class="ac-on">
                         Confirm &amp; Add to Memory
                     </button>
                 </form>
@@ -110,13 +110,13 @@
                     <span class="bg-gray-800 hover:bg-gray-700 text-gray-300 text-sm rounded-lg px-3 py-2 border border-gray-700 inline-block" id="file-label">Choose file…</span>
                     <input type="file" name="file" accept=".csv,.xlsx,.xls" required class="hidden" onchange="document.getElementById('file-label').textContent = this.files[0]?.name ?? 'Choose file…'">
                 </label>
-                <button type="submit" class="text-sm rounded-lg px-4 py-2 transition font-medium" style="background:var(--accent);color:#000;">Preview Import</button>
+                <button type="submit" class="text-sm rounded-lg px-4 py-2 transition font-medium" class="ac-on">Preview Import</button>
             </form>
         </div>
         <div class="mt-2 flex items-center gap-1 text-xs text-gray-600">
             <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
             Download template:
-            <a id="tpl-link" href="{{ route('memory.import.template', 'clients') }}" style="color:var(--accent-text)" class="hover:underline">clients_import_template.csv</a>
+            <a id="tpl-link" href="{{ route('memory.import.template', 'clients') }}" class="ac-text" class="hover:underline">clients_import_template.csv</a>
         </div>
     </div>
 
@@ -187,7 +187,7 @@
                                 class="bg-gray-800 text-white text-xs rounded-lg px-3 py-2 border border-gray-700 focus:outline-none focus:border-yellow-400 sm:col-span-2">
                             <textarea name="notes" rows="1" placeholder="Notes" class="bg-gray-800 text-white text-xs rounded-lg px-3 py-2 border border-gray-700 focus:outline-none focus:border-yellow-400 sm:col-span-2">{{ $client->notes }}</textarea>
                             <div class="sm:col-span-2 flex gap-2">
-                                <button type="submit" class="text-xs font-medium rounded-lg px-4 py-1.5 transition" style="background:var(--accent);color:#000;">Save</button>
+                                <button type="submit" class="text-xs font-medium rounded-lg px-4 py-1.5 transition" class="ac-on">Save</button>
                                 <button type="button" onclick="toggleEdit('client', {{ $client->id }})" class="text-gray-400 hover:text-white text-xs px-2">Cancel</button>
                             </div>
                         </form>
@@ -216,7 +216,7 @@
                 </div>
                 <div><label class="text-gray-400 text-xs block mb-1">Address</label><input type="text" name="address" placeholder="Street, City, State…" class="w-full bg-gray-800 text-white text-sm rounded-lg px-3 py-2 border border-gray-700 focus:outline-none focus:border-yellow-400"></div>
                 <div><label class="text-gray-400 text-xs block mb-1">Notes</label><textarea name="notes" rows="2" class="w-full bg-gray-800 text-white text-sm rounded-lg px-3 py-2 border border-gray-700 focus:outline-none focus:border-yellow-400"></textarea></div>
-                <button type="submit" class="w-full text-sm rounded-lg py-2 transition font-medium" style="background:var(--accent);color:#000;">Add Client</button>
+                <button type="submit" class="w-full text-sm rounded-lg py-2 transition font-medium" class="ac-on">Add Client</button>
             </form>
         </div>
     </div>
@@ -235,7 +235,7 @@
                                     <span class="text-xs px-1.5 py-0.5 rounded bg-yellow-900/40 text-yellow-400 font-medium">Decision Maker</span>
                                     @endif
                                 </div>
-                                <p class="text-xs mt-0.5" style="color:var(--accent-text)">{{ $contact->email }}</p>
+                                <p class="text-xs mt-0.5" class="ac-text">{{ $contact->email }}</p>
                                 <p class="text-gray-500 text-xs">{{ implode(' · ', array_filter([$contact->phone, $contact->role, $contact->department])) }}</p>
                                 @php $cn = $clients->firstWhere('id', $contact->client_id); @endphp
                                 @if($cn)<p class="text-gray-600 text-xs">{{ $cn->name }}</p>@endif
@@ -278,7 +278,7 @@
                                 @include('partials.client-picker', ['pickerId' => 'contact-edit-'.$contact->id, 'selectedId' => $contact->client_id, 'selectedName' => $selClient?->name ?? ''])
                             </div>
                             <div class="sm:col-span-2 flex gap-2">
-                                <button type="submit" class="text-xs font-medium rounded-lg px-4 py-1.5 transition" style="background:var(--accent);color:#000;">Save</button>
+                                <button type="submit" class="text-xs font-medium rounded-lg px-4 py-1.5 transition" class="ac-on">Save</button>
                                 <button type="button" onclick="toggleEdit('contact', {{ $contact->id }})" class="text-gray-400 hover:text-white text-xs px-2">Cancel</button>
                             </div>
                         </form>
@@ -313,7 +313,7 @@
                                     peer-checked:after:translate-x-4"></div>
                     </div>
                 </label>
-                <button type="submit" class="w-full text-sm rounded-lg py-2 transition font-medium" style="background:var(--accent);color:#000;">Add Contact</button>
+                <button type="submit" class="w-full text-sm rounded-lg py-2 transition font-medium" class="ac-on">Add Contact</button>
             </form>
         </div>
     </div>
@@ -384,7 +384,7 @@
                             @php $selClient = $clients->firstWhere('id', $asset->client_id); @endphp
                             @include('partials.client-picker', ['pickerId' => 'asset-edit-'.$asset->id, 'selectedId' => $asset->client_id, 'selectedName' => $selClient?->name ?? ''])
                             <div class="sm:col-span-2 flex gap-2">
-                                <button type="submit" class="text-xs font-medium rounded-lg px-4 py-1.5 transition" style="background:var(--accent);color:#000;">Save</button>
+                                <button type="submit" class="text-xs font-medium rounded-lg px-4 py-1.5 transition" class="ac-on">Save</button>
                                 <button type="button" onclick="toggleEdit('asset', {{ $asset->id }})" class="text-gray-400 hover:text-white text-xs px-2">Cancel</button>
                             </div>
                         </form>
@@ -423,7 +423,7 @@
                     @include('partials.client-picker', ['pickerId' => 'asset-add', 'selectedId' => '', 'selectedName' => ''])
                 </div>
                 <div><label class="text-gray-400 text-xs block mb-1">Cost / Year ($)</label><input type="number" name="cost_per_year" step="0.01" class="w-full bg-gray-800 text-white text-sm rounded-lg px-3 py-2 border border-gray-700 focus:outline-none focus:border-yellow-400"></div>
-                <button type="submit" class="w-full text-sm rounded-lg py-2 transition font-medium" style="background:var(--accent);color:#000;">Add Asset</button>
+                <button type="submit" class="w-full text-sm rounded-lg py-2 transition font-medium" class="ac-on">Add Asset</button>
             </form>
         </div>
     </div>

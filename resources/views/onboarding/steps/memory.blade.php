@@ -21,7 +21,7 @@
 @endphp
 
 <div class="mb-6">
-    <p class="text-xs font-bold uppercase tracking-widest mb-4" style="color:var(--accent-text)">Step 3 of 4 &nbsp;·&nbsp; Build memory</p>
+    <p class="text-xs font-bold uppercase tracking-widest mb-4" class="ac-text">Step 3 of 4 &nbsp;·&nbsp; Build memory</p>
     <h1 class="text-2xl font-black text-white mb-3 leading-snug">Introduce Ava to your {{ $clientNounPlural }}.</h1>
     <p class="text-gray-400 text-sm leading-relaxed">A new employee becomes more useful after learning who your customers are.</p>
     <p class="text-gray-400 text-sm leading-relaxed mt-1">The same is true here.</p>
@@ -72,7 +72,7 @@
     @csrf
     <button type="submit"
             class="w-full font-bold text-base py-4 rounded-xl transition"
-            style="background:var(--accent);color:#111">
+            class="ac-on">
         Continue
     </button>
     <p class="text-center text-xs text-gray-600 mt-2">
@@ -135,7 +135,7 @@
 
         <button type="submit"
                 class="w-full py-2.5 rounded-xl text-sm font-bold transition"
-                style="background:var(--accent);color:#111">
+                class="ac-on">
             + Add client
         </button>
     </form>

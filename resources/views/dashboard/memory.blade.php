@@ -103,14 +103,14 @@
                            onchange="document.getElementById('file-label').textContent = this.files[0]?.name ?? 'Choose file…'">
                 </label>
                 <button type="submit" class="text-sm rounded-lg px-4 py-2 font-semibold transition hover:opacity-90"
-                        style="background:var(--accent);color:#000">Preview Import</button>
+                        class="ac-on">Preview Import</button>
             </form>
         </div>
         <div class="mt-2 flex items-center gap-1 text-xs" style="color:var(--text-faint)">
             <svg class="w-3 h-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
             Download template:
             <a id="tpl-link" href="{{ route('memory.import.template', 'clients') }}"
-               class="transition hover:opacity-80" style="color:var(--accent-text)">clients_import_template.csv</a>
+               class="transition hover:opacity-80" class="ac-text">clients_import_template.csv</a>
         </div>
     </div>
 
@@ -202,7 +202,7 @@
                     <input type="text" name="address" placeholder="Street, City, State…" class="w-full text-sm rounded-lg px-3 py-2 border focus:outline-none" style="background:var(--bg-raised);color:var(--text-primary);border-color:var(--border)"></div>
                     <div><label class="text-xs block mb-1" style="color:var(--text-muted)">Notes</label>
                     <textarea name="notes" rows="2" class="w-full text-sm rounded-lg px-3 py-2 border focus:outline-none resize-none" style="background:var(--bg-raised);color:var(--text-primary);border-color:var(--border)"></textarea></div>
-                    <button type="submit" class="w-full text-sm rounded-lg py-2 font-semibold transition hover:opacity-90" style="background:var(--accent);color:#000">Add Client</button>
+                    <button type="submit" class="w-full text-sm rounded-lg py-2 font-semibold transition hover:opacity-90" class="ac-on">Add Client</button>
                 </form>
             </div>
         </div>
@@ -223,7 +223,7 @@
                                 <span class="text-xs px-1.5 py-0.5 rounded font-medium bg-yellow-900/40 text-yellow-400">Decision Maker</span>
                                 @endif
                             </div>
-                            <p class="text-xs mt-0.5 truncate" style="color:var(--accent-text)">{{ $contact->email }}</p>
+                            <p class="text-xs mt-0.5 truncate" class="ac-text">{{ $contact->email }}</p>
                             <p class="text-xs" style="color:var(--text-muted)">{{ implode(' · ', array_filter([$contact->phone, $contact->role, $contact->department])) }}</p>
                             @if($cn)<p class="text-xs mt-0.5" style="color:var(--text-faint)">{{ $cn->name }}</p>@endif
                         </div>
@@ -269,7 +269,7 @@
                             <div class="w-9 h-5 rounded-full transition peer-checked:bg-yellow-400 bg-gray-700 after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:w-4 after:h-4 after:rounded-full after:bg-white after:transition-all peer-checked:after:translate-x-4"></div>
                         </div>
                     </label>
-                    <button type="submit" class="w-full text-sm rounded-lg py-2 font-semibold transition hover:opacity-90" style="background:var(--accent);color:#000">Add Contact</button>
+                    <button type="submit" class="w-full text-sm rounded-lg py-2 font-semibold transition hover:opacity-90" class="ac-on">Add Contact</button>
                 </form>
             </div>
         </div>
@@ -307,7 +307,7 @@
                             @endif
                         </div>
                         <div class="flex items-center gap-3 shrink-0">
-                            <button onclick="toggleAssetEdit({{ $asset->id }})" class="text-xs font-medium transition hover:opacity-80" style="color:var(--accent-text)">Edit</button>
+                            <button onclick="toggleAssetEdit({{ $asset->id }})" class="text-xs font-medium transition hover:opacity-80" class="ac-text">Edit</button>
                             <form method="POST" action="{{ route('memory.assets.destroy', $asset->id) }}">
                                 @csrf @method('DELETE')
                                 <button class="text-xs transition hover:opacity-80" style="color:var(--text-faint)"
@@ -346,7 +346,7 @@
                                 </select></div>
                             </div>
                             <div class="flex gap-2 pt-1">
-                                <button type="submit" class="text-sm px-4 py-2 rounded-lg font-semibold transition hover:opacity-90" style="background:var(--accent);color:#000">Save</button>
+                                <button type="submit" class="text-sm px-4 py-2 rounded-lg font-semibold transition hover:opacity-90" class="ac-on">Save</button>
                                 <button type="button" onclick="toggleAssetEdit({{ $asset->id }})" class="text-sm px-4 py-2 rounded-lg transition hover:opacity-80" style="background:var(--bg-card);color:var(--text-muted);border:1px solid var(--border)">Cancel</button>
                             </div>
                         </form>
@@ -387,7 +387,7 @@
                         <option value="">— none —</option>
                         @foreach($clients as $c)<option value="{{ $c->id }}">{{ $c->name }}</option>@endforeach
                     </select></div>
-                    <button type="submit" class="w-full text-sm rounded-lg py-2 font-semibold transition hover:opacity-90" style="background:var(--accent);color:#000">Add Asset</button>
+                    <button type="submit" class="w-full text-sm rounded-lg py-2 font-semibold transition hover:opacity-90" class="ac-on">Add Asset</button>
                 </form>
             </div>
         </div>
@@ -419,7 +419,7 @@
                     <span class="text-xs font-bold uppercase tracking-widest" style="color:var(--text-faint)">{{ $depName }}</span>
                     <span class="text-xs px-2 py-0.5 rounded font-mono" style="background:var(--bg-raised);color:var(--text-faint)">{{ $workerSlug }}</span>
                 </div>
-                <a href="{{ route('workers.memory.groups', $depId) }}" class="text-xs transition hover:opacity-80" style="color:var(--accent-text)">Manage →</a>
+                <a href="{{ route('workers.memory.groups', $depId) }}" class="text-xs transition hover:opacity-80" class="ac-text">Manage →</a>
             </div>
             <div class="space-y-3">
                 @foreach($depGroups as $group)
@@ -476,7 +476,7 @@
                     <div class="px-5 py-4 flex items-start justify-between gap-4">
                         <div class="flex-1 min-w-0">
                             <div class="flex items-center gap-2 flex-wrap mb-1">
-                                <span class="text-xs font-mono font-bold" style="color:var(--accent-text)">{{ $rule->rule_id }}</span>
+                                <span class="text-xs font-mono font-bold" class="ac-text">{{ $rule->rule_id }}</span>
                                 @php $pc = match($rule->priority) { 'Critical'=>'#f87171','High'=>'#fbbf24','Medium'=>'var(--text-muted)',default=>'var(--text-faint)' }; @endphp
                                 <span class="text-xs font-medium" style="color:{{ $pc }}">{{ $rule->priority }}</span>
                                 @if(!$rule->active)<span class="text-xs px-1.5 py-0.5 rounded" style="background:var(--bg-raised);color:var(--text-faint)">Inactive</span>@endif
@@ -513,7 +513,7 @@
                     <textarea name="condition" rows="3" required class="w-full text-sm rounded-lg px-3 py-2 border focus:outline-none resize-none" style="background:var(--bg-raised);color:var(--text-primary);border-color:var(--border)"></textarea></div>
                     <div><label class="text-xs block mb-1" style="color:var(--text-muted)">Action (then…)</label>
                     <textarea name="action" rows="3" required class="w-full text-sm rounded-lg px-3 py-2 border focus:outline-none resize-none" style="background:var(--bg-raised);color:var(--text-primary);border-color:var(--border)"></textarea></div>
-                    <button type="submit" class="w-full text-sm rounded-lg py-2 font-semibold transition hover:opacity-90" style="background:var(--accent);color:#000">Add Rule</button>
+                    <button type="submit" class="w-full text-sm rounded-lg py-2 font-semibold transition hover:opacity-90" class="ac-on">Add Rule</button>
                 </form>
             </div>
         </div>
@@ -549,7 +549,7 @@
             </div>
             <a href="{{ route('memory.shared', $grant->id) }}"
                class="text-sm px-4 py-2 rounded-lg font-semibold transition hover:opacity-90 shrink-0 self-center"
-               style="background:var(--accent);color:#000">Open Memory →</a>
+               class="ac-on">Open Memory →</a>
         </div>
         {{-- Grant meta --}}
         <div class="px-5 py-2.5 flex flex-wrap gap-x-5 gap-y-1">
@@ -705,7 +705,7 @@
                     </div>
                 </div>
             </div>
-            <button type="submit" class="w-full sm:w-auto text-sm px-6 py-2.5 rounded-lg font-semibold transition hover:opacity-90" style="background:var(--accent);color:#000">Send Invitation</button>
+            <button type="submit" class="w-full sm:w-auto text-sm px-6 py-2.5 rounded-lg font-semibold transition hover:opacity-90" class="ac-on">Send Invitation</button>
         </form>
     </div>
 </div>

@@ -53,7 +53,7 @@
                  style="background:rgba(var(--accent-rgb),0.08);border-color:rgba(var(--accent-rgb),0.35)">
                 <div class="flex items-center gap-3">
                     <span class="w-2 h-2 rounded-full animate-pulse" style="background:#a78bfa"></span>
-                    <span class="text-sm" style="color:var(--accent)">
+                    <span class="text-sm" class="ac-text">
                         <strong>{{ $pendingReview }}</strong> draft{{ $pendingReview !== 1 ? 's' : '' }} awaiting your review
                     </span>
                 </div>
@@ -161,7 +161,7 @@
 
                 {{-- Header --}}
                 <div class="px-5 py-4 border-b border-gray-800 flex flex-wrap items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl flex items-center justify-center text-sm font-bold shrink-0" style="background:rgba(var(--accent-rgb),0.15);color:var(--accent)">
+                    <div class="w-10 h-10 rounded-xl flex items-center justify-center text-sm font-bold shrink-0" class="ac-on-soft-md">
                         {{ strtoupper(substr($w->slug, 0, 2)) }}
                     </div>
                     <div class="flex-1 min-w-0">
@@ -206,7 +206,7 @@
                             @if($status !== 'published' && $status !== 'deprecated')
                                 <form method="POST" action="{{ route('qa.marketplace-publish', $w->id) }}">
                                     @csrf
-                                    <button type="submit" class="text-xs font-bold px-4 py-1.5 rounded-lg text-gray-900 hover:opacity-90" style="background:var(--accent)">
+                                    <button type="submit" class="text-xs font-bold px-4 py-1.5 rounded-lg text-gray-900 hover:opacity-90" class="ac-bg">
                                         ✓ Publish to Marketplace
                                     </button>
                                 </form>

@@ -83,6 +83,48 @@
         .text-xs { font-size: 13px !important; }
         .text-sm { font-size: 15px !important; }
 
+        /* ── Accent utility classes — change theme here, nowhere else ── */
+        .ac-bg          { background: var(--accent); }
+        .ac-text        { color: var(--accent); }
+        .ac-on          { background: var(--accent); color: var(--accent-text); }
+        .ac-on-soft     { background: rgba(var(--accent-rgb), 0.10); color: var(--accent); }
+        .ac-on-soft-md  { background: rgba(var(--accent-rgb), 0.15); color: var(--accent); }
+        .ac-border      { border-color: var(--accent); }
+        .ac-border-left { border-left: 3px solid var(--accent); }
+        .ac-border-left-2 { border-left: 2px solid var(--accent); }
+        .ac-ring        { border: 1px solid rgba(var(--accent-rgb), 0.22); }
+        .ac-ring-md     { border: 1px solid rgba(var(--accent-rgb), 0.40); }
+
+        /* Buttons */
+        .btn-accent {
+            display: inline-flex; align-items: center; gap: 6px;
+            background: var(--accent); color: var(--accent-text);
+            border: none; cursor: pointer; font-weight: 700;
+            transition: opacity .15s, transform .15s;
+        }
+        .btn-accent:hover  { opacity: .88; transform: translateY(-1px); }
+        .btn-accent:active { transform: translateY(0); opacity: 1; }
+
+        .btn-accent-soft {
+            display: inline-flex; align-items: center; gap: 6px;
+            background: rgba(var(--accent-rgb), 0.10); color: var(--accent);
+            border: 1px solid rgba(var(--accent-rgb), 0.22); cursor: pointer; font-weight: 600;
+            transition: background .15s;
+        }
+        .btn-accent-soft:hover { background: rgba(var(--accent-rgb), 0.17); }
+
+        .btn-surface {
+            display: inline-flex; align-items: center; gap: 6px;
+            background: var(--bg-raised); color: var(--text-primary);
+            border: 1px solid var(--border); cursor: pointer; font-weight: 500;
+            transition: background .15s;
+        }
+        .btn-surface:hover { background: var(--bg-card); }
+
+        /* Links */
+        .ac-link        { color: var(--accent); text-decoration: none; }
+        .ac-link:hover  { opacity: .80; }
+
         /* ── Sidebar ────────────────────────────────────── */
         #sidebar         { background: var(--bg-surface); border-right: 1px solid var(--border); }
         .nav-section-label { color: var(--text-secondary); }
@@ -378,7 +420,7 @@
             <div>
                 <div class="px-3 mb-1.5 flex items-center justify-between">
                     <p class="nav-section-label text-xs uppercase tracking-widest font-semibold">My Team</p>
-                    <a href="{{ route('workers.deploy') }}" class="text-xs font-semibold" style="color:var(--accent)">+ Hire</a>
+                    <a href="{{ route('workers.deploy') }}" class="text-xs font-semibold" class="ac-text">+ Hire</a>
                 </div>
                 @forelse($deployments as $dep)
                     @php $isActive = request()->segment(2) == $dep->id; @endphp
@@ -398,7 +440,7 @@
                 @empty
                     <div class="mx-1 px-3 py-4 rounded-lg text-center" style="border:1px dashed var(--border)">
                         <p class="text-xs mb-1" style="color:var(--text-faint)">No employees hired yet</p>
-                        <a href="{{ route('workers.deploy') }}" class="text-xs font-semibold" style="color:var(--accent)">Hire your first →</a>
+                        <a href="{{ route('workers.deploy') }}" class="text-xs font-semibold" class="ac-text">Hire your first →</a>
                     </div>
                 @endforelse
             </div>

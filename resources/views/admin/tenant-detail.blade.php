@@ -136,7 +136,7 @@
                 {{-- Identity + source --}}
                 <div>
                     <div class="flex items-center gap-2 mb-2">
-                        <span class="text-xs font-semibold uppercase tracking-widest" style="color:var(--accent)">Referral Program</span>
+                        <span class="text-xs font-semibold uppercase tracking-widest" class="ac-text">Referral Program</span>
                         @if($referredBy)
                             <span class="text-xs px-2 py-0.5 rounded-full" style="background:rgba(var(--accent-rgb),0.12);border:1px solid rgba(var(--accent-rgb),0.25);color:var(--accent)">
                                 Referred by {{ $referredBy->name }}
@@ -161,7 +161,7 @@
                     <div class="flex items-center justify-between gap-4">
                         <div class="flex items-center gap-2 min-w-0">
                             <div class="w-5 h-5 rounded-md flex items-center justify-center text-xs font-bold shrink-0"
-                                 style="background:rgba(var(--accent-rgb),0.15);color:var(--accent)">{{ strtoupper(substr($ref->referee_name,0,1)) }}</div>
+                                 class="ac-on-soft-md">{{ strtoupper(substr($ref->referee_name,0,1)) }}</div>
                             <span class="text-white text-xs truncate">{{ $ref->referee_name }}</span>
                             <span class="text-xs shrink-0 px-1.5 py-0.5 rounded"
                                   style="background:{{ $ref->event === 'paid_conversion' ? 'rgba(74,222,128,0.12)' : 'rgba(var(--accent-rgb),0.10)' }};color:{{ $ref->event === 'paid_conversion' ? '#4ade80' : 'var(--accent)' }}">
@@ -170,7 +170,7 @@
                         </div>
                         <div class="text-right shrink-0">
                             @if($ref->credit_usd > 0)
-                                <span class="text-xs font-semibold" style="color:var(--accent)">+${{ number_format($ref->credit_usd,2) }}</span>
+                                <span class="text-xs font-semibold" class="ac-text">+${{ number_format($ref->credit_usd,2) }}</span>
                             @endif
                             <span class="text-xs ml-2" style="color:rgba(var(--accent-rgb),0.4)">{{ \Carbon\Carbon::parse($ref->created_at)->format('M j') }}</span>
                         </div>
@@ -693,7 +693,7 @@
                                     <input type="hidden" name="cta_url"   :value="ctaUrl">
                                     <div class="flex items-center gap-2">
                                         <span class="text-gray-600 text-xs">Preview:</span>
-                                        <span class="text-xs px-3 py-1 rounded-md font-semibold" style="background:var(--accent);color:#ffffff" x-text="ctaLabel"></span>
+                                        <span class="text-xs px-3 py-1 rounded-md font-semibold" class="ac-on" x-text="ctaLabel"></span>
                                     </div>
                                     <input type="text" x-model="ctaUrl" class="w-full text-xs px-2 py-1.5 rounded border border-gray-800 bg-gray-800 text-gray-400 focus:outline-none focus:border-brand font-mono">
                                 </div>

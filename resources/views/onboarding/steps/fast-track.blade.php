@@ -48,7 +48,7 @@
         {{-- CTA — immediately below success card --}}
         <a href="{{ route('onboarding.gmail-draft') }}"
            class="block w-full text-center font-black text-base py-4 rounded-xl transition-all mb-5"
-           style="background:var(--accent);color:#ffffff">
+           class="ac-on">
             See My Draft
         </a>
     </div>
@@ -67,7 +67,7 @@
                 @foreach($outcome['what_happened'] ?? [] as $i => $item)
                 <div class="flex items-start gap-3">
                     <div class="w-6 h-6 rounded-full flex items-center justify-center shrink-0 mt-0.5 text-xs font-bold text-gray-950"
-                         style="background:var(--accent)">{{ $i + 1 }}</div>
+                         class="ac-bg">{{ $i + 1 }}</div>
                     <p class="text-gray-300 text-sm leading-relaxed">{{ $item['text'] }}</p>
                 </div>
                 @endforeach
@@ -80,10 +80,10 @@
     <div class="bg-gray-900 border border-gray-800 rounded-2xl px-6 pt-5 pb-4 mb-5">
         <div class="flex items-center gap-2 mb-4">
             <div class="w-2 h-2 rounded-full animate-pulse" x-show="!success"
-                 style="background:var(--accent)"></div>
+                 class="ac-bg"></div>
             <div class="w-2 h-2 rounded-full bg-green-500" x-show="success" x-cloak></div>
             <p class="text-xs font-semibold uppercase tracking-widest" x-show="!success"
-               style="color:var(--accent-text)">Fast Track Pipeline</p>
+               class="ac-text">Fast Track Pipeline</p>
             <p class="text-green-400 text-xs font-semibold uppercase tracking-widest" x-show="success" x-cloak>Pipeline Complete</p>
             <span class="text-gray-700 text-xs font-mono ml-auto">{{ $activeTxId }}</span>
         </div>
@@ -119,7 +119,7 @@
 {{-- ── NOT YET RUN ── --}}
 
 <div class="mb-6">
-    <p class="text-xs font-bold uppercase tracking-widest mb-4" style="color:var(--accent-text)">Step 4 of 4 &nbsp;·&nbsp; First assignment</p>
+    <p class="text-xs font-bold uppercase tracking-widest mb-4" class="ac-text">Step 4 of 4 &nbsp;·&nbsp; First assignment</p>
     <h1 class="text-2xl font-black text-white mb-3 leading-snug">Watch Ava handle her first job.</h1>
     <p class="text-gray-400 text-sm leading-relaxed">Rather than explaining what Ava does...</p>
     <p class="text-gray-400 text-sm leading-relaxed mt-1">Let's watch her work.</p>
@@ -226,7 +226,7 @@
 
     <button type="submit" id="run-btn"
         class="w-full font-bold text-base py-4 rounded-xl transition-colors mb-3"
-        style="background:var(--accent);color:#ffffff">
+        class="ac-on">
         Run Test
     </button>
 </form>

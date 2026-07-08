@@ -6,7 +6,7 @@
       <h2 class="text-white font-semibold">Blog Posts</h2>
       <p class="text-gray-500 text-xs mt-0.5">Published posts appear on the public blog. Drafts are hidden.</p>
     </div>
-    <a href="{{ route('admin.blog.create') }}" class="text-xs px-4 py-2 rounded-lg font-semibold" style="background:var(--accent);color:#000">+ New Post</a>
+    <a href="{{ route('admin.blog.create') }}" class="text-xs px-4 py-2 rounded-lg font-semibold" class="ac-on">+ New Post</a>
   </div>
 
   @if(session('saved'))

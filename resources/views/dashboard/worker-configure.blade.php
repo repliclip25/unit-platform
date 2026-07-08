@@ -60,7 +60,7 @@
                                class="w-full bg-gray-800 text-white text-sm rounded-lg px-3 py-2.5 border border-gray-700 focus:outline-none focus:border-brand">
                     </div>
                     <div class="pt-2">
-                        <button type="submit" style="background:var(--accent);color:#000"
+                        <button type="submit" class="ac-on"
                                 class="text-sm font-medium rounded-lg px-5 py-2.5 transition hover:opacity-90">
                             Save Settings
                         </button>
@@ -88,7 +88,7 @@
                         <p class="text-gray-600 text-xs mt-1.5">Times are UTC. 8 AM UTC ≈ 4 AM ET / 1 AM PT — adjust based on your timezone.</p>
                     </div>
                     <div class="pt-1">
-                        <button type="submit" style="background:var(--accent);color:#000"
+                        <button type="submit" class="ac-on"
                                 class="text-sm font-medium rounded-lg px-5 py-2.5 transition hover:opacity-90">
                             Save Timing
                         </button>
@@ -184,7 +184,7 @@
                     </div>
 
                     <div>
-                        <button type="submit" style="background:var(--accent);color:#000"
+                        <button type="submit" class="ac-on"
                                 class="text-sm font-medium rounded-lg px-5 py-2.5 transition hover:opacity-90">
                             Save Guardrails
                         </button>
@@ -243,7 +243,7 @@
                                 </div>
                                 <div x-show="selected === '{{ $key }}'" x-cloak
                                      class="w-4 h-4 rounded-full flex items-center justify-center shrink-0"
-                                     style="background:var(--accent)">
+                                     class="ac-bg">
                                     <svg class="w-2.5 h-2.5" viewBox="0 0 12 12" fill="none">
                                         <path d="M2 6l3 3 5-5" stroke="#111" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
                                     </svg>
@@ -253,7 +253,7 @@
                         </div>
                         <button type="submit"
                                 class="px-4 py-2 rounded-lg text-sm font-semibold transition"
-                                style="background:var(--accent);color:#111">
+                                class="ac-on">
                             Save use case
                         </button>
                     </form>
@@ -372,7 +372,7 @@
                     @endforeach
 
                     <div class="pt-2 flex items-center gap-4">
-                        <button type="submit" style="background:var(--accent);color:#000"
+                        <button type="submit" class="ac-on"
                                 class="text-sm font-medium rounded-lg px-5 py-2.5 transition hover:opacity-90">
                             Save Prompt Overrides
                         </button>
@@ -403,7 +403,7 @@
                         </div>
                     </div>
                     <div class="px-5 py-4 border-t border-gray-800 flex gap-3">
-                        <button onclick="useDefaultAsStartingPoint()" style="background:var(--accent);color:#000"
+                        <button onclick="useDefaultAsStartingPoint()" class="ac-on"
                                 class="text-xs font-semibold rounded-lg px-4 py-2 transition hover:opacity-90">
                             Use as starting point
                         </button>
@@ -531,7 +531,7 @@
                     @endif
 
                     <button type="submit" class="w-full text-sm font-bold py-2.5 rounded-lg text-gray-900 hover:opacity-90 transition"
-                            style="background:var(--accent)">
+                            class="ac-bg">
                         Apply Model
                     </button>
                 </form>
@@ -628,7 +628,7 @@ async function testPrompt(stageKey, depId) {
                 <div class="bg-yellow-950 border border-yellow-700 rounded-xl p-4">
                     <p class="text-yellow-300 text-xs font-semibold mb-1">Free tests used up</p>
                     <p class="text-yellow-200 text-xs">${escHtml(data.error ?? 'You have used all free prompt tests.')}</p>
-                    ${data.subscribe ? `<a href="${escHtml(data.subscribe)}" class="inline-block mt-2 text-xs px-3 py-1 rounded" style="background:var(--accent);color:#000">Subscribe to continue</a>` : ''}
+                    ${data.subscribe ? `<a href="${escHtml(data.subscribe)}" class="inline-block mt-2 text-xs px-3 py-1 rounded" class="ac-on">Subscribe to continue</a>` : ''}
                 </div>`;
             return;
         }

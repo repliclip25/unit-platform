@@ -391,7 +391,7 @@
     <div style="position:absolute;inset:0;background:rgba(0,0,0,.55)" onclick="closeAddStep()"></div>
     <div style="position:relative;width:100%;max-width:520px;margin:20px;background:var(--bg-card);border:1px solid var(--border);border-radius:18px;padding:28px;max-height:90vh;overflow-y:auto">
         <div style="font-size:15px;font-weight:700;color:var(--text-primary);margin-bottom:4px">Add Onboarding Step</div>
-        <div style="font-size:12px;color:var(--text-muted);margin-bottom:20px">Adding to: <strong id="add-step-worker-label" style="color:var(--accent-text)"></strong></div>
+        <div style="font-size:12px;color:var(--text-muted);margin-bottom:20px">Adding to: <strong id="add-step-worker-label" class="ac-text"></strong></div>
         <input type="hidden" id="add-step-worker-slug">
         <div style="display:flex;flex-direction:column;gap:12px">
             <div>
@@ -493,8 +493,8 @@
                 <div class="ai-body-txt" id="rw-orig-body"></div>
             </div>
             <div class="ai-pane" style="border-color:rgba(241,211,98,.3)">
-                <div class="ai-pane-hd" style="color:var(--accent-text)">AI Suggestion</div>
-                <div class="ai-subject" id="rw-new-subj" style="color:var(--accent-text)"></div>
+                <div class="ai-pane-hd" class="ac-text">AI Suggestion</div>
+                <div class="ai-subject" id="rw-new-subj" class="ac-text"></div>
                 <div class="ai-body-txt" id="rw-new-body"></div>
             </div>
         </div>

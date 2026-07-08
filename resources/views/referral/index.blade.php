@@ -15,7 +15,7 @@
             <p class="text-gray-600 text-xs mt-1 uppercase tracking-wide">Signed up</p>
         </div>
         <div class="bg-gray-900 border border-gray-800 rounded-xl px-5 py-4 text-center">
-            <p class="font-bold text-3xl" style="color:var(--accent)">{{ $referral->converted }}</p>
+            <p class="font-bold text-3xl" class="ac-text">{{ $referral->converted }}</p>
             <p class="text-gray-600 text-xs mt-1 uppercase tracking-wide">Converted</p>
         </div>
         <div class="bg-gray-900 border border-gray-800 rounded-xl px-5 py-4 text-center">
@@ -28,7 +28,7 @@
     @if($referral->nextTier)
     <div class="bg-gray-900 border border-gray-800 rounded-xl px-5 py-4">
         <div class="flex items-center justify-between mb-2">
-            <span class="text-sm text-gray-400">Progress to <span class="font-semibold" style="color:var(--accent)">{{ $referral->tierLabel }}</span></span>
+            <span class="text-sm text-gray-400">Progress to <span class="font-semibold" class="ac-text">{{ $referral->tierLabel }}</span></span>
             <span class="text-sm text-gray-500">{{ $referral->converted }} / {{ $referral->nextTier }} conversions</span>
         </div>
         <div class="w-full h-2 rounded-full bg-gray-800">
@@ -39,7 +39,7 @@
     <div class="bg-gray-900 border border-gray-800 rounded-xl px-5 py-4 flex items-center gap-3">
         <span class="text-2xl">&#127942;</span>
         <div>
-            <p class="font-semibold" style="color:var(--accent)">Gold Referrer</p>
+            <p class="font-semibold" class="ac-text">Gold Referrer</p>
             <p class="text-gray-500 text-sm">10+ conversions — you're in the top tier.</p>
         </div>
     </div>
@@ -55,7 +55,7 @@
             </div>
             <button @click="navigator.clipboard.writeText('{{ $referralUrl }}'); copied=true; setTimeout(()=>copied=false,2500)"
                     class="shrink-0 text-sm px-5 py-2.5 rounded-lg font-bold transition"
-                    style="background:var(--accent);color:#ffffff">
+                    class="ac-on">
                 <span x-show="!copied">Copy Link</span>
                 <span x-show="copied">Copied &#10003;</span>
             </button>
@@ -149,7 +149,7 @@
                             <span class="text-xs px-2 py-0.5 rounded-full bg-gray-800 text-gray-500">{{ ucfirst($credit->event) }}</span>
                         @endif
                     </td>
-                    <td class="px-5 py-3 text-right font-mono" style="color:var(--accent)">
+                    <td class="px-5 py-3 text-right font-mono" class="ac-text">
                         ${{ number_format($credit->credit_usd ?? 0, 0) }}
                     </td>
                     <td class="px-5 py-3 text-right text-gray-600 text-xs">
@@ -171,21 +171,21 @@
         <p class="text-white font-semibold mb-4">How it works</p>
         <ol class="space-y-3">
             <li class="flex gap-3">
-                <span class="w-6 h-6 rounded-full flex items-center justify-center shrink-0 text-xs font-bold" style="background:rgba(var(--accent-rgb),0.15);color:var(--accent)">1</span>
+                <span class="w-6 h-6 rounded-full flex items-center justify-center shrink-0 text-xs font-bold" class="ac-on-soft-md">1</span>
                 <div>
                     <p class="text-sm text-gray-200 font-medium">Share your link</p>
                     <p class="text-xs text-gray-600 mt-0.5">Send it to anyone who does license renewal or compliance work.</p>
                 </div>
             </li>
             <li class="flex gap-3">
-                <span class="w-6 h-6 rounded-full flex items-center justify-center shrink-0 text-xs font-bold" style="background:rgba(var(--accent-rgb),0.15);color:var(--accent)">2</span>
+                <span class="w-6 h-6 rounded-full flex items-center justify-center shrink-0 text-xs font-bold" class="ac-on-soft-md">2</span>
                 <div>
                     <p class="text-sm text-gray-200 font-medium">They sign up and get 20 free transactions</p>
                     <p class="text-xs text-gray-600 mt-0.5">Double the usual free trial — a meaningful incentive to try it.</p>
                 </div>
             </li>
             <li class="flex gap-3">
-                <span class="w-6 h-6 rounded-full flex items-center justify-center shrink-0 text-xs font-bold" style="background:rgba(var(--accent-rgb),0.15);color:var(--accent)">3</span>
+                <span class="w-6 h-6 rounded-full flex items-center justify-center shrink-0 text-xs font-bold" class="ac-on-soft-md">3</span>
                 <div>
                     <p class="text-sm text-gray-200 font-medium">You earn $25 credit when they subscribe</p>
                     <p class="text-xs text-gray-600 mt-0.5">Applied to your UNIT account automatically. No cap on earnings.</p>

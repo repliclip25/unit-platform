@@ -5,7 +5,7 @@
 @endphp
 
 {{-- Eyebrow --}}
-<p class="text-xs font-bold uppercase tracking-widest mb-5" style="color:var(--accent-text)">
+<p class="text-xs font-bold uppercase tracking-widest mb-5" class="ac-text">
     Step 1 of 4 &nbsp;·&nbsp; Give Ava access
 </p>
 
@@ -36,7 +36,7 @@
     @csrf
     <button type="submit"
             class="w-full font-bold text-base py-4 rounded-xl transition-colors"
-            style="background:var(--accent);color:#1a1a1a">
+            class="ac-on">
         Continue
     </button>
 </form>

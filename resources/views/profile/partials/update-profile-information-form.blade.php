@@ -43,7 +43,7 @@
     <div class="pt-1">
         <button type="submit"
                 class="px-5 py-2 rounded-lg text-sm font-bold transition hover:opacity-90"
-                style="background:var(--accent);color:#000">
+                class="ac-on">
             Save changes
         </button>
     </div>

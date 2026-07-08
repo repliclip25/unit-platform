@@ -26,7 +26,7 @@
             <option value="{{ $s }}" @selected($req->status === $s)>{{ ucfirst($s) }}</option>
           @endforeach
         </select>
-        <button type="submit" class="text-xs px-3 py-2 rounded-lg font-semibold" style="background:var(--accent);color:#000">Save</button>
+        <button type="submit" class="text-xs px-3 py-2 rounded-lg font-semibold" class="ac-on">Save</button>
       </form>
     </div>
     <div class="mt-3 flex items-center gap-3 text-xs text-gray-600">
