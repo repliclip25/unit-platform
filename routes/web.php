@@ -164,11 +164,6 @@ Route::middleware(['auth', 'verified', 'onboarded', 'not-pending-del'])->group(f
     Route::post('/memory/import/preview',         [MemoryController::class, 'importPreview'])->name('memory.import.preview');
     Route::post('/memory/import/commit',          [MemoryController::class, 'importCommit'])->name('memory.import.commit');
 
-    // ── Email Templates ─────────────────────────────────────────────────────
-    Route::get('/templates',        [WorkerTemplateController::class, 'index'])->name('templates');
-    Route::post('/templates',       [WorkerTemplateController::class, 'store'])->name('templates.store');
-    Route::delete('/templates/{id}',[WorkerTemplateController::class, 'destroy'])->name('templates.destroy');
-
     // ── Worker Deployments ──────────────────────────────────────────────────
     Route::get('/workers',                                           [WorkerController::class, 'index'])->name('workers.deploy');
     Route::post('/workers',                                          [WorkerController::class, 'store'])->name('workers.store');

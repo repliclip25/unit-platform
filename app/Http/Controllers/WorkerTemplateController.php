@@ -8,30 +8,6 @@ use Illuminate\Support\Facades\Mail;
 
 class WorkerTemplateController extends Controller
 {
-    // ── Global /templates routes ──────────────────────────────────────────────
-
-    public function index()
-    {
-        $userId    = auth()->id();
-        $templates = DB::table('email_templates')->where(function ($q) use ($userId) {
-            $q->where('user_id', $userId)->orWhereNull('user_id');
-        })->orderBy('category')->get();
-        return view('dashboard.templates', compact('templates'));
-    }
-
-    public function store(Request $request)
-    {
-        $request->validate(['name' => 'required', 'category' => 'required', 'subject_template' => 'required', 'body_template' => 'required']);
-        DB::table('email_templates')->insert(['user_id' => auth()->id(), 'name' => $request->name, 'category' => $request->category, 'tone' => $request->tone ?? 'Professional, concise', 'subject_template' => $request->subject_template, 'body_template' => $request->body_template, 'approval_required' => $request->boolean('approval_required'), 'is_default' => false, 'active' => true, 'created_at' => now(), 'updated_at' => now()]);
-        return back()->with('success', 'Template saved.');
-    }
-
-    public function destroy(int $id)
-    {
-        DB::table('email_templates')->where('id', $id)->where('user_id', auth()->id())->delete();
-        return back()->with('success', 'Template removed.');
-    }
-
     // ── Worker-scoped /workers/{slug}/templates routes ────────────────────────
 
     public function workerIndex(string $slug)
