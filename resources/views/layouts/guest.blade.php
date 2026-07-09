@@ -26,11 +26,11 @@
             --input-border: rgba(255,255,255,0.15);
             --input-text:   #ffffff;
             --input-ph:     #555555;
-            --link-color:   #142C74;
+            --link-color:   #93aee8;
             --accent:      #142C74;
-            --accent-rgb:  241, 211, 98;
+            --accent-rgb:  20, 44, 116;
             --accent-dark: #0e2260;
-            --accent-text: #142C74;
+            --accent-text: #93aee8;
         }
         [data-theme="light"] {
             --bg-base:      #f9f9f7;
@@ -47,11 +47,11 @@
             --input-border: #e2e2e0;
             --input-text:   #000000;
             --input-ph:     #999999;
-            --link-color:   #7a5c00;
+            --link-color:   var(--gold);
             --accent:      #142C74;
-            --accent-rgb:  241, 211, 98;
+            --accent-rgb:  20, 44, 116;
             --accent-dark: #0e2260;
-            --accent-text: #7a5c00;
+            --accent-text: var(--gold);
         }
 
         body {

@@ -202,7 +202,7 @@ footer .fa{color:var(--gold)}
 }
 /* Light theme — gold text → dark amber, gold bg icons → yellow with black icons */
 [data-theme="light"] .brand{color:var(--gold-text)!important}
-[data-theme="light"] .eyebrow{color:var(--gold-text)!important;border-color:rgba(122,92,0,0.25)!important;background:rgba(122,92,0,0.06)!important}
+[data-theme="light"] .eyebrow{color:var(--gold-text)!important;border-color:rgba(20,44,116,0.25)!important;background:rgba(122,92,0,0.06)!important}
 [data-theme="light"] h1 .gold{color:var(--gold-text)!important}
 [data-theme="light"] .sec-label{color:var(--gold-text)!important}
 [data-theme="light"] .htrust svg{color:var(--gold-text)!important}

@@ -21,7 +21,7 @@
   --bg:#080810;
 }
 [data-theme="light"]{
-  --gold-text:#7a5c00;
+  --gold-text:var(--gold);
   --text:#000000;--t2:#1a1a1a;--t3:#555555;--t4:#999999;
   --line:#e2e2e0;--line2:#cccccc;
   --surf:#f0f0ee;--raised:#e6e6e4;--card:#ffffff;
@@ -57,7 +57,7 @@ header#nav{position:sticky;top:0;left:0;right:0;z-index:300;transition:backgroun
 [data-theme="dark"] .tog::after{transform:translateX(16px)}
 
 /* ── SHARED COMPONENTS ── */
-.eyebrow{display:inline-flex;align-items:center;gap:9px;border:1px solid rgba(243,197,49,0.28);background:rgba(243,197,49,0.06);color:var(--gold);font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:7px 15px;border-radius:100px;margin-bottom:28px}
+.eyebrow{display:inline-flex;align-items:center;gap:9px;border:1px solid rgba(20,44,116,0.28);background:rgba(20,44,116,0.06);color:var(--gold);font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:7px 15px;border-radius:100px;margin-bottom:28px}
 .slabel{font-size:11px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--gold-text);margin-bottom:12px}
 .sh2{font-family:var(--fd);font-size:44px;font-weight:800;letter-spacing:-1.5px;line-height:1.06;margin-bottom:14px}
 .ssub{font-size:16px;line-height:1.65;color:var(--t2)}
@@ -96,8 +96,8 @@ footer{background:rgba(4,4,10,0.99);border-top:1px solid rgba(255,255,255,0.08);
 [data-theme="light"] .nl a:hover,[data-theme="light"] .nl a.active{color:#000000!important}
 [data-theme="light"] .brand{color:#000000!important}
 [data-theme="light"] .btn-ln{color:#444444!important;border-color:#cccccc!important}
-[data-theme="light"] .btn-ln:hover{color:#7a5c00!important;border-color:#7a5c00!important}
-[data-theme="light"] .slabel{color:#7a5c00!important}
+[data-theme="light"] .btn-ln:hover{color:var(--gold)!important;border-color:var(--gold)!important}
+[data-theme="light"] .slabel{color:var(--gold)!important}
 [data-theme="light"] .sh2{color:#000000!important}
 [data-theme="light"] .ssub{color:#555555!important}
 [data-theme="light"] .sec-dark{background:#f0f0ee!important;border-color:#e2e2e0!important}

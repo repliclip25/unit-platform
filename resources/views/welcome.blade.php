@@ -411,12 +411,12 @@ svg{display:block}
 [data-theme="light"] .stats-row{border-color:#e2e2e0!important}
 /* Sections */
 [data-theme="light"] .sec-dark{background:#f0f0ee!important;border-color:#e2e2e0!important}
-[data-theme="light"] .slabel{color:#7a5c00!important}
+[data-theme="light"] .slabel{color:var(--gold)!important}
 [data-theme="light"] .sh2{color:#000000!important}
 [data-theme="light"] .ssub{color:#555555!important}
 [data-theme="light"] .btn-ln{color:#444444!important;border-color:#cccccc!important}
-[data-theme="light"] .btn-ln:hover{color:#7a5c00!important;border-color:#7a5c00!important}
-[data-theme="light"] .univ-stat-n{color:#7a5c00!important}
+[data-theme="light"] .btn-ln:hover{color:var(--gold)!important;border-color:var(--gold)!important}
+[data-theme="light"] .univ-stat-n{color:var(--gold)!important}
 [data-theme="light"] .tstat-n{color:#000000!important}
 [data-theme="light"] .tstat-l{color:#555555!important}
 /* Feature/step icons — yellow bg with black icon */

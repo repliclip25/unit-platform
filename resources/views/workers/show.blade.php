@@ -259,12 +259,12 @@ footer .fa-gold{color:var(--gold)}
 [data-theme="light"] .btn-gh{color:#555555!important;background:none!important}
 [data-theme="light"] .btn-gh:hover{color:#000000!important}
 [data-theme="light"] .tog{background:#cccccc!important}
-[data-theme="light"] .slabel{color:#7a5c00!important}
+[data-theme="light"] .slabel{color:var(--gold)!important}
 [data-theme="light"] .sh2{color:#000000!important}
 [data-theme="light"] h1.wh{color:#000000!important}
-[data-theme="light"] h1.wh em{color:#7a5c00!important}
+[data-theme="light"] h1.wh em{color:var(--gold)!important}
 [data-theme="light"] .hero-sub{color:#444444!important}
-[data-theme="light"] .hero-badge{color:#7a5c00!important;border-color:rgba(122,92,0,0.25)!important;background:rgba(122,92,0,0.07)!important}
+[data-theme="light"] .hero-badge{color:var(--gold)!important;border-color:rgba(20,44,116,0.25)!important;background:rgba(20,44,116,0.07)!important}
 [data-theme="light"] .org-chip{color:#000000!important;border-color:rgba(0,0,0,0.15)!important;background:var(--gold)!important}
 /* Stats card numbers — black on light card */
 [data-theme="light"] .hsc-n{color:#000000!important}
@@ -278,9 +278,9 @@ footer .fa-gold{color:var(--gold)}
 [data-theme="light"] .step-icon svg,
 [data-theme="light"] .pd-step-icon svg,
 [data-theme="light"] .pipe-icon svg{color:#000000!important;stroke:#000000!important}
-[data-theme="light"] .fa-gold{color:#7a5c00!important}
+[data-theme="light"] .fa-gold{color:var(--gold)!important}
 [data-theme="light"] .btn-ln{color:#444444!important;border-color:#cccccc!important}
-[data-theme="light"] .btn-ln:hover{color:#7a5c00!important;border-color:#7a5c00!important}
+[data-theme="light"] .btn-ln:hover{color:var(--gold)!important;border-color:var(--gold)!important}
 [data-theme="light"] .pipeline-sec{border-color:#e2e2e0!important}
 /* Footer always dark — force light text regardless of theme */
 footer{background:rgba(4,4,10,0.99)!important;color:#aaaaaa!important}
