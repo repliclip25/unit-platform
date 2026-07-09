@@ -89,10 +89,10 @@
     border-radius:12px;padding:14px 18px;margin-bottom:36px;
     display:flex;gap:11px;align-items:flex-start;
 }
-[data-theme="dark"]  .pc-note { background:rgba(241,211,98,.05);border:1px solid rgba(241,211,98,.16) }
-[data-theme="light"] .pc-note { background:#fffbea;border:1px solid #f0d96e }
+[data-theme="dark"]  .pc-note { background:rgba(20,44,116,.08);border:1px solid rgba(20,44,116,.22) }
+[data-theme="light"] .pc-note { background:#eef1fa;border:1px solid rgba(20,44,116,.25) }
 .pc-note p { font-size:13px;color:var(--t2);line-height:1.6;margin:0 }
-[data-theme="light"] .pc-note p { color:#4a3a00 }
+[data-theme="light"] .pc-note p { color:#1a2a5e }
 
 /* FAQ */
 .faq-wrap { max-width:640px;margin:0 auto }

@@ -8,17 +8,17 @@
 .mkt-search-wrap{padding:48px 0 0}
 .mkt-search-box{position:relative;max-width:540px}
 .mkt-search-box input{width:100%;padding:13px 20px 13px 48px;border-radius:12px;border:1px solid var(--line2);background:var(--card);color:var(--text);font-size:15px;outline:none;transition:border-color .2s;font-family:var(--fb)}
-.mkt-search-box input:focus{border-color:rgba(241,211,98,0.5)}
+.mkt-search-box input:focus{border-color:rgba(20,44,116,0.5)}
 .mkt-search-box input::placeholder{color:var(--t4)}
 .mkt-search-icon{position:absolute;left:16px;top:50%;transform:translateY(-50%);color:var(--t4)}
 .filter-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
 .filter-btn{font-size:12.5px;font-weight:600;padding:6px 14px;border-radius:20px;border:1px solid var(--line);background:transparent;color:var(--t3);cursor:pointer;transition:all .15s;font-family:var(--fb)}
-.filter-btn.active,.filter-btn:hover{background:rgba(241,211,98,0.1);border-color:rgba(241,211,98,0.4);color:var(--gold-text)}
+.filter-btn.active,.filter-btn:hover{background:rgba(20,44,116,0.1);border-color:rgba(20,44,116,0.4);color:var(--gold-text)}
 
 /* ── Worker Card Grid ── */
 .worker-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:20px;margin-top:40px;padding-bottom:60px}
 .wk-card{background:var(--card);border:1px solid var(--line);border-radius:18px;overflow:hidden;display:flex;flex-direction:column;transition:border-color .2s,box-shadow .2s}
-.wk-card:hover{border-color:rgba(241,211,98,0.3);box-shadow:0 12px 40px rgba(0,0,0,0.3)}
+.wk-card:hover{border-color:rgba(20,44,116,0.3);box-shadow:0 12px 40px rgba(0,0,0,0.3)}
 .wk-card-head{padding:24px 24px 0}
 .wk-card-identity{display:flex;align-items:center;gap:14px;margin-bottom:16px}
 .wk-av{width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-family:var(--fd);font-weight:800;font-size:22px;flex-shrink:0}
@@ -45,7 +45,7 @@
 .req-form{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:36px}
 .req-form label{display:block;font-size:11.5px;font-weight:700;letter-spacing:.5px;color:var(--t3);margin-bottom:6px;text-transform:uppercase}
 .req-in{width:100%;padding:11px 14px;border-radius:9px;border:1px solid var(--line);background:var(--raised);color:var(--text);font-size:14px;outline:none;transition:border-color .2s;font-family:var(--fb);margin-bottom:16px}
-.req-in:focus{border-color:rgba(241,211,98,0.5)}
+.req-in:focus{border-color:rgba(20,44,116,0.5)}
 .req-in::placeholder{color:var(--t4)}
 textarea.req-in{resize:vertical;min-height:100px;line-height:1.6}
 .req-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
@@ -260,7 +260,7 @@ textarea.req-in{resize:vertical;min-height:100px;line-height:1.6}
             ['<path d="M13 10V3L4 14h7v7l9-11h-7z"/>','We scope and build if it fits'],
           ] as [$ico, $step])
           <div style="display:flex;align-items:center;gap:14px">
-            <div style="width:36px;height:36px;border-radius:9px;background:rgba(241,211,98,0.08);border:1px solid rgba(241,211,98,0.18);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+            <div style="width:36px;height:36px;border-radius:9px;background:rgba(20,44,116,0.08);border:1px solid rgba(20,44,116,0.18);display:flex;align-items:center;justify-content:center;flex-shrink:0">
               <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" style="color:var(--gold-text)">{!! $ico !!}</svg>
             </div>
             <span style="font-size:14px;color:var(--t2)">{{ $step }}</span>
