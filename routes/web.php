@@ -469,17 +469,3 @@ Route::get('/influencer/apply',  [InfluencerController::class, 'apply'])->name('
 Route::post('/influencer/apply', [InfluencerController::class, 'submitApplication'])->name('influencer.apply.submit');
 
 require __DIR__.'/auth.php';
-
-// TEMP DEBUG — remove after confirming OAuth URI
-Route::get('/__oauth_debug', function () {
-    $redirect = \Laravel\Socialite\Facades\Socialite::driver('google')->redirect()->getTargetUrl();
-    parse_str(parse_url($redirect, PHP_URL_QUERY), $params);
-    return response()->json([
-        'redirect_uri_sent_to_google' => $params['redirect_uri'] ?? 'not found',
-        'config_services_google_redirect' => config('services.google.redirect'),
-        'app_url' => config('app.url'),
-        'request_is_secure' => request()->isSecure(),
-        'x_forwarded_proto' => request()->header('X-Forwarded-Proto'),
-        'full_oauth_url' => $redirect,
-    ]);
-})->middleware('web');
