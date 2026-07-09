@@ -99,6 +99,12 @@
         [data-theme="dark"]  .theme-toggle::after { transform: translateX(16px); }
         [data-theme="light"] .theme-toggle::after { transform: translateX(0); }
 
+        /* Accent utilities (mirrors app.blade.php) */
+        .ac-on { background: var(--accent); color: #ffffff; border: none; }
+        .ac-on:hover { opacity: .88; }
+        .ac-text { color: var(--accent); }
+        .ac-bg   { background: var(--accent); }
+
         @media(max-width:480px){
             .auth-input { padding: 10px 14px; font-size: 0.8125rem; }
             .space-y-5 > * + * { margin-top: 14px; }
