@@ -11,6 +11,10 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        // Trust all proxies — Forge runs Laravel behind nginx with SSL termination.
+        // Without this, Laravel generates http:// URLs even when behind HTTPS.
+        $middleware->trustProxies(at: '*');
+
         $middleware->validateCsrfTokens(except: [
             'workers/ava/test',
             'workers/ava/gmail/webhook',
