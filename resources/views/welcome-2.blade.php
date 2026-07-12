@@ -659,7 +659,7 @@ body{
     <ul class="nav-links">
       <li><a href="#workers">Meet the Team</a></li>
       <li><a href="#how-it-works">How It Works</a></li>
-      <li><a href="{{ route('public.pricing') }}">Pricing</a></li>
+      <li><a href="{{ route('pricing') }}">Pricing</a></li>
       <li><a href="{{ route('marketplace') }}">Marketplace</a></li>
     </ul>
 
@@ -693,7 +693,7 @@ body{
   <ul class="mobile-nav-links">
     <li><a href="#workers" onclick="closeMobileMenu()">Meet the Team</a></li>
     <li><a href="#how-it-works" onclick="closeMobileMenu()">How It Works</a></li>
-    <li><a href="{{ route('public.pricing') }}" onclick="closeMobileMenu()">Pricing</a></li>
+    <li><a href="{{ route('pricing') }}" onclick="closeMobileMenu()">Pricing</a></li>
     <li><a href="{{ route('marketplace') }}" onclick="closeMobileMenu()">Marketplace</a></li>
   </ul>
   <div class="mobile-nav-ctas">
@@ -802,7 +802,7 @@ body{
           <div class="worker-card-name" style="color:var(--ava)">AVA</div>
           <div class="worker-card-role">Renewal Coordinator</div>
           <p class="worker-card-quote">"I remember the renewals everyone else forgets. Every deadline. Every client. Every time."</p>
-          <a href="{{ route('workers.public', 'ava') }}" class="btn-worker" style="background:var(--ava)">
+          <a href="{{ route('workers.public.show', 'ava') }}" class="btn-worker" style="background:var(--ava)">
             Meet AVA
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
           </a>
@@ -998,7 +998,7 @@ body{
       <div>
         <div class="footer-col-title">Workers</div>
         <ul class="footer-links">
-          <li><a href="{{ route('workers.public', 'ava') }}">AVA — Renewal Coordinator</a></li>
+          <li><a href="{{ route('workers.public.show', 'ava') }}">AVA — Renewal Coordinator</a></li>
           <li><a href="{{ route('marketplace') }}">All Workers</a></li>
           <li><a href="{{ route('referral.index') }}">Refer &amp; Earn</a></li>
         </ul>
@@ -1008,7 +1008,7 @@ body{
         <ul class="footer-links">
           <li><a href="#how-it-works">How It Works</a></li>
           <li><a href="{{ route('marketplace') }}">Marketplace</a></li>
-          <li><a href="{{ route('public.pricing') }}">Pricing</a></li>
+          <li><a href="{{ route('pricing') }}">Pricing</a></li>
           <li><a href="{{ route('register') }}">Sign Up Free</a></li>
         </ul>
       </div>
