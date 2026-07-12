@@ -99,9 +99,14 @@ body{
   grid-template-columns:1fr 1fr;
   overflow:hidden;
 }
+/* Left column: align to same left edge as nav logo inside .w */
 .hero-left{
   display:flex;align-items:center;
-  padding:clamp(48px,6vw,80px) clamp(20px,5vw,64px) clamp(48px,6vw,80px) clamp(20px,6vw,80px);
+  /* right padding keeps gap from image; left uses same var(--pad) as nav .w */
+  padding:clamp(48px,6vw,80px) clamp(32px,4vw,56px) clamp(48px,6vw,80px) var(--pad);
+  /* cap so text doesn't stretch too wide on very large viewports */
+  max-width:calc(var(--max)/2 + (100vw - var(--max))/2);
+  margin-left:auto;
 }
 .hero-left-inner{max-width:520px}
 .hero-h{
@@ -137,15 +142,17 @@ body{
 .hero-proof{display:flex;align-items:center;gap:12px}
 .proof-avs{display:flex}
 .proof-avs img{
-  width:32px;height:32px;border-radius:50%;
+  width:34px;height:34px;border-radius:50%;
   border:2px solid #fff;margin-left:-8px;
+  outline:1.5px solid #d1d5db;
   object-fit:cover;object-position:center top;
   flex-shrink:0;
+  box-shadow:0 1px 4px rgba(0,0,0,.12);
 }
 .proof-avs img:first-child{margin-left:0}
 .proof-txt{font-size:13px;color:var(--t3);line-height:1.5}
 .proof-txt strong{color:var(--text);display:block}
-/* Hero image — bleeds to right edge, no padding, no radius */
+/* Hero image — bleeds to right edge, white gradient fades left edge into text */
 .hero-right{
   position:relative;
   overflow:hidden;
@@ -156,6 +163,13 @@ body{
   object-position:center top;
   display:block;
   min-height:520px;
+}
+/* White fade on left edge blends image into the white text panel */
+.hero-right::after{
+  content:'';
+  position:absolute;inset:0;
+  background:linear-gradient(to right,rgba(255,255,255,.85) 0%,rgba(255,255,255,.3) 20%,transparent 45%);
+  pointer-events:none;
 }
 .hero-badge{
   position:absolute;bottom:28px;right:28px;
