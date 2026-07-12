@@ -468,4 +468,7 @@ Route::get('/referral', [ReferralController::class, 'index'])->name('referral.in
 Route::get('/influencer/apply',  [InfluencerController::class, 'apply'])->name('influencer.apply');
 Route::post('/influencer/apply', [InfluencerController::class, 'submitApplication'])->name('influencer.apply.submit');
 
+// ── Homepage A/B test
+Route::get('/home2', fn() => view('welcome-2'))->name('home2');
+
 require __DIR__.'/auth.php';
