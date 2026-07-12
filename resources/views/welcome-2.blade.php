@@ -300,37 +300,42 @@ body{
 .btn-wk:hover{opacity:.85;transform:translateY(-1px)}
 
 /* ── TIMELINE ── */
-.timeline-sec{background:var(--soft);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.timeline-sec{background:var(--soft);border-bottom:1px solid var(--border)}
 .tl{
   display:grid;grid-template-columns:repeat(5,1fr);
   gap:0;position:relative;margin-top:clamp(40px,5vw,64px);
 }
+/* connecting line */
 .tl::before{
   content:'';position:absolute;
-  top:26px;left:10%;right:10%;height:1px;
-  background:linear-gradient(90deg,transparent,var(--border),var(--border),var(--border),transparent);
+  top:32px;left:12%;right:12%;height:2px;
+  background:repeating-linear-gradient(90deg,var(--border) 0,var(--border) 6px,transparent 6px,transparent 12px);
 }
-/* arrows between nodes */
-.tl-arrow{
-  position:absolute;top:18px;
+.tl-item{display:flex;flex-direction:column;align-items:center;text-align:center;padding:0 8px;position:relative}
+/* arrow between items — shows on all except last */
+.tl-item:not(:last-child)::after{
+  content:'';
+  position:absolute;
+  top:24px;right:-10px;
   width:0;height:0;
   border-top:8px solid transparent;
   border-bottom:8px solid transparent;
-  border-left:10px solid var(--border);
+  border-left:10px solid #CBD5E1;
+  z-index:2;
 }
-.tl-item{display:flex;flex-direction:column;align-items:center;text-align:center;padding:0 8px}
 .tl-node{
-  width:52px;height:52px;border-radius:50%;
-  background:#fff;border:1px solid var(--border);
+  width:64px;height:64px;border-radius:50%;
+  background:#fff;border:1.5px solid var(--border);
   display:flex;align-items:center;justify-content:center;
-  position:relative;z-index:1;margin-bottom:16px;
+  position:relative;z-index:1;margin-bottom:18px;
   flex-shrink:0;
+  box-shadow:0 2px 8px rgba(0,0,0,.06);
 }
-.tl-node svg{width:20px;height:20px}
-.tl-time{font-size:11px;font-weight:700;letter-spacing:.04em;margin-bottom:6px}
-.tl-evt{font-size:13px;color:var(--t3);line-height:1.6}
-.tl-evt strong{color:var(--text);display:block;margin-bottom:2px;font-weight:600}
-.tl-item:last-child .tl-node{background:var(--brand);border-color:var(--brand)}
+.tl-node svg{width:26px;height:26px}
+.tl-time{font-size:13px;font-weight:700;letter-spacing:.03em;margin-bottom:7px}
+.tl-evt{font-size:14.5px;color:var(--t3);line-height:1.6}
+.tl-evt strong{color:var(--text);display:block;margin-bottom:2px;font-weight:700}
+.tl-item:last-child .tl-node{background:var(--brand);border-color:var(--brand);box-shadow:0 4px 16px rgba(76,29,149,.3)}
 .tl-item:last-child .tl-node svg{color:#fff!important;stroke:#fff!important}
 
 /* ── LIFECYCLE ── */
