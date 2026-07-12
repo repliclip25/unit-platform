@@ -249,19 +249,41 @@ body{
 .badge-txt span{color:var(--t3);font-weight:400;font-size:12px}
 
 /* ── TRUST BAR ── */
-.trust{
-  border-top:1px solid var(--border);
-  border-bottom:1px solid var(--border);
-  padding:22px 0;background:var(--soft);
+/* ── ACTIVITY FEED TICKER ── */
+.activity-feed{
+  background:#0A0A0A;
+  border-top:1px solid #1F1F1F;
+  border-bottom:1px solid #1F1F1F;
+  padding:0;overflow:hidden;position:relative;
 }
-.trust-i{
-  display:flex;align-items:center;justify-content:center;
-  gap:clamp(20px,4vw,52px);flex-wrap:wrap;
+.activity-feed::before,.activity-feed::after{
+  content:'';position:absolute;top:0;bottom:0;width:80px;z-index:2;pointer-events:none;
 }
-.trust-lbl{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--t4)}
-.trust-items{display:flex;align-items:center;gap:clamp(16px,3vw,40px);flex-wrap:wrap}
-.trust-item{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--t3)}
-.stars{color:#111;font-size:10px;letter-spacing:1px}
+.activity-feed::before{left:0;background:linear-gradient(to right,#0A0A0A,transparent)}
+.activity-feed::after{right:0;background:linear-gradient(to left,#0A0A0A,transparent)}
+.feed-track{
+  display:flex;align-items:center;gap:0;
+  width:max-content;
+  animation:feedScroll 38s linear infinite;
+}
+.feed-track:hover{animation-play-state:paused}
+@keyframes feedScroll{
+  0%{transform:translateX(0)}
+  100%{transform:translateX(-50%)}
+}
+.feed-item{
+  display:flex;align-items:center;gap:10px;
+  padding:14px 32px;
+  border-right:1px solid #1F1F1F;
+  white-space:nowrap;flex-shrink:0;
+}
+.feed-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.feed-dot.green{background:#22C55E;box-shadow:0 0 6px rgba(34,197,94,.6)}
+.feed-dot.blue{background:#3B82F6;box-shadow:0 0 6px rgba(59,130,246,.6)}
+.feed-dot.amber{background:#F59E0B;box-shadow:0 0 6px rgba(245,158,11,.6)}
+.feed-worker{font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase}
+.feed-action{font-size:12.5px;color:rgba(255,255,255,.55)}
+.feed-time{font-size:11px;color:rgba(255,255,255,.25);margin-left:4px}
 
 /* ── SECTION ATOMS ── */
 .sec{padding:clamp(60px,8vw,100px) 0}
@@ -816,15 +838,130 @@ body{
   </div>
 </section>
 
-<!-- TRUST -->
-<div class="trust">
-  <div class="w trust-i">
-    <span class="trust-lbl">Trusted by teams who want more done</span>
-    <div class="trust-items">
-      <div class="trust-item"><span class="stars">★★★★★</span> G2</div>
-      <div class="trust-item"><span class="stars">★★★★★</span> Capterra</div>
-      <div class="trust-item"><span class="stars">★★★★★</span> Google</div>
-      <div class="trust-item"><span class="stars">★★★★★</span> Trustpilot</div>
+<!-- ACTIVITY FEED TICKER -->
+<div class="activity-feed">
+  <div class="feed-track">
+    <!-- set 1 -->
+    <div class="feed-item">
+      <span class="feed-dot green"></span>
+      <span class="feed-worker" style="color:#4C1D95">AVA</span>
+      <span class="feed-action">Renewal drafted for Apex Property Group</span>
+      <span class="feed-time">3s ago</span>
+    </div>
+    <div class="feed-item">
+      <span class="feed-dot green"></span>
+      <span class="feed-worker" style="color:#fff">DOX</span>
+      <span class="feed-action">1,247 lease files sorted and tagged</span>
+      <span class="feed-time">14m ago</span>
+    </div>
+    <div class="feed-item">
+      <span class="feed-dot amber"></span>
+      <span class="feed-worker" style="color:#fff">MOX</span>
+      <span class="feed-action">Brand mention found on LinkedIn — flagged for review</span>
+      <span class="feed-time">1m ago</span>
+    </div>
+    <div class="feed-item">
+      <span class="feed-dot green"></span>
+      <span class="feed-worker" style="color:#fff">NUX</span>
+      <span class="feed-action">Campaign published across 3 channels</span>
+      <span class="feed-time">22m ago</span>
+    </div>
+    <div class="feed-item">
+      <span class="feed-dot green"></span>
+      <span class="feed-worker" style="color:#4C1D95">AVA</span>
+      <span class="feed-action">Follow-up sent to Sunrise LLC · renewal confirmed</span>
+      <span class="feed-time">8m ago</span>
+    </div>
+    <div class="feed-item">
+      <span class="feed-dot blue"></span>
+      <span class="feed-worker" style="color:#fff">DOX</span>
+      <span class="feed-action">Contract uploaded · client folder updated automatically</span>
+      <span class="feed-time">31m ago</span>
+    </div>
+    <div class="feed-item">
+      <span class="feed-dot green"></span>
+      <span class="feed-worker" style="color:#fff">MOX</span>
+      <span class="feed-action">National Coffee Day opportunity surfaced — sent to team</span>
+      <span class="feed-time">2h ago</span>
+    </div>
+    <div class="feed-item">
+      <span class="feed-dot green"></span>
+      <span class="feed-worker" style="color:#4C1D95">AVA</span>
+      <span class="feed-action">3 renewals processed before 9 AM · zero missed</span>
+      <span class="feed-time">today</span>
+    </div>
+    <div class="feed-item">
+      <span class="feed-dot amber"></span>
+      <span class="feed-worker" style="color:#fff">NUX</span>
+      <span class="feed-action">Content repurposed from last week's report · 6 posts ready</span>
+      <span class="feed-time">45m ago</span>
+    </div>
+    <div class="feed-item">
+      <span class="feed-dot blue"></span>
+      <span class="feed-worker" style="color:#fff">DOX</span>
+      <span class="feed-action">Duplicate files removed · 340 MB recovered</span>
+      <span class="feed-time">1h ago</span>
+    </div>
+    <!-- set 2 — exact clone for seamless loop -->
+    <div class="feed-item">
+      <span class="feed-dot green"></span>
+      <span class="feed-worker" style="color:#4C1D95">AVA</span>
+      <span class="feed-action">Renewal drafted for Apex Property Group</span>
+      <span class="feed-time">3s ago</span>
+    </div>
+    <div class="feed-item">
+      <span class="feed-dot green"></span>
+      <span class="feed-worker" style="color:#fff">DOX</span>
+      <span class="feed-action">1,247 lease files sorted and tagged</span>
+      <span class="feed-time">14m ago</span>
+    </div>
+    <div class="feed-item">
+      <span class="feed-dot amber"></span>
+      <span class="feed-worker" style="color:#fff">MOX</span>
+      <span class="feed-action">Brand mention found on LinkedIn — flagged for review</span>
+      <span class="feed-time">1m ago</span>
+    </div>
+    <div class="feed-item">
+      <span class="feed-dot green"></span>
+      <span class="feed-worker" style="color:#fff">NUX</span>
+      <span class="feed-action">Campaign published across 3 channels</span>
+      <span class="feed-time">22m ago</span>
+    </div>
+    <div class="feed-item">
+      <span class="feed-dot green"></span>
+      <span class="feed-worker" style="color:#4C1D95">AVA</span>
+      <span class="feed-action">Follow-up sent to Sunrise LLC · renewal confirmed</span>
+      <span class="feed-time">8m ago</span>
+    </div>
+    <div class="feed-item">
+      <span class="feed-dot blue"></span>
+      <span class="feed-worker" style="color:#fff">DOX</span>
+      <span class="feed-action">Contract uploaded · client folder updated automatically</span>
+      <span class="feed-time">31m ago</span>
+    </div>
+    <div class="feed-item">
+      <span class="feed-dot green"></span>
+      <span class="feed-worker" style="color:#fff">MOX</span>
+      <span class="feed-action">National Coffee Day opportunity surfaced — sent to team</span>
+      <span class="feed-time">2h ago</span>
+    </div>
+    <div class="feed-item">
+      <span class="feed-dot green"></span>
+      <span class="feed-worker" style="color:#4C1D95">AVA</span>
+      <span class="feed-action">3 renewals processed before 9 AM · zero missed</span>
+      <span class="feed-time">today</span>
+    </div>
+    <div class="feed-item">
+      <span class="feed-dot amber"></span>
+      <span class="feed-worker" style="color:#fff">NUX</span>
+      <span class="feed-action">Content repurposed from last week's report · 6 posts ready</span>
+      <span class="feed-time">45m ago</span>
+    </div>
+    <div class="feed-item">
+      <span class="feed-dot blue"></span>
+      <span class="feed-worker" style="color:#fff">DOX</span>
+      <span class="feed-action">Duplicate files removed · 340 MB recovered</span>
+      <span class="feed-time">1h ago</span>
     </div>
   </div>
 </div>
