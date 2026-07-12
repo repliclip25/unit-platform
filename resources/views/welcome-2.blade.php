@@ -828,52 +828,6 @@ body{
   </div>
 </div>
 
-<!-- WHAT IS A UNIT WORKER -->
-<section class="what sec" id="what">
-  <div class="w">
-    <div class="what-grid">
-      <div class="what-left">
-        <div class="what-tag">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-          What is a UNIT Worker
-        </div>
-        <h2 class="what-h">Not an app.<br>Not a bot.<br><em>A worker.</em></h2>
-        <p class="what-sub">A UNIT worker is a system built from your day-to-day workflow. It runs without hand-holding, handles its job end-to-end, and reports back to you — so you always know what was done and why.</p>
-        <div class="what-pills">
-          <span class="what-pill">Workflow-native</span>
-          <span class="what-pill">Fully autonomous</span>
-          <span class="what-pill">Reports to you</span>
-          <span class="what-pill">Improves over time</span>
-          <span class="what-pill">No prompts needed</span>
-        </div>
-      </div>
-      <div class="what-right">
-        <div class="what-item">
-          <div class="what-num">1</div>
-          <div class="what-item-body">
-            <h4>Built from your real workflow</h4>
-            <p>Not a generic tool. Each worker is configured around the actual tasks your team does every day — renewals, documents, outreach, content.</p>
-          </div>
-        </div>
-        <div class="what-item">
-          <div class="what-num">2</div>
-          <div class="what-item-body">
-            <h4>Runs without hand-holding</h4>
-            <p>No prompts. No babysitting. Once deployed, your worker picks up work, makes decisions, and executes — the same way a trained employee would.</p>
-          </div>
-        </div>
-        <div class="what-item">
-          <div class="what-num">3</div>
-          <div class="what-item-body">
-            <h4>Reports back to you</h4>
-            <p>Every task is logged. Every decision is explained. You get a clear record of what was done, what was flagged, and what needs your attention.</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
 <!-- WORKERS -->
 <section class="workers sec" id="workers">
   <div class="w">
@@ -1147,10 +1101,17 @@ body{
     <div class="faq-grid">
       <div class="faq-left">
         <div class="sec-eye">FAQ</div>
-        <h2 class="sec-h">Questions people actually ask.</h2>
-        <p>Still unsure? These are the most common questions from people hiring their first worker.</p>
-        <a href="{{ route('register') }}" class="btn-outline" style="margin-top:8px">
-          Talk to us
+        <h2 class="what-h" style="margin-bottom:16px">Not an app.<br>Not a bot.<br><em>A worker.</em></h2>
+        <p style="font-size:.975rem;color:var(--t3);line-height:1.75;margin-bottom:20px">A UNIT worker is a system built from your day-to-day workflow. It runs without hand-holding, handles its job end-to-end, and reports back to you — so you always know what was done and why.</p>
+        <div class="what-pills" style="margin-bottom:28px">
+          <span class="what-pill">Workflow-native</span>
+          <span class="what-pill">Fully autonomous</span>
+          <span class="what-pill">Reports to you</span>
+          <span class="what-pill">Improves over time</span>
+          <span class="what-pill">No prompts needed</span>
+        </div>
+        <a href="{{ route('register') }}" class="btn-outline">
+          Get started free
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
         </a>
       </div>
