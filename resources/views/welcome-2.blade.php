@@ -154,22 +154,28 @@ body{
 .proof-avs img:first-child{margin-left:0}
 .proof-txt{font-size:13px;color:var(--t3);line-height:1.5}
 .proof-txt strong{color:var(--text);display:block}
-/* Hero image — bleeds to right edge, white gradient fades left edge into text */
+/* Hero image — bleeds to right edge, crossfade between two images */
 .hero-right{
   position:relative;
   overflow:hidden;
+  background:#000;
 }
-.hero-right img{
+.hero-slide{
+  position:absolute;inset:0;
   width:100%;height:100%;
   object-fit:cover;
   object-position:center top;
   display:block;
-  min-height:520px;
+  transition:opacity 1.2s ease-in-out;
 }
+.hero-slide.active{ opacity:1; z-index:1; }
+.hero-slide.hidden{ opacity:0; z-index:0; }
+/* Spacer so container has height when children are absolute */
+.hero-right-spacer{ display:block; width:100%; min-height:calc(100vh - 62px); }
 .hero-fade{
   position:absolute;inset:0;
-  z-index:2;
-  background:linear-gradient(to right,#ffffff 0%,rgba(255,255,255,.7) 20%,transparent 45%);
+  z-index:3;
+  background:linear-gradient(to right,#ffffff 0%,rgba(255,255,255,.55) 15%,transparent 35%);
   pointer-events:none;
 }
 .hero-badge{
@@ -537,7 +543,9 @@ body{
   </div>
 
   <div class="hero-right">
-    <img src="/images/hero-team.png" alt="AVA, DOX, MOX and NUX — the UNIT AI workforce">
+    <img src="/images/hero-team-2.png" alt="AVA, DOX, MOX and NUX — the UNIT AI workforce" class="hero-slide active" id="slide-0">
+    <img src="/images/hero-team.png"   alt="AVA, DOX, MOX and NUX — selfie"                 class="hero-slide hidden" id="slide-1">
+    <span class="hero-right-spacer" aria-hidden="true"></span>
     <div class="hero-fade"></div>
     <div class="hero-badge">
       <div class="badge-star">
@@ -812,6 +820,19 @@ const mobClose = document.getElementById('mob-close');
 ham.addEventListener('click', () => mob.classList.add('open'));
 mobClose.addEventListener('click', () => mob.classList.remove('open'));
 function closeMob(){ mob.classList.remove('open') }
+
+// Hero image crossfade
+(function(){
+  const slides = document.querySelectorAll('.hero-slide');
+  let cur = 0;
+  setInterval(function(){
+    slides[cur].classList.remove('active');
+    slides[cur].classList.add('hidden');
+    cur = (cur + 1) % slides.length;
+    slides[cur].classList.remove('hidden');
+    slides[cur].classList.add('active');
+  }, 5000);
+})();
 
 document.querySelectorAll('a[href^="#"]').forEach(a => {
   a.addEventListener('click', e => {
