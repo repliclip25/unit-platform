@@ -340,18 +340,19 @@ body{
 
 /* ── LIFECYCLE ── */
 .lifecycle{background:#fff}
-/* outer card wraps the whole section */
+/* outer card wraps the whole section — break out of .w padding to fill viewport */
 .lc-card{
   border:1.5px solid var(--border);
   border-radius:28px;
-  padding:clamp(32px,4vw,56px);
+  box-shadow:0 8px 40px rgba(0,0,0,.07);
+  padding:clamp(32px,4vw,52px) clamp(28px,4vw,52px);
   display:grid;
-  grid-template-columns:260px 1fr;
-  gap:clamp(32px,5vw,56px);
+  grid-template-columns:220px 1fr;
+  gap:clamp(28px,4vw,44px);
   align-items:center;
 }
-.lc-left .sec-h{margin-bottom:14px;font-size:clamp(1.4rem,2.6vw,2rem)}
-.lc-left p{font-size:.95rem;color:var(--t3);line-height:1.7;margin-bottom:24px}
+.lc-left .sec-h{margin-bottom:14px;font-size:clamp(1.3rem,2.4vw,1.85rem)}
+.lc-left p{font-size:.9rem;color:var(--t3);line-height:1.7;margin-bottom:22px}
 .btn-outline{
   display:inline-flex;align-items:center;gap:7px;
   padding:11px 20px;border-radius:10px;
@@ -362,7 +363,7 @@ body{
 .btn-outline:hover{border-color:#999}
 /* right side: photos + arrows inline */
 .lc-row{
-  display:flex;align-items:flex-start;gap:0;
+  display:flex;align-items:flex-start;
 }
 .lc-photo{
   flex:1;
@@ -370,26 +371,37 @@ body{
   border-radius:18px;
   overflow:hidden;
   background:var(--soft);
+  position:relative;
 }
 .lc-photo img{
-  width:100%;height:230px;
+  width:100%;height:260px;
   object-fit:cover;object-position:center top;
   display:block;
 }
-.lc-photo-body{padding:14px 16px 16px}
+.lc-photo-body{padding:14px 16px 18px}
 .lc-photo-step{
   font-size:10.5px;font-weight:700;letter-spacing:.08em;
   text-transform:uppercase;margin-bottom:6px;
 }
 .lc-photo-txt{font-size:13.5px;color:var(--t2);line-height:1.55;font-weight:500}
-/* arrow between lifecycle cards */
+/* circular arrow badge — overlaps adjacent cards, centered on image */
 .lc-arrow{
   flex-shrink:0;
   width:36px;
+  height:36px;
+  margin:0 -18px; /* negative margin overlaps both cards */
+  z-index:10;
+  position:relative;
   display:flex;align-items:center;justify-content:center;
-  padding-bottom:80px;
-  color:#9CA3AF;
-  font-size:22px;
+  background:#fff;
+  border:1.5px solid var(--border);
+  border-radius:50%;
+  box-shadow:0 2px 8px rgba(0,0,0,.1);
+  color:var(--t3);
+  font-size:14px;
+  /* center vertically on the image (260px tall) */
+  margin-top:calc(130px - 18px);
+  align-self:flex-start;
 }
 
 /* ── CTA BANNER ── */
