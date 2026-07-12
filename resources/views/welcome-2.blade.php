@@ -408,34 +408,77 @@ body{
   margin-right:-20px;
 }
 
-/* ── CTA BANNER ── */
-.cta-sec{
-  background:var(--brand);
-  padding:clamp(52px,7vw,88px) 0;
-  position:relative;overflow:hidden;
+/* ── FEATURES ── */
+.features{background:#fff;padding:clamp(48px,6vw,72px) 0}
+.feat-h{
+  font-family:var(--font-h);font-size:clamp(1.4rem,2.8vw,2rem);
+  font-weight:800;letter-spacing:-.03em;text-align:center;
+  margin-bottom:clamp(36px,5vw,52px);
 }
-.cta-sec::before{
-  content:'';position:absolute;inset:0;
-  background:radial-gradient(ellipse 80% 80% at 50% 110%,rgba(255,255,255,.07) 0%,transparent 70%);
+.feat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(20px,3vw,36px)}
+.feat-item{display:flex;flex-direction:row;gap:14px;align-items:flex-start}
+.feat-icon{
+  width:44px;height:44px;border-radius:12px;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
 }
-.cta-i{text-align:center;position:relative;z-index:1}
-.cta-i h2{
-  font-family:var(--font-h);
-  font-size:clamp(1.8rem,3.8vw,2.8rem);
-  font-weight:800;color:#fff;letter-spacing:-.03em;
-  margin-bottom:12px;
+.feat-icon svg{width:22px;height:22px}
+.feat-body h4{font-size:14.5px;font-weight:700;margin-bottom:5px;color:var(--text)}
+.feat-body p{font-size:13px;color:var(--t3);line-height:1.6}
+
+/* ── CTA CARD ── */
+.cta-sec{padding:clamp(28px,4vw,48px) 0}
+.cta-card{
+  background:#EDE9FE;
+  border-radius:24px;
+  padding:clamp(28px,4vw,44px) clamp(28px,5vw,52px);
+  display:flex;align-items:center;justify-content:space-between;
+  gap:32px;flex-wrap:wrap;
 }
-.cta-i p{font-size:1rem;color:rgba(255,255,255,.65);margin-bottom:28px}
-.btn-white{
-  display:inline-flex;align-items:center;gap:7px;
-  padding:13px 26px;border-radius:11px;
+.cta-left{display:flex;align-items:center;gap:20px}
+.cta-icon{width:56px;height:56px;flex-shrink:0;color:var(--brand)}
+.cta-icon svg{width:56px;height:56px}
+.cta-text h2{
+  font-family:var(--font-h);font-size:clamp(1.2rem,2.2vw,1.6rem);
+  font-weight:800;color:var(--text);letter-spacing:-.02em;margin-bottom:4px;
+}
+.cta-text p{font-size:14px;color:var(--t3)}
+.cta-right{display:flex;flex-direction:column;align-items:center;gap:8px;flex-shrink:0}
+.btn-cta-main{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:14px 28px;border-radius:12px;
   font-size:15px;font-weight:700;
-  background:#fff;color:var(--brand);
-  box-shadow:0 4px 20px rgba(0,0,0,.18);
+  background:var(--brand);color:#fff;
+  box-shadow:0 4px 20px rgba(76,29,149,.35);
+  white-space:nowrap;
   transition:opacity .15s,transform .15s;
 }
-.btn-white:hover{opacity:.94;transform:translateY(-2px)}
-.cta-note{margin-top:12px;font-size:13px;color:rgba(255,255,255,.4)}
+.btn-cta-main:hover{opacity:.9;transform:translateY(-2px)}
+.cta-note{font-size:12.5px;color:var(--t4)}
+
+/* ── TRUST BAR ── */
+.trust-bar{padding:clamp(32px,4vw,52px) 0 0;background:#fff}
+.trust-bar-i{
+  display:flex;align-items:center;flex-wrap:wrap;
+  gap:clamp(24px,4vw,48px);
+}
+.trust-left{display:flex;flex-direction:column;gap:10px}
+.trust-lbl2{font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--text)}
+.trust-avs{display:flex;align-items:center;gap:0}
+.trust-avs img{
+  width:32px;height:32px;border-radius:50%;
+  border:2px solid #fff;outline:1.5px solid #d1d5db;
+  object-fit:cover;margin-left:-8px;
+}
+.trust-avs img:first-child{margin-left:0}
+.trust-score{display:flex;align-items:center;gap:8px;margin-top:4px}
+.trust-score-avs{display:flex}
+.trust-stars2{color:#F59E0B;font-size:12px;letter-spacing:1px}
+.trust-score-txt{font-size:13px;font-weight:600;color:var(--t2)}
+.trust-platforms{display:flex;align-items:center;gap:clamp(20px,3vw,40px);flex-wrap:wrap;flex:1;justify-content:flex-end}
+.trust-platform{display:flex;flex-direction:column;align-items:center;gap:5px}
+.trust-platform-name{font-size:13px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:4px}
+.trust-platform-stars{color:#F59E0B;font-size:11px;letter-spacing:1px}
 
 /* ── FOOTER ── */
 .footer{background:#0A0A0A;padding:clamp(40px,6vw,72px) 0 28px}
@@ -482,6 +525,8 @@ body{
 
 /* ── RESPONSIVE ── */
 @media(max-width:1024px){
+  .feat-grid{grid-template-columns:repeat(2,1fr)}
+  .trust-platforms{justify-content:flex-start}
   .wk-grid{grid-template-columns:repeat(2,1fr)}
   .wk-img-bg{width:50%}
   .ft-grid{grid-template-columns:1fr 1fr;gap:28px}
@@ -826,16 +871,122 @@ body{
   </div>
 </section>
 
+<!-- FEATURES -->
+<section class="features">
+  <div class="w">
+    <h2 class="feat-h">Built for humans. Powered by AI.</h2>
+    <div class="feat-grid">
+      <div class="feat-item">
+        <div class="feat-icon" style="background:#ECFDF5">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <div class="feat-body">
+          <h4>Secure by design</h4>
+          <p>Enterprise-grade security and privacy. Your data is always yours.</p>
+        </div>
+      </div>
+      <div class="feat-item">
+        <div class="feat-icon" style="background:#FFF7ED">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#EA580C" stroke-width="2" stroke-linecap="round"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+        </div>
+        <div class="feat-body">
+          <h4>Learns and adapts</h4>
+          <p>Every task makes them smarter. They improve without extra work from you.</p>
+        </div>
+      </div>
+      <div class="feat-item">
+        <div class="feat-icon" style="background:#EFF6FF">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2" stroke-linecap="round"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+        </div>
+        <div class="feat-body">
+          <h4>Works 24/7</h4>
+          <p>No breaks. No vacations. Always showing up when you need them.</p>
+        </div>
+      </div>
+      <div class="feat-item">
+        <div class="feat-icon" style="background:#F5F3FF">
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--brand)" stroke-width="2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+        </div>
+        <div class="feat-body">
+          <h4>Made to collaborate</h4>
+          <p>Workers can work together seamlessly as your business grows.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- CTA -->
 <section class="cta-sec">
-  <div class="w cta-i">
-    <h2>Hire your first worker today.</h2>
-    <p>Start with one. Add more as you grow.</p>
-    <a href="{{ route('register') }}" class="btn-white">
-      Hire Your First Worker
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-    </a>
-    <p class="cta-note">No credit card required.</p>
+  <div class="w">
+    <div class="cta-card">
+      <div class="cta-left">
+        <div class="cta-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--brand)" stroke-width="1.5" stroke-linecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+        </div>
+        <div class="cta-text">
+          <h2>Ready to put AI workers to work for you?</h2>
+          <p>Start with one. Add more as you grow.</p>
+        </div>
+      </div>
+      <div class="cta-right">
+        <a href="{{ route('register') }}" class="btn-cta-main">
+          Hire Your First Worker
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+        <span class="cta-note">No credit card required.</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TRUST BAR -->
+<section class="trust-bar">
+  <div class="w">
+    <div class="trust-bar-i">
+      <div class="trust-left">
+        <div class="trust-lbl2">Trusted by businesses of all sizes</div>
+        <div class="trust-score">
+          <div class="trust-avs">
+            <img src="/images/ava.png" alt="">
+            <img src="/images/ava.png" alt="" style="filter:hue-rotate(30deg)">
+            <img src="/images/ava.png" alt="" style="filter:hue-rotate(60deg)">
+            <img src="/images/ava.png" alt="" style="filter:hue-rotate(200deg)">
+          </div>
+          <span class="trust-stars2">★★★★★</span>
+          <span class="trust-score-txt">4.9/5 from 1,200+ reviews</span>
+        </div>
+      </div>
+      <div class="trust-platforms">
+        <div class="trust-platform">
+          <div class="trust-platform-name">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="#007FA8"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            Capterra
+          </div>
+          <div class="trust-platform-stars">★★★★★</div>
+        </div>
+        <div class="trust-platform">
+          <div class="trust-platform-name" style="font-size:15px;font-weight:800">G<span style="color:#E8170E">2</span></div>
+          <div class="trust-platform-stars">★★★★★</div>
+        </div>
+        <div class="trust-platform">
+          <div class="trust-platform-name">
+            <span style="color:#4285F4">G</span><span style="color:#EA4335">o</span><span style="color:#FBBC05">o</span><span style="color:#4285F4">g</span><span style="color:#34A853">l</span><span style="color:#EA4335">e</span>
+          </div>
+          <div class="trust-platform-stars">★★★★★</div>
+        </div>
+        <div class="trust-platform">
+          <div class="trust-platform-name">
+            <span style="color:#00B67A">★</span> Trustpilot
+          </div>
+          <div class="trust-platform-stars">★★★★★</div>
+        </div>
+        <div class="trust-platform">
+          <div class="trust-platform-name">GetApp</div>
+          <div class="trust-platform-stars">★★★★★</div>
+        </div>
+      </div>
+    </div>
   </div>
 </section>
 
