@@ -99,14 +99,16 @@ body{
   grid-template-columns:1fr 1fr;
   overflow:hidden;
 }
-/* Left column: align to same left edge as nav logo inside .w */
+/* Left column: align text to same x as nav logo.
+   .w uses max-width:1160px + padding:var(--pad) centered.
+   So logo x = max(var(--pad), (100vw - 1160px)/2 + var(--pad)).
+   Mirror that with CSS max(). */
 .hero-left{
   display:flex;align-items:center;
-  /* right padding keeps gap from image; left uses same var(--pad) as nav .w */
-  padding:clamp(48px,6vw,80px) clamp(32px,4vw,56px) clamp(48px,6vw,80px) var(--pad);
-  /* cap so text doesn't stretch too wide on very large viewports */
-  max-width:calc(var(--max)/2 + (100vw - var(--max))/2);
-  margin-left:auto;
+  padding-top:clamp(48px,6vw,80px);
+  padding-bottom:clamp(48px,6vw,80px);
+  padding-right:clamp(32px,4vw,56px);
+  padding-left:max(var(--pad), calc((100vw - var(--max)) / 2 + var(--pad)));
 }
 .hero-left-inner{max-width:520px}
 .hero-h{
@@ -164,15 +166,17 @@ body{
   display:block;
   min-height:520px;
 }
-/* White fade on left edge blends image into the white text panel */
+/* White fade on left edge blends image into white text panel */
 .hero-right::after{
   content:'';
   position:absolute;inset:0;
-  background:linear-gradient(to right,rgba(255,255,255,.85) 0%,rgba(255,255,255,.3) 20%,transparent 45%);
+  z-index:2;
+  background:linear-gradient(to right,#ffffff 0%,rgba(255,255,255,.6) 18%,transparent 42%);
   pointer-events:none;
 }
 .hero-badge{
   position:absolute;bottom:28px;right:28px;
+  z-index:3;
   background:#fff;
   border:1px solid var(--border);
   border-radius:16px;
