@@ -224,72 +224,69 @@ body{
 .center .sec-p{margin:0 auto}
 
 /* ── WORKER CARDS ── */
-.workers{background:#fff}
+.workers{background:var(--soft)}
 .wk-grid{
   display:grid;grid-template-columns:repeat(4,1fr);
-  gap:18px;
+  gap:16px;
 }
 .wk-card{
   background:#fff;
   border:1px solid var(--border);
   border-radius:20px;
-  overflow:hidden;
+  overflow:visible; /* allow image to overflow top */
   display:flex;flex-direction:column;
+  position:relative;
   transition:transform .2s,box-shadow .2s;
 }
-.wk-card:hover{transform:translateY(-4px);box-shadow:0 16px 40px rgba(0,0,0,0.09)}
-.wk-top{height:3px;width:100%}
-.wk-img{
-  position:relative;
-  background:var(--soft);
-  overflow:hidden;
+.wk-card:hover{transform:translateY(-4px);box-shadow:0 16px 40px rgba(0,0,0,0.08)}
+
+/* Top row: icon+name left, image right — image overflows card top */
+.wk-head{
+  display:flex;align-items:flex-start;justify-content:space-between;
+  padding:18px 16px 0 18px;
+  gap:8px;
 }
-.wk-img img{
+.wk-head-left{display:flex;flex-direction:column;gap:6px;padding-top:4px}
+.wk-icon{
+  width:36px;height:36px;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+}
+.wk-icon svg{width:18px;height:18px}
+.wk-name{
+  font-family:var(--font-h);font-size:1.25rem;font-weight:800;
+  letter-spacing:-.03em;line-height:1;
+}
+.wk-role{font-size:11px;color:var(--t3);font-weight:500}
+
+/* Character image — top-right, overflows top of card */
+.wk-img-wrap{
+  width:130px;flex-shrink:0;
+  margin-top:-28px; /* overflow above card top edge */
+  margin-right:-4px;
+}
+.wk-img-wrap img{
   width:100%;
-  height:240px;
+  height:160px;
   object-fit:cover;
   object-position:center top;
   display:block;
+  border-radius:12px;
 }
-.wk-status{
-  position:absolute;top:10px;right:10px;
-  padding:4px 10px;border-radius:20px;
-  font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;
-  display:flex;align-items:center;gap:4px;
-  backdrop-filter:blur(8px);
-}
-.wk-status.live{background:rgba(34,197,94,.14);color:#16a34a;border:1px solid rgba(34,197,94,.25)}
-.wk-status.soon{background:rgba(0,0,0,.35);color:rgba(255,255,255,.8);border:1px solid rgba(255,255,255,.15)}
-.wk-status-dot{width:5px;height:5px;border-radius:50%;background:currentColor}
-.wk-body{padding:18px;flex:1;display:flex;flex-direction:column}
-.wk-icon{
-  width:34px;height:34px;border-radius:9px;
-  display:flex;align-items:center;justify-content:center;
-  margin-bottom:10px;
-}
-.wk-icon svg{width:17px;height:17px}
-.wk-name{
-  font-family:var(--font-h);font-size:1.15rem;font-weight:800;
-  letter-spacing:-.02em;margin-bottom:2px;
-}
-.wk-role{font-size:11.5px;color:var(--t3);font-weight:500;margin-bottom:10px}
+
+.wk-body{padding:14px 18px 18px;flex:1;display:flex;flex-direction:column}
 .wk-quote{
   font-size:13.5px;color:var(--t2);line-height:1.65;
-  font-style:italic;flex:1;margin-bottom:16px;
+  flex:1;margin-bottom:16px;
 }
 .btn-wk{
-  display:flex;align-items:center;justify-content:center;gap:6px;
-  padding:9px 14px;border-radius:9px;
-  font-size:13px;font-weight:700;color:#fff;
+  display:flex;align-items:center;justify-content:center;gap:7px;
+  padding:11px 14px;border-radius:11px;
+  font-size:13.5px;font-weight:700;color:#fff;
   transition:opacity .15s,transform .1s;
+  width:100%;
 }
 .btn-wk:hover{opacity:.85;transform:translateY(-1px)}
-.btn-wk-ghost{
-  display:flex;align-items:center;justify-content:center;
-  padding:9px 14px;border-radius:9px;
-  font-size:13px;font-weight:500;color:var(--t4);
-  border:1px solid var(--border);
-}
 
 /* ── TIMELINE ── */
 .timeline-sec{background:var(--soft);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
@@ -431,6 +428,7 @@ body{
 /* ── RESPONSIVE ── */
 @media(max-width:1024px){
   .wk-grid{grid-template-columns:repeat(2,1fr)}
+  .wk-img-wrap{width:110px}
   .ft-grid{grid-template-columns:1fr 1fr;gap:28px}
   .tl{grid-template-columns:repeat(3,1fr)}
   .lc-grid{grid-template-columns:1fr;gap:40px}
@@ -588,77 +586,94 @@ body{
     <div class="wk-grid">
 
       <!-- AVA -->
-      <div class="wk-card">
-        <div class="wk-top" style="background:var(--ava)"></div>
-        <div class="wk-img">
-          <img src="/images/ava.png" alt="AVA — Renewal Coordinator">
-          <div class="wk-status live"><span class="wk-status-dot"></span> Live</div>
+      <div class="wk-card" style="border-top:3px solid var(--ava)">
+        <div class="wk-head">
+          <div class="wk-head-left">
+            <div class="wk-icon" style="background:rgba(107,43,242,.1)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="var(--ava)" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+            </div>
+            <div class="wk-name" style="color:var(--ava)">AVA</div>
+            <div class="wk-role">Renewal Coordinator</div>
+          </div>
+          <div class="wk-img-wrap">
+            <img src="/images/ava.png" alt="AVA">
+          </div>
         </div>
         <div class="wk-body">
-          <div class="wk-icon" style="background:rgba(107,43,242,.1)">
-            <svg viewBox="0 0 24 24" fill="none" stroke="var(--ava)" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
-          </div>
-          <div class="wk-name" style="color:var(--ava)">AVA</div>
-          <div class="wk-role">Renewal Coordinator</div>
-          <p class="wk-quote">"I remember the renewals everyone else forgets. Every deadline. Every client. Every time."</p>
+          <p class="wk-quote">I remember the renewals everyone else forgets. Every deadline. Every client. Every time.</p>
           <a href="{{ route('workers.public.show', 'ava') }}" class="btn-wk" style="background:var(--ava)">
             Watch Ava's Day
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M10 8l6 4-6 4V8z" fill="currentColor" stroke="none"/></svg>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M10 8l6 4-6 4V8z" fill="currentColor" stroke="none"/></svg>
           </a>
         </div>
       </div>
 
       <!-- DOX -->
-      <div class="wk-card">
-        <div class="wk-top" style="background:var(--dox)"></div>
-        <div class="wk-img">
-          <img src="/images/ava.png" alt="DOX — Document Organizer" style="filter:hue-rotate(130deg) saturate(.85)">
-          <div class="wk-status soon"><span class="wk-status-dot"></span> Coming Soon</div>
+      <div class="wk-card" style="border-top:3px solid var(--dox)">
+        <div class="wk-head">
+          <div class="wk-head-left">
+            <div class="wk-icon" style="background:rgba(5,150,105,.1)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="var(--dox)" stroke-width="2" stroke-linecap="round"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>
+            </div>
+            <div class="wk-name" style="color:var(--dox)">DOX</div>
+            <div class="wk-role">Document Organizer</div>
+          </div>
+          <div class="wk-img-wrap">
+            <img src="/images/ava.png" alt="DOX" style="filter:hue-rotate(130deg) saturate(.85)">
+          </div>
         </div>
         <div class="wk-body">
-          <div class="wk-icon" style="background:rgba(5,150,105,.1)">
-            <svg viewBox="0 0 24 24" fill="none" stroke="var(--dox)" stroke-width="2" stroke-linecap="round"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>
-          </div>
-          <div class="wk-name" style="color:var(--dox)">DOX</div>
-          <div class="wk-role">Document Organizer</div>
-          <p class="wk-quote">"I organize the documents nobody wants to touch — so everything is exactly where you need it."</p>
-          <button class="btn-wk-ghost" disabled>Watch Dox's Day ›</button>
+          <p class="wk-quote">I organize the documents nobody wants to touch — so everything is exactly where you need it.</p>
+          <a href="#" class="btn-wk" style="background:var(--dox)">
+            Watch Dox's Day
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M10 8l6 4-6 4V8z" fill="currentColor" stroke="none"/></svg>
+          </a>
         </div>
       </div>
 
       <!-- MOX -->
-      <div class="wk-card">
-        <div class="wk-top" style="background:var(--mox)"></div>
-        <div class="wk-img">
-          <img src="/images/ava.png" alt="MOX — Brand Scout" style="filter:hue-rotate(195deg) saturate(.8)">
-          <div class="wk-status soon"><span class="wk-status-dot"></span> Coming Soon</div>
+      <div class="wk-card" style="border-top:3px solid var(--mox)">
+        <div class="wk-head">
+          <div class="wk-head-left">
+            <div class="wk-icon" style="background:rgba(217,119,6,.1)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="var(--mox)" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            </div>
+            <div class="wk-name" style="color:var(--mox)">MOX</div>
+            <div class="wk-role">Brand Scout</div>
+          </div>
+          <div class="wk-img-wrap">
+            <img src="/images/ava.png" alt="MOX" style="filter:hue-rotate(195deg) saturate(.8)">
+          </div>
         </div>
         <div class="wk-body">
-          <div class="wk-icon" style="background:rgba(217,119,6,.1)">
-            <svg viewBox="0 0 24 24" fill="none" stroke="var(--mox)" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-          </div>
-          <div class="wk-name" style="color:var(--mox)">MOX</div>
-          <div class="wk-role">Brand Scout</div>
-          <p class="wk-quote">"I search the world for moments your brand shouldn't miss — and surface them before you even ask."</p>
-          <button class="btn-wk-ghost" disabled>Watch Mox's Day ›</button>
+          <p class="wk-quote">I search the world for moments your brand shouldn't miss — and surface them before you even ask.</p>
+          <a href="#" class="btn-wk" style="background:var(--mox)">
+            Watch Mox's Day
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M10 8l6 4-6 4V8z" fill="currentColor" stroke="none"/></svg>
+          </a>
         </div>
       </div>
 
       <!-- NUX -->
-      <div class="wk-card">
-        <div class="wk-top" style="background:var(--nux)"></div>
-        <div class="wk-img">
-          <img src="/images/ava.png" alt="NUX — Content Creator" style="filter:hue-rotate(260deg) saturate(.75)">
-          <div class="wk-status soon"><span class="wk-status-dot"></span> Coming Soon</div>
+      <div class="wk-card" style="border-top:3px solid var(--nux)">
+        <div class="wk-head">
+          <div class="wk-head-left">
+            <div class="wk-icon" style="background:rgba(37,99,235,.1)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="var(--nux)" stroke-width="2" stroke-linecap="round"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+            </div>
+            <div class="wk-name" style="color:var(--nux)">NUX</div>
+            <div class="wk-role">Content Creator</div>
+          </div>
+          <div class="wk-img-wrap">
+            <img src="/images/ava.png" alt="NUX" style="filter:hue-rotate(260deg) saturate(.75)">
+          </div>
         </div>
         <div class="wk-body">
-          <div class="wk-icon" style="background:rgba(37,99,235,.1)">
-            <svg viewBox="0 0 24 24" fill="none" stroke="var(--nux)" stroke-width="2" stroke-linecap="round"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
-          </div>
-          <div class="wk-name" style="color:var(--nux)">NUX</div>
-          <div class="wk-role">Content Creator</div>
-          <p class="wk-quote">"I turn one idea into content people actually see — across every channel, every format, every time."</p>
-          <button class="btn-wk-ghost" disabled>Watch Nux's Day ›</button>
+          <p class="wk-quote">I turn one idea into content people actually see — across every channel, every format, every time.</p>
+          <a href="#" class="btn-wk" style="background:var(--nux)">
+            Watch Nux's Day
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M10 8l6 4-6 4V8z" fill="currentColor" stroke="none"/></svg>
+          </a>
         </div>
       </div>
 
