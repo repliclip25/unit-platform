@@ -53,7 +53,8 @@ ul{list-style:none}
   --brand:  #7C3AED;
 }
 [data-theme="dark"] .nav{background:rgba(13,13,13,.92);border-color:#2D2D2D}
-[data-theme="dark"] .wk-card,[data-theme="dark"] .lc-card,[data-theme="dark"] .lc-photo{background:#161616}
+[data-theme="dark"] .lc-card,[data-theme="dark"] .lc-photo{background:#161616}
+.wk-card{background:#fff!important}
 [data-theme="dark"] .lc-photo-body{background:#161616}
 [data-theme="dark"] .cta-card{background:#1E1333}
 [data-theme="dark"] .cta-text h2{color:#F3F4F6}
@@ -335,9 +336,9 @@ body{
   font-family:var(--font-h);font-size:1.2rem;font-weight:800;
   letter-spacing:-.03em;line-height:1;
 }
-.wk-role{font-size:11px;color:var(--t3);font-weight:500;margin-bottom:12px}
+.wk-role{font-size:11px;color:#6B7280;font-weight:500;margin-bottom:12px}
 .wk-quote{
-  font-size:13px;color:var(--t2);line-height:1.65;
+  font-size:13px;color:#374151;line-height:1.65;
   flex:1;margin-bottom:18px;
 }
 /* Button flush left, auto width */
@@ -1103,13 +1104,6 @@ body{
         <div class="sec-eye">FAQ</div>
         <h2 class="what-h" style="margin-bottom:16px">Not an app.<br>Not a bot.<br><em>A worker.</em></h2>
         <p style="font-size:.975rem;color:var(--t3);line-height:1.75;margin-bottom:20px">A UNIT worker is a system built from your day-to-day workflow. It runs without hand-holding, handles its job end-to-end, and reports back to you — so you always know what was done and why.</p>
-        <div class="what-pills" style="margin-bottom:28px">
-          <span class="what-pill">Workflow-native</span>
-          <span class="what-pill">Fully autonomous</span>
-          <span class="what-pill">Reports to you</span>
-          <span class="what-pill">Improves over time</span>
-          <span class="what-pill">No prompts needed</span>
-        </div>
         <a href="{{ route('register') }}" class="btn-outline">
           Get started free
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
