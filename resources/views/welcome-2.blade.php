@@ -61,16 +61,10 @@ body{
   display:flex;align-items:center;justify-content:space-between;
   height:62px;
 }
-.logo{display:flex;align-items:center;gap:9px}
-.logo-mark{
-  width:32px;height:32px;border-radius:8px;
-  background:var(--brand);
-  display:flex;align-items:center;justify-content:center;
-}
-.logo-mark svg{width:16px;height:16px}
+.logo{display:flex;align-items:center}
 .logo-name{
-  font-family:var(--font-h);font-size:1.1rem;font-weight:800;
-  color:var(--text);letter-spacing:-.4px;
+  font-family:var(--font-h);font-size:1.5rem;font-weight:800;
+  color:var(--text);letter-spacing:-.5px;
 }
 .nav-links{display:flex;align-items:center;gap:28px}
 .nav-links a{
@@ -458,11 +452,6 @@ body{
 <nav class="nav">
   <div class="w nav-i">
     <a href="/" class="logo">
-      <div class="logo-mark">
-        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
-        </svg>
-      </div>
       <span class="logo-name">UNIT</span>
     </a>
     <ul class="nav-links">
@@ -488,7 +477,6 @@ body{
 <div class="mob-menu" id="mob">
   <div class="mob-top">
     <a href="/" class="logo">
-      <div class="logo-mark"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg></div>
       <span class="logo-name">UNIT</span>
     </a>
     <button class="mob-close" id="mob-close">✕</button>
