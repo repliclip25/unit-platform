@@ -864,7 +864,7 @@ body{
       <!-- DOX -->
       <div class="wk-card" style="border-top:3px solid #111">
         <div class="wk-img-bg">
-          <img src="/images/ava.png" alt="DOX">
+          <img src="/images/ava.png" alt="DOX" style="object-position:center top">
         </div>
         <div class="wk-content">
           <div class="wk-head">
@@ -885,7 +885,7 @@ body{
       <!-- MOX -->
       <div class="wk-card" style="border-top:3px solid #111">
         <div class="wk-img-bg">
-          <img src="/images/ava.png" alt="MOX">
+          <img src="/images/mox.png" alt="MOX" style="object-position:center top">
         </div>
         <div class="wk-content">
           <div class="wk-head">
@@ -906,7 +906,7 @@ body{
       <!-- NUX -->
       <div class="wk-card" style="border-top:3px solid #111">
         <div class="wk-img-bg">
-          <img src="/images/ava.png" alt="NUX">
+          <img src="/images/nux.png" alt="NUX" style="object-position:center top">
         </div>
         <div class="wk-content">
           <div class="wk-head">
