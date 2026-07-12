@@ -253,6 +253,8 @@ body{
   object-fit:cover;
   object-position:center top;
   display:block;
+  transform:scale(1.6);
+  transform-origin:top center;
 }
 /* Fade so image blends into white card bg on the left */
 .wk-img-bg::after{
