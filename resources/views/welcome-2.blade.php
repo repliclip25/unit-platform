@@ -17,11 +17,11 @@ button{cursor:pointer;font-family:inherit;border:none;background:none}
 ul{list-style:none}
 
 :root{
-  --brand:      #6B2BF2;
-  --brand-dark: #5320C4;
+  --brand:      #4C1D95;
+  --brand-dark: #3B1578;
   --brand-soft: rgba(107,43,242,0.08);
 
-  --ava:  #6B2BF2;
+  --ava:  #4C1D95;
   --dox:  #111111;
   --mox:  #111111;
   --nux:  #111111;
@@ -294,7 +294,7 @@ body{
   display:inline-flex;align-items:center;gap:7px;
   padding:10px 16px;border-radius:10px;
   font-size:13px;font-weight:700;color:#fff;
-  width:fit-content;
+  width:fit-content;white-space:nowrap;
   transition:opacity .15s,transform .1s;
 }
 .btn-wk:hover{opacity:.85;transform:translateY(-1px)}
@@ -540,9 +540,9 @@ body{
       <div class="hero-proof">
         <div class="proof-avs">
           <img src="/images/ava.png" alt="user">
-          <img src="/images/ava.png" alt="user" style="filter:grayscale(.3)">
-          <img src="/images/ava.png" alt="user" style="filter:grayscale(.3)">
-          <img src="/images/ava.png" alt="user" style="filter:grayscale(.3)">
+          <img src="/images/ava.png" alt="user">
+          <img src="/images/ava.png" alt="user">
+          <img src="/images/ava.png" alt="user">
         </div>
         <p class="proof-txt">
           <strong>2,847+ businesses</strong> already hired their first worker
@@ -620,7 +620,7 @@ body{
       <!-- DOX -->
       <div class="wk-card" style="border-top:3px solid #111">
         <div class="wk-img-bg">
-          <img src="/images/ava.png" alt="DOX" style="filter:grayscale(1)">
+          <img src="/images/ava.png" alt="DOX">
         </div>
         <div class="wk-content">
           <div class="wk-head">
@@ -641,7 +641,7 @@ body{
       <!-- MOX -->
       <div class="wk-card" style="border-top:3px solid #111">
         <div class="wk-img-bg">
-          <img src="/images/ava.png" alt="MOX" style="filter:grayscale(1)">
+          <img src="/images/ava.png" alt="MOX">
         </div>
         <div class="wk-content">
           <div class="wk-head">
@@ -662,7 +662,7 @@ body{
       <!-- NUX -->
       <div class="wk-card" style="border-top:3px solid #111">
         <div class="wk-img-bg">
-          <img src="/images/ava.png" alt="NUX" style="filter:grayscale(1)">
+          <img src="/images/ava.png" alt="NUX">
         </div>
         <div class="wk-content">
           <div class="wk-head">
@@ -753,21 +753,21 @@ body{
           </div>
         </div>
         <div class="lc-photo">
-          <img src="/images/ava.png" alt="Receive work" style="filter:grayscale(.3)">
+          <img src="/images/ava.png" alt="Receive work">
           <div class="lc-photo-label">
             <div class="lc-photo-step">2. Receive work</div>
             <div class="lc-photo-txt">New tasks. New opportunities.</div>
           </div>
         </div>
         <div class="lc-photo">
-          <img src="/images/ava.png" alt="Do the work" style="filter:grayscale(.3)">
+          <img src="/images/ava.png" alt="Do the work">
           <div class="lc-photo-label">
             <div class="lc-photo-step">3. Do the work</div>
             <div class="lc-photo-txt">Focus. Execute. Deliver results.</div>
           </div>
         </div>
         <div class="lc-photo">
-          <img src="/images/ava.png" alt="Write their diary" style="filter:grayscale(.3)">
+          <img src="/images/ava.png" alt="Write their diary">
           <div class="lc-photo-label">
             <div class="lc-photo-step">4. Write their diary</div>
             <div class="lc-photo-txt">Reflect, learn, and get better tomorrow.</div>
