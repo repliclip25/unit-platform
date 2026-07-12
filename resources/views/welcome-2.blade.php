@@ -340,34 +340,57 @@ body{
 
 /* ── LIFECYCLE ── */
 .lifecycle{background:#fff}
-.lc-grid{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center}
-.lc-left .sec-h{margin-bottom:16px}
-.lc-left p{font-size:1rem;color:var(--t3);line-height:1.7;margin-bottom:28px}
+/* outer card wraps the whole section */
+.lc-card{
+  border:1px solid var(--border);
+  border-radius:24px;
+  padding:clamp(28px,4vw,48px);
+  display:grid;
+  grid-template-columns:280px 1fr;
+  gap:clamp(24px,4vw,48px);
+  align-items:center;
+}
+.lc-left .sec-h{margin-bottom:14px;font-size:clamp(1.5rem,2.8vw,2.1rem)}
+.lc-left p{font-size:.95rem;color:var(--t3);line-height:1.7;margin-bottom:24px}
 .btn-outline{
   display:inline-flex;align-items:center;gap:7px;
-  padding:11px 22px;border-radius:10px;
+  padding:11px 20px;border-radius:10px;
   font-size:14px;font-weight:600;color:var(--text);
   border:1px solid var(--border);
   transition:all .15s;
 }
-.btn-outline:hover{border-color:#999;color:var(--text)}
-.lc-photos{
-  display:grid;grid-template-columns:repeat(4,1fr);
-  gap:10px;
+.btn-outline:hover{border-color:#999}
+/* right side: photos + arrows inline */
+.lc-row{
+  display:flex;align-items:flex-start;gap:0;
 }
-.lc-photo{position:relative;overflow:hidden;border-radius:14px}
+.lc-photo{
+  flex:1;
+  border:1px solid var(--border);
+  border-radius:16px;
+  overflow:hidden;
+  background:var(--soft);
+}
 .lc-photo img{
-  width:100%;height:200px;
+  width:100%;height:180px;
   object-fit:cover;object-position:center top;
   display:block;
 }
-.lc-photo-label{
-  position:absolute;bottom:0;left:0;right:0;
-  padding:10px 10px 12px;
-  background:linear-gradient(to top,rgba(0,0,0,.65),transparent);
+.lc-photo-body{padding:12px 14px 14px}
+.lc-photo-step{
+  font-size:10px;font-weight:700;letter-spacing:.08em;
+  text-transform:uppercase;margin-bottom:5px;
 }
-.lc-photo-step{font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--brand);margin-bottom:2px}
-.lc-photo-txt{font-size:11px;font-weight:600;color:#fff;line-height:1.4}
+.lc-photo-txt{font-size:13px;color:var(--t2);line-height:1.5;font-weight:500}
+/* arrow between lifecycle cards */
+.lc-arrow{
+  flex-shrink:0;
+  width:32px;
+  display:flex;align-items:center;justify-content:center;
+  padding-bottom:60px; /* align with image center */
+  color:var(--t4);
+  font-size:18px;font-weight:300;
+}
 
 /* ── CTA BANNER ── */
 .cta-sec{
@@ -447,8 +470,9 @@ body{
   .wk-img-bg{width:50%}
   .ft-grid{grid-template-columns:1fr 1fr;gap:28px}
   .tl{grid-template-columns:repeat(3,1fr)}
-  .lc-grid{grid-template-columns:1fr;gap:40px}
-  .lc-photos{grid-template-columns:repeat(4,1fr)}
+  .lc-card{grid-template-columns:1fr;gap:28px}
+  .lc-row{flex-wrap:wrap;gap:8px}
+  .lc-arrow{padding-bottom:0;font-size:14px;width:16px}
 }
 @media(max-width:768px){
   .nav-links,.nav-acts{display:none}
@@ -461,14 +485,14 @@ body{
   .tl{grid-template-columns:repeat(2,1fr)}
   .ft-grid{grid-template-columns:1fr}
   .ft-bottom{flex-direction:column;text-align:center}
-  .lc-photos{grid-template-columns:repeat(2,1fr)}
+  .lc-photo{min-width:calc(50% - 16px)}
 }
 @media(max-width:480px){
   .wk-grid{grid-template-columns:1fr}
   .tl{grid-template-columns:1fr}
   .hero-btns{flex-direction:column;align-items:stretch}
   .btn-hero,.btn-hero-ghost{justify-content:center}
-  .lc-photos{grid-template-columns:repeat(2,1fr)}
+  .lc-photo{min-width:calc(50% - 16px)}
 }
 </style>
 </head>
@@ -739,7 +763,7 @@ body{
 <!-- LIFECYCLE -->
 <section class="lifecycle sec">
   <div class="w">
-    <div class="lc-grid">
+    <div class="lc-card">
       <div class="lc-left">
         <div class="sec-eye">Every worker has a life</div>
         <h2 class="sec-h">They wake up. They receive work. They improve. They write about their day.</h2>
@@ -749,33 +773,36 @@ body{
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
         </a>
       </div>
-      <div class="lc-photos">
+      <div class="lc-row">
         <div class="lc-photo">
           <img src="/images/ava.png" alt="Wake up">
-          <div class="lc-photo-label">
-            <div class="lc-photo-step">1. Wake up</div>
-            <div class="lc-photo-txt">Ready for the day at the Desk.</div>
+          <div class="lc-photo-body">
+            <div class="lc-photo-step" style="color:var(--brand)">1. Wake Up</div>
+            <div class="lc-photo-txt">Ready for the day at the desk.</div>
           </div>
         </div>
+        <div class="lc-arrow">→</div>
         <div class="lc-photo">
           <img src="/images/ava.png" alt="Receive work">
-          <div class="lc-photo-label">
-            <div class="lc-photo-step">2. Receive work</div>
+          <div class="lc-photo-body">
+            <div class="lc-photo-step" style="color:#111">2. Receive Work</div>
             <div class="lc-photo-txt">New tasks. New opportunities.</div>
           </div>
         </div>
+        <div class="lc-arrow">→</div>
         <div class="lc-photo">
           <img src="/images/ava.png" alt="Do the work">
-          <div class="lc-photo-label">
-            <div class="lc-photo-step">3. Do the work</div>
+          <div class="lc-photo-body">
+            <div class="lc-photo-step" style="color:#111">3. Do the Work</div>
             <div class="lc-photo-txt">Focus. Execute. Deliver results.</div>
           </div>
         </div>
+        <div class="lc-arrow">→</div>
         <div class="lc-photo">
           <img src="/images/ava.png" alt="Write their diary">
-          <div class="lc-photo-label">
-            <div class="lc-photo-step">4. Write their diary</div>
-            <div class="lc-photo-txt">Reflect, learn, and get better tomorrow.</div>
+          <div class="lc-photo-body">
+            <div class="lc-photo-step" style="color:#111">4. Write Their Diary</div>
+            <div class="lc-photo-txt">Reflect, learn, get better tomorrow.</div>
           </div>
         </div>
       </div>
