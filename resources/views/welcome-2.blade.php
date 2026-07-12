@@ -342,15 +342,15 @@ body{
 .lifecycle{background:#fff}
 /* outer card wraps the whole section */
 .lc-card{
-  border:1px solid var(--border);
-  border-radius:24px;
-  padding:clamp(28px,4vw,48px);
+  border:1.5px solid var(--border);
+  border-radius:28px;
+  padding:clamp(32px,4vw,56px);
   display:grid;
-  grid-template-columns:280px 1fr;
-  gap:clamp(24px,4vw,48px);
+  grid-template-columns:260px 1fr;
+  gap:clamp(32px,5vw,56px);
   align-items:center;
 }
-.lc-left .sec-h{margin-bottom:14px;font-size:clamp(1.5rem,2.8vw,2.1rem)}
+.lc-left .sec-h{margin-bottom:14px;font-size:clamp(1.4rem,2.6vw,2rem)}
 .lc-left p{font-size:.95rem;color:var(--t3);line-height:1.7;margin-bottom:24px}
 .btn-outline{
   display:inline-flex;align-items:center;gap:7px;
@@ -367,29 +367,29 @@ body{
 .lc-photo{
   flex:1;
   border:1px solid var(--border);
-  border-radius:16px;
+  border-radius:18px;
   overflow:hidden;
   background:var(--soft);
 }
 .lc-photo img{
-  width:100%;height:180px;
+  width:100%;height:230px;
   object-fit:cover;object-position:center top;
   display:block;
 }
-.lc-photo-body{padding:12px 14px 14px}
+.lc-photo-body{padding:14px 16px 16px}
 .lc-photo-step{
-  font-size:10px;font-weight:700;letter-spacing:.08em;
-  text-transform:uppercase;margin-bottom:5px;
+  font-size:10.5px;font-weight:700;letter-spacing:.08em;
+  text-transform:uppercase;margin-bottom:6px;
 }
-.lc-photo-txt{font-size:13px;color:var(--t2);line-height:1.5;font-weight:500}
+.lc-photo-txt{font-size:13.5px;color:var(--t2);line-height:1.55;font-weight:500}
 /* arrow between lifecycle cards */
 .lc-arrow{
   flex-shrink:0;
-  width:32px;
+  width:36px;
   display:flex;align-items:center;justify-content:center;
-  padding-bottom:60px; /* align with image center */
-  color:var(--t4);
-  font-size:18px;font-weight:300;
+  padding-bottom:80px;
+  color:#9CA3AF;
+  font-size:22px;
 }
 
 /* ── CTA BANNER ── */
