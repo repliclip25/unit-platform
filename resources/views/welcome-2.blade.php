@@ -339,7 +339,9 @@ body{
 .tl-item:last-child .tl-node svg{color:#fff!important;stroke:#fff!important}
 
 /* ── LIFECYCLE ── */
-.lifecycle{background:#fff}
+.lifecycle{background:#fff;padding-top:0}
+/* break lifecycle card past the normal .w max-width */
+.lifecycle .w{ max-width:min(1360px, calc(100vw - 48px)); }
 /* outer card wraps the whole section — break out of .w padding to fill viewport */
 .lc-card{
   border:1.5px solid var(--border);
@@ -363,7 +365,8 @@ body{
 .btn-outline:hover{border-color:#999}
 /* right side: photos + arrows inline */
 .lc-row{
-  display:flex;align-items:flex-start;
+  display:flex;align-items:stretch;
+  gap:8px;
 }
 .lc-photo{
   flex:1;
@@ -371,7 +374,6 @@ body{
   border-radius:18px;
   overflow:hidden;
   background:var(--soft);
-  position:relative;
 }
 .lc-photo img{
   width:100%;height:260px;
@@ -384,24 +386,26 @@ body{
   text-transform:uppercase;margin-bottom:6px;
 }
 .lc-photo-txt{font-size:13.5px;color:var(--t2);line-height:1.55;font-weight:500}
-/* circular arrow badge — overlaps adjacent cards, centered on image */
+/* circular arrow badge — sits in the gap, centered on image height */
 .lc-arrow{
   flex-shrink:0;
   width:36px;
   height:36px;
-  margin:0 -18px; /* negative margin overlaps both cards */
-  z-index:10;
-  position:relative;
-  display:flex;align-items:center;justify-content:center;
+  border-radius:50%;
   background:#fff;
   border:1.5px solid var(--border);
-  border-radius:50%;
-  box-shadow:0 2px 8px rgba(0,0,0,.1);
+  box-shadow:0 2px 10px rgba(0,0,0,.12);
+  display:flex;align-items:center;justify-content:center;
   color:var(--t3);
-  font-size:14px;
-  /* center vertically on the image (260px tall) */
-  margin-top:calc(130px - 18px);
+  font-size:15px;
+  z-index:10;
+  position:relative;
   align-self:flex-start;
+  /* center arrow badge at midpoint of image (260px / 2 - 18px) */
+  margin-top:calc(130px - 18px);
+  /* pull it into both adjacent cards */
+  margin-left:-20px;
+  margin-right:-20px;
 }
 
 /* ── CTA BANNER ── */
