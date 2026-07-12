@@ -596,7 +596,7 @@ body{
       <!-- AVA -->
       <div class="wk-card" style="border-top:3px solid var(--ava)">
         <div class="wk-img-bg">
-          <img src="/images/ava.png" alt="AVA">
+          <img src="/images/ava-stand.png" alt="AVA" style="object-position:center 10%">
         </div>
         <div class="wk-content">
           <div class="wk-head">
