@@ -166,12 +166,10 @@ body{
   display:block;
   min-height:520px;
 }
-/* White fade on left edge blends image into white text panel */
-.hero-right::after{
-  content:'';
+.hero-fade{
   position:absolute;inset:0;
   z-index:2;
-  background:linear-gradient(to right,#ffffff 0%,rgba(255,255,255,.6) 18%,transparent 42%);
+  background:linear-gradient(to right,#ffffff 0%,rgba(255,255,255,.7) 20%,transparent 45%);
   pointer-events:none;
 }
 .hero-badge{
@@ -540,6 +538,7 @@ body{
 
   <div class="hero-right">
     <img src="/images/hero-team.png" alt="AVA, DOX, MOX and NUX — the UNIT AI workforce">
+    <div class="hero-fade"></div>
     <div class="hero-badge">
       <div class="badge-star">
         <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
