@@ -22,9 +22,10 @@ ul{list-style:none}
   --brand-soft: rgba(107,43,242,0.08);
 
   --ava:  #6B2BF2;
-  --dox:  #059669;
-  --mox:  #D97706;
-  --nux:  #2563EB;
+  --dox:  #111111;
+  --mox:  #111111;
+  --nux:  #111111;
+  --worker-icon-bg: rgba(0,0,0,.07);
 
   --text:   #0D0D0D;
   --t2:     #374151;
@@ -208,7 +209,7 @@ body{
 .trust-lbl{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--t4)}
 .trust-items{display:flex;align-items:center;gap:clamp(16px,3vw,40px);flex-wrap:wrap}
 .trust-item{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--t3)}
-.stars{color:#F59E0B;font-size:10px;letter-spacing:1px}
+.stars{color:#111;font-size:10px;letter-spacing:1px}
 
 /* ── SECTION ATOMS ── */
 .sec{padding:clamp(60px,8vw,100px) 0}
@@ -539,9 +540,9 @@ body{
       <div class="hero-proof">
         <div class="proof-avs">
           <img src="/images/ava.png" alt="user">
-          <img src="/images/ava.png" alt="user" style="filter:hue-rotate(130deg) saturate(.85)">
-          <img src="/images/ava.png" alt="user" style="filter:hue-rotate(195deg) saturate(.8)">
-          <img src="/images/ava.png" alt="user" style="filter:hue-rotate(260deg) saturate(.75)">
+          <img src="/images/ava.png" alt="user" style="filter:grayscale(.3)">
+          <img src="/images/ava.png" alt="user" style="filter:grayscale(.3)">
+          <img src="/images/ava.png" alt="user" style="filter:grayscale(.3)">
         </div>
         <p class="proof-txt">
           <strong>2,847+ businesses</strong> already hired their first worker
@@ -617,20 +618,20 @@ body{
       </div>
 
       <!-- DOX -->
-      <div class="wk-card" style="border-top:3px solid var(--dox)">
+      <div class="wk-card" style="border-top:3px solid #111">
         <div class="wk-img-bg">
-          <img src="/images/ava.png" alt="DOX" style="filter:hue-rotate(130deg) saturate(.85)">
+          <img src="/images/ava.png" alt="DOX" style="filter:grayscale(1)">
         </div>
         <div class="wk-content">
           <div class="wk-head">
-            <div class="wk-icon" style="background:rgba(5,150,105,.1)">
-              <svg viewBox="0 0 24 24" fill="none" stroke="var(--dox)" stroke-width="2" stroke-linecap="round"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>
+            <div class="wk-icon" style="background:rgba(0,0,0,.07)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2" stroke-linecap="round"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>
             </div>
-            <div class="wk-name" style="color:var(--dox)">DOX</div>
+            <div class="wk-name" style="color:#111">DOX</div>
           </div>
           <div class="wk-role">Document Organizer</div>
           <p class="wk-quote">I organize the documents nobody wants to touch — so everything is exactly where you need it.</p>
-          <a href="#" class="btn-wk" style="background:var(--dox)">
+          <a href="#" class="btn-wk" style="background:#111">
             Watch Dox's Day
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M10 8l6 4-6 4V8z" fill="currentColor" stroke="none"/></svg>
           </a>
@@ -638,20 +639,20 @@ body{
       </div>
 
       <!-- MOX -->
-      <div class="wk-card" style="border-top:3px solid var(--mox)">
+      <div class="wk-card" style="border-top:3px solid #111">
         <div class="wk-img-bg">
-          <img src="/images/ava.png" alt="MOX" style="filter:hue-rotate(195deg) saturate(.8)">
+          <img src="/images/ava.png" alt="MOX" style="filter:grayscale(1)">
         </div>
         <div class="wk-content">
           <div class="wk-head">
-            <div class="wk-icon" style="background:rgba(217,119,6,.1)">
-              <svg viewBox="0 0 24 24" fill="none" stroke="var(--mox)" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <div class="wk-icon" style="background:rgba(0,0,0,.07)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
             </div>
-            <div class="wk-name" style="color:var(--mox)">MOX</div>
+            <div class="wk-name" style="color:#111">MOX</div>
           </div>
           <div class="wk-role">Brand Scout</div>
           <p class="wk-quote">I search the world for moments your brand shouldn't miss — and surface them before you even ask.</p>
-          <a href="#" class="btn-wk" style="background:var(--mox)">
+          <a href="#" class="btn-wk" style="background:#111">
             Watch Mox's Day
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M10 8l6 4-6 4V8z" fill="currentColor" stroke="none"/></svg>
           </a>
@@ -659,20 +660,20 @@ body{
       </div>
 
       <!-- NUX -->
-      <div class="wk-card" style="border-top:3px solid var(--nux)">
+      <div class="wk-card" style="border-top:3px solid #111">
         <div class="wk-img-bg">
-          <img src="/images/ava.png" alt="NUX" style="filter:hue-rotate(260deg) saturate(.75)">
+          <img src="/images/ava.png" alt="NUX" style="filter:grayscale(1)">
         </div>
         <div class="wk-content">
           <div class="wk-head">
-            <div class="wk-icon" style="background:rgba(37,99,235,.1)">
-              <svg viewBox="0 0 24 24" fill="none" stroke="var(--nux)" stroke-width="2" stroke-linecap="round"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+            <div class="wk-icon" style="background:rgba(0,0,0,.07)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2" stroke-linecap="round"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
             </div>
-            <div class="wk-name" style="color:var(--nux)">NUX</div>
+            <div class="wk-name" style="color:#111">NUX</div>
           </div>
           <div class="wk-role">Content Creator</div>
           <p class="wk-quote">I turn one idea into content people actually see — across every channel, every format, every time.</p>
-          <a href="#" class="btn-wk" style="background:var(--nux)">
+          <a href="#" class="btn-wk" style="background:#111">
             Watch Nux's Day
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M10 8l6 4-6 4V8z" fill="currentColor" stroke="none"/></svg>
           </a>
@@ -699,24 +700,24 @@ body{
         <div class="tl-evt"><strong>AVA</strong>finishes three renewals.</div>
       </div>
       <div class="tl-item">
-        <div class="tl-node" style="border-color:rgba(5,150,105,.3)">
-          <svg viewBox="0 0 24 24" fill="none" stroke="var(--dox)" stroke-width="1.8" stroke-linecap="round"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>
+        <div class="tl-node" style="border-color:rgba(0,0,0,.2)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="1.8" stroke-linecap="round"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>
         </div>
-        <div class="tl-time" style="color:var(--dox)">9:30 AM</div>
+        <div class="tl-time" style="color:#111">9:30 AM</div>
         <div class="tl-evt"><strong>DOX</strong>organizes 1,247 files.</div>
       </div>
       <div class="tl-item">
-        <div class="tl-node" style="border-color:rgba(217,119,6,.3)">
-          <svg viewBox="0 0 24 24" fill="none" stroke="var(--mox)" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <div class="tl-node" style="border-color:rgba(0,0,0,.2)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
         </div>
-        <div class="tl-time" style="color:var(--mox)">11:00 AM</div>
+        <div class="tl-time" style="color:#111">11:00 AM</div>
         <div class="tl-evt"><strong>MOX</strong>discovers National Coffee Day.</div>
       </div>
       <div class="tl-item">
-        <div class="tl-node" style="border-color:rgba(37,99,235,.3)">
-          <svg viewBox="0 0 24 24" fill="none" stroke="var(--nux)" stroke-width="1.8" stroke-linecap="round"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+        <div class="tl-node" style="border-color:rgba(0,0,0,.2)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="1.8" stroke-linecap="round"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
         </div>
-        <div class="tl-time" style="color:var(--nux)">2:00 PM</div>
+        <div class="tl-time" style="color:#111">2:00 PM</div>
         <div class="tl-evt"><strong>NUX</strong>publishes six campaigns.</div>
       </div>
       <div class="tl-item">
@@ -752,23 +753,23 @@ body{
           </div>
         </div>
         <div class="lc-photo">
-          <img src="/images/ava.png" alt="Receive work" style="filter:hue-rotate(130deg) saturate(.85)">
+          <img src="/images/ava.png" alt="Receive work" style="filter:grayscale(.3)">
           <div class="lc-photo-label">
-            <div class="lc-photo-step" style="color:#34d399">1. Receive work</div>
+            <div class="lc-photo-step">2. Receive work</div>
             <div class="lc-photo-txt">New tasks. New opportunities.</div>
           </div>
         </div>
         <div class="lc-photo">
-          <img src="/images/ava.png" alt="Do the work" style="filter:hue-rotate(195deg) saturate(.8)">
+          <img src="/images/ava.png" alt="Do the work" style="filter:grayscale(.3)">
           <div class="lc-photo-label">
-            <div class="lc-photo-step" style="color:#fbbf24">3. Do the work</div>
+            <div class="lc-photo-step">3. Do the work</div>
             <div class="lc-photo-txt">Focus. Execute. Deliver results.</div>
           </div>
         </div>
         <div class="lc-photo">
-          <img src="/images/ava.png" alt="Write their diary" style="filter:hue-rotate(260deg) saturate(.75)">
+          <img src="/images/ava.png" alt="Write their diary" style="filter:grayscale(.3)">
           <div class="lc-photo-label">
-            <div class="lc-photo-step" style="color:#60a5fa">4. Write their diary</div>
+            <div class="lc-photo-step">4. Write their diary</div>
             <div class="lc-photo-txt">Reflect, learn, and get better tomorrow.</div>
           </div>
         </div>
