@@ -4,874 +4,650 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>UNIT — AI Workers That Never Stop Showing Up</title>
-<meta name="description" content="AVA, DOX, MOX, and NUX are your AI workforce. Each one built for a specific job. All of them running 24/7 while you focus on growth.">
+<meta name="description" content="AVA, DOX, MOX, and NUX are your AI workforce. Each one built for a specific job, running 24/7 while you focus on growth.">
 <link rel="icon" type="image/png" href="/logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Syne:wght@700;800&display=swap" rel="stylesheet">
 <style>
-/* ── Reset ── */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 img{display:block;max-width:100%}
-a{text-decoration:none}
-button{cursor:pointer;font-family:inherit}
+a{text-decoration:none;color:inherit}
+button{cursor:pointer;font-family:inherit;border:none;background:none}
+ul{list-style:none}
 
-/* ── Tokens ── */
 :root{
-  --brand:       #7C3AED;
-  --brand-dark:  #5B21B6;
-  --brand-soft:  rgba(124,58,237,0.09);
-  --brand-ring:  rgba(124,58,237,0.22);
+  --brand:      #6B2BF2;
+  --brand-dark: #5320C4;
+  --brand-soft: rgba(107,43,242,0.08);
 
-  --ava:  #7C3AED; --ava-soft: rgba(124,58,237,0.10);
-  --dox:  #059669; --dox-soft: rgba(5,150,105,0.10);
-  --mox:  #D97706; --mox-soft: rgba(217,119,6,0.10);
-  --nux:  #2563EB; --nux-soft: rgba(37,99,235,0.10);
+  --ava:  #6B2BF2;
+  --dox:  #059669;
+  --mox:  #D97706;
+  --nux:  #2563EB;
 
-  --dark:  #09090B;
-  --dark2: #18181B;
-  --dark3: #27272A;
+  --text:   #0D0D0D;
+  --t2:     #374151;
+  --t3:     #6B7280;
+  --t4:     #9CA3AF;
+  --border: #E5E7EB;
+  --bg:     #FFFFFF;
+  --soft:   #F8F8F6;
 
-  --text:    #0F0F0F;
-  --t2:      #374151;
-  --t3:      #6B7280;
-  --t4:      #9CA3AF;
-  --border:  #E5E7EB;
-  --soft-bg: #F9FAFB;
-  --white:   #FFFFFF;
-
-  --r-sm: 10px;
-  --r-md: 16px;
-  --r-lg: 24px;
-  --r-xl: 32px;
-
-  --font-head: 'Syne', sans-serif;
-  --font-body: 'Inter', sans-serif;
-
-  --max-w: 1180px;
-  --pad:   clamp(20px, 5vw, 48px);
+  --font-h: 'Syne', sans-serif;
+  --font-b: 'Inter', sans-serif;
+  --max:    1160px;
+  --pad:    clamp(20px,5vw,48px);
 }
 
 body{
-  font-family: var(--font-body);
-  color: var(--text);
-  background: var(--white);
-  -webkit-font-smoothing: antialiased;
-  overflow-x: hidden;
+  font-family:var(--font-b);
+  color:var(--text);
+  background:var(--bg);
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
 }
 
-/* ── Layout helpers ── */
-.wrap{ max-width: var(--max-w); margin: 0 auto; padding: 0 var(--pad); }
-.section{ padding: clamp(64px, 8vw, 112px) 0; }
+.w{ max-width:var(--max); margin:0 auto; padding:0 var(--pad); }
 
-/* ═══════════════════════════════════════════
-   NAV
-═══════════════════════════════════════════ */
+/* ── NAV ── */
 .nav{
-  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-  background: rgba(9,9,11,0.82);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-bottom: 1px solid rgba(255,255,255,0.07);
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  background:rgba(255,255,255,0.92);
+  backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--border);
 }
-.nav-inner{
-  display: flex; align-items: center; justify-content: space-between;
-  height: 64px;
+.nav-i{
+  display:flex;align-items:center;justify-content:space-between;
+  height:62px;
 }
-.nav-logo{
-  display: flex; align-items: center; gap: 10px;
+.logo{display:flex;align-items:center;gap:9px}
+.logo-mark{
+  width:32px;height:32px;border-radius:8px;
+  background:var(--brand);
+  display:flex;align-items:center;justify-content:center;
 }
-.nav-logo-mark{
-  width: 34px; height: 34px; border-radius: 9px;
-  background: var(--brand);
-  display: flex; align-items: center; justify-content: center;
+.logo-mark svg{width:16px;height:16px}
+.logo-name{
+  font-family:var(--font-h);font-size:1.1rem;font-weight:800;
+  color:var(--text);letter-spacing:-.4px;
 }
-.nav-logo-mark svg{ width: 18px; height: 18px; }
-.nav-logo-name{
-  font-family: var(--font-head);
-  font-size: 1.15rem; font-weight: 800;
-  color: #fff; letter-spacing: -.5px;
-}
-.nav-links{
-  display: flex; align-items: center; gap: 32px;
-  list-style: none;
-}
+.nav-links{display:flex;align-items:center;gap:28px}
 .nav-links a{
-  font-size: 14px; font-weight: 500;
-  color: rgba(255,255,255,0.65);
-  transition: color .15s;
+  font-size:14px;font-weight:500;color:var(--t2);
+  transition:color .15s;
 }
-.nav-links a:hover{ color: #fff; }
-.nav-actions{ display: flex; align-items: center; gap: 10px; }
-.btn-ghost-nav{
-  padding: 8px 18px; border-radius: 8px; font-size: 14px; font-weight: 600;
-  color: rgba(255,255,255,0.75); background: transparent;
-  border: 1px solid rgba(255,255,255,0.14);
-  transition: all .15s;
+.nav-links a:hover{color:var(--text)}
+.nav-acts{display:flex;align-items:center;gap:10px}
+.btn-login{
+  padding:8px 18px;border-radius:8px;font-size:14px;font-weight:600;
+  color:var(--t2);border:1px solid var(--border);
+  transition:all .15s;
 }
-.btn-ghost-nav:hover{ background: rgba(255,255,255,0.07); color: #fff; }
-.btn-primary{
-  padding: 9px 20px; border-radius: 9px; font-size: 14px; font-weight: 700;
-  background: var(--brand); color: #fff; border: none;
-  display: inline-flex; align-items: center; gap: 6px;
-  transition: opacity .15s, transform .15s, box-shadow .15s;
-  box-shadow: 0 0 0 0 rgba(124,58,237,0);
+.btn-login:hover{border-color:#bbb;color:var(--text)}
+.btn-cta{
+  padding:9px 20px;border-radius:9px;font-size:14px;font-weight:700;
+  background:var(--brand);color:#fff;
+  display:inline-flex;align-items:center;gap:6px;
+  transition:opacity .15s,transform .15s,box-shadow .15s;
+  box-shadow:0 2px 12px rgba(107,43,242,0.3);
 }
-.btn-primary:hover{
-  opacity: .9; transform: translateY(-1px);
-  box-shadow: 0 8px 24px rgba(124,58,237,0.35);
-}
-.nav-mobile-toggle{
-  display: none; flex-direction: column; gap: 5px;
-  background: none; border: none; padding: 4px;
-}
-.nav-mobile-toggle span{
-  display: block; width: 22px; height: 2px;
-  background: rgba(255,255,255,0.8); border-radius: 2px;
-  transition: all .2s;
-}
+.btn-cta:hover{opacity:.9;transform:translateY(-1px);box-shadow:0 6px 20px rgba(107,43,242,0.35)}
+.ham{display:none;flex-direction:column;gap:5px;padding:4px}
+.ham span{display:block;width:22px;height:2px;background:var(--text);border-radius:2px}
 
-/* ═══════════════════════════════════════════
-   HERO
-═══════════════════════════════════════════ */
+/* ── HERO ── */
 .hero{
-  background: var(--dark);
-  min-height: 100vh;
-  display: flex; align-items: center;
-  padding-top: 64px;
-  position: relative;
-  overflow: hidden;
+  padding-top:62px;
+  background:#fff;
+  min-height:100vh;
+  display:flex;align-items:center;
 }
-.hero::before{
-  content: '';
-  position: absolute; inset: 0;
-  background: radial-gradient(ellipse 70% 60% at 65% 50%, rgba(124,58,237,0.18) 0%, transparent 70%);
-  pointer-events: none;
-}
-.hero-inner{
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 48px;
-  align-items: center;
-  padding: clamp(48px, 8vw, 96px) var(--pad);
-  max-width: var(--max-w);
-  margin: 0 auto;
-  width: 100%;
+.hero-i{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:40px;align-items:center;
+  padding:clamp(48px,7vw,80px) var(--pad);
+  max-width:var(--max);margin:0 auto;width:100%;
 }
 .hero-eyebrow{
-  display: inline-flex; align-items: center; gap: 8px;
-  font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
-  color: var(--brand); margin-bottom: 24px;
+  display:inline-flex;align-items:center;gap:7px;
+  font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--brand);margin-bottom:20px;
 }
-.hero-eyebrow-dot{
-  width: 6px; height: 6px; border-radius: 50%;
-  background: var(--brand);
-  animation: pulse-brand 2s infinite;
+.hero-dot{
+  width:6px;height:6px;border-radius:50%;background:var(--brand);
+  animation:blink 2s infinite;
 }
-@keyframes pulse-brand{
-  0%,100%{ opacity:1; transform:scale(1); }
-  50%{ opacity:.5; transform:scale(1.4); }
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.hero-h{
+  font-family:var(--font-h);
+  font-size:clamp(2.6rem,5.5vw,4.2rem);
+  font-weight:800;line-height:1.05;
+  letter-spacing:-.04em;
+  color:var(--text);
+  margin-bottom:20px;
 }
-.hero-headline{
-  font-family: var(--font-head);
-  font-size: clamp(2.4rem, 5vw, 3.8rem);
-  font-weight: 800;
-  color: #fff;
-  line-height: 1.08;
-  letter-spacing: -.03em;
-  margin-bottom: 24px;
+.hero-h em{
+  font-style:normal;color:var(--brand);
 }
-.hero-headline em{
-  font-style: normal;
-  background: linear-gradient(135deg, #a78bfa, var(--brand));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+.hero-p{
+  font-size:clamp(.95rem,1.4vw,1.1rem);
+  color:var(--t2);line-height:1.7;
+  max-width:420px;margin-bottom:32px;
 }
-.hero-sub{
-  font-size: clamp(1rem, 1.5vw, 1.125rem);
-  color: rgba(255,255,255,0.55);
-  line-height: 1.7;
-  max-width: 440px;
-  margin-bottom: 36px;
+.hero-btns{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:36px}
+.btn-hero{
+  padding:13px 26px;border-radius:10px;font-size:15px;font-weight:700;
+  background:var(--brand);color:#fff;
+  display:inline-flex;align-items:center;gap:7px;
+  box-shadow:0 4px 20px rgba(107,43,242,0.38);
+  transition:opacity .15s,transform .15s,box-shadow .15s;
 }
-.hero-ctas{ display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 44px; }
-.btn-primary-lg{
-  padding: 14px 28px; border-radius: 12px; font-size: 15px; font-weight: 700;
-  background: var(--brand); color: #fff; border: none;
-  display: inline-flex; align-items: center; gap: 8px;
-  transition: opacity .15s, transform .15s, box-shadow .15s;
-  box-shadow: 0 4px 24px rgba(124,58,237,0.4);
+.btn-hero:hover{opacity:.9;transform:translateY(-2px);box-shadow:0 10px 28px rgba(107,43,242,0.42)}
+.btn-hero-ghost{
+  padding:12px 22px;border-radius:10px;font-size:15px;font-weight:600;
+  color:var(--t2);border:1px solid var(--border);
+  display:inline-flex;align-items:center;gap:7px;
+  transition:all .15s;
 }
-.btn-primary-lg:hover{ opacity:.9; transform:translateY(-2px); box-shadow: 0 12px 32px rgba(124,58,237,0.45); }
-.btn-ghost-lg{
-  padding: 13px 24px; border-radius: 12px; font-size: 15px; font-weight: 600;
-  background: transparent; color: rgba(255,255,255,0.7);
-  border: 1px solid rgba(255,255,255,0.16);
-  display: inline-flex; align-items: center; gap: 8px;
-  transition: all .15s;
+.btn-hero-ghost:hover{border-color:#aaa;color:var(--text)}
+.hero-proof{display:flex;align-items:center;gap:12px}
+.proof-avs{display:flex}
+.proof-avs span{
+  width:30px;height:30px;border-radius:50%;
+  border:2px solid #fff;margin-left:-7px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:700;color:#fff;
 }
-.btn-ghost-lg:hover{ background: rgba(255,255,255,0.06); color: #fff; }
-.hero-proof{
-  display: flex; align-items: center; gap: 14px;
+.proof-avs span:first-child{margin-left:0}
+.proof-txt{font-size:13px;color:var(--t3)}
+.proof-txt strong{color:var(--text)}
+/* Hero image */
+.hero-img{position:relative}
+.hero-img img{
+  width:100%;
+  border-radius:24px;
+  object-fit:cover;
+  object-position:center top;
+  box-shadow:0 24px 64px rgba(0,0,0,0.12);
 }
-.hero-proof-avatars{
-  display: flex;
+.hero-badge{
+  position:absolute;bottom:20px;right:20px;
+  background:#fff;
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:11px 15px;
+  display:flex;align-items:center;gap:9px;
+  box-shadow:0 4px 16px rgba(0,0,0,0.08);
 }
-.hero-proof-avatars span{
-  width: 32px; height: 32px; border-radius: 50%;
-  border: 2px solid var(--dark);
-  margin-left: -8px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 11px; font-weight: 700; color: #fff;
-  background: var(--dark3);
+.badge-dot{
+  width:8px;height:8px;border-radius:50%;background:#22c55e;
+  box-shadow:0 0 0 3px rgba(34,197,94,0.2);
+  animation:pulse-g 2s infinite;flex-shrink:0;
 }
-.hero-proof-avatars span:first-child{ margin-left: 0; }
-.hero-proof-text{
-  font-size: 13px; color: rgba(255,255,255,0.45);
-}
-.hero-proof-text strong{ color: rgba(255,255,255,0.75); }
-.hero-image{
-  position: relative;
-}
-.hero-image img{
-  width: 100%;
-  max-height: 600px;
-  object-fit: cover;
-  object-position: center top;
-  border-radius: var(--r-xl);
-  box-shadow: 0 32px 80px rgba(0,0,0,0.6);
-}
-.hero-image-badge{
-  position: absolute; bottom: 24px; left: -20px;
-  background: rgba(9,9,11,0.82);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255,255,255,0.1);
-  border-radius: 14px;
-  padding: 12px 16px;
-  display: flex; align-items: center; gap: 10px;
-}
-.hero-image-badge-dot{
-  width: 8px; height: 8px; border-radius: 50%;
-  background: #22c55e;
-  box-shadow: 0 0 0 3px rgba(34,197,94,0.2);
-  animation: pulse-green 2s infinite;
-  flex-shrink: 0;
-}
-@keyframes pulse-green{
-  0%,100%{ box-shadow: 0 0 0 3px rgba(34,197,94,0.2); }
-  50%{ box-shadow: 0 0 0 6px rgba(34,197,94,0.08); }
-}
-.hero-image-badge-text{
-  font-size: 12px; font-weight: 600; color: #fff; white-space: nowrap;
-}
-.hero-image-badge-text span{ color: rgba(255,255,255,0.45); font-weight: 400; }
+@keyframes pulse-g{0%,100%{box-shadow:0 0 0 3px rgba(34,197,94,.2)}50%{box-shadow:0 0 0 6px rgba(34,197,94,.06)}}
+.badge-txt{font-size:12px;font-weight:600;color:var(--text);white-space:nowrap}
+.badge-txt span{color:var(--t3);font-weight:400}
 
-/* ═══════════════════════════════════════════
-   TRUST BAR
-═══════════════════════════════════════════ */
+/* ── TRUST BAR ── */
 .trust{
-  background: var(--soft-bg);
-  border-top: 1px solid var(--border);
-  border-bottom: 1px solid var(--border);
-  padding: 28px 0;
+  border-top:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+  padding:22px 0;background:var(--soft);
 }
-.trust-inner{
-  display: flex; align-items: center; justify-content: center;
-  gap: clamp(24px, 4vw, 60px); flex-wrap: wrap;
+.trust-i{
+  display:flex;align-items:center;justify-content:center;
+  gap:clamp(20px,4vw,52px);flex-wrap:wrap;
 }
-.trust-label{
-  font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
-  color: var(--t4); white-space: nowrap;
-}
-.trust-items{ display: flex; align-items: center; gap: clamp(20px, 3vw, 44px); flex-wrap: wrap; }
-.trust-item{
-  display: flex; align-items: center; gap: 7px;
-  font-size: 13px; font-weight: 600; color: var(--t3);
-}
-.trust-stars{ color: #F59E0B; font-size: 11px; letter-spacing: 1px; }
+.trust-lbl{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--t4)}
+.trust-items{display:flex;align-items:center;gap:clamp(16px,3vw,40px);flex-wrap:wrap}
+.trust-item{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--t3)}
+.stars{color:#F59E0B;font-size:10px;letter-spacing:1px}
 
-/* ═══════════════════════════════════════════
-   SECTION HEADERS
-═══════════════════════════════════════════ */
-.section-eyebrow{
-  display: inline-block;
-  font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
-  color: var(--brand); margin-bottom: 14px;
+/* ── SECTION ATOMS ── */
+.sec{padding:clamp(60px,8vw,100px) 0}
+.sec-eye{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--brand);margin-bottom:12px}
+.sec-h{
+  font-family:var(--font-h);
+  font-size:clamp(1.7rem,3.2vw,2.6rem);
+  font-weight:800;line-height:1.12;letter-spacing:-.03em;
+  color:var(--text);margin-bottom:14px;
 }
-.section-title{
-  font-family: var(--font-head);
-  font-size: clamp(1.8rem, 3.5vw, 2.8rem);
-  font-weight: 800; line-height: 1.12; letter-spacing: -.03em;
-  color: var(--text); margin-bottom: 16px;
-}
-.section-sub{
-  font-size: 1rem; color: var(--t3); line-height: 1.7; max-width: 520px;
-}
-.section-header{ margin-bottom: clamp(40px, 6vw, 64px); }
-.section-header.centered{ text-align: center; }
-.section-header.centered .section-sub{ margin: 0 auto; }
+.sec-p{font-size:1rem;color:var(--t3);line-height:1.7;max-width:520px}
+.center{text-align:center}
+.center .sec-p{margin:0 auto}
 
-/* ═══════════════════════════════════════════
-   WORKER CARDS
-═══════════════════════════════════════════ */
-.workers{ background: var(--white); }
-.worker-grid{
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 20px;
+/* ── WORKER CARDS ── */
+.workers{background:#fff}
+.wk-grid{
+  display:grid;grid-template-columns:repeat(4,1fr);
+  gap:18px;
 }
-.worker-card{
-  background: var(--white);
-  border: 1px solid var(--border);
-  border-radius: var(--r-lg);
-  overflow: hidden;
-  transition: transform .2s, box-shadow .2s;
-  display: flex; flex-direction: column;
+.wk-card{
+  background:#fff;
+  border:1px solid var(--border);
+  border-radius:20px;
+  overflow:hidden;
+  display:flex;flex-direction:column;
+  transition:transform .2s,box-shadow .2s;
 }
-.worker-card:hover{
-  transform: translateY(-4px);
-  box-shadow: 0 20px 48px rgba(0,0,0,0.10);
+.wk-card:hover{transform:translateY(-4px);box-shadow:0 16px 40px rgba(0,0,0,0.09)}
+.wk-top{height:3px;width:100%}
+.wk-img{
+  position:relative;
+  background:var(--soft);
+  overflow:hidden;
 }
-.worker-card-top{
-  height: 4px; width: 100%;
+.wk-img img{
+  width:100%;
+  height:240px;
+  object-fit:cover;
+  object-position:center top;
+  display:block;
 }
-.worker-card-image{
-  position: relative;
-  background: var(--soft-bg);
-  overflow: hidden;
+.wk-status{
+  position:absolute;top:10px;right:10px;
+  padding:4px 10px;border-radius:20px;
+  font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;
+  display:flex;align-items:center;gap:4px;
+  backdrop-filter:blur(8px);
 }
-.worker-card-image img{
-  width: 100%;
-  height: 260px;
-  object-fit: cover;
-  object-position: center top;
-  display: block;
+.wk-status.live{background:rgba(34,197,94,.14);color:#16a34a;border:1px solid rgba(34,197,94,.25)}
+.wk-status.soon{background:rgba(0,0,0,.35);color:rgba(255,255,255,.8);border:1px solid rgba(255,255,255,.15)}
+.wk-status-dot{width:5px;height:5px;border-radius:50%;background:currentColor}
+.wk-body{padding:18px;flex:1;display:flex;flex-direction:column}
+.wk-icon{
+  width:34px;height:34px;border-radius:9px;
+  display:flex;align-items:center;justify-content:center;
+  margin-bottom:10px;
 }
-.worker-card-status{
-  position: absolute; top: 12px; right: 12px;
-  padding: 4px 10px; border-radius: 20px;
-  font-size: 10px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
-  display: flex; align-items: center; gap: 5px;
-  backdrop-filter: blur(8px);
+.wk-icon svg{width:17px;height:17px}
+.wk-name{
+  font-family:var(--font-h);font-size:1.15rem;font-weight:800;
+  letter-spacing:-.02em;margin-bottom:2px;
 }
-.worker-card-status.live{
-  background: rgba(34,197,94,0.15); color: #16a34a;
-  border: 1px solid rgba(34,197,94,0.25);
+.wk-role{font-size:11.5px;color:var(--t3);font-weight:500;margin-bottom:10px}
+.wk-quote{
+  font-size:13.5px;color:var(--t2);line-height:1.65;
+  font-style:italic;flex:1;margin-bottom:16px;
 }
-.worker-card-status.soon{
-  background: rgba(0,0,0,0.4); color: rgba(255,255,255,0.7);
-  border: 1px solid rgba(255,255,255,0.15);
+.btn-wk{
+  display:flex;align-items:center;justify-content:center;gap:6px;
+  padding:9px 14px;border-radius:9px;
+  font-size:13px;font-weight:700;color:#fff;
+  transition:opacity .15s,transform .1s;
 }
-.worker-card-status-dot{
-  width: 5px; height: 5px; border-radius: 50%;
-  background: currentColor;
-}
-.worker-card-body{
-  padding: 20px; flex: 1; display: flex; flex-direction: column;
-}
-.worker-card-icon{
-  width: 36px; height: 36px; border-radius: 10px;
-  display: flex; align-items: center; justify-content: center;
-  margin-bottom: 12px; flex-shrink: 0;
-}
-.worker-card-icon svg{ width: 18px; height: 18px; }
-.worker-card-name{
-  font-family: var(--font-head);
-  font-size: 1.25rem; font-weight: 800;
-  letter-spacing: -.02em; margin-bottom: 2px;
-}
-.worker-card-role{
-  font-size: 12px; font-weight: 500; color: var(--t3); margin-bottom: 12px;
-}
-.worker-card-quote{
-  font-size: 14px; color: var(--t2); line-height: 1.65; margin-bottom: 20px; flex: 1;
-  font-style: italic;
-}
-.btn-worker{
-  display: inline-flex; align-items: center; gap: 6px;
-  padding: 9px 16px; border-radius: 9px;
-  font-size: 13px; font-weight: 700; border: none;
-  transition: opacity .15s, transform .15s;
-  color: #fff; width: 100%; justify-content: center;
-}
-.btn-worker:hover{ opacity:.85; transform:translateY(-1px); }
-.btn-worker-ghost{
-  display: inline-flex; align-items: center; gap: 6px;
-  padding: 9px 16px; border-radius: 9px;
-  font-size: 13px; font-weight: 600;
-  width: 100%; justify-content: center;
-  background: transparent; transition: opacity .15s;
-  border: 1px solid var(--border); color: var(--t3);
+.btn-wk:hover{opacity:.85;transform:translateY(-1px)}
+.btn-wk-ghost{
+  display:flex;align-items:center;justify-content:center;
+  padding:9px 14px;border-radius:9px;
+  font-size:13px;font-weight:500;color:var(--t4);
+  border:1px solid var(--border);
 }
 
-/* ═══════════════════════════════════════════
-   TIMELINE — A DAY INSIDE UNIT
-═══════════════════════════════════════════ */
-.timeline-section{ background: var(--dark); }
-.timeline-section .section-eyebrow{ color: #a78bfa; }
-.timeline-section .section-title{ color: #fff; }
-.timeline-section .section-sub{ color: rgba(255,255,255,0.45); }
-.timeline{
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 0;
-  position: relative;
+/* ── TIMELINE ── */
+.timeline-sec{background:var(--soft);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.tl{
+  display:grid;grid-template-columns:repeat(5,1fr);
+  gap:0;position:relative;margin-top:clamp(40px,5vw,64px);
 }
-.timeline::before{
-  content: '';
-  position: absolute;
-  top: 28px; left: 10%; right: 10%;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(124,58,237,0.6), rgba(124,58,237,0.6), rgba(124,58,237,0.6), transparent);
+.tl::before{
+  content:'';position:absolute;
+  top:26px;left:10%;right:10%;height:1px;
+  background:linear-gradient(90deg,transparent,var(--border),var(--border),var(--border),transparent);
 }
-.timeline-item{
-  display: flex; flex-direction: column; align-items: center;
-  padding: 0 12px;
-  text-align: center;
+/* arrows between nodes */
+.tl-arrow{
+  position:absolute;top:18px;
+  width:0;height:0;
+  border-top:8px solid transparent;
+  border-bottom:8px solid transparent;
+  border-left:10px solid var(--border);
 }
-.timeline-node{
-  width: 56px; height: 56px; border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  margin-bottom: 20px;
-  position: relative; z-index: 1;
-  border: 2px solid rgba(255,255,255,0.1);
-  background: var(--dark2);
-  flex-shrink: 0;
+.tl-item{display:flex;flex-direction:column;align-items:center;text-align:center;padding:0 8px}
+.tl-node{
+  width:52px;height:52px;border-radius:50%;
+  background:#fff;border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  position:relative;z-index:1;margin-bottom:16px;
+  flex-shrink:0;
 }
-.timeline-node svg{ width: 22px; height: 22px; }
-.timeline-time{
-  font-size: 11px; font-weight: 700; letter-spacing: .06em;
-  margin-bottom: 8px;
-}
-.timeline-event{
-  font-size: 13px; color: rgba(255,255,255,0.55); line-height: 1.6;
-}
-.timeline-event strong{ color: rgba(255,255,255,0.85); display: block; font-weight: 600; margin-bottom: 3px; }
-.timeline-item:last-child .timeline-node{
-  background: var(--brand); border-color: var(--brand);
-}
-.timeline-item:last-child .timeline-time{ color: #a78bfa; }
+.tl-node svg{width:20px;height:20px}
+.tl-time{font-size:11px;font-weight:700;letter-spacing:.04em;margin-bottom:6px}
+.tl-evt{font-size:13px;color:var(--t3);line-height:1.6}
+.tl-evt strong{color:var(--text);display:block;margin-bottom:2px;font-weight:600}
+.tl-item:last-child .tl-node{background:var(--brand);border-color:var(--brand)}
+.tl-item:last-child .tl-node svg{color:#fff!important;stroke:#fff!important}
 
-/* ═══════════════════════════════════════════
-   HOW THEY WORK
-═══════════════════════════════════════════ */
-.howworks{ background: var(--soft-bg); }
-.steps-grid{
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 20px;
+/* ── LIFECYCLE ── */
+.lifecycle{background:#fff}
+.lc-grid{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center}
+.lc-left .sec-h{margin-bottom:16px}
+.lc-left p{font-size:1rem;color:var(--t3);line-height:1.7;margin-bottom:28px}
+.btn-outline{
+  display:inline-flex;align-items:center;gap:7px;
+  padding:11px 22px;border-radius:10px;
+  font-size:14px;font-weight:600;color:var(--text);
+  border:1px solid var(--border);
+  transition:all .15s;
 }
-.step-card{
-  background: var(--white);
-  border: 1px solid var(--border);
-  border-radius: var(--r-lg);
-  padding: 28px 24px;
+.btn-outline:hover{border-color:#999;color:var(--text)}
+.lc-photos{
+  display:grid;grid-template-columns:repeat(4,1fr);
+  gap:10px;
 }
-.step-number{
-  font-family: var(--font-head);
-  font-size: 2.5rem; font-weight: 800;
-  color: var(--border); margin-bottom: 16px; line-height: 1;
+.lc-photo{position:relative;overflow:hidden;border-radius:14px}
+.lc-photo img{
+  width:100%;height:200px;
+  object-fit:cover;object-position:center top;
+  display:block;
 }
-.step-icon{
-  width: 44px; height: 44px; border-radius: 12px;
-  background: var(--brand-soft);
-  display: flex; align-items: center; justify-content: center;
-  margin-bottom: 16px;
+.lc-photo-label{
+  position:absolute;bottom:0;left:0;right:0;
+  padding:10px 10px 12px;
+  background:linear-gradient(to top,rgba(0,0,0,.65),transparent);
 }
-.step-icon svg{ width: 22px; height: 22px; color: var(--brand); }
-.step-title{
-  font-family: var(--font-head);
-  font-size: 1.1rem; font-weight: 800;
-  margin-bottom: 10px; letter-spacing: -.02em;
-}
-.step-desc{
-  font-size: 14px; color: var(--t3); line-height: 1.65;
-}
+.lc-photo-step{font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--brand);margin-bottom:2px}
+.lc-photo-txt{font-size:11px;font-weight:600;color:#fff;line-height:1.4}
 
-/* ═══════════════════════════════════════════
-   CTA BANNER
-═══════════════════════════════════════════ */
-.cta-banner{
-  background: var(--brand);
-  padding: clamp(56px, 7vw, 96px) 0;
-  position: relative; overflow: hidden;
+/* ── CTA BANNER ── */
+.cta-sec{
+  background:var(--brand);
+  padding:clamp(52px,7vw,88px) 0;
+  position:relative;overflow:hidden;
 }
-.cta-banner::before{
-  content: '';
-  position: absolute; inset: 0;
-  background: radial-gradient(ellipse 80% 80% at 50% 120%, rgba(255,255,255,0.08) 0%, transparent 70%);
+.cta-sec::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse 80% 80% at 50% 110%,rgba(255,255,255,.07) 0%,transparent 70%);
 }
-.cta-banner-inner{
-  text-align: center; position: relative; z-index: 1;
+.cta-i{text-align:center;position:relative;z-index:1}
+.cta-i h2{
+  font-family:var(--font-h);
+  font-size:clamp(1.8rem,3.8vw,2.8rem);
+  font-weight:800;color:#fff;letter-spacing:-.03em;
+  margin-bottom:12px;
 }
-.cta-banner h2{
-  font-family: var(--font-head);
-  font-size: clamp(1.8rem, 4vw, 3rem);
-  font-weight: 800; color: #fff; letter-spacing: -.03em;
-  margin-bottom: 16px;
-}
-.cta-banner p{
-  font-size: 1rem; color: rgba(255,255,255,0.65);
-  margin-bottom: 32px;
-}
+.cta-i p{font-size:1rem;color:rgba(255,255,255,.65);margin-bottom:28px}
 .btn-white{
-  display: inline-flex; align-items: center; gap: 8px;
-  padding: 14px 28px; border-radius: 12px;
-  font-size: 15px; font-weight: 700;
-  background: #fff; color: var(--brand); border: none;
-  transition: opacity .15s, transform .15s, box-shadow .15s;
-  box-shadow: 0 4px 24px rgba(0,0,0,0.2);
+  display:inline-flex;align-items:center;gap:7px;
+  padding:13px 26px;border-radius:11px;
+  font-size:15px;font-weight:700;
+  background:#fff;color:var(--brand);
+  box-shadow:0 4px 20px rgba(0,0,0,.18);
+  transition:opacity .15s,transform .15s;
 }
-.btn-white:hover{ opacity:.94; transform:translateY(-2px); box-shadow: 0 12px 32px rgba(0,0,0,0.3); }
-.cta-note{
-  margin-top: 14px; font-size: 13px; color: rgba(255,255,255,0.45);
-}
+.btn-white:hover{opacity:.94;transform:translateY(-2px)}
+.cta-note{margin-top:12px;font-size:13px;color:rgba(255,255,255,.4)}
 
-/* ═══════════════════════════════════════════
-   FOOTER
-═══════════════════════════════════════════ */
-.footer{
-  background: var(--dark);
-  border-top: 1px solid rgba(255,255,255,0.07);
-  padding: clamp(40px, 6vw, 72px) 0 32px;
+/* ── FOOTER ── */
+.footer{background:#0A0A0A;padding:clamp(40px,6vw,72px) 0 28px}
+.ft-grid{
+  display:grid;grid-template-columns:2fr 1fr 1fr 1fr;
+  gap:44px;margin-bottom:44px;
 }
-.footer-grid{
-  display: grid;
-  grid-template-columns: 2fr 1fr 1fr 1fr;
-  gap: 48px;
-  margin-bottom: 48px;
+.ft-name{
+  font-family:var(--font-h);font-size:1.15rem;font-weight:800;
+  color:#fff;margin-bottom:10px;
 }
-.footer-brand-name{
-  font-family: var(--font-head);
-  font-size: 1.2rem; font-weight: 800;
-  color: #fff; margin-bottom: 12px;
+.ft-desc{font-size:13.5px;color:rgba(255,255,255,.3);line-height:1.7;max-width:220px;margin-bottom:20px}
+.ft-col-h{
+  font-size:10.5px;font-weight:700;letter-spacing:.1em;
+  text-transform:uppercase;color:rgba(255,255,255,.25);
+  margin-bottom:14px;
 }
-.footer-brand-desc{
-  font-size: 14px; color: rgba(255,255,255,0.35);
-  line-height: 1.7; max-width: 240px; margin-bottom: 24px;
+.ft-links{display:flex;flex-direction:column;gap:9px}
+.ft-links a{font-size:13.5px;color:rgba(255,255,255,.4);transition:color .15s}
+.ft-links a:hover{color:rgba(255,255,255,.8)}
+.ft-bottom{
+  border-top:1px solid rgba(255,255,255,.07);padding-top:24px;
+  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;
 }
-.footer-col-title{
-  font-size: 11px; font-weight: 700; letter-spacing: .1em;
-  text-transform: uppercase; color: rgba(255,255,255,0.3);
-  margin-bottom: 16px;
-}
-.footer-links{ list-style: none; display: flex; flex-direction: column; gap: 10px; }
-.footer-links a{
-  font-size: 14px; color: rgba(255,255,255,0.45);
-  transition: color .15s;
-}
-.footer-links a:hover{ color: rgba(255,255,255,0.85); }
-.footer-bottom{
-  border-top: 1px solid rgba(255,255,255,0.07);
-  padding-top: 28px;
-  display: flex; align-items: center; justify-content: space-between;
-  flex-wrap: wrap; gap: 12px;
-}
-.footer-bottom p{
-  font-size: 13px; color: rgba(255,255,255,0.25);
-}
+.ft-bottom p{font-size:12.5px;color:rgba(255,255,255,.2)}
 
-/* ═══════════════════════════════════════════
-   MOBILE NAV DRAWER
-═══════════════════════════════════════════ */
-.mobile-menu{
-  display: none;
-  position: fixed; inset: 0; z-index: 200;
-  background: var(--dark);
-  flex-direction: column;
-  padding: 24px var(--pad);
+/* ── MOBILE MENU ── */
+.mob-menu{
+  display:none;position:fixed;inset:0;z-index:200;
+  background:#fff;flex-direction:column;padding:24px var(--pad);
 }
-.mobile-menu.open{ display: flex; }
-.mobile-menu-top{
-  display: flex; align-items: center; justify-content: space-between;
-  margin-bottom: 40px;
+.mob-menu.open{display:flex}
+.mob-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:36px}
+.mob-close{font-size:22px;color:var(--t3);padding:4px}
+.mob-links{display:flex;flex-direction:column}
+.mob-links a{
+  display:block;padding:14px 0;
+  font-size:1.05rem;font-weight:600;color:var(--t2);
+  border-bottom:1px solid var(--border);
+  transition:color .15s;
 }
-.mobile-close{
-  background: none; border: none;
-  color: rgba(255,255,255,0.6); font-size: 24px; line-height: 1;
-}
-.mobile-nav-links{
-  list-style: none; display: flex; flex-direction: column; gap: 8px;
-}
-.mobile-nav-links a{
-  display: block; padding: 14px 0;
-  font-size: 1.1rem; font-weight: 600; color: rgba(255,255,255,0.75);
-  border-bottom: 1px solid rgba(255,255,255,0.07);
-  transition: color .15s;
-}
-.mobile-nav-links a:hover{ color: #fff; }
-.mobile-nav-ctas{ margin-top: 32px; display: flex; flex-direction: column; gap: 12px; }
+.mob-links a:hover{color:var(--text)}
+.mob-ctas{margin-top:28px;display:flex;flex-direction:column;gap:10px}
 
-/* ═══════════════════════════════════════════
-   RESPONSIVE
-═══════════════════════════════════════════ */
-@media(max-width: 1024px){
-  .worker-grid{ grid-template-columns: repeat(2, 1fr); }
-  .steps-grid{ grid-template-columns: repeat(2, 1fr); }
-  .footer-grid{ grid-template-columns: 1fr 1fr; gap: 32px; }
-  .timeline{ gap: 16px; }
-  .timeline::before{ display: none; }
+/* ── RESPONSIVE ── */
+@media(max-width:1024px){
+  .wk-grid{grid-template-columns:repeat(2,1fr)}
+  .ft-grid{grid-template-columns:1fr 1fr;gap:28px}
+  .tl{grid-template-columns:repeat(3,1fr)}
+  .lc-grid{grid-template-columns:1fr;gap:40px}
+  .lc-photos{grid-template-columns:repeat(4,1fr)}
 }
-
-@media(max-width: 768px){
-  .nav-links, .nav-actions{ display: none; }
-  .nav-mobile-toggle{ display: flex; }
-  .hero-inner{
-    grid-template-columns: 1fr;
-    text-align: center;
-    padding-top: 80px; padding-bottom: 48px;
-  }
-  .hero-sub{ margin: 0 auto 32px; }
-  .hero-ctas{ justify-content: center; }
-  .hero-proof{ justify-content: center; }
-  .hero-image{ order: -1; }
-  .hero-image img{ max-height: 380px; }
-  .hero-image-badge{ left: 8px; bottom: 8px; }
-  .timeline{ grid-template-columns: repeat(2, 1fr); }
-  .footer-grid{ grid-template-columns: 1fr; gap: 28px; }
-  .footer-bottom{ flex-direction: column; text-align: center; }
+@media(max-width:768px){
+  .nav-links,.nav-acts{display:none}
+  .ham{display:flex}
+  .hero-i{grid-template-columns:1fr;text-align:center}
+  .hero-p{margin:0 auto 28px}
+  .hero-btns{justify-content:center}
+  .hero-proof{justify-content:center}
+  .hero-img{order:-1}
+  .tl{grid-template-columns:repeat(2,1fr)}
+  .ft-grid{grid-template-columns:1fr}
+  .ft-bottom{flex-direction:column;text-align:center}
+  .lc-photos{grid-template-columns:repeat(2,1fr)}
 }
-
-@media(max-width: 480px){
-  .worker-grid{ grid-template-columns: 1fr; }
-  .steps-grid{ grid-template-columns: 1fr; }
-  .timeline{ grid-template-columns: 1fr; }
-  .hero-ctas{ flex-direction: column; align-items: stretch; }
-  .btn-primary-lg, .btn-ghost-lg{ justify-content: center; width: 100%; }
+@media(max-width:480px){
+  .wk-grid{grid-template-columns:1fr}
+  .tl{grid-template-columns:1fr}
+  .hero-btns{flex-direction:column;align-items:stretch}
+  .btn-hero,.btn-hero-ghost{justify-content:center}
+  .lc-photos{grid-template-columns:repeat(2,1fr)}
 }
 </style>
 </head>
 <body>
 
-<!-- ── NAV ── -->
+<!-- NAV -->
 <nav class="nav">
-  <div class="wrap nav-inner">
-    <a href="/" class="nav-logo">
-      <div class="nav-logo-mark">
-        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round">
+  <div class="w nav-i">
+    <a href="/" class="logo">
+      <div class="logo-mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
           <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
         </svg>
       </div>
-      <span class="nav-logo-name">UNIT</span>
+      <span class="logo-name">UNIT</span>
     </a>
-
     <ul class="nav-links">
       <li><a href="#workers">Meet the Team</a></li>
-      <li><a href="#how-it-works">How It Works</a></li>
+      <li><a href="#timeline">How It Works</a></li>
       <li><a href="{{ route('pricing') }}">Pricing</a></li>
       <li><a href="{{ route('marketplace') }}">Marketplace</a></li>
     </ul>
-
-    <div class="nav-actions">
-      <a href="{{ route('login') }}" class="btn-ghost-nav">Log in</a>
-      <a href="{{ route('register') }}" class="btn-primary">
+    <div class="nav-acts">
+      <a href="{{ route('login') }}" class="btn-login">Log in</a>
+      <a href="{{ route('register') }}" class="btn-cta">
         Hire Your First Worker
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
       </a>
     </div>
-
-    <button class="nav-mobile-toggle" id="menu-open" aria-label="Open menu">
+    <button class="ham" id="ham" aria-label="Menu">
       <span></span><span></span><span></span>
     </button>
   </div>
 </nav>
 
-<!-- ── MOBILE MENU ── -->
-<div class="mobile-menu" id="mobile-menu">
-  <div class="mobile-menu-top">
-    <a href="/" class="nav-logo">
-      <div class="nav-logo-mark">
-        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round">
-          <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
-        </svg>
-      </div>
-      <span class="nav-logo-name">UNIT</span>
+<!-- MOBILE MENU -->
+<div class="mob-menu" id="mob">
+  <div class="mob-top">
+    <a href="/" class="logo">
+      <div class="logo-mark"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg></div>
+      <span class="logo-name">UNIT</span>
     </a>
-    <button class="mobile-close" id="menu-close">✕</button>
+    <button class="mob-close" id="mob-close">✕</button>
   </div>
-  <ul class="mobile-nav-links">
-    <li><a href="#workers" onclick="closeMobileMenu()">Meet the Team</a></li>
-    <li><a href="#how-it-works" onclick="closeMobileMenu()">How It Works</a></li>
-    <li><a href="{{ route('pricing') }}" onclick="closeMobileMenu()">Pricing</a></li>
-    <li><a href="{{ route('marketplace') }}" onclick="closeMobileMenu()">Marketplace</a></li>
-  </ul>
-  <div class="mobile-nav-ctas">
-    <a href="{{ route('login') }}" class="btn-ghost-nav" style="text-align:center;padding:13px">Log in</a>
-    <a href="{{ route('register') }}" class="btn-primary" style="padding:13px;justify-content:center">Hire Your First Worker →</a>
+  <div class="mob-links">
+    <a href="#workers" onclick="closeMob()">Meet the Team</a>
+    <a href="#timeline" onclick="closeMob()">How It Works</a>
+    <a href="{{ route('pricing') }}" onclick="closeMob()">Pricing</a>
+    <a href="{{ route('marketplace') }}" onclick="closeMob()">Marketplace</a>
+  </div>
+  <div class="mob-ctas">
+    <a href="{{ route('login') }}" class="btn-login" style="text-align:center;padding:12px">Log in</a>
+    <a href="{{ route('register') }}" class="btn-cta" style="padding:12px;justify-content:center">Hire Your First Worker →</a>
   </div>
 </div>
 
-<!-- ── HERO ── -->
+<!-- HERO -->
 <section class="hero">
-  <div class="hero-inner">
-    <div class="hero-left">
+  <div class="hero-i">
+    <div>
       <div class="hero-eyebrow">
-        <span class="hero-eyebrow-dot"></span>
+        <span class="hero-dot"></span>
         AI Workforce Platform
       </div>
-      <h1 class="hero-headline">
-        Meet the workers that never stop<br>
+      <h1 class="hero-h">
+        Meet the workers<br>
+        that never stop<br>
         <em>showing up.</em>
       </h1>
-      <p class="hero-sub">
-        AVA, DOX, MOX, and NUX are your founding AI team — each one built for a specific job, running 24/7, and getting better every single day.
+      <p class="hero-p">
+        Every UNIT worker has one job — and does it exceptionally well. They work 24/7, improve over time, and tell their own story while helping you run your business.
       </p>
-      <div class="hero-ctas">
-        <a href="{{ route('register') }}" class="btn-primary-lg">
+      <div class="hero-btns">
+        <a href="{{ route('register') }}" class="btn-hero">
           Hire Your First Worker
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
         </a>
-        <a href="#workers" class="btn-ghost-lg">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M10 8l6 4-6 4V8z" fill="currentColor" stroke="none"/></svg>
+        <a href="#workers" class="btn-hero-ghost">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M10 8l6 4-6 4V8z" fill="currentColor" stroke="none"/></svg>
           Meet the Team
         </a>
       </div>
       <div class="hero-proof">
-        <div class="hero-proof-avatars">
-          <span style="background:#7C3AED">A</span>
-          <span style="background:#059669">D</span>
-          <span style="background:#D97706">M</span>
-          <span style="background:#2563EB">N</span>
+        <div class="proof-avs">
+          <span style="background:var(--ava)">A</span>
+          <span style="background:var(--dox)">D</span>
+          <span style="background:var(--mox)">M</span>
+          <span style="background:var(--nux)">N</span>
         </div>
-        <p class="hero-proof-text"><strong>4 workers.</strong> One platform. Every workflow covered.</p>
+        <p class="proof-txt"><strong>2,847+</strong> businesses already hired their first worker</p>
       </div>
     </div>
 
-    <div class="hero-image">
-      <img src="/images/hero-team.png" alt="The UNIT AI workforce team — AVA, DOX, MOX, and NUX">
-      <div class="hero-image-badge">
-        <div class="hero-image-badge-dot"></div>
-        <div class="hero-image-badge-text">
-          All 4 workers online <span>· Processing now</span>
-        </div>
+    <div class="hero-img">
+      <img src="/images/hero-team.png" alt="AVA, DOX, MOX and NUX — the UNIT AI workforce">
+      <div class="hero-badge">
+        <div class="badge-dot"></div>
+        <div class="badge-txt">Real stories. Real work. <span>Real results.</span></div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ── TRUST BAR ── -->
+<!-- TRUST -->
 <div class="trust">
-  <div class="wrap trust-inner">
-    <span class="trust-label">Trusted by teams at</span>
+  <div class="w trust-i">
+    <span class="trust-lbl">Trusted by teams who want more done</span>
     <div class="trust-items">
-      <div class="trust-item">
-        <span class="trust-stars">★★★★★</span>
-        G2
-      </div>
-      <div class="trust-item">
-        <span class="trust-stars">★★★★★</span>
-        Capterra
-      </div>
-      <div class="trust-item">
-        <span class="trust-stars">★★★★★</span>
-        Google
-      </div>
-      <div class="trust-item">
-        <span class="trust-stars">★★★★★</span>
-        Trustpilot
-      </div>
+      <div class="trust-item"><span class="stars">★★★★★</span> G2</div>
+      <div class="trust-item"><span class="stars">★★★★★</span> Capterra</div>
+      <div class="trust-item"><span class="stars">★★★★★</span> Google</div>
+      <div class="trust-item"><span class="stars">★★★★★</span> Trustpilot</div>
     </div>
   </div>
 </div>
 
-<!-- ── WORKERS ── -->
-<section class="workers section" id="workers">
-  <div class="wrap">
-    <div class="section-header centered">
-      <div class="section-eyebrow">Meet the team</div>
-      <h2 class="section-title">Four workers. Four specialties.<br>One goal: your success.</h2>
-      <p class="section-sub">Each UNIT worker has one job — and does it exceptionally well. They run continuously, improve with every task, and report back on everything they do.</p>
+<!-- WORKERS -->
+<section class="workers sec" id="workers">
+  <div class="w">
+    <div class="center" style="margin-bottom:clamp(36px,5vw,56px)">
+      <div class="sec-eye">Meet the team</div>
+      <h2 class="sec-h">Four workers. Four specialties.<br>One goal: your success.</h2>
+      <p class="sec-p">Each UNIT worker has one job — and does it exceptionally well. They run continuously, improve with every task, and report back on everything they do.</p>
     </div>
 
-    <div class="worker-grid">
+    <div class="wk-grid">
 
-      {{-- AVA --}}
-      <div class="worker-card">
-        <div class="worker-card-top" style="background:var(--ava)"></div>
-        <div class="worker-card-image">
+      <!-- AVA -->
+      <div class="wk-card">
+        <div class="wk-top" style="background:var(--ava)"></div>
+        <div class="wk-img">
           <img src="/images/ava.png" alt="AVA — Renewal Coordinator">
-          <div class="worker-card-status live">
-            <span class="worker-card-status-dot"></span> Live
-          </div>
+          <div class="wk-status live"><span class="wk-status-dot"></span> Live</div>
         </div>
-        <div class="worker-card-body">
-          <div class="worker-card-icon" style="background:var(--ava-soft)">
+        <div class="wk-body">
+          <div class="wk-icon" style="background:rgba(107,43,242,.1)">
             <svg viewBox="0 0 24 24" fill="none" stroke="var(--ava)" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
           </div>
-          <div class="worker-card-name" style="color:var(--ava)">AVA</div>
-          <div class="worker-card-role">Renewal Coordinator</div>
-          <p class="worker-card-quote">"I remember the renewals everyone else forgets. Every deadline. Every client. Every time."</p>
-          <a href="{{ route('workers.public.show', 'ava') }}" class="btn-worker" style="background:var(--ava)">
-            Meet AVA
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          <div class="wk-name" style="color:var(--ava)">AVA</div>
+          <div class="wk-role">Renewal Coordinator</div>
+          <p class="wk-quote">"I remember the renewals everyone else forgets. Every deadline. Every client. Every time."</p>
+          <a href="{{ route('workers.public.show', 'ava') }}" class="btn-wk" style="background:var(--ava)">
+            Watch Ava's Day
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M10 8l6 4-6 4V8z" fill="currentColor" stroke="none"/></svg>
           </a>
         </div>
       </div>
 
-      {{-- DOX --}}
-      <div class="worker-card">
-        <div class="worker-card-top" style="background:var(--dox)"></div>
-        <div class="worker-card-image">
-          <img src="/images/ava.png" alt="DOX — Document Organizer" style="filter:hue-rotate(135deg) saturate(0.8)">
-          <div class="worker-card-status soon">
-            <span class="worker-card-status-dot"></span> Coming Soon
-          </div>
+      <!-- DOX -->
+      <div class="wk-card">
+        <div class="wk-top" style="background:var(--dox)"></div>
+        <div class="wk-img">
+          <img src="/images/ava.png" alt="DOX — Document Organizer" style="filter:hue-rotate(130deg) saturate(.85)">
+          <div class="wk-status soon"><span class="wk-status-dot"></span> Coming Soon</div>
         </div>
-        <div class="worker-card-body">
-          <div class="worker-card-icon" style="background:var(--dox-soft)">
+        <div class="wk-body">
+          <div class="wk-icon" style="background:rgba(5,150,105,.1)">
             <svg viewBox="0 0 24 24" fill="none" stroke="var(--dox)" stroke-width="2" stroke-linecap="round"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>
           </div>
-          <div class="worker-card-name" style="color:var(--dox)">DOX</div>
-          <div class="worker-card-role">Document Organizer</div>
-          <p class="worker-card-quote">"I organize the documents nobody wants to touch — so everything is exactly where you need it."</p>
-          <button class="btn-worker-ghost" disabled>
-            Joining the team soon
-          </button>
+          <div class="wk-name" style="color:var(--dox)">DOX</div>
+          <div class="wk-role">Document Organizer</div>
+          <p class="wk-quote">"I organize the documents nobody wants to touch — so everything is exactly where you need it."</p>
+          <button class="btn-wk-ghost" disabled>Watch Dox's Day ›</button>
         </div>
       </div>
 
-      {{-- MOX --}}
-      <div class="worker-card">
-        <div class="worker-card-top" style="background:var(--mox)"></div>
-        <div class="worker-card-image">
-          <img src="/images/ava.png" alt="MOX — Brand Scout" style="filter:hue-rotate(200deg) saturate(0.75)">
-          <div class="worker-card-status soon">
-            <span class="worker-card-status-dot"></span> Coming Soon
-          </div>
+      <!-- MOX -->
+      <div class="wk-card">
+        <div class="wk-top" style="background:var(--mox)"></div>
+        <div class="wk-img">
+          <img src="/images/ava.png" alt="MOX — Brand Scout" style="filter:hue-rotate(195deg) saturate(.8)">
+          <div class="wk-status soon"><span class="wk-status-dot"></span> Coming Soon</div>
         </div>
-        <div class="worker-card-body">
-          <div class="worker-card-icon" style="background:var(--mox-soft)">
+        <div class="wk-body">
+          <div class="wk-icon" style="background:rgba(217,119,6,.1)">
             <svg viewBox="0 0 24 24" fill="none" stroke="var(--mox)" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
           </div>
-          <div class="worker-card-name" style="color:var(--mox)">MOX</div>
-          <div class="worker-card-role">Brand Scout</div>
-          <p class="worker-card-quote">"I search the world for moments your brand shouldn't miss — and surface them before you even ask."</p>
-          <button class="btn-worker-ghost" disabled>
-            Joining the team soon
-          </button>
+          <div class="wk-name" style="color:var(--mox)">MOX</div>
+          <div class="wk-role">Brand Scout</div>
+          <p class="wk-quote">"I search the world for moments your brand shouldn't miss — and surface them before you even ask."</p>
+          <button class="btn-wk-ghost" disabled>Watch Mox's Day ›</button>
         </div>
       </div>
 
-      {{-- NUX --}}
-      <div class="worker-card">
-        <div class="worker-card-top" style="background:var(--nux)"></div>
-        <div class="worker-card-image">
-          <img src="/images/ava.png" alt="NUX — Content Creator" style="filter:hue-rotate(270deg) saturate(0.7)">
-          <div class="worker-card-status soon">
-            <span class="worker-card-status-dot"></span> Coming Soon
-          </div>
+      <!-- NUX -->
+      <div class="wk-card">
+        <div class="wk-top" style="background:var(--nux)"></div>
+        <div class="wk-img">
+          <img src="/images/ava.png" alt="NUX — Content Creator" style="filter:hue-rotate(260deg) saturate(.75)">
+          <div class="wk-status soon"><span class="wk-status-dot"></span> Coming Soon</div>
         </div>
-        <div class="worker-card-body">
-          <div class="worker-card-icon" style="background:var(--nux-soft)">
+        <div class="wk-body">
+          <div class="wk-icon" style="background:rgba(37,99,235,.1)">
             <svg viewBox="0 0 24 24" fill="none" stroke="var(--nux)" stroke-width="2" stroke-linecap="round"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
           </div>
-          <div class="worker-card-name" style="color:var(--nux)">NUX</div>
-          <div class="worker-card-role">Content Creator</div>
-          <p class="worker-card-quote">"I turn one idea into content people actually see — across every channel, every format, every time."</p>
-          <button class="btn-worker-ghost" disabled>
-            Joining the team soon
-          </button>
+          <div class="wk-name" style="color:var(--nux)">NUX</div>
+          <div class="wk-role">Content Creator</div>
+          <p class="wk-quote">"I turn one idea into content people actually see — across every channel, every format, every time."</p>
+          <button class="btn-wk-ghost" disabled>Watch Nux's Day ›</button>
         </div>
       </div>
 
@@ -879,169 +655,165 @@ body{
   </div>
 </section>
 
-<!-- ── TIMELINE ── -->
-<section class="timeline-section section" id="how-it-works">
-  <div class="wrap">
-    <div class="section-header centered">
-      <div class="section-eyebrow">A day inside UNIT</div>
-      <h2 class="section-title" style="color:#fff">While you focus on growth,<br>they handle everything else.</h2>
-      <p class="section-sub" style="color:rgba(255,255,255,0.45);margin:0 auto">From the moment your team logs in, your UNIT workers are already running.</p>
+<!-- TIMELINE -->
+<section class="timeline-sec sec" id="timeline">
+  <div class="w">
+    <div class="center">
+      <div class="sec-eye">A day inside UNIT</div>
+      <h2 class="sec-h">While you focus on growth,<br>they handle everything else.</h2>
     </div>
-
-    <div class="timeline">
-      <div class="timeline-item">
-        <div class="timeline-node" style="border-color:rgba(124,58,237,0.4)">
+    <div class="tl">
+      <div class="tl-item">
+        <div class="tl-node" style="border-color:rgba(107,43,242,.3)">
           <svg viewBox="0 0 24 24" fill="none" stroke="var(--ava)" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
         </div>
-        <div class="timeline-time" style="color:var(--ava)">8:00 AM</div>
-        <div class="timeline-event"><strong>AVA</strong> processes your overnight renewals and queues 3 draft replies for review.</div>
+        <div class="tl-time" style="color:var(--ava)">8:00 AM</div>
+        <div class="tl-evt"><strong>AVA</strong>finishes three renewals.</div>
       </div>
-      <div class="timeline-item">
-        <div class="timeline-node" style="border-color:rgba(5,150,105,0.4)">
+      <div class="tl-item">
+        <div class="tl-node" style="border-color:rgba(5,150,105,.3)">
           <svg viewBox="0 0 24 24" fill="none" stroke="var(--dox)" stroke-width="1.8" stroke-linecap="round"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>
         </div>
-        <div class="timeline-time" style="color:var(--dox)">9:30 AM</div>
-        <div class="timeline-event"><strong>DOX</strong> organizes 1,247 files from your last 90 days and builds a searchable index.</div>
+        <div class="tl-time" style="color:var(--dox)">9:30 AM</div>
+        <div class="tl-evt"><strong>DOX</strong>organizes 1,247 files.</div>
       </div>
-      <div class="timeline-item">
-        <div class="timeline-node" style="border-color:rgba(217,119,6,0.4)">
+      <div class="tl-item">
+        <div class="tl-node" style="border-color:rgba(217,119,6,.3)">
           <svg viewBox="0 0 24 24" fill="none" stroke="var(--mox)" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
         </div>
-        <div class="timeline-time" style="color:var(--mox)">11:00 AM</div>
-        <div class="timeline-event"><strong>MOX</strong> discovers a brand moment trending in your industry — surfaces it to your feed.</div>
+        <div class="tl-time" style="color:var(--mox)">11:00 AM</div>
+        <div class="tl-evt"><strong>MOX</strong>discovers National Coffee Day.</div>
       </div>
-      <div class="timeline-item">
-        <div class="timeline-node" style="border-color:rgba(37,99,235,0.4)">
+      <div class="tl-item">
+        <div class="tl-node" style="border-color:rgba(37,99,235,.3)">
           <svg viewBox="0 0 24 24" fill="none" stroke="var(--nux)" stroke-width="1.8" stroke-linecap="round"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
         </div>
-        <div class="timeline-time" style="color:var(--nux)">2:00 PM</div>
-        <div class="timeline-event"><strong>NUX</strong> publishes six content pieces from a brief you wrote at breakfast.</div>
+        <div class="tl-time" style="color:var(--nux)">2:00 PM</div>
+        <div class="tl-evt"><strong>NUX</strong>publishes six campaigns.</div>
       </div>
-      <div class="timeline-item">
-        <div class="timeline-node">
+      <div class="tl-item">
+        <div class="tl-node">
           <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
         </div>
-        <div class="timeline-time" style="color:#a78bfa">5:00 PM</div>
-        <div class="timeline-event"><strong>You arrive.</strong> Everything is already done. Your team just needed a UNIT.</div>
+        <div class="tl-time" style="color:var(--brand)">5:00 PM</div>
+        <div class="tl-evt"><strong>You arrive.</strong>Everything is already done.</div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ── HOW WORKERS WORK ── -->
-<section class="howworks section">
-  <div class="wrap">
-    <div class="section-header">
-      <div class="section-eyebrow">Every worker has a life</div>
-      <h2 class="section-title">They wake up. They receive work.<br>They improve. They write about their day.</h2>
-      <p class="section-sub">They're not just tools — they're consistent, reliable, and always getting better.</p>
-    </div>
-
-    <div class="steps-grid">
-      <div class="step-card">
-        <div class="step-number">01</div>
-        <div class="step-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 3a6 6 0 009 9 9 9 0 11-9-9z"/></svg>
-        </div>
-        <div class="step-title">Wake Up</div>
-        <p class="step-desc">Every morning, workers come online, check their queue, and get ready for the day ahead — no alarm required.</p>
+<!-- LIFECYCLE -->
+<section class="lifecycle sec">
+  <div class="w">
+    <div class="lc-grid">
+      <div class="lc-left">
+        <div class="sec-eye">Every worker has a life</div>
+        <h2 class="sec-h">They wake up. They receive work. They improve. They write about their day.</h2>
+        <p>They're not just tools. They're consistent, reliable, and always getting better.</p>
+        <a href="{{ route('register') }}" class="btn-outline">
+          See Inside Their World
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
       </div>
-      <div class="step-card">
-        <div class="step-number">02</div>
-        <div class="step-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+      <div class="lc-photos">
+        <div class="lc-photo">
+          <img src="/images/ava.png" alt="Wake up">
+          <div class="lc-photo-label">
+            <div class="lc-photo-step">1. Wake up</div>
+            <div class="lc-photo-txt">Ready for the day at the Desk.</div>
+          </div>
         </div>
-        <div class="step-title">Receive Work</div>
-        <p class="step-desc">New tasks flow in automatically — from your inbox, your integrations, or direct assignments you push their way.</p>
-      </div>
-      <div class="step-card">
-        <div class="step-number">03</div>
-        <div class="step-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+        <div class="lc-photo">
+          <img src="/images/ava.png" alt="Receive work" style="filter:hue-rotate(130deg) saturate(.85)">
+          <div class="lc-photo-label">
+            <div class="lc-photo-step" style="color:#34d399">1. Receive work</div>
+            <div class="lc-photo-txt">New tasks. New opportunities.</div>
+          </div>
         </div>
-        <div class="step-title">Do the Work</div>
-        <p class="step-desc">They execute with precision — classify, draft, organize, publish. Every action logged. Every result reviewable.</p>
-      </div>
-      <div class="step-card">
-        <div class="step-number">04</div>
-        <div class="step-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+        <div class="lc-photo">
+          <img src="/images/ava.png" alt="Do the work" style="filter:hue-rotate(195deg) saturate(.8)">
+          <div class="lc-photo-label">
+            <div class="lc-photo-step" style="color:#fbbf24">3. Do the work</div>
+            <div class="lc-photo-txt">Focus. Execute. Deliver results.</div>
+          </div>
         </div>
-        <div class="step-title">Write Their Diary</div>
-        <p class="step-desc">At the end of each day, every worker reflects, logs learnings, and gets smarter for tomorrow's tasks.</p>
+        <div class="lc-photo">
+          <img src="/images/ava.png" alt="Write their diary" style="filter:hue-rotate(260deg) saturate(.75)">
+          <div class="lc-photo-label">
+            <div class="lc-photo-step" style="color:#60a5fa">4. Write their diary</div>
+            <div class="lc-photo-txt">Reflect, learn, and get better tomorrow.</div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ── CTA BANNER ── -->
-<section class="cta-banner">
-  <div class="wrap cta-banner-inner">
+<!-- CTA -->
+<section class="cta-sec">
+  <div class="w cta-i">
     <h2>Hire your first worker today.</h2>
-    <p>Start with one. Add more as you grow. No credit card required.</p>
+    <p>Start with one. Add more as you grow.</p>
     <a href="{{ route('register') }}" class="btn-white">
-      Get Started Free
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      Hire Your First Worker
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
     </a>
-    <p class="cta-note">10 free transactions on any worker. No card required.</p>
+    <p class="cta-note">No credit card required.</p>
   </div>
 </section>
 
-<!-- ── FOOTER ── -->
+<!-- FOOTER -->
 <footer class="footer">
-  <div class="wrap">
-    <div class="footer-grid">
+  <div class="w">
+    <div class="ft-grid">
       <div>
-        <div class="footer-brand-name">UNIT</div>
-        <p class="footer-brand-desc">A platform for deploying purpose-built AI workers. Each worker is trained for a specific workflow and runs on your team.</p>
+        <div class="ft-name">UNIT</div>
+        <p class="ft-desc">A platform for deploying purpose-built AI workers. Each worker is trained for a specific workflow and runs on your team.</p>
       </div>
       <div>
-        <div class="footer-col-title">Workers</div>
-        <ul class="footer-links">
-          <li><a href="{{ route('workers.public.show', 'ava') }}">AVA — Renewal Coordinator</a></li>
-          <li><a href="{{ route('marketplace') }}">All Workers</a></li>
-          <li><a href="{{ route('referral.index') }}">Refer &amp; Earn</a></li>
-        </ul>
+        <div class="ft-col-h">Workers</div>
+        <div class="ft-links">
+          <a href="{{ route('workers.public.show', 'ava') }}">AVA — Renewal Coordinator</a>
+          <a href="{{ route('marketplace') }}">All Workers</a>
+          <a href="{{ route('referral.index') }}">Refer &amp; Earn</a>
+        </div>
       </div>
       <div>
-        <div class="footer-col-title">Product</div>
-        <ul class="footer-links">
-          <li><a href="#how-it-works">How It Works</a></li>
-          <li><a href="{{ route('marketplace') }}">Marketplace</a></li>
-          <li><a href="{{ route('pricing') }}">Pricing</a></li>
-          <li><a href="{{ route('register') }}">Sign Up Free</a></li>
-        </ul>
+        <div class="ft-col-h">Product</div>
+        <div class="ft-links">
+          <a href="#timeline">How It Works</a>
+          <a href="{{ route('marketplace') }}">Marketplace</a>
+          <a href="{{ route('pricing') }}">Pricing</a>
+          <a href="{{ route('register') }}">Sign Up Free</a>
+        </div>
       </div>
       <div>
-        <div class="footer-col-title">Legal</div>
-        <ul class="footer-links">
-          <li><a href="/privacy">Privacy Policy</a></li>
-          <li><a href="/terms">Terms of Use</a></li>
-        </ul>
+        <div class="ft-col-h">Legal</div>
+        <div class="ft-links">
+          <a href="/privacy">Privacy Policy</a>
+          <a href="/terms">Terms of Use</a>
+        </div>
       </div>
     </div>
-    <div class="footer-bottom">
+    <div class="ft-bottom">
       <p>© {{ date('Y') }} UNIT. All rights reserved.</p>
-      <p style="color:rgba(255,255,255,0.2);font-size:12px">Built to work while you don't.</p>
+      <p>Built to work while you don't.</p>
     </div>
   </div>
 </footer>
 
 <script>
-// Mobile menu
-const menuOpen  = document.getElementById('menu-open');
-const menuClose = document.getElementById('menu-close');
-const mobileMenu = document.getElementById('mobile-menu');
+const ham = document.getElementById('ham');
+const mob = document.getElementById('mob');
+const mobClose = document.getElementById('mob-close');
+ham.addEventListener('click', () => mob.classList.add('open'));
+mobClose.addEventListener('click', () => mob.classList.remove('open'));
+function closeMob(){ mob.classList.remove('open') }
 
-menuOpen.addEventListener('click',  () => mobileMenu.classList.add('open'));
-menuClose.addEventListener('click', () => mobileMenu.classList.remove('open'));
-function closeMobileMenu(){ mobileMenu.classList.remove('open'); }
-
-// Smooth scroll for anchor links
 document.querySelectorAll('a[href^="#"]').forEach(a => {
   a.addEventListener('click', e => {
-    const target = document.querySelector(a.getAttribute('href'));
-    if(target){ e.preventDefault(); target.scrollIntoView({ behavior:'smooth', block:'start' }); }
+    const t = document.querySelector(a.getAttribute('href'));
+    if(t){ e.preventDefault(); t.scrollIntoView({behavior:'smooth',block:'start'}) }
   });
 });
 </script>
