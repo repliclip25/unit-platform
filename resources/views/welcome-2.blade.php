@@ -457,6 +457,103 @@ body{
   margin-right:-20px;
 }
 
+/* ── WHAT IS A UNIT WORKER ── */
+.what{background:var(--soft);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.what-grid{display:grid;grid-template-columns:1fr 1fr;gap:clamp(40px,6vw,80px);align-items:center}
+.what-tag{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:5px 12px;border-radius:99px;
+  background:rgba(124,58,237,.1);
+  font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--brand);margin-bottom:20px;
+}
+.what-h{
+  font-family:var(--font-h);font-size:clamp(1.8rem,3.2vw,2.6rem);
+  font-weight:800;letter-spacing:-.03em;line-height:1.12;
+  color:var(--text);margin-bottom:16px;
+}
+.what-h em{font-style:normal;color:var(--brand)}
+.what-sub{font-size:1rem;color:var(--t3);line-height:1.75;margin-bottom:28px;max-width:440px}
+.what-pills{display:flex;flex-wrap:wrap;gap:8px}
+.what-pill{
+  padding:6px 14px;border-radius:99px;
+  font-size:12.5px;font-weight:600;color:var(--t2);
+  border:1px solid var(--border);background:#fff;
+}
+[data-theme="dark"] .what-pill{background:#161616}
+.what-right{display:flex;flex-direction:column;gap:20px}
+.what-item{
+  display:flex;gap:14px;align-items:flex-start;
+  padding:18px;border-radius:16px;
+  background:#fff;border:1px solid var(--border);
+}
+[data-theme="dark"] .what-item{background:#161616}
+.what-num{
+  width:32px;height:32px;border-radius:9px;
+  background:var(--brand);color:#fff;
+  font-size:13px;font-weight:800;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+}
+.what-item-body h4{font-size:14.5px;font-weight:700;color:var(--text);margin-bottom:4px}
+.what-item-body p{font-size:13px;color:var(--t3);line-height:1.6}
+
+/* ── VIDEO ── */
+.video-sec{background:#fff;padding:clamp(60px,8vw,100px) 0}
+.video-grid{display:grid;grid-template-columns:1fr 1fr;gap:clamp(40px,6vw,72px);align-items:center}
+.video-wrap{
+  position:relative;border-radius:20px;overflow:hidden;
+  background:#0D0D0D;aspect-ratio:16/9;
+  box-shadow:0 20px 60px rgba(0,0,0,.18);
+}
+.video-wrap video,.video-wrap iframe{width:100%;height:100%;display:block;object-fit:cover}
+/* placeholder shown when no video src */
+.video-placeholder{
+  position:absolute;inset:0;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:16px;
+  background:linear-gradient(135deg,#1a0533 0%,#0D0D0D 100%);
+}
+.video-play{
+  width:64px;height:64px;border-radius:50%;
+  background:var(--brand);
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 0 0 12px rgba(124,58,237,.2);
+  transition:transform .2s,box-shadow .2s;
+  cursor:pointer;
+}
+.video-play:hover{transform:scale(1.08);box-shadow:0 0 0 16px rgba(124,58,237,.15)}
+.video-play svg{width:26px;height:26px;margin-left:4px}
+.video-caption{font-size:13px;color:rgba(255,255,255,.4);letter-spacing:.04em}
+.video-right .sec-eye{margin-bottom:12px}
+.video-right .sec-h{margin-bottom:14px}
+.video-right p{font-size:1rem;color:var(--t3);line-height:1.75;margin-bottom:28px}
+[data-theme="dark"] .video-sec{background:#0D0D0D}
+
+/* ── FAQ ── */
+.faq-sec{background:var(--soft);padding:clamp(60px,8vw,100px) 0}
+.faq-grid{display:grid;grid-template-columns:1fr 1.6fr;gap:clamp(40px,6vw,72px);align-items:flex-start}
+.faq-left .sec-h{margin-bottom:12px}
+.faq-left p{font-size:1rem;color:var(--t3);line-height:1.7;margin-bottom:24px}
+.faq-list{display:flex;flex-direction:column;gap:0}
+.faq-item{border-bottom:1px solid var(--border)}
+.faq-item:first-child{border-top:1px solid var(--border)}
+.faq-q{
+  width:100%;display:flex;align-items:center;justify-content:space-between;
+  padding:18px 0;background:none;border:none;cursor:pointer;
+  font-family:var(--font-h);font-size:15px;font-weight:700;
+  color:var(--text);text-align:left;gap:16px;
+}
+.faq-q svg{width:18px;height:18px;flex-shrink:0;color:var(--t3);transition:transform .25s}
+.faq-item.open .faq-q svg{transform:rotate(45deg)}
+.faq-a{
+  font-size:14px;color:var(--t3);line-height:1.75;
+  max-height:0;overflow:hidden;
+  transition:max-height .3s ease,padding .3s ease;
+}
+.faq-item.open .faq-a{max-height:300px;padding-bottom:16px}
+[data-theme="dark"] .faq-sec{background:#0D0D0D}
+
 /* ── FEATURES ── */
 .features{background:#fff;padding:clamp(48px,6vw,72px) 0}
 .feat-h{
@@ -574,6 +671,7 @@ body{
 
 /* ── RESPONSIVE ── */
 @media(max-width:1024px){
+  .what-grid,.video-grid,.faq-grid{grid-template-columns:1fr}
   .feat-grid{grid-template-columns:repeat(2,1fr)}
   .trust-platforms{justify-content:flex-start}
   .wk-grid{grid-template-columns:repeat(2,1fr)}
@@ -728,6 +826,52 @@ body{
   </div>
 </div>
 
+<!-- WHAT IS A UNIT WORKER -->
+<section class="what sec" id="what">
+  <div class="w">
+    <div class="what-grid">
+      <div class="what-left">
+        <div class="what-tag">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+          What is a UNIT Worker
+        </div>
+        <h2 class="what-h">Not an app.<br>Not a bot.<br><em>A worker.</em></h2>
+        <p class="what-sub">A UNIT worker is a system built from your day-to-day workflow. It runs without hand-holding, handles its job end-to-end, and reports back to you — so you always know what was done and why.</p>
+        <div class="what-pills">
+          <span class="what-pill">Workflow-native</span>
+          <span class="what-pill">Fully autonomous</span>
+          <span class="what-pill">Reports to you</span>
+          <span class="what-pill">Improves over time</span>
+          <span class="what-pill">No prompts needed</span>
+        </div>
+      </div>
+      <div class="what-right">
+        <div class="what-item">
+          <div class="what-num">1</div>
+          <div class="what-item-body">
+            <h4>Built from your real workflow</h4>
+            <p>Not a generic tool. Each worker is configured around the actual tasks your team does every day — renewals, documents, outreach, content.</p>
+          </div>
+        </div>
+        <div class="what-item">
+          <div class="what-num">2</div>
+          <div class="what-item-body">
+            <h4>Runs without hand-holding</h4>
+            <p>No prompts. No babysitting. Once deployed, your worker picks up work, makes decisions, and executes — the same way a trained employee would.</p>
+          </div>
+        </div>
+        <div class="what-item">
+          <div class="what-num">3</div>
+          <div class="what-item-body">
+            <h4>Reports back to you</h4>
+            <p>Every task is logged. Every decision is explained. You get a clear record of what was done, what was flagged, and what needs your attention.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- WORKERS -->
 <section class="workers sec" id="workers">
   <div class="w">
@@ -874,6 +1018,32 @@ body{
   </div>
 </section>
 
+<!-- VIDEO -->
+<section class="video-sec" id="video">
+  <div class="w">
+    <div class="video-grid">
+      <div class="video-wrap">
+        {{-- swap src for real video when ready --}}
+        <div class="video-placeholder">
+          <div class="video-play" id="video-play">
+            <svg viewBox="0 0 24 24" fill="#fff" stroke="none"><path d="M8 5v14l11-7z"/></svg>
+          </div>
+          <span class="video-caption">Watch AVA's first day on the job</span>
+        </div>
+      </div>
+      <div class="video-right">
+        <div class="sec-eye">See it in action</div>
+        <h2 class="sec-h">Watch a worker handle a full day — start to finish.</h2>
+        <p>AVA wakes up, reads her inbox, drafts renewal responses, flags anything unusual, and files her daily report. All before your first coffee. This is what autonomous looks like.</p>
+        <a href="{{ route('register') }}" class="btn-hero" style="width:fit-content">
+          Hire Your First Worker
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- LIFECYCLE -->
 <section class="lifecycle sec">
   <div class="w">
@@ -963,6 +1133,67 @@ body{
         <div class="feat-body">
           <h4>Made to collaborate</h4>
           <p>Workers can work together seamlessly as your business grows.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="faq-sec" id="faq">
+  <div class="w">
+    <div class="faq-grid">
+      <div class="faq-left">
+        <div class="sec-eye">FAQ</div>
+        <h2 class="sec-h">Questions people actually ask.</h2>
+        <p>Still unsure? These are the most common questions from people hiring their first worker.</p>
+        <a href="{{ route('register') }}" class="btn-outline" style="margin-top:8px">
+          Talk to us
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+      </div>
+      <div class="faq-list">
+        <div class="faq-item open">
+          <button class="faq-q">
+            What exactly is a UNIT worker?
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </button>
+          <div class="faq-a">A UNIT worker is an AI system built around a specific job — like managing renewals or organizing documents. It runs autonomously using your existing workflow, handles the task end-to-end, and reports back to you. Think of it as a trained team member that never needs reminders.</div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q">
+            Do I need to set it up every day?
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </button>
+          <div class="faq-a">No. You configure it once during onboarding. After that, your worker runs on its own schedule — checking for new work, making decisions, and completing tasks without you needing to prompt it each time.</div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q">
+            How does a worker know what to do?
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </button>
+          <div class="faq-a">Each worker is trained around a specific workflow — AVA, for example, reads Gmail, classifies renewal emails, and drafts responses using your templates and client history. The worker learns your patterns and improves every time it runs.</div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q">
+            What if the worker makes a mistake?
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </button>
+          <div class="faq-a">Workers flag anything they're uncertain about for your review before taking action. Nothing gets sent or finalized without your approval on edge cases. You stay in control — the worker just handles the volume.</div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q">
+            Can I have more than one worker?
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </button>
+          <div class="faq-a">Yes. You can deploy multiple workers, each handling a different function. They can also work together — for example, AVA can hand off a document to DOX after closing a renewal. Start with one, add more as your team grows.</div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q">
+            How much does it cost?
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </button>
+          <div class="faq-a">Each worker has its own subscription plan. You can start with a free trial and upgrade as you see results. No credit card required to begin. Visit the pricing page for full details.</div>
         </div>
       </div>
     </div>
@@ -1090,6 +1321,16 @@ const mobClose = document.getElementById('mob-close');
 ham.addEventListener('click', () => mob.classList.add('open'));
 mobClose.addEventListener('click', () => mob.classList.remove('open'));
 function closeMob(){ mob.classList.remove('open') }
+
+// FAQ accordion
+document.querySelectorAll('.faq-q').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const item = btn.closest('.faq-item');
+    const isOpen = item.classList.contains('open');
+    document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+    if(!isOpen) item.classList.add('open');
+  });
+});
 
 // Theme toggle
 (function(){
