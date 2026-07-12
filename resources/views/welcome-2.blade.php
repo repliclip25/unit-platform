@@ -80,7 +80,7 @@ body{
 }
 .btn-login:hover{border-color:#bbb;color:var(--text)}
 .btn-cta{
-  padding:9px 20px;border-radius:9px;font-size:14px;font-weight:700;
+  padding:10px 22px;border-radius:99px;font-size:14px;font-weight:700;
   background:var(--brand);color:#fff;
   display:inline-flex;align-items:center;gap:6px;
   transition:opacity .15s,transform .15s,box-shadow .15s;
@@ -95,43 +95,32 @@ body{
   padding-top:62px;
   background:#fff;
   min-height:100vh;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  overflow:hidden;
+}
+.hero-left{
   display:flex;align-items:center;
+  padding:clamp(48px,6vw,80px) clamp(20px,5vw,64px) clamp(48px,6vw,80px) clamp(20px,6vw,80px);
 }
-.hero-i{
-  display:grid;grid-template-columns:1fr 1fr;
-  gap:40px;align-items:center;
-  padding:clamp(48px,7vw,80px) var(--pad);
-  max-width:var(--max);margin:0 auto;width:100%;
-}
-.hero-eyebrow{
-  display:inline-flex;align-items:center;gap:7px;
-  font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
-  color:var(--brand);margin-bottom:20px;
-}
-.hero-dot{
-  width:6px;height:6px;border-radius:50%;background:var(--brand);
-  animation:blink 2s infinite;
-}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.hero-left-inner{max-width:520px}
 .hero-h{
   font-family:var(--font-h);
-  font-size:clamp(2.6rem,5.5vw,4.2rem);
-  font-weight:800;line-height:1.05;
+  font-size:clamp(2.4rem,4.8vw,3.8rem);
+  font-weight:800;line-height:1.06;
   letter-spacing:-.04em;
   color:var(--text);
   margin-bottom:20px;
 }
-.hero-h em{
-  font-style:normal;color:var(--brand);
-}
+.hero-h em{font-style:normal;color:var(--brand)}
 .hero-p{
-  font-size:clamp(.95rem,1.4vw,1.1rem);
-  color:var(--t2);line-height:1.7;
-  max-width:420px;margin-bottom:32px;
+  font-size:clamp(.95rem,1.3vw,1.05rem);
+  color:var(--t2);line-height:1.75;
+  margin-bottom:32px;
 }
 .hero-btns{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:36px}
 .btn-hero{
-  padding:13px 26px;border-radius:10px;font-size:15px;font-weight:700;
+  padding:13px 26px;border-radius:99px;font-size:15px;font-weight:700;
   background:var(--brand);color:#fff;
   display:inline-flex;align-items:center;gap:7px;
   box-shadow:0 4px 20px rgba(107,43,242,0.38);
@@ -139,49 +128,50 @@ body{
 }
 .btn-hero:hover{opacity:.9;transform:translateY(-2px);box-shadow:0 10px 28px rgba(107,43,242,0.42)}
 .btn-hero-ghost{
-  padding:12px 22px;border-radius:10px;font-size:15px;font-weight:600;
-  color:var(--t2);border:1px solid var(--border);
+  padding:12px 22px;border-radius:99px;font-size:15px;font-weight:600;
+  color:var(--t2);border:1.5px solid var(--border);
   display:inline-flex;align-items:center;gap:7px;
   transition:all .15s;
 }
 .btn-hero-ghost:hover{border-color:#aaa;color:var(--text)}
 .hero-proof{display:flex;align-items:center;gap:12px}
 .proof-avs{display:flex}
-.proof-avs span{
-  width:30px;height:30px;border-radius:50%;
-  border:2px solid #fff;margin-left:-7px;
-  display:flex;align-items:center;justify-content:center;
-  font-size:11px;font-weight:700;color:#fff;
+.proof-avs img{
+  width:32px;height:32px;border-radius:50%;
+  border:2px solid #fff;margin-left:-8px;
+  object-fit:cover;object-position:center top;
+  flex-shrink:0;
 }
-.proof-avs span:first-child{margin-left:0}
-.proof-txt{font-size:13px;color:var(--t3)}
-.proof-txt strong{color:var(--text)}
-/* Hero image */
-.hero-img{position:relative}
-.hero-img img{
-  width:100%;
-  border-radius:24px;
+.proof-avs img:first-child{margin-left:0}
+.proof-txt{font-size:13px;color:var(--t3);line-height:1.5}
+.proof-txt strong{color:var(--text);display:block}
+/* Hero image — bleeds to right edge, no padding, no radius */
+.hero-right{
+  position:relative;
+  overflow:hidden;
+}
+.hero-right img{
+  width:100%;height:100%;
   object-fit:cover;
   object-position:center top;
-  box-shadow:0 24px 64px rgba(0,0,0,0.12);
+  display:block;
+  min-height:520px;
 }
 .hero-badge{
-  position:absolute;bottom:20px;right:20px;
+  position:absolute;bottom:28px;right:28px;
   background:#fff;
   border:1px solid var(--border);
-  border-radius:14px;
-  padding:11px 15px;
-  display:flex;align-items:center;gap:9px;
-  box-shadow:0 4px 16px rgba(0,0,0,0.08);
+  border-radius:16px;
+  padding:13px 16px;
+  display:flex;align-items:center;gap:10px;
+  box-shadow:0 4px 20px rgba(0,0,0,0.1);
 }
-.badge-dot{
-  width:8px;height:8px;border-radius:50%;background:#22c55e;
-  box-shadow:0 0 0 3px rgba(34,197,94,0.2);
-  animation:pulse-g 2s infinite;flex-shrink:0;
+.badge-star{
+  width:36px;height:36px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
 }
-@keyframes pulse-g{0%,100%{box-shadow:0 0 0 3px rgba(34,197,94,.2)}50%{box-shadow:0 0 0 6px rgba(34,197,94,.06)}}
-.badge-txt{font-size:12px;font-weight:600;color:var(--text);white-space:nowrap}
-.badge-txt span{color:var(--t3);font-weight:400}
+.badge-txt{font-size:13px;font-weight:700;color:var(--text);line-height:1.45}
+.badge-txt span{color:var(--t3);font-weight:400;font-size:12px}
 
 /* ── TRUST BAR ── */
 .trust{
@@ -427,11 +417,11 @@ body{
 @media(max-width:768px){
   .nav-links,.nav-acts{display:none}
   .ham{display:flex}
-  .hero-i{grid-template-columns:1fr;text-align:center}
-  .hero-p{margin:0 auto 28px}
+  .hero{grid-template-columns:1fr;min-height:auto}
+  .hero-right{order:-1;min-height:300px}
+  .hero-left{padding:40px var(--pad);text-align:center}
   .hero-btns{justify-content:center}
   .hero-proof{justify-content:center}
-  .hero-img{order:-1}
   .tl{grid-template-columns:repeat(2,1fr)}
   .ft-grid{grid-template-columns:1fr}
   .ft-bottom{flex-direction:column;text-align:center}
@@ -457,8 +447,9 @@ body{
     <ul class="nav-links">
       <li><a href="#workers">Meet the Team</a></li>
       <li><a href="#timeline">How It Works</a></li>
+      <li><a href="{{ route('marketplace') }}">For Business</a></li>
+      <li><a href="{{ route('marketplace') }}">Resources</a></li>
       <li><a href="{{ route('pricing') }}">Pricing</a></li>
-      <li><a href="{{ route('marketplace') }}">Marketplace</a></li>
     </ul>
     <div class="nav-acts">
       <a href="{{ route('login') }}" class="btn-login">Log in</a>
@@ -495,14 +486,10 @@ body{
 
 <!-- HERO -->
 <section class="hero">
-  <div class="hero-i">
-    <div>
-      <div class="hero-eyebrow">
-        <span class="hero-dot"></span>
-        AI Workforce Platform
-      </div>
+  <div class="hero-left">
+    <div class="hero-left-inner">
       <h1 class="hero-h">
-        Meet the workers<br>
+        Meet the AI workers<br>
         that never stop<br>
         <em>showing up.</em>
       </h1>
@@ -510,32 +497,43 @@ body{
         Every UNIT worker has one job — and does it exceptionally well. They work 24/7, improve over time, and tell their own story while helping you run your business.
       </p>
       <div class="hero-btns">
-        <a href="{{ route('register') }}" class="btn-hero">
-          Hire Your First Worker
+        <a href="#workers" class="btn-hero">
+          Meet the Team
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
         </a>
-        <a href="#workers" class="btn-hero-ghost">
+        <a href="{{ route('register') }}" class="btn-hero-ghost">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M10 8l6 4-6 4V8z" fill="currentColor" stroke="none"/></svg>
-          Meet the Team
+          Watch Their First Day
         </a>
       </div>
       <div class="hero-proof">
         <div class="proof-avs">
-          <span style="background:var(--ava)">A</span>
-          <span style="background:var(--dox)">D</span>
-          <span style="background:var(--mox)">M</span>
-          <span style="background:var(--nux)">N</span>
+          <img src="/images/ava.png" alt="user">
+          <img src="/images/ava.png" alt="user" style="filter:hue-rotate(130deg) saturate(.85)">
+          <img src="/images/ava.png" alt="user" style="filter:hue-rotate(195deg) saturate(.8)">
+          <img src="/images/ava.png" alt="user" style="filter:hue-rotate(260deg) saturate(.75)">
         </div>
-        <p class="proof-txt"><strong>2,847+</strong> businesses already hired their first worker</p>
+        <p class="proof-txt">
+          <strong>2,847+ businesses</strong> already hired their first worker
+        </p>
       </div>
     </div>
+  </div>
 
-    <div class="hero-img">
-      <img src="/images/hero-team.png" alt="AVA, DOX, MOX and NUX — the UNIT AI workforce">
-      <div class="hero-badge">
-        <div class="badge-dot"></div>
-        <div class="badge-txt">Real stories. Real work. <span>Real results.</span></div>
+  <div class="hero-right">
+    <img src="/images/hero-team.png" alt="AVA, DOX, MOX and NUX — the UNIT AI workforce">
+    <div class="hero-badge">
+      <div class="badge-star">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+          <path d="M12 2l1.5 4.5H18l-3.75 2.75 1.5 4.5L12 11l-3.75 2.75 1.5-4.5L6 6.5h4.5L12 2z" fill="#F59E0B"/>
+          <circle cx="12" cy="12" r="2" fill="#F59E0B" opacity=".4"/>
+          <line x1="12" y1="2" x2="12" y2="0.5" stroke="#F59E0B" stroke-width="1.5" stroke-linecap="round"/>
+          <line x1="12" y1="21.5" x2="12" y2="23.5" stroke="#F59E0B" stroke-width="1.5" stroke-linecap="round"/>
+          <line x1="2" y1="12" x2="0.5" y2="12" stroke="#F59E0B" stroke-width="1.5" stroke-linecap="round"/>
+          <line x1="21.5" y1="12" x2="23.5" y2="12" stroke="#F59E0B" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
       </div>
+      <div class="badge-txt">Real stories. Real work.<br>Real results.</div>
     </div>
   </div>
 </section>
