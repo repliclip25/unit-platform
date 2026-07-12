@@ -8,7 +8,7 @@
 <link rel="icon" type="image/png" href="/logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 img{display:block;max-width:100%}
@@ -34,7 +34,7 @@ ul{list-style:none}
   --bg:     #FFFFFF;
   --soft:   #F8F8F6;
 
-  --font-h: 'Syne', sans-serif;
+  --font-h: 'Inter', sans-serif;
   --font-b: 'Inter', sans-serif;
   --max:    1160px;
   --pad:    clamp(20px,5vw,48px);
@@ -106,9 +106,9 @@ body{
 .hero-left-inner{max-width:520px}
 .hero-h{
   font-family:var(--font-h);
-  font-size:clamp(2.4rem,4.8vw,3.8rem);
-  font-weight:800;line-height:1.06;
-  letter-spacing:-.04em;
+  font-size:clamp(2rem,3.8vw,3rem);
+  font-weight:800;line-height:1.12;
+  letter-spacing:-.03em;
   color:var(--text);
   margin-bottom:20px;
 }
