@@ -103,39 +103,43 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
 
 /* ── HERO ── */
 .hero-worker{
-  position:relative;
+  display:flex;flex-direction:row;
   height:calc(100vh - 62px);
-  min-height:580px;
+  min-height:560px;
+  margin-top:62px;
   background:#0A0A0F;
   overflow:hidden;
-  display:flex;flex-direction:column;
-  margin-top:62px;
 }
-/* video / image fills the frame */
+
+/* LEFT: video column */
+.hero-video-col{
+  position:relative;
+  flex:1;min-width:0;
+  display:flex;flex-direction:column;
+  overflow:hidden;
+}
 .hero-media{
-  position:absolute;inset:0;z-index:0;
-  display:flex;align-items:stretch;
+  position:absolute;inset:0;
+  display:flex;
 }
 .hero-media video,
 .hero-media img{
   width:100%;height:100%;
   object-fit:cover;object-position:center top;
 }
-/* gradient: strong left fade so text is readable, gentle right to keep card readable */
+/* gradient: left side dark for text readability */
 .hero-media::after{
   content:'';position:absolute;inset:0;
   background:
-    linear-gradient(to right, rgba(6,4,15,.92) 0%, rgba(6,4,15,.6) 38%, rgba(6,4,15,.15) 65%, transparent 100%),
-    linear-gradient(to top, rgba(6,4,15,.7) 0%, transparent 40%);
+    linear-gradient(to right, rgba(6,4,15,.88) 0%, rgba(6,4,15,.55) 35%, rgba(6,4,15,.1) 62%, transparent 80%),
+    linear-gradient(to top, rgba(6,4,15,.6) 0%, transparent 35%);
 }
-/* content sits above gradient */
-.hero-inner{
+/* text content over the video */
+.hero-text{
   position:relative;z-index:2;
-  display:grid;grid-template-columns:1fr 320px;
-  gap:clamp(32px,4vw,56px);align-items:center;
-  width:100%;max-width:var(--max);
-  margin:0 auto;padding:0 var(--pad);
-  flex:1;
+  flex:1;display:flex;flex-direction:column;justify-content:center;
+  padding:clamp(32px,5vw,56px) clamp(28px,4vw,48px);
+  padding-bottom:16px;
 }
 .hero-eye{
   font-size:11px;font-weight:700;letter-spacing:.16em;
@@ -143,64 +147,127 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
   margin-bottom:14px;
 }
 .hero-h{
-  font-size:clamp(2.2rem,4.8vw,3.6rem);
+  font-size:clamp(2rem,4.2vw,3.4rem);
   font-weight:800;line-height:1.06;
   letter-spacing:-.03em;color:#fff;
   margin-bottom:16px;
 }
 .hero-p{
-  font-size:1rem;color:rgba(255,255,255,.72);
-  line-height:1.75;margin-bottom:28px;max-width:430px;
+  font-size:.95rem;color:rgba(255,255,255,.7);
+  line-height:1.75;margin-bottom:28px;max-width:400px;
 }
 .hero-btns{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
 .btn-hire-hero{
   display:inline-flex;align-items:center;gap:8px;
-  padding:13px 24px;border-radius:10px;
-  font-size:15px;font-weight:700;color:#fff;
+  padding:12px 22px;border-radius:10px;
+  font-size:14.5px;font-weight:700;color:#fff;
   background:var(--brand);
   transition:opacity .15s,transform .15s;
 }
 .btn-hire-hero:hover{opacity:.9;transform:translateY(-1px)}
 .btn-watch-hero{
   display:inline-flex;align-items:center;gap:9px;
-  padding:12px 20px;border-radius:10px;
+  padding:11px 18px;border-radius:10px;
   font-size:14px;font-weight:600;color:rgba(255,255,255,.88);
-  border:1.5px solid rgba(255,255,255,.25);
+  border:1.5px solid rgba(255,255,255,.22);
   transition:border-color .15s,background .15s;
 }
-.btn-watch-hero:hover{border-color:rgba(255,255,255,.6);background:rgba(255,255,255,.05)}
+.btn-watch-hero:hover{border-color:rgba(255,255,255,.5);background:rgba(255,255,255,.05)}
 .btn-watch-icon{
-  width:28px;height:28px;border-radius:50%;
+  width:26px;height:26px;border-radius:50%;
   border:1.5px solid rgba(255,255,255,.4);
   display:flex;align-items:center;justify-content:center;flex-shrink:0;
 }
-.btn-watch-icon svg{width:11px;height:11px;fill:#fff;margin-left:2px}
-/* fake video bar at bottom */
+.btn-watch-icon svg{width:10px;height:10px;fill:#fff;margin-left:2px}
+/* video controls bar — bottom of video col */
 .hero-vidbar{
   position:relative;z-index:3;
   display:flex;align-items:center;gap:14px;
-  padding:12px var(--pad);
-  background:rgba(0,0,0,.55);
-  backdrop-filter:blur(8px);
-  border-top:1px solid rgba(255,255,255,.06);
+  padding:10px clamp(28px,4vw,48px);
+  background:rgba(0,0,0,.5);
+  backdrop-filter:blur(6px);
+  border-top:1px solid rgba(255,255,255,.05);
+  flex-shrink:0;
 }
 .vidbar-play{
-  width:30px;height:30px;flex-shrink:0;
-  display:flex;align-items:center;justify-content:center;
-  cursor:pointer;
+  width:28px;height:28px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;cursor:pointer;
 }
-.vidbar-play svg{width:18px;height:18px;fill:#fff;margin-left:2px}
-.vidbar-time{font-size:12px;color:rgba(255,255,255,.65);font-variant-numeric:tabular-nums;white-space:nowrap}
-.vidbar-track{flex:1;height:4px;background:rgba(255,255,255,.2);border-radius:99px;position:relative;cursor:pointer}
+.vidbar-play svg{width:16px;height:16px;fill:#fff;margin-left:2px}
+.vidbar-time{font-size:12px;color:rgba(255,255,255,.6);font-variant-numeric:tabular-nums;white-space:nowrap}
+.vidbar-track{flex:1;height:3px;background:rgba(255,255,255,.18);border-radius:99px;position:relative;cursor:pointer}
 .vidbar-fill{height:100%;background:#7C3AED;border-radius:99px;width:19%}
 .vidbar-thumb{
-  position:absolute;top:50%;right:calc(81% - 7px);transform:translateY(-50%);
-  width:14px;height:14px;border-radius:50%;
+  position:absolute;top:50%;left:19%;transform:translate(-50%,-50%);
+  width:13px;height:13px;border-radius:50%;
   background:#fff;box-shadow:0 0 4px rgba(0,0,0,.5);
 }
 .vidbar-icons{display:flex;align-items:center;gap:14px;flex-shrink:0}
-.vidbar-icons svg{width:18px;height:18px;stroke:rgba(255,255,255,.7);fill:none;stroke-width:1.8;cursor:pointer}
+.vidbar-icons svg{width:17px;height:17px;stroke:rgba(255,255,255,.65);fill:none;stroke-width:1.8;cursor:pointer;transition:stroke .12s}
 .vidbar-icons svg:hover{stroke:#fff}
+
+/* RIGHT: status panel — separate column, not overlay */
+.hero-panel{
+  width:300px;flex-shrink:0;
+  background:#111118;
+  border-left:1px solid rgba(255,255,255,.07);
+  display:flex;flex-direction:column;
+  padding:32px 24px 24px;
+  overflow-y:auto;
+}
+.hc-status{display:flex;align-items:center;gap:8px;margin-bottom:20px}
+.hc-dot{
+  width:8px;height:8px;border-radius:50%;
+  background:#22C55E;box-shadow:0 0 8px rgba(34,197,94,.8);
+  flex-shrink:0;animation:pulse 2s ease infinite;
+}
+@keyframes pulse{0%,100%{opacity:1;box-shadow:0 0 8px rgba(34,197,94,.8)}50%{opacity:.7;box-shadow:0 0 16px rgba(34,197,94,.4)}}
+.hc-status-txt{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#22C55E}
+.hc-time{
+  font-size:2.4rem;font-weight:800;color:#fff;
+  letter-spacing:-.04em;line-height:1;
+  font-variant-numeric:tabular-nums;margin-bottom:20px;
+}
+.hc-task-label{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:8px}
+.hc-task-name{font-size:13.5px;font-weight:500;color:rgba(255,255,255,.85);line-height:1.5;margin-bottom:12px}
+.hc-task-icon{
+  width:40px;height:40px;border-radius:10px;
+  border:1px solid rgba(var(--brand-rgb),.4);
+  background:rgba(var(--brand-rgb),.12);
+  display:flex;align-items:center;justify-content:center;
+  margin-bottom:20px;
+}
+.hc-task-icon svg{width:20px;height:20px;stroke:var(--brand);fill:none;stroke-width:1.8}
+.hc-divider{height:1px;background:rgba(255,255,255,.07);margin:4px 0 16px}
+.hc-completed-label{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:10px}
+.hc-done-item{display:flex;align-items:center;gap:9px;margin-bottom:8px;font-size:13px;color:rgba(255,255,255,.8)}
+.hc-check{
+  width:20px;height:20px;border-radius:50%;flex-shrink:0;
+  border:1.5px solid #22C55E;
+  display:flex;align-items:center;justify-content:center;
+}
+.hc-check svg{width:10px;height:10px;stroke:#22C55E;stroke-width:2.5;fill:none}
+.hc-revenue-label{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.35);margin-top:20px;margin-bottom:6px}
+.hc-revenue-amount{font-size:2rem;font-weight:800;color:var(--brand);letter-spacing:-.04em;line-height:1;margin-bottom:4px}
+.hc-revenue-streak{font-size:13px;color:rgba(255,255,255,.5);margin-bottom:20px}
+.hc-feed-btn{
+  display:flex;align-items:center;justify-content:center;gap:7px;
+  width:100%;padding:11px 16px;
+  border-radius:10px;
+  font-size:13.5px;font-weight:600;color:rgba(255,255,255,.8);
+  border:1px solid rgba(255,255,255,.14);
+  background:rgba(255,255,255,.04);
+  transition:all .15s;margin-top:auto;
+}
+.hc-feed-btn:hover{background:rgba(255,255,255,.09);color:#fff}
+@media(max-width:900px){
+  .hero-worker{flex-direction:column;height:auto}
+  .hero-video-col{min-height:55vh}
+  .hero-panel{width:100%;border-left:none;border-top:1px solid rgba(255,255,255,.07);flex-direction:row;flex-wrap:wrap;gap:20px;padding:20px}
+}
+@media(max-width:600px){
+  .hero-panel{flex-direction:column}
+}
 
 /* hero status card */
 .hero-card{
@@ -532,24 +599,17 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
 {{-- HERO --}}
 <section class="hero-worker">
 
-  {{-- Background media --}}
-  <div class="hero-media">
-    @if($worker['youtube_id'] ?? false)
-    {{-- Use a poster image; clicking would load actual video --}}
-    <img src="/images/workers/{{ $worker['slug'] }}-hero.jpg"
-         alt="{{ $worker['name'] }}"
-         onerror="this.src='/images/ava-hero.jpg'">
-    @else
-    <img src="/images/ava-hero.jpg"
-         alt="{{ $worker['name'] }}"
-         onerror="this.style.display='none'">
-    @endif
-  </div>
+  {{-- LEFT: video column --}}
+  <div class="hero-video-col">
 
-  {{-- Main content row --}}
-  <div class="hero-inner">
-    {{-- Left: text --}}
-    <div>
+    {{-- Background media --}}
+    <div class="hero-media">
+      <img src="/images/ava-hero.jpg" alt="{{ $worker['name'] }}"
+           onerror="this.src='/images/ava.png';this.onerror=null">
+    </div>
+
+    {{-- Text content over the video --}}
+    <div class="hero-text">
       <div class="hero-eye">Meet {{ $worker['name'] }}</div>
       <h1 class="hero-h">She never<br>forgets a renewal.</h1>
       <p class="hero-p">{{ $worker['name'] }} works 24/7 to track renewals, send reminders, update records, and protect the revenue your business depends on.</p>
@@ -567,52 +627,51 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
       </div>
     </div>
 
-    {{-- Right: status card --}}
-    <div class="hero-card">
-      <div class="hc-status">
-        <div class="hc-dot"></div>
-        <span class="hc-status-txt">{{ $worker['name'] }} IS ON SHIFT</span>
+    {{-- Video controls bar --}}
+    <div class="hero-vidbar">
+      <div class="vidbar-play">
+        <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
       </div>
-      <div class="hc-time" id="live-clock">09:42 AM</div>
-      <div class="hc-task-label">Current Task</div>
-      <div class="hc-task">
-        <div class="hc-task-name">Checking 14 contracts expiring this week…</div>
-        <div class="hc-progress"><div class="hc-progress-bar"></div></div>
+      <span class="vidbar-time">0:12 / 1:02</span>
+      <div class="vidbar-track">
+        <div class="vidbar-fill"></div>
+        <div class="vidbar-thumb"></div>
       </div>
-      <div class="hc-divider"></div>
-      <div class="hc-completed-label">Completed Today</div>
-      @foreach(['42 renewals reviewed','18 reminders sent','6 customers retained'] as $item)
-      <div class="hc-done-item">
-        <div class="hc-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
-        {{ $item }}
+      <div class="vidbar-icons">
+        <svg viewBox="0 0 24 24" stroke-linecap="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07"/></svg>
+        <svg viewBox="0 0 24 24" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+        <svg viewBox="0 0 24 24" stroke-linecap="round"><path d="M8 3H5a2 2 0 00-2 2v3m18 0V5a2 2 0 00-2-2h-3m0 18h3a2 2 0 002-2v-3M3 16v3a2 2 0 002 2h3"/></svg>
       </div>
-      @endforeach
-      <div class="hc-revenue">
-        <div class="hc-rev-label">Revenue Protected</div>
-        <div class="hc-rev-amount">${{ number_format($totalTx * 3.85, 0) }}</div>
-        <div class="hc-rev-streak">{{ $deploymentCount * 18 }}-day streak 🔥</div>
-      </div>
-      <a href="{{ route('register') }}" class="hc-feed-btn">
-        View Live Feed →
-      </a>
     </div>
-  </div>
 
-  {{-- Fake video progress bar --}}
-  <div class="hero-vidbar">
-    <div class="vidbar-play">
-      <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+  </div>{{-- end .hero-video-col --}}
+
+  {{-- RIGHT: status panel (separate column) --}}
+  <div class="hero-panel">
+    <div class="hc-status">
+      <div class="hc-dot"></div>
+      <span class="hc-status-txt">{{ $worker['name'] }} IS ON SHIFT</span>
     </div>
-    <span class="vidbar-time">0:12 / 1:02</span>
-    <div class="vidbar-track">
-      <div class="vidbar-fill"></div>
-      <div class="vidbar-thumb"></div>
+    <div class="hc-time" id="live-clock">09:42 AM</div>
+    <div class="hc-task-label">Current Task</div>
+    <div class="hc-task-name">Checking 14 contracts expiring this week…</div>
+    <div class="hc-task-icon">
+      <svg viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2M12 12h.01M12 16h.01" stroke-linecap="round"/></svg>
     </div>
-    <div class="vidbar-icons">
-      <svg viewBox="0 0 24 24" stroke-linecap="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07"/></svg>
-      <svg viewBox="0 0 24 24" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
-      <svg viewBox="0 0 24 24" stroke-linecap="round"><path d="M8 3H5a2 2 0 00-2 2v3m18 0V5a2 2 0 00-2-2h-3m0 18h3a2 2 0 002-2v-3M3 16v3a2 2 0 002 2h3"/></svg>
+    <div class="hc-divider"></div>
+    <div class="hc-completed-label">Completed Today</div>
+    @foreach(['42 renewals reviewed','18 reminders sent','6 customers retained'] as $item)
+    <div class="hc-done-item">
+      <div class="hc-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+      {{ $item }}
     </div>
+    @endforeach
+    <div class="hc-revenue-label">Revenue Protected</div>
+    <div class="hc-revenue-amount">${{ number_format($totalTx * 3.85, 0) }}</div>
+    <div class="hc-revenue-streak">{{ $deploymentCount * 18 }}-day streak 🔥</div>
+    <a href="{{ route('register') }}" class="hc-feed-btn">
+      View Live Feed →
+    </a>
   </div>
 
 </section>
