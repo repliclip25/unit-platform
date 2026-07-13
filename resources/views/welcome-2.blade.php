@@ -54,6 +54,9 @@ ul{list-style:none}
 }
 [data-theme="dark"] .nav{background:rgba(13,13,13,.92);border-color:#2D2D2D}
 [data-theme="dark"] .lc-card,[data-theme="dark"] .lc-photo{background:#161616}
+[data-theme="dark"] .lc-photo-txt{color:#D1D5DB}
+[data-theme="dark"] .lc-left p{color:#9CA3AF}
+[data-theme="dark"] .btn-outline{color:#E5E7EB;border-color:#3D3D3D}
 .wk-card{background:#fff!important}
 [data-theme="dark"] .lc-photo-body{background:#161616}
 [data-theme="dark"] .cta-card{background:#1E1333}
@@ -718,17 +721,20 @@ body{
   .tl-item:not(:last-child)::after{display:none}
   .ft-grid{grid-template-columns:1fr}
   .ft-bottom{flex-direction:column;text-align:center}
-  /* lifecycle: strip the card border, 2-col grid */
+  /* lifecycle: strip the card border, 2-col grid, full bleed */
   .lc-card{border:none;box-shadow:none;padding:0;background:transparent!important}
-  .lc-row{flex-wrap:wrap;gap:12px}
-  .lc-photo{min-width:calc(50% - 8px);flex:1}
+  .lifecycle .w{padding-left:10px;padding-right:10px;max-width:100%}
+  .lc-row{flex-wrap:wrap;gap:8px}
+  .lc-photo{min-width:calc(50% - 5px);flex:1}
+  .lc-photo img{height:200px}
 }
 @media(max-width:480px){
   .wk-grid{grid-template-columns:1fr}
   .tl{grid-template-columns:repeat(2,1fr)}
   .hero-btns{flex-direction:column;align-items:stretch}
   .btn-hero,.btn-hero-ghost{justify-content:center}
-  .lc-photo{min-width:calc(50% - 8px);flex:1}
+  .lc-photo{min-width:calc(50% - 5px);flex:1}
+  .lc-photo img{height:180px}
 }
 </style>
 </head>
@@ -1173,7 +1179,7 @@ body{
         <div class="lc-photo">
           <img src="/images/ava.png" alt="Receive work">
           <div class="lc-photo-body">
-            <div class="lc-photo-step" style="color:#111">2. Receive Work</div>
+            <div class="lc-photo-step" style="color:var(--text)">2. Receive Work</div>
             <div class="lc-photo-txt">New tasks. New opportunities.</div>
           </div>
         </div>
@@ -1181,7 +1187,7 @@ body{
         <div class="lc-photo">
           <img src="/images/ava.png" alt="Do the work">
           <div class="lc-photo-body">
-            <div class="lc-photo-step" style="color:#111">3. Do the Work</div>
+            <div class="lc-photo-step" style="color:var(--text)">3. Do the Work</div>
             <div class="lc-photo-txt">Focus. Execute. Deliver results.</div>
           </div>
         </div>
@@ -1189,7 +1195,7 @@ body{
         <div class="lc-photo">
           <img src="/images/ava.png" alt="Write their diary">
           <div class="lc-photo-body">
-            <div class="lc-photo-step" style="color:#111">4. Write Their Diary</div>
+            <div class="lc-photo-step" style="color:var(--text)">4. Write Their Diary</div>
             <div class="lc-photo-txt">Reflect, learn, get better tomorrow.</div>
           </div>
         </div>
