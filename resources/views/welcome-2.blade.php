@@ -611,7 +611,7 @@ body{
 }
 .res-rail::-webkit-scrollbar{display:none}
 .res-card{
-  flex-shrink:0;width:280px;
+  flex-shrink:0;width:360px;
   background:#fff;border:1px solid var(--border);border-radius:16px;
   overflow:hidden;display:flex;flex-direction:column;
   transition:box-shadow .2s,transform .15s;
@@ -621,7 +621,7 @@ body{
 .res-card:hover{box-shadow:0 8px 28px rgba(0,0,0,.1);transform:translateY(-3px)}
 [data-theme="dark"] .res-card:hover{box-shadow:0 8px 28px rgba(0,0,0,.4)}
 .res-thumb{
-  height:158px;display:flex;align-items:center;justify-content:center;
+  height:200px;display:flex;align-items:center;justify-content:center;
   position:relative;overflow:hidden;
 }
 .res-thumb-icon{
@@ -647,7 +647,7 @@ body{
   font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
   padding:3px 8px;border-radius:6px;margin-bottom:10px;width:fit-content;
 }
-.res-title{font-size:14.5px;font-weight:700;color:var(--text);line-height:1.4;margin-bottom:6px;flex:1}
+.res-title{font-size:16px;font-weight:700;color:var(--text);line-height:1.4;margin-bottom:6px;flex:1}
 [data-theme="dark"] .res-title{color:#F3F4F6}
 .res-meta{font-size:12px;color:var(--t4);display:flex;align-items:center;gap:6px;margin-top:8px}
 .res-link{
@@ -838,7 +838,7 @@ body{
 /* ── RESPONSIVE ── */
 @media(max-width:1024px){
   .what-grid,.faq-grid{grid-template-columns:1fr}
-  .res-card{width:240px}
+  .res-card{width:300px}
   .feat-grid{grid-template-columns:repeat(2,1fr)}
   .trust-platforms{justify-content:flex-start}
   .wk-grid{grid-template-columns:repeat(2,1fr)}
