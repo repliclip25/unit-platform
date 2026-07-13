@@ -714,6 +714,8 @@ body{
   .hero-btns{justify-content:center}
   .hero-proof{justify-content:center}
   .tl{grid-template-columns:repeat(2,1fr)}
+  .tl::before{display:none}
+  .tl-item:not(:last-child)::after{display:none}
   .ft-grid{grid-template-columns:1fr}
   .ft-bottom{flex-direction:column;text-align:center}
   /* lifecycle: strip the card border, 2-col grid */
@@ -1108,6 +1110,13 @@ body{
         </div>
         <div class="tl-time" style="color:var(--brand)">5:00 PM</div>
         <div class="tl-evt"><strong>You arrive.</strong>Everything is already done.</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-node" style="border-color:rgba(107,43,242,.3)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--ava)" stroke-width="1.8" stroke-linecap="round"><path d="M3 12a9 9 0 1018 0 9 9 0 00-18 0"/><path d="M12 8v4l3 3"/></svg>
+        </div>
+        <div class="tl-time" style="color:var(--ava)">Next morning</div>
+        <div class="tl-evt"><strong>They start again.</strong>Without being asked.</div>
       </div>
     </div>
   </div>
