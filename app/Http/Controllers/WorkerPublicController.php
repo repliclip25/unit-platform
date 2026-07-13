@@ -8,7 +8,7 @@ use App\Platform\Services\PlatformDefaults;
 
 class WorkerPublicController extends Controller
 {
-    public function show(string $slug)
+    public function show(string $slug, string $view = 'workers.show')
     {
         // Pull employee() persona from contract for live fields
         $contract = WorkerRegistry::resolve($slug);
@@ -96,11 +96,17 @@ class WorkerPublicController extends Controller
             ->where('worker_deployments.worker_slug', $slug)
             ->count();
 
-        return view('workers.show', [
+        return view($view, [
             'worker'          => $w,
             'deploymentCount' => $deploymentCount ?: 12,   // fallback for fresh installs
             'tokensToday'     => $tokensToday     ?: 48200,
             'totalTx'         => $totalTx         ?: 3840,
         ]);
+    }
+
+    // ── v2 worker page (A/B layer — same data, new view)
+    public function show2(string $slug)
+    {
+        return $this->show($slug, 'workers.show-2');
     }
 }

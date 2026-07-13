@@ -471,5 +471,6 @@ Route::post('/influencer/apply', [InfluencerController::class, 'submitApplicatio
 // ── Homepage A/B test
 Route::get('/home2', fn() => view('welcome-2'))->name('home2');
 Route::get('/workers', fn() => view('workers'))->name('workers.page');
+Route::get('/w2/{slug}', [WorkerPublicController::class, 'show2'])->name('workers.public.show2');
 
 require __DIR__.'/auth.php';
