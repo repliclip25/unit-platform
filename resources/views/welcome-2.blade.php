@@ -285,10 +285,42 @@ body{
   border-right:1px solid #1F1F1F;
   white-space:nowrap;flex-shrink:0;
 }
-.feed-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
-.feed-dot.green{background:#22C55E;box-shadow:0 0 6px rgba(34,197,94,.6)}
-.feed-dot.blue{background:#3B82F6;box-shadow:0 0 6px rgba(59,130,246,.6)}
-.feed-dot.amber{background:#F59E0B;box-shadow:0 0 6px rgba(245,158,11,.6)}
+.feed-dot{
+  width:8px;height:8px;border-radius:50%;flex-shrink:0;
+  position:relative;
+}
+.feed-dot::after{
+  content:'';
+  position:absolute;
+  inset:-4px;
+  border-radius:50%;
+  opacity:0;
+  animation:dotPing 2.4s ease-out infinite;
+}
+.feed-dot.green{background:#22C55E;box-shadow:0 0 8px rgba(34,197,94,.7)}
+.feed-dot.green::after{background:rgba(34,197,94,.35)}
+.feed-dot.blue{background:#3B82F6;box-shadow:0 0 8px rgba(59,130,246,.7)}
+.feed-dot.blue::after{background:rgba(59,130,246,.35)}
+.feed-dot.amber{background:#F59E0B;box-shadow:0 0 8px rgba(245,158,11,.7)}
+.feed-dot.amber::after{background:rgba(245,158,11,.35)}
+
+/* stagger the ping so not all dots pulse simultaneously */
+.feed-item:nth-child(2)  .feed-dot::after{animation-delay:.4s}
+.feed-item:nth-child(3)  .feed-dot::after{animation-delay:.8s}
+.feed-item:nth-child(4)  .feed-dot::after{animation-delay:1.2s}
+.feed-item:nth-child(5)  .feed-dot::after{animation-delay:1.6s}
+.feed-item:nth-child(6)  .feed-dot::after{animation-delay:2.0s}
+.feed-item:nth-child(7)  .feed-dot::after{animation-delay:.3s}
+.feed-item:nth-child(8)  .feed-dot::after{animation-delay:.9s}
+.feed-item:nth-child(9)  .feed-dot::after{animation-delay:1.5s}
+.feed-item:nth-child(10) .feed-dot::after{animation-delay:2.1s}
+
+@keyframes dotPing{
+  0%  {transform:scale(1);opacity:.8}
+  70% {transform:scale(2.8);opacity:0}
+  100%{transform:scale(2.8);opacity:0}
+}
+
 .feed-worker{font-size:13px;font-weight:800;letter-spacing:.06em;text-transform:uppercase}
 .feed-action{font-size:14px;color:rgba(255,255,255,.85)}
 .feed-time{font-size:12px;color:rgba(255,255,255,.4);margin-left:6px}
