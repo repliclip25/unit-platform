@@ -369,13 +369,11 @@ body{
   object-position:center top;
   display:block;
 }
-/* Fade: strong left-to-right + right edge clip so dark image bg never shows */
+/* Fade: white → transparent, stops where content ends (~40%) */
 .wk-img-bg::after{
   content:'';
   position:absolute;inset:0;
-  background:
-    linear-gradient(to right, #fff 0%, rgba(255,255,255,.92) 25%, rgba(255,255,255,.6) 52%, rgba(255,255,255,.35) 72%, rgba(255,255,255,.25) 100%),
-    linear-gradient(to left,  #fff 0%, transparent 18%);
+  background:linear-gradient(to right, #fff 0%, rgba(255,255,255,.85) 20%, rgba(255,255,255,.3) 38%, transparent 52%);
 }
 
 /* Content — left side, z-index above image */
