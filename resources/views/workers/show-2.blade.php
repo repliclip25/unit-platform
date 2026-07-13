@@ -414,18 +414,17 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
   display:flex;align-items:center;justify-content:center;
   transition:background .3s;
 }
-/* step label + desc */
-.pipe-time{
-  font-size:11px;font-weight:600;color:#C4C9D4;
-  margin-bottom:6px;transition:color .3s;
-  font-variant-numeric:tabular-nums;
-}
+/* step label + time */
 .pipe-label{
   font-size:10px;font-weight:700;letter-spacing:.09em;
-  text-transform:uppercase;color:#9CA3AF;margin-bottom:5px;
+  text-transform:uppercase;color:#9CA3AF;margin-bottom:6px;
   transition:color .3s;line-height:1.35;
 }
-.pipe-desc{font-size:12px;color:#B0B6C2;line-height:1.55;transition:color .3s;max-width:95px}
+.pipe-time{
+  font-size:11px;font-weight:600;color:transparent;
+  font-variant-numeric:tabular-nums;min-height:16px;
+  transition:color .3s;
+}
 /* running state */
 .pipe-step.ps-running .pipe-node{
   border-color:var(--brand);
@@ -437,7 +436,6 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
 @keyframes badgePulse{0%,100%{box-shadow:0 0 0 0 rgba(var(--brand-rgb),.4)}50%{box-shadow:0 0 0 5px rgba(var(--brand-rgb),0)}}
 .pipe-step.ps-running .pipe-label{color:var(--brand)}
 .pipe-step.ps-running .pipe-time{color:var(--brand)}
-.pipe-step.ps-running .pipe-desc{color:var(--t2)}
 /* done state */
 .pipe-step.ps-done .pipe-node{border-color:#22C55E;background:rgba(34,197,94,.05)}
 .pipe-step.ps-done .pipe-node svg{stroke:#22C55E}
@@ -844,84 +842,76 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
     {{-- AVA's real 8-stage pipeline (human-friendly labels) --}}
     <div class="pipeline-row" id="pipelineRow">
 
-      <div class="pipe-step" data-step="0">
+      <div class="pipe-step" data-step="0" data-time="9:00 AM">
         <div class="pipe-node">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1M12 3v13M8 7l4-4 4 4"/></svg>
           <span class="pipe-badge">1</span>
         </div>
-        <div class="pipe-time">9:00 AM</div>
         <div class="pipe-label">Task Received</div>
-        <div class="pipe-desc">AVA picks up a new renewal to handle</div>
+        <div class="pipe-time"></div>
       </div>
 
-      <div class="pipe-step" data-step="1">
+      <div class="pipe-step" data-step="1" data-time="9:00 AM">
         <div class="pipe-node">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
           <span class="pipe-badge">2</span>
         </div>
-        <div class="pipe-time">9:00 AM</div>
         <div class="pipe-label">Reads the Email</div>
-        <div class="pipe-desc">Understands what the customer needs</div>
+        <div class="pipe-time"></div>
       </div>
 
-      <div class="pipe-step" data-step="2">
+      <div class="pipe-step" data-step="2" data-time="9:01 AM">
         <div class="pipe-node">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
           <span class="pipe-badge">3</span>
         </div>
-        <div class="pipe-time">9:01 AM</div>
         <div class="pipe-label">Figures Out Priority</div>
-        <div class="pipe-desc">Renewal, urgent, or routine — AVA decides</div>
+        <div class="pipe-time"></div>
       </div>
 
-      <div class="pipe-step" data-step="3">
+      <div class="pipe-step" data-step="3" data-time="9:01 AM">
         <div class="pipe-node">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
           <span class="pipe-badge">4</span>
         </div>
-        <div class="pipe-time">9:01 AM</div>
         <div class="pipe-label">Looks Up the Customer</div>
-        <div class="pipe-desc">History, past renewals &amp; preferences</div>
+        <div class="pipe-time"></div>
       </div>
 
-      <div class="pipe-step" data-step="4">
+      <div class="pipe-step" data-step="4" data-time="9:02 AM">
         <div class="pipe-node">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
           <span class="pipe-badge">5</span>
         </div>
-        <div class="pipe-time">9:02 AM</div>
         <div class="pipe-label">Logs the Interaction</div>
-        <div class="pipe-desc">Every action recorded for your review</div>
+        <div class="pipe-time"></div>
       </div>
 
-      <div class="pipe-step" data-step="5">
+      <div class="pipe-step" data-step="5" data-time="9:02 AM">
         <div class="pipe-node">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>
           <span class="pipe-badge">6</span>
         </div>
-        <div class="pipe-time">9:02 AM</div>
         <div class="pipe-label">Picks the Right Message</div>
-        <div class="pipe-desc">Chooses the tone &amp; template that fits</div>
+        <div class="pipe-time"></div>
       </div>
 
-      <div class="pipe-step" data-step="6">
+      <div class="pipe-step" data-step="6" data-time="9:03 AM">
         <div class="pipe-node">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4z"/></svg>
           <span class="pipe-badge">7</span>
         </div>
-        <div class="pipe-time">9:03 AM</div>
         <div class="pipe-label">Writes the Email</div>
-        <div class="pipe-desc">Personalised, professional &amp; ready to send</div>
+        <div class="pipe-time"></div>
       </div>
 
-      <div class="pipe-step" data-step="7">
+      <div class="pipe-step" data-step="7" data-time="9:03 AM">
         <div class="pipe-node">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/><polyline points="9 10 12 13 15 10"/></svg>
           <span class="pipe-badge">8</span>
         </div>
-        <div class="pipe-time">9:03 AM</div>
         <div class="pipe-label">Lands in Your Inbox</div>
-        <div class="pipe-desc">Draft ready — you review &amp; approve</div>
+        <div class="pipe-time"></div>
       </div>
 
     </div>
@@ -978,7 +968,10 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
   ];
 
   function clearAll(){
-    steps.forEach(function(s){ s.classList.remove('ps-running','ps-done'); });
+    steps.forEach(function(s){
+      s.classList.remove('ps-running','ps-done');
+      s.querySelector('.pipe-time').textContent = '';
+    });
     tickerRow.innerHTML = '';
     missionBar.classList.remove('visible');
   }
@@ -993,11 +986,15 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
       }, PAUSE_MS);
       return;
     }
-    steps[i].classList.add('ps-running');
+    var step = steps[i];
+    var timeEl = step.querySelector('.pipe-time');
+    step.classList.add('ps-running');
+    timeEl.textContent = step.dataset.time;  // stamp time when step activates
     tickerRow.innerHTML = '<span class="pipe-ticker-dot"></span>' + tickerMessages[i];
     setTimeout(function(){
-      steps[i].classList.remove('ps-running');
-      steps[i].classList.add('ps-done');
+      step.classList.remove('ps-running');
+      step.classList.add('ps-done');
+      // time stays visible in done color
       runStep(i + 1);
     }, STEP_MS);
   }
