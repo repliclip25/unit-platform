@@ -227,20 +227,22 @@ body{font-family:var(--font-b);color:var(--text);background:var(--bg);-webkit-fo
 .wk-bullet{display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:500;color:var(--t2)}
 .wk-check{width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .wk-check svg{width:10px;height:10px;stroke:#fff;stroke-width:2.5;fill:none}
-.wk-btns{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.wk-btns{display:flex;align-items:center;gap:8px;flex-wrap:nowrap}
 .btn-hire-wk{
-  display:inline-flex;align-items:center;gap:7px;
-  padding:10px 18px;border-radius:10px;
-  font-size:13px;font-weight:700;color:#fff;
-  width:fit-content;transition:opacity .15s,transform .1s;
+  display:inline-flex;align-items:center;gap:6px;
+  padding:9px 14px;border-radius:10px;
+  font-size:12.5px;font-weight:700;color:#fff;
+  white-space:nowrap;flex-shrink:0;
+  transition:opacity .15s,transform .1s;
 }
 .btn-hire-wk:hover{opacity:.88;transform:translateY(-1px)}
 .btn-watch-wk{
-  display:inline-flex;align-items:center;gap:7px;
-  padding:10px 18px;border-radius:10px;
-  font-size:13px;font-weight:700;
+  display:inline-flex;align-items:center;gap:6px;
+  padding:9px 14px;border-radius:10px;
+  font-size:12.5px;font-weight:700;
   border:1.5px solid var(--border);color:var(--t2);
-  width:fit-content;transition:all .15s;
+  white-space:nowrap;flex-shrink:0;
+  transition:all .15s;
 }
 .btn-watch-wk:hover{border-color:currentColor}
 
