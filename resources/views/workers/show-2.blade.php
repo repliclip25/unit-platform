@@ -51,103 +51,156 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
 .nav{
   position:fixed;top:0;left:0;right:0;z-index:100;
   background:#fff;
-  border-bottom:1px solid #EDEDED;
-  box-shadow:0 1px 3px rgba(0,0,0,.06);
+  border-bottom:1px solid #EBEBEB;
+  box-shadow:0 1px 0 rgba(0,0,0,.04);
 }
 .nav-i{
   display:flex;align-items:center;justify-content:space-between;
-  height:68px;padding:0 var(--pad);max-width:var(--max);margin:0 auto;
+  height:62px;padding:0 var(--pad);max-width:var(--max);margin:0 auto;
 }
-/* logo */
-.nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none}
-.nav-logo-icon{
-  width:38px;height:38px;flex-shrink:0;
+.nav-logo{
+  font-size:1.25rem;font-weight:800;
+  color:#0D0D0D;letter-spacing:-.5px;
+  text-decoration:none;flex-shrink:0;
 }
-.nav-logo-text{}
-.nav-logo-name{
-  display:block;font-size:1.15rem;font-weight:800;
-  color:#0D0D0D;letter-spacing:-.4px;line-height:1.1;
-}
-.nav-logo-sub{
-  display:block;font-size:9px;font-weight:700;
-  letter-spacing:.18em;text-transform:uppercase;color:#9CA3AF;line-height:1;
-}
-/* center links */
 .nav-links{display:flex;align-items:center;gap:2px}
 .nav-link{
   font-size:13.5px;font-weight:500;color:#374151;
-  padding:8px 13px;border-radius:8px;
+  padding:7px 13px;border-radius:8px;
   transition:color .15s,background .15s;white-space:nowrap;
 }
 .nav-link:hover{color:#0D0D0D;background:#F5F5F5}
-/* right actions */
 .nav-actions{display:flex;align-items:center;gap:8px}
+.btn-theme{
+  width:34px;height:34px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  border:1.5px solid #E5E7EB;background:#fff;
+  color:#6B7280;cursor:pointer;flex-shrink:0;
+  transition:border-color .15s,color .15s;
+}
+.btn-theme:hover{border-color:#9CA3AF;color:#374151}
+.btn-theme svg{width:15px;height:15px}
 .btn-login{
   display:inline-flex;align-items:center;
-  padding:9px 20px;border-radius:99px;
-  font-size:14px;font-weight:600;color:#374151;
-  border:1.5px solid #D1D5DB;
+  padding:8px 18px;border-radius:99px;
+  font-size:13.5px;font-weight:600;color:#374151;
+  border:1.5px solid #D1D5DB;background:#fff;
   transition:border-color .15s,color .15s;
 }
 .btn-login:hover{border-color:#9CA3AF;color:#0D0D0D}
 .btn-nav-hire{
   display:inline-flex;align-items:center;gap:7px;
-  padding:10px 22px;border-radius:99px;
-  font-size:14px;font-weight:700;color:#fff;
+  padding:9px 20px;border-radius:99px;
+  font-size:13.5px;font-weight:700;color:#fff;
   background:var(--brand);
-  box-shadow:0 2px 12px rgba(var(--brand-rgb),.35);
   transition:opacity .15s,transform .15s;white-space:nowrap;
 }
 .btn-nav-hire:hover{opacity:.9;transform:translateY(-1px)}
-.btn-nav-hire svg{transition:transform .15s}
+.btn-nav-hire svg{flex-shrink:0;transition:transform .15s}
 .btn-nav-hire:hover svg{transform:translateX(2px)}
-/* mobile: hide center links */
-@media(max-width:900px){.nav-links{display:none}}
-@media(max-width:600px){.btn-login{display:none}}
+@media(max-width:960px){.nav-links{display:none}}
+@media(max-width:600px){.btn-login,.btn-theme{display:none}}
 
 /* ── HERO ── */
 .hero-worker{
-  position:relative;min-height:100vh;
-  background:#000;overflow:hidden;
-  display:flex;align-items:center;
-  padding-top:68px;
+  position:relative;
+  height:calc(100vh - 62px);
+  min-height:580px;
+  background:#0A0A0F;
+  overflow:hidden;
+  display:flex;flex-direction:column;
+  margin-top:62px;
 }
-.hero-bg{position:absolute;inset:0;z-index:0}
-.hero-bg img{width:100%;height:100%;object-fit:cover;object-position:center top;opacity:.55}
-.hero-bg::after{content:'';position:absolute;inset:0;background:linear-gradient(to right,rgba(0,0,0,.85) 0%,rgba(0,0,0,.5) 50%,rgba(0,0,0,.2) 100%)}
+/* video / image fills the frame */
+.hero-media{
+  position:absolute;inset:0;z-index:0;
+  display:flex;align-items:stretch;
+}
+.hero-media video,
+.hero-media img{
+  width:100%;height:100%;
+  object-fit:cover;object-position:center top;
+}
+/* gradient: strong left fade so text is readable, gentle right to keep card readable */
+.hero-media::after{
+  content:'';position:absolute;inset:0;
+  background:
+    linear-gradient(to right, rgba(6,4,15,.92) 0%, rgba(6,4,15,.6) 38%, rgba(6,4,15,.15) 65%, transparent 100%),
+    linear-gradient(to top, rgba(6,4,15,.7) 0%, transparent 40%);
+}
+/* content sits above gradient */
 .hero-inner{
   position:relative;z-index:2;
-  display:grid;grid-template-columns:1fr 340px;
-  gap:48px;align-items:center;
-  width:100%;padding:clamp(60px,8vw,100px) var(--pad);
-  max-width:var(--max);margin:0 auto;
+  display:grid;grid-template-columns:1fr 320px;
+  gap:clamp(32px,4vw,56px);align-items:center;
+  width:100%;max-width:var(--max);
+  margin:0 auto;padding:0 var(--pad);
+  flex:1;
 }
-.hero-eye{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.55);margin-bottom:14px}
+.hero-eye{
+  font-size:11px;font-weight:700;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--brand);
+  margin-bottom:14px;
+}
 .hero-h{
-  font-size:clamp(2rem,4.5vw,3.4rem);font-weight:800;
-  line-height:1.08;letter-spacing:-.03em;
-  color:#fff;margin-bottom:18px;
+  font-size:clamp(2.2rem,4.8vw,3.6rem);
+  font-weight:800;line-height:1.06;
+  letter-spacing:-.03em;color:#fff;
+  margin-bottom:16px;
 }
-.hero-h em{font-style:normal;color:{{ $color }}}
-.hero-p{font-size:1rem;color:rgba(255,255,255,.75);line-height:1.75;margin-bottom:28px;max-width:480px}
-.hero-btns{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.hero-p{
+  font-size:1rem;color:rgba(255,255,255,.72);
+  line-height:1.75;margin-bottom:28px;max-width:430px;
+}
+.hero-btns{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
 .btn-hire-hero{
   display:inline-flex;align-items:center;gap:8px;
-  padding:13px 26px;border-radius:99px;
+  padding:13px 24px;border-radius:10px;
   font-size:15px;font-weight:700;color:#fff;
   background:var(--brand);
-  box-shadow:0 4px 20px rgba(var(--brand-rgb),.5);
   transition:opacity .15s,transform .15s;
 }
-.btn-hire-hero:hover{opacity:.9;transform:translateY(-2px)}
+.btn-hire-hero:hover{opacity:.9;transform:translateY(-1px)}
 .btn-watch-hero{
-  display:inline-flex;align-items:center;gap:7px;
-  padding:12px 20px;border-radius:99px;
-  font-size:14px;font-weight:600;color:rgba(255,255,255,.85);
-  border:1.5px solid rgba(255,255,255,.3);
-  transition:border-color .15s;
+  display:inline-flex;align-items:center;gap:9px;
+  padding:12px 20px;border-radius:10px;
+  font-size:14px;font-weight:600;color:rgba(255,255,255,.88);
+  border:1.5px solid rgba(255,255,255,.25);
+  transition:border-color .15s,background .15s;
 }
-.btn-watch-hero:hover{border-color:rgba(255,255,255,.7)}
+.btn-watch-hero:hover{border-color:rgba(255,255,255,.6);background:rgba(255,255,255,.05)}
+.btn-watch-icon{
+  width:28px;height:28px;border-radius:50%;
+  border:1.5px solid rgba(255,255,255,.4);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.btn-watch-icon svg{width:11px;height:11px;fill:#fff;margin-left:2px}
+/* fake video bar at bottom */
+.hero-vidbar{
+  position:relative;z-index:3;
+  display:flex;align-items:center;gap:14px;
+  padding:12px var(--pad);
+  background:rgba(0,0,0,.55);
+  backdrop-filter:blur(8px);
+  border-top:1px solid rgba(255,255,255,.06);
+}
+.vidbar-play{
+  width:30px;height:30px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;
+}
+.vidbar-play svg{width:18px;height:18px;fill:#fff;margin-left:2px}
+.vidbar-time{font-size:12px;color:rgba(255,255,255,.65);font-variant-numeric:tabular-nums;white-space:nowrap}
+.vidbar-track{flex:1;height:4px;background:rgba(255,255,255,.2);border-radius:99px;position:relative;cursor:pointer}
+.vidbar-fill{height:100%;background:#7C3AED;border-radius:99px;width:19%}
+.vidbar-thumb{
+  position:absolute;top:50%;right:calc(81% - 7px);transform:translateY(-50%);
+  width:14px;height:14px;border-radius:50%;
+  background:#fff;box-shadow:0 0 4px rgba(0,0,0,.5);
+}
+.vidbar-icons{display:flex;align-items:center;gap:14px;flex-shrink:0}
+.vidbar-icons svg{width:18px;height:18px;stroke:rgba(255,255,255,.7);fill:none;stroke-width:1.8;cursor:pointer}
+.vidbar-icons svg:hover{stroke:#fff}
 
 /* hero status card */
 .hero-card{
@@ -449,30 +502,8 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
 {{-- NAV --}}
 <nav class="nav">
   <div class="nav-i">
-    {{-- Logo --}}
-    <a href="{{ route('home2') }}" class="nav-logo">
-      <svg class="nav-logo-icon" viewBox="0 0 38 38" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="19" cy="19" r="19" fill="#4C1D95"/>
-        {{-- sunburst rays --}}
-        <g stroke="#F5D97E" stroke-width="2" stroke-linecap="round">
-          <line x1="19" y1="4"  x2="19" y2="9"/>
-          <line x1="19" y1="29" x2="19" y2="34"/>
-          <line x1="4"  y1="19" x2="9"  y2="19"/>
-          <line x1="29" y1="19" x2="34" y2="19"/>
-          <line x1="8.1"  y1="8.1"  x2="11.6" y2="11.6"/>
-          <line x1="26.4" y1="26.4" x2="29.9" y2="29.9"/>
-          <line x1="29.9" y1="8.1"  x2="26.4" y2="11.6"/>
-          <line x1="11.6" y1="26.4" x2="8.1"  y2="29.9"/>
-        </g>
-        <circle cx="19" cy="19" r="5" fill="#F5D97E"/>
-      </svg>
-      <div class="nav-logo-text">
-        <span class="nav-logo-name">UNIT</span>
-        <span class="nav-logo-sub">AI Workers</span>
-      </div>
-    </a>
+    <a href="{{ route('home2') }}" class="nav-logo">UNIT</a>
 
-    {{-- Center links --}}
     <div class="nav-links">
       <a href="{{ route('workers.page') }}" class="nav-link">Meet the Team</a>
       <a href="#day-in-life" class="nav-link">How It Works</a>
@@ -481,15 +512,17 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
       <a href="{{ route('pricing') }}" class="nav-link">Pricing</a>
     </div>
 
-    {{-- Actions --}}
     <div class="nav-actions">
+      <button class="btn-theme" id="themeToggle" aria-label="Toggle dark mode">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+      </button>
       @auth
         <a href="{{ route('dashboard') }}" class="btn-login">Dashboard</a>
       @else
         <a href="{{ route('login') }}" class="btn-login">Log in</a>
       @endauth
       <a href="{{ route('register') }}" class="btn-nav-hire">
-        Hire {{ $worker['name'] }}
+        Hire Your First Worker
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
       </a>
     </div>
@@ -498,27 +531,43 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
 
 {{-- HERO --}}
 <section class="hero-worker">
-  <div class="hero-bg">
-    <img src="/images/ava-stand.png" alt="{{ $worker['name'] }}" style="object-position:center 15%">
+
+  {{-- Background media --}}
+  <div class="hero-media">
+    @if($worker['youtube_id'] ?? false)
+    {{-- Use a poster image; clicking would load actual video --}}
+    <img src="/images/workers/{{ $worker['slug'] }}-hero.jpg"
+         alt="{{ $worker['name'] }}"
+         onerror="this.src='/images/ava-hero.jpg'">
+    @else
+    <img src="/images/ava-hero.jpg"
+         alt="{{ $worker['name'] }}"
+         onerror="this.style.display='none'">
+    @endif
   </div>
+
+  {{-- Main content row --}}
   <div class="hero-inner">
+    {{-- Left: text --}}
     <div>
       <div class="hero-eye">Meet {{ $worker['name'] }}</div>
-      <h1 class="hero-h">{!! $worker['headline'] !!}</h1>
-      <p class="hero-p">{{ $worker['sub'] }}</p>
+      <h1 class="hero-h">She never<br>forgets a renewal.</h1>
+      <p class="hero-p">{{ $worker['name'] }} works 24/7 to track renewals, send reminders, update records, and protect the revenue your business depends on.</p>
       <div class="hero-btns">
         <a href="{{ route('register') }}" class="btn-hire-hero">
           Hire {{ $worker['name'] }} Today
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
         </a>
         <a href="#day-in-life" class="btn-watch-hero">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M10 8l6 4-6 4V8z" fill="currentColor" stroke="none"/></svg>
+          <span class="btn-watch-icon">
+            <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          </span>
           Watch Full Day
         </a>
       </div>
     </div>
 
-    {{-- Status card --}}
+    {{-- Right: status card --}}
     <div class="hero-card">
       <div class="hc-status">
         <div class="hc-dot"></div>
@@ -532,14 +581,7 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
       </div>
       <div class="hc-divider"></div>
       <div class="hc-completed-label">Completed Today</div>
-      @php
-        $doneItems = [
-          '42 renewals reviewed',
-          '18 reminders sent',
-          '6 customers retained',
-        ];
-      @endphp
-      @foreach($doneItems as $item)
+      @foreach(['42 renewals reviewed','18 reminders sent','6 customers retained'] as $item)
       <div class="hc-done-item">
         <div class="hc-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
         {{ $item }}
@@ -551,11 +593,28 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
         <div class="hc-rev-streak">{{ $deploymentCount * 18 }}-day streak 🔥</div>
       </div>
       <a href="{{ route('register') }}" class="hc-feed-btn">
-        View Live Feed
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        View Live Feed →
       </a>
     </div>
   </div>
+
+  {{-- Fake video progress bar --}}
+  <div class="hero-vidbar">
+    <div class="vidbar-play">
+      <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+    </div>
+    <span class="vidbar-time">0:12 / 1:02</span>
+    <div class="vidbar-track">
+      <div class="vidbar-fill"></div>
+      <div class="vidbar-thumb"></div>
+    </div>
+    <div class="vidbar-icons">
+      <svg viewBox="0 0 24 24" stroke-linecap="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07"/></svg>
+      <svg viewBox="0 0 24 24" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+      <svg viewBox="0 0 24 24" stroke-linecap="round"><path d="M8 3H5a2 2 0 00-2 2v3m18 0V5a2 2 0 00-2-2h-3m0 18h3a2 2 0 002-2v-3M3 16v3a2 2 0 002 2h3"/></svg>
+    </div>
+  </div>
+
 </section>
 
 {{-- THE PROBLEM --}}
@@ -908,6 +967,20 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
   }
   updateClock();
   setInterval(updateClock, 60000);
+})();
+
+// Dark mode toggle
+(function(){
+  var btn = document.getElementById('themeToggle');
+  if(!btn) return;
+  var html = document.documentElement;
+  var moon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>';
+  var sun  = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>';
+  btn.addEventListener('click', function(){
+    var dark = html.getAttribute('data-theme') === 'dark';
+    html.setAttribute('data-theme', dark ? 'light' : 'dark');
+    btn.innerHTML = dark ? moon : sun;
+  });
 })();
 </script>
 
