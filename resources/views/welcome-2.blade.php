@@ -419,38 +419,78 @@ body{
   display:grid;grid-template-columns:repeat(6,1fr);
   gap:0;position:relative;margin-top:clamp(40px,5vw,64px);
 }
-/* connecting line */
+/* static dashed base line */
 .tl::before{
   content:'';position:absolute;
-  top:32px;left:12%;right:12%;height:2px;
+  top:32px;left:8%;right:8%;height:2px;
   background:repeating-linear-gradient(90deg,var(--border) 0,var(--border) 6px,transparent 6px,transparent 12px);
+  z-index:0;
 }
+/* traveling glow dot — moves left→right over 10.8s then loops */
+.tl::after{
+  content:'';position:absolute;
+  top:28px;left:8%;
+  width:36px;height:8px;
+  border-radius:4px;
+  background:var(--brand);
+  box-shadow:0 0 14px 4px rgba(76,29,149,.55);
+  z-index:3;
+  animation:lineTravel 10.8s linear infinite;
+}
+@keyframes lineTravel{
+  0%  {left:8%;opacity:0}
+  4%  {opacity:1}
+  92% {opacity:1}
+  100%{left:calc(92% - 36px);opacity:0}
+}
+
 .tl-item{display:flex;flex-direction:column;align-items:center;text-align:center;padding:0 8px;position:relative}
-/* arrow between items — shows on all except last */
-.tl-item:not(:last-child)::after{
-  content:'';
-  position:absolute;
-  top:24px;right:-10px;
-  width:0;height:0;
-  border-top:8px solid transparent;
-  border-bottom:8px solid transparent;
-  border-left:10px solid #CBD5E1;
-  z-index:2;
-}
+
+/* node base */
 .tl-node{
   width:64px;height:64px;border-radius:50%;
-  background:#fff;border:1.5px solid #D1D5DB;
+  background:#fff;border:2px solid #D1D5DB;
   display:flex;align-items:center;justify-content:center;
-  position:relative;z-index:1;margin-bottom:18px;
-  flex-shrink:0;
+  position:relative;z-index:2;margin-bottom:18px;
+  flex-shrink:0;color:#111;
+  transition:transform .3s ease;
   box-shadow:0 2px 8px rgba(0,0,0,.08);
 }
-.tl-node svg{width:26px;height:26px;stroke:#111}
-.tl-time{font-size:13px;font-weight:700;letter-spacing:.03em;margin-bottom:7px;color:var(--text)}
+.tl-node svg{width:26px;height:26px;stroke:currentColor;transition:stroke .3s}
+
+/* sequential node activation — 10.8s total cycle, 1.8s per node */
+@keyframes nodeActivate{
+  0%,100%{background:#fff;border-color:#D1D5DB;box-shadow:0 2px 8px rgba(0,0,0,.08);transform:scale(1);color:#111}
+  10%    {background:var(--brand);border-color:var(--brand);box-shadow:0 0 0 6px rgba(76,29,149,.15),0 0 24px rgba(76,29,149,.4);transform:scale(1.14);color:#fff}
+  40%    {background:var(--brand);border-color:var(--brand);box-shadow:0 0 0 6px rgba(76,29,149,.1),0 0 16px rgba(76,29,149,.3);transform:scale(1.1);color:#fff}
+  55%    {background:#fff;border-color:#D1D5DB;box-shadow:0 2px 8px rgba(0,0,0,.08);transform:scale(1);color:#111}
+}
+.tl-item:nth-child(1) .tl-node{animation:nodeActivate 10.8s ease-in-out infinite 0s}
+.tl-item:nth-child(2) .tl-node{animation:nodeActivate 10.8s ease-in-out infinite 1.8s}
+.tl-item:nth-child(3) .tl-node{animation:nodeActivate 10.8s ease-in-out infinite 3.6s}
+.tl-item:nth-child(4) .tl-node{animation:nodeActivate 10.8s ease-in-out infinite 5.4s}
+.tl-item:nth-child(5) .tl-node{animation:nodeActivate 10.8s ease-in-out infinite 7.2s}
+.tl-item:nth-child(6) .tl-node{animation:nodeActivate 10.8s ease-in-out infinite 9.0s}
+
+/* time label flashes when node is active */
+@keyframes timeFlash{
+  0%,100%{color:var(--t3);font-weight:600}
+  10%,40%{color:var(--brand);font-weight:800}
+  55%    {color:var(--t3);font-weight:600}
+}
+.tl-item:nth-child(1) .tl-time{animation:timeFlash 10.8s ease-in-out infinite 0s}
+.tl-item:nth-child(2) .tl-time{animation:timeFlash 10.8s ease-in-out infinite 1.8s}
+.tl-item:nth-child(3) .tl-time{animation:timeFlash 10.8s ease-in-out infinite 3.6s}
+.tl-item:nth-child(4) .tl-time{animation:timeFlash 10.8s ease-in-out infinite 5.4s}
+.tl-item:nth-child(5) .tl-time{animation:timeFlash 10.8s ease-in-out infinite 7.2s}
+.tl-item:nth-child(6) .tl-time{animation:timeFlash 10.8s ease-in-out infinite 9.0s}
+
+.tl-time{font-size:13px;font-weight:600;letter-spacing:.03em;margin-bottom:7px;color:var(--t3)}
 .tl-evt{font-size:14.5px;color:var(--t3);line-height:1.6}
 .tl-evt strong{color:var(--text);display:block;margin-bottom:2px;font-weight:700}
-.tl-item:last-child .tl-node{background:var(--brand);border-color:var(--brand);box-shadow:0 4px 16px rgba(76,29,149,.3)}
-.tl-item:last-child .tl-node svg{color:#fff!important;stroke:#fff!important}
+/* last two nodes start purple-tinted so they always feel "special" */
+.tl-item:nth-child(5) .tl-node,
+.tl-item:nth-child(6) .tl-node{border-color:rgba(76,29,149,.4)}
 
 /* ── LIFECYCLE ── */
 .lifecycle{background:#fff;padding-top:0}
@@ -1120,45 +1160,45 @@ body{
     </div>
     <div class="tl">
       <div class="tl-item">
-        <div class="tl-node" style="border-color:var(--ava)">
-          <svg viewBox="0 0 24 24" fill="none" stroke="var(--ava)" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+        <div class="tl-node">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
         </div>
-        <div class="tl-time" style="color:var(--ava)">8:00 AM</div>
+        <div class="tl-time">8:00 AM</div>
         <div class="tl-evt"><strong>AVA</strong>finishes three renewals.</div>
       </div>
       <div class="tl-item">
         <div class="tl-node">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="1.8" stroke-linecap="round"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>
         </div>
         <div class="tl-time">9:30 AM</div>
         <div class="tl-evt"><strong>DOX</strong>organizes 1,247 files.</div>
       </div>
       <div class="tl-item">
         <div class="tl-node">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
         </div>
         <div class="tl-time">11:00 AM</div>
         <div class="tl-evt"><strong>MOX</strong>discovers National Coffee Day.</div>
       </div>
       <div class="tl-item">
         <div class="tl-node">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="1.8" stroke-linecap="round"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
         </div>
         <div class="tl-time">2:00 PM</div>
         <div class="tl-evt"><strong>NUX</strong>publishes six campaigns.</div>
       </div>
       <div class="tl-item">
-        <div class="tl-node" style="background:var(--brand);border-color:var(--brand)">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        <div class="tl-node">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
         </div>
-        <div class="tl-time" style="color:var(--brand)">5:00 PM</div>
+        <div class="tl-time">5:00 PM</div>
         <div class="tl-evt"><strong>You arrive.</strong>Everything is already done.</div>
       </div>
       <div class="tl-item">
-        <div class="tl-node" style="border-color:rgba(107,43,242,.3)">
-          <svg viewBox="0 0 24 24" fill="none" stroke="var(--ava)" stroke-width="1.8" stroke-linecap="round"><path d="M3 12a9 9 0 1018 0 9 9 0 00-18 0"/><path d="M12 8v4l3 3"/></svg>
+        <div class="tl-node">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 12a9 9 0 1018 0 9 9 0 00-18 0"/><path d="M12 8v4l3 3"/></svg>
         </div>
-        <div class="tl-time" style="color:var(--ava)">Next morning</div>
+        <div class="tl-time">Next morning</div>
         <div class="tl-evt"><strong>They start again.</strong>Without being asked.</div>
       </div>
     </div>
