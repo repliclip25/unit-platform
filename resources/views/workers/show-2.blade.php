@@ -321,49 +321,150 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
 .sec-p{font-size:1rem;color:var(--t3);line-height:1.7}
 .center{text-align:center}.center .sec-p{max-width:520px;margin:0 auto}
 
-/* ── PROBLEM SECTION ── */
-.problem-sec{background:#F9F9FB;padding:clamp(56px,7vw,88px) 0}
+/* ── PROBLEM SECTION (redesigned) ── */
+.problem-sec{background:#fff;padding:clamp(60px,8vw,96px) 0 0}
 [data-theme="dark"] .problem-sec{background:#0D0D0D}
-.prob-heading{text-align:center;margin-bottom:clamp(32px,4vw,48px)}
-.prob-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
-.prob-card{
-  background:#fff;border-radius:18px;
-  padding:28px 24px 32px;
-  display:flex;flex-direction:column;gap:0;
-  box-shadow:0 1px 3px rgba(0,0,0,.06),0 4px 16px rgba(0,0,0,.04);
+.prob-top{text-align:center;margin-bottom:clamp(36px,5vw,56px)}
+.prob-top-eye{
+  display:inline-flex;align-items:center;gap:7px;
+  font-size:11px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;
+  color:var(--brand);margin-bottom:16px;
 }
-[data-theme="dark"] .prob-card{background:#111;box-shadow:none;border:1px solid #2D2D2D}
-.prob-card.solution{
-  background:rgba(var(--brand-rgb),.07);
-  box-shadow:0 1px 3px rgba(var(--brand-rgb),.08),0 4px 16px rgba(var(--brand-rgb),.06);
+.prob-top-eye svg{width:14px;height:14px;stroke:var(--brand);fill:none;stroke-width:2;stroke-linecap:round}
+.prob-top-h{font-size:clamp(2rem,4vw,3.2rem);font-weight:800;line-height:1.1;letter-spacing:-.03em;color:var(--text);margin-bottom:0}
+.prob-top-h span{color:var(--brand)}
+.prob-top-sub{font-size:1rem;color:var(--t3);margin-top:14px}
+/* two-col layout */
+.prob-split{display:grid;grid-template-columns:1fr 400px;gap:24px;align-items:start}
+/* left: problems panel */
+.prob-panel{
+  background:#F9F9FB;border:1px solid #EBEBEB;
+  border-radius:20px;padding:28px;
 }
-[data-theme="dark"] .prob-card.solution{background:rgba(var(--brand-rgb),.14);border-color:rgba(var(--brand-rgb),.3)}
-/* icon: purple circle */
-.prob-icon{
-  width:52px;height:52px;border-radius:50%;
-  background:rgba(var(--brand-rgb),.1);
+[data-theme="dark"] .prob-panel{background:#111;border-color:#2D2D2D}
+.prob-panel-h{display:flex;align-items:center;gap:12px;margin-bottom:6px}
+.prob-panel-icon{
+  width:36px;height:36px;border-radius:50%;flex-shrink:0;
+  background:var(--brand);display:flex;align-items:center;justify-content:center;
+}
+.prob-panel-icon svg{width:16px;height:16px;stroke:#fff;fill:none;stroke-width:2.5;stroke-linecap:round}
+.prob-panel-title{font-size:18px;font-weight:800;color:var(--text)}
+.prob-panel-sub{font-size:13px;color:var(--t3);margin-bottom:20px;padding-left:48px}
+.prob-items{display:grid;grid-template-columns:repeat(5,1fr);gap:14px}
+.prob-item{display:flex;flex-direction:column;gap:8px}
+.prob-item-icon{
+  width:38px;height:38px;border-radius:50%;flex-shrink:0;
+  background:rgba(var(--brand-rgb),.08);
   display:flex;align-items:center;justify-content:center;
-  margin-bottom:20px;flex-shrink:0;
 }
-.prob-icon svg{width:22px;height:22px;stroke:var(--brand);fill:none;stroke-width:1.8;stroke-linecap:round}
-.prob-h{font-size:16px;font-weight:700;color:var(--text);margin-bottom:10px;line-height:1.35}
-.prob-p{font-size:13.5px;color:var(--t3);line-height:1.65}
-/* solution card header */
-.prob-sol-header{display:flex;align-items:center;gap:10px;margin-bottom:18px}
-.prob-sol-avatar{width:44px;height:44px;border-radius:50%;object-fit:cover;object-position:center top;flex-shrink:0}
-.prob-sol-title{font-size:14px;font-weight:700;color:var(--brand)}
-/* solution bullets */
-.prob-bullets{display:flex;flex-direction:column;gap:11px}
-.prob-bullet{display:flex;align-items:center;gap:10px;font-size:14px;color:var(--t2)}
-[data-theme="dark"] .prob-bullet{color:#D1D5DB}
-.prob-check{
-  width:22px;height:22px;border-radius:50%;flex-shrink:0;
+.prob-item-icon svg{width:17px;height:17px;stroke:var(--brand);fill:none;stroke-width:1.8;stroke-linecap:round}
+.prob-item-h{font-size:13px;font-weight:700;color:var(--text);line-height:1.35}
+.prob-item-p{font-size:12px;color:var(--t3);line-height:1.55}
+/* right: solution panel */
+.sol-panel{
+  border-radius:20px;overflow:hidden;
+  border:1px solid #EBEBEB;
+  display:flex;flex-direction:column;
+}
+[data-theme="dark"] .sol-panel{border-color:#2D2D2D}
+.sol-header{
+  background:var(--brand);
+  padding:10px 20px;
+  font-size:11px;font-weight:700;letter-spacing:.12em;
+  text-transform:uppercase;color:#fff;text-align:center;
+}
+.sol-body{
+  background:#F9F9FB;padding:24px 20px;
+  display:flex;flex-direction:column;
+  flex:1;
+}
+[data-theme="dark"] .sol-body{background:#111}
+.sol-meet{font-size:22px;font-weight:800;color:var(--text);margin-bottom:2px}
+.sol-meet span{color:var(--brand)}
+.sol-role{font-size:13px;color:var(--t3);margin-bottom:16px}
+.sol-img-wrap{position:relative;height:200px;margin:0 -20px;overflow:hidden}
+.sol-img-wrap img{
+  width:100%;height:100%;
+  object-fit:cover;object-position:center top;
+}
+.sol-checks{display:flex;flex-direction:column;gap:8px;margin-top:16px}
+.sol-check{display:flex;align-items:center;gap:9px;font-size:13px;color:var(--t2)}
+[data-theme="dark"] .sol-check{color:#D1D5DB}
+.sol-chk{
+  width:20px;height:20px;border-radius:50%;flex-shrink:0;
   background:var(--brand);
   display:flex;align-items:center;justify-content:center;
 }
-.prob-check svg{width:11px;height:11px;stroke:#fff;stroke-width:2.5;fill:none;stroke-linecap:round}
-@media(max-width:900px){.prob-grid{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:520px){.prob-grid{grid-template-columns:1fr}}
+.sol-chk svg{width:10px;height:10px;stroke:#fff;stroke-width:2.5;fill:none;stroke-linecap:round}
+.sol-cta-bar{
+  background:var(--brand);
+  padding:16px 20px;margin-top:16px;border-radius:12px;
+}
+.sol-cta-title{font-size:14px;font-weight:700;color:#fff;display:flex;align-items:center;gap:7px;margin-bottom:5px}
+.sol-cta-desc{font-size:12px;color:rgba(255,255,255,.75);line-height:1.55}
+/* bottom 4-stat bar */
+.prob-stats-bar{
+  display:grid;grid-template-columns:repeat(4,1fr);
+  gap:0;border-top:1px solid #EBEBEB;margin-top:32px;
+}
+[data-theme="dark"] .prob-stats-bar{border-color:#2D2D2D}
+.prob-stat-item{
+  display:flex;align-items:flex-start;gap:14px;
+  padding:28px 24px;border-right:1px solid #EBEBEB;
+}
+[data-theme="dark"] .prob-stat-item{border-color:#2D2D2D}
+.prob-stat-item:last-child{border-right:none}
+.prob-stat-icon{
+  width:44px;height:44px;border-radius:50%;flex-shrink:0;
+  background:rgba(var(--brand-rgb),.08);
+  display:flex;align-items:center;justify-content:center;margin-top:2px;
+}
+.prob-stat-icon svg{width:20px;height:20px;stroke:var(--brand);fill:none;stroke-width:1.8;stroke-linecap:round}
+.prob-stat-h{font-size:14px;font-weight:700;color:var(--text);line-height:1.35;margin-bottom:4px}
+.prob-stat-p{font-size:12.5px;color:var(--t3)}
+/* dark CTA footer strip */
+.prob-cta-strip{
+  background:#0F0B1E;
+  display:flex;align-items:center;justify-content:space-between;
+  flex-wrap:wrap;gap:20px;
+  padding:24px clamp(20px,5vw,48px);
+}
+.prob-strip-left{display:flex;align-items:center;gap:14px}
+.prob-strip-icon{
+  width:44px;height:44px;border-radius:12px;flex-shrink:0;
+  background:var(--brand);display:flex;align-items:center;justify-content:center;
+}
+.prob-strip-icon svg{width:22px;height:22px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round}
+.prob-strip-text{}
+.prob-strip-t1{font-size:14px;color:rgba(255,255,255,.6);line-height:1.4}
+.prob-strip-t1 span{color:var(--brand);font-weight:700}
+.prob-strip-t2{font-size:15px;font-weight:700;color:#fff;line-height:1.4}
+.prob-strip-t2 span{color:var(--brand)}
+.btn-strip{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:13px 26px;border-radius:10px;
+  font-size:14.5px;font-weight:700;color:#fff;
+  background:var(--brand);
+  transition:opacity .15s,transform .15s;white-space:nowrap;flex-shrink:0;
+}
+.btn-strip:hover{opacity:.9;transform:translateY(-1px)}
+.prob-strip-right{display:flex;align-items:center;gap:14px;flex-shrink:0}
+.prob-strip-avatars{display:flex}
+.prob-strip-av{
+  width:32px;height:32px;border-radius:50%;
+  border:2px solid #0F0B1E;
+  background:var(--brand);
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:700;color:#fff;
+  margin-left:-8px;
+}
+.prob-strip-av:first-child{margin-left:0}
+.prob-strip-rating{}
+.prob-strip-stars{color:#F59E0B;font-size:13px;letter-spacing:1px}
+.prob-strip-rtext{font-size:11.5px;color:rgba(255,255,255,.5);margin-top:2px}
+@media(max-width:1024px){.prob-split{grid-template-columns:1fr;} .sol-panel{order:-1}}
+@media(max-width:768px){.prob-items{grid-template-columns:repeat(2,1fr)} .prob-stats-bar{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:480px){.prob-items{grid-template-columns:1fr} .prob-stats-bar{grid-template-columns:1fr} .prob-cta-strip{flex-direction:column;align-items:flex-start}}
 
 /* ── DAY IN LIFE / PIPELINE ── */
 .day-sec{background:#F9F9FB;padding:clamp(56px,7vw,88px) 0}
@@ -771,62 +872,129 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
 
 </section>
 
-{{-- THE PROBLEM --}}
+{{-- THE PROBLEM (redesigned) --}}
 <section class="problem-sec">
   <div class="w">
-    <div class="prob-heading">
-      <div class="sec-eye">The Problem</div>
-      <h2 class="sec-h">Too many renewals slip through the cracks.</h2>
+
+    {{-- Top heading --}}
+    <div class="prob-top">
+      <div class="prob-top-eye">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        The Problem
+      </div>
+      <h2 class="prob-top-h">Renewals are everywhere.<br><span>Oversight is human.</span></h2>
+      <p class="prob-top-sub">Small misses. Quiet losses. Big consequences.</p>
     </div>
-    <div class="prob-grid">
 
-      {{-- Card 1 --}}
-      <div class="prob-card">
-        <div class="prob-icon">
-          <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
-        </div>
-        <div class="prob-h">Your team gets busy.</div>
-        <p class="prob-p">Contracts get forgotten. Customers disappear.</p>
-      </div>
+    {{-- Two-col split --}}
+    <div class="prob-split">
 
-      {{-- Card 2 --}}
-      <div class="prob-card">
-        <div class="prob-icon">
-          <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+      {{-- LEFT: problems panel --}}
+      <div class="prob-panel">
+        <div class="prob-panel-h">
+          <div class="prob-panel-icon">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          </div>
+          <div class="prob-panel-title">Which of these problems sound familiar?</div>
         </div>
-        <div class="prob-h">Manual reminders don't scale.</div>
-        <p class="prob-p">Someone always slips through.</p>
-      </div>
-
-      {{-- Card 3 --}}
-      <div class="prob-card">
-        <div class="prob-icon">
-          <svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
-        </div>
-        <div class="prob-h">Every missed renewal costs money.</div>
-        <p class="prob-p">Not because customers wanted to leave. Because nobody remembered.</p>
-      </div>
-
-      {{-- Card 4: solution --}}
-      <div class="prob-card solution">
-        <div class="prob-sol-header">
-          <img src="/images/ava.png" alt="{{ $worker['name'] }}"
-               class="prob-sol-avatar"
-               onerror="this.style.display='none'">
-          <span class="prob-sol-title">{{ $worker['name'] }} changes that.</span>
-        </div>
-        <div class="prob-bullets">
-          @foreach(['Detects upcoming renewals','Sends timely reminders','Customers renew','Revenue protected'] as $b)
-          <div class="prob-bullet">
-            <div class="prob-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
-            {{ $b }}
+        <p class="prob-panel-sub">You're not alone. Every growing business faces these.</p>
+        <div class="prob-items">
+          @php $problems = [
+            ['icon'=>'<path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/>','h'=>'Nobody owns renewals.','p'=>'Permits, licenses, contracts, domains— no clear owner.'],
+            ['icon'=>'<path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/>','h'=>'Your inbox is the system.','p'=>'Important emails get buried, deleted, or missed.'],
+            ['icon'=>'<line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/>','h'=>'Money leaks through unnoticed.','p'=>'Unused software, duplicate subscriptions, forgotten vendors.'],
+            ['icon'=>'<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>','h'=>'Licenses expire unexpectedly.','p'=>'One missed renewal can stop operations or create fines.'],
+            ['icon'=>'<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>','h'=>'Hours wasted weekly.','p'=>'Checking spreadsheets, portals, emails, and calendars.'],
+            ['icon'=>'<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/>','h'=>'Everyone uses a different system.','p'=>'Finance, Ops, IT— nobody sees the full picture.'],
+            ['icon'=>'<path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/>','h'=>'Manual reminders don\'t scale.','p'=>'Calendars, sticky notes, spreadsheets— something gets missed.'],
+            ['icon'=>'<circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3M12 17h.01"/>','h'=>'You don\'t know what\'s due next.','p'=>'You only find out when someone asks... or after the deadline.'],
+            ['icon'=>'<path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/>','h'=>'It depends on one person.','p'=>'Vacation, sick leave, resignation— knowledge walks out.'],
+            ['icon'=>'<polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>','h'=>'Customers quietly churn.','p'=>'Contracts lapse. Opportunities disappear. Revenue walks away.'],
+          ]; @endphp
+          @foreach($problems as $p)
+          <div class="prob-item">
+            <div class="prob-item-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">{!! $p['icon'] !!}</svg></div>
+            <div class="prob-item-h">{{ $p['h'] }}</div>
+            <div class="prob-item-p">{{ $p['p'] }}</div>
           </div>
           @endforeach
         </div>
       </div>
 
+      {{-- RIGHT: solution panel --}}
+      <div class="sol-panel">
+        <div class="sol-header">The Solution</div>
+        <div class="sol-body">
+          <div class="sol-meet">Meet <span>AVA</span></div>
+          <div class="sol-role">Your Renewal Worker.</div>
+          <div class="sol-img-wrap">
+            <img src="/images/ava.png" alt="AVA" onerror="this.src='/images/ava-hero.jpg'">
+          </div>
+          <div class="sol-checks">
+            @foreach(['Watches every renewal','Reads every renewal email','Tracks every deadline','Finds every subscription','Drafts every renewal','Reminds the right people','Never takes vacation','Never forgets','Works 24 / 7'] as $c)
+            <div class="sol-check">
+              <div class="sol-chk"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+              {{ $c }}
+            </div>
+            @endforeach
+          </div>
+          <div class="sol-cta-bar">
+            <div class="sol-cta-title">✨ Peace of mind. Protected.</div>
+            <div class="sol-cta-desc">AVA catches what humans miss—before it becomes a problem, a penalty, or a lost customer.</div>
+          </div>
+        </div>
+      </div>
+
+    </div>{{-- end .prob-split --}}
+  </div>
+
+  {{-- 4-stat bar --}}
+  <div class="prob-stats-bar">
+    @php $stats = [
+      ['icon'=>'<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/>','h'=>'Avoid penalties and legal risks','p'=>'Stay compliant. Stay protected.'],
+      ['icon'=>'<line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/>','h'=>'Save thousands in unnecessary renewals','p'=>'Stop paying for what you don\'t use.'],
+      ['icon'=>'<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>','h'=>'Save 10+ hours per week','p'=>'Your team focuses on real work.'],
+      ['icon'=>'<polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>','h'=>'Protect revenue and customer relationships','p'=>'Never miss another renewal opportunity.'],
+    ]; @endphp
+    @foreach($stats as $s)
+    <div class="prob-stat-item">
+      <div class="prob-stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">{!! $s['icon'] !!}</svg></div>
+      <div>
+        <div class="prob-stat-h">{{ $s['h'] }}</div>
+        <div class="prob-stat-p">{{ $s['p'] }}</div>
+      </div>
+    </div>
+    @endforeach
+  </div>
+
+  {{-- Dark CTA strip --}}
+  <div class="prob-cta-strip">
+    <div class="prob-strip-left">
+      <div class="prob-strip-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      </div>
+      <div class="prob-strip-text">
+        <div class="prob-strip-t1">Renewals are too important to leave to chance.</div>
+        <div class="prob-strip-t2"><span>AVA</span> protects what keeps your business running.</div>
+      </div>
+    </div>
+    <a href="{{ route('register') }}" class="btn-strip">
+      See AVA in Action
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </a>
+    <div class="prob-strip-right">
+      <div class="prob-strip-avatars">
+        @foreach(['A','B','C','D','E'] as $av)
+        <div class="prob-strip-av">{{ $av }}</div>
+        @endforeach
+      </div>
+      <div class="prob-strip-rating">
+        <div class="prob-strip-stars">★★★★★</div>
+        <div class="prob-strip-rtext">Trusted by operations teams<br>across 100+ industries</div>
+      </div>
     </div>
   </div>
+
 </section>
 
 {{-- A DAY IN AVA'S LIFE — AVA's real pipeline, animated --}}
