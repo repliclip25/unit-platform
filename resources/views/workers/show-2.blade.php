@@ -324,7 +324,7 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
 /* ── PROBLEM SECTION (redesigned) ── */
 .problem-sec{background:#fff;padding:clamp(60px,8vw,96px) 0 0}
 [data-theme="dark"] .problem-sec{background:#0D0D0D}
-.prob-top{text-align:center;margin-bottom:clamp(36px,5vw,56px)}
+.prob-top{text-align:center;margin-bottom:clamp(36px,5vw,56px);padding:0 var(--pad)}
 .prob-top-eye{
   display:inline-flex;align-items:center;gap:7px;
   font-size:11px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;
@@ -335,7 +335,7 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
 .prob-top-h span{color:var(--brand)}
 .prob-top-sub{font-size:1rem;color:var(--t3);margin-top:14px}
 /* two-col layout — full width, no wasted space */
-.prob-split{display:grid;grid-template-columns:1fr 360px;gap:20px;align-items:start}
+.prob-split{display:grid;grid-template-columns:1fr 380px;gap:20px;align-items:start;max-width:var(--max);margin:0 auto;padding:0 var(--pad)}
 /* left: problems panel */
 .prob-panel{
   background:#fff;border:1.5px solid #E5E7EB;
@@ -386,11 +386,14 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
 .sol-meet{font-size:24px;font-weight:800;color:#0D0D0D;margin-bottom:2px}
 [data-theme="dark"] .sol-meet{color:#F3F4F6}
 .sol-meet span{color:var(--brand)}
-.sol-role{font-size:13px;color:var(--t3);margin-bottom:16px}
-.sol-img-wrap{height:210px;margin:0 -22px;overflow:hidden;background:#F3F4F6}
-[data-theme="dark"] .sol-img-wrap{background:#1a1a1a}
-.sol-img-wrap img{width:100%;height:100%;object-fit:cover;object-position:center top}
-.sol-checks{display:flex;flex-direction:column;gap:9px;margin-top:18px}
+.sol-role{font-size:13px;color:var(--t3);margin-bottom:20px}
+.sol-delivers{
+  font-size:22px;font-weight:800;color:#0D0D0D;
+  margin-bottom:16px;letter-spacing:-.02em;line-height:1.1;
+}
+[data-theme="dark"] .sol-delivers{color:#F3F4F6}
+.sol-delivers span{color:var(--brand)}
+.sol-checks{display:flex;flex-direction:column;gap:9px}
 .sol-check{display:flex;align-items:center;gap:10px;font-size:13.5px;color:#0D0D0D}
 [data-theme="dark"] .sol-check{color:#F3F4F6}
 .sol-chk{
@@ -880,10 +883,8 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
 
 {{-- THE PROBLEM (redesigned) --}}
 <section class="problem-sec">
-  <div class="w">
-
-    {{-- Top heading --}}
-    <div class="prob-top">
+  {{-- Top heading --}}
+  <div class="prob-top">
       <div class="prob-top-eye">
         <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
         The Problem
@@ -892,7 +893,7 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
       <p class="prob-top-sub">Small misses. Quiet losses. Big consequences.</p>
     </div>
 
-    {{-- Two-col split --}}
+    {{-- Two-col split — no inner .w, uses its own padding --}}
     <div class="prob-split">
 
       {{-- LEFT: problems panel --}}
@@ -903,7 +904,7 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
           </div>
           <div class="prob-panel-title">Which of these problems sound familiar?</div>
         </div>
-        <p class="prob-panel-sub">You're not alone. Every growing business faces these.</p>
+        <p class="prob-panel-sub">You're not alone. Every growing business faces these challenges daily.</p>
         <div class="prob-items">
           @php $problems = [
             ['icon'=>'<path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/>','h'=>'Nobody owns renewals.','p'=>'Permits, licenses, contracts, domains— no clear owner.'],
@@ -933,9 +934,7 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
         <div class="sol-body">
           <div class="sol-meet">Meet <span>AVA</span></div>
           <div class="sol-role">Your Renewal Worker.</div>
-          <div class="sol-img-wrap">
-            <img src="/images/ava.png" alt="AVA" onerror="this.src='/images/ava-hero.jpg'">
-          </div>
+          <div class="sol-delivers"><span>AVA</span> Delivers.</div>
           <div class="sol-checks">
             @foreach(['Watches every renewal','Reads every renewal email','Tracks every deadline','Finds every subscription','Drafts every renewal','Reminds the right people','Never takes vacation','Never forgets','Works 24 / 7'] as $c)
             <div class="sol-check">
@@ -952,7 +951,6 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
       </div>
 
     </div>{{-- end .prob-split --}}
-  </div>
 
   {{-- 4-stat bar --}}
   <div class="prob-stats-bar">
