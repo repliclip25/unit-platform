@@ -419,29 +419,12 @@ body{
   display:grid;grid-template-columns:repeat(6,1fr);
   gap:0;position:relative;margin-top:clamp(40px,5vw,64px);
 }
-/* static dashed base line */
+/* dashed base line */
 .tl::before{
   content:'';position:absolute;
   top:32px;left:8%;right:8%;height:2px;
   background:repeating-linear-gradient(90deg,var(--border) 0,var(--border) 6px,transparent 6px,transparent 12px);
   z-index:0;
-}
-/* traveling glow dot — moves left→right over 10.8s then loops */
-.tl::after{
-  content:'';position:absolute;
-  top:28px;left:8%;
-  width:36px;height:8px;
-  border-radius:4px;
-  background:var(--brand);
-  box-shadow:0 0 14px 4px rgba(76,29,149,.55);
-  z-index:3;
-  animation:lineTravel 10.8s linear infinite;
-}
-@keyframes lineTravel{
-  0%  {left:8%;opacity:0}
-  4%  {opacity:1}
-  92% {opacity:1}
-  100%{left:calc(92% - 36px);opacity:0}
 }
 
 .tl-item{display:flex;flex-direction:column;align-items:center;text-align:center;padding:0 8px;position:relative}
@@ -453,37 +436,38 @@ body{
   display:flex;align-items:center;justify-content:center;
   position:relative;z-index:2;margin-bottom:18px;
   flex-shrink:0;color:#111;
-  transition:transform .3s ease;
-  box-shadow:0 2px 8px rgba(0,0,0,.08);
+  box-shadow:0 2px 8px rgba(0,0,0,.06);
 }
-.tl-node svg{width:26px;height:26px;stroke:currentColor;transition:stroke .3s}
+.tl-node svg{width:26px;height:26px;stroke:currentColor}
 
-/* sequential node activation — 10.8s total cycle, 1.8s per node */
+/*
+  12s total cycle, 2s per node.
+  Active window = 0–15% = 1.8s. Next node starts at 2s (16.7%).
+  Gap between end of active (1.8s) and next start (2s) = 0.2s — clean, no overlap.
+*/
 @keyframes nodeActivate{
-  0%,100%{background:#fff;border-color:#D1D5DB;box-shadow:0 2px 8px rgba(0,0,0,.08);transform:scale(1);color:#111}
-  10%    {background:var(--brand);border-color:var(--brand);box-shadow:0 0 0 6px rgba(76,29,149,.15),0 0 24px rgba(76,29,149,.4);transform:scale(1.14);color:#fff}
-  40%    {background:var(--brand);border-color:var(--brand);box-shadow:0 0 0 6px rgba(76,29,149,.1),0 0 16px rgba(76,29,149,.3);transform:scale(1.1);color:#fff}
-  55%    {background:#fff;border-color:#D1D5DB;box-shadow:0 2px 8px rgba(0,0,0,.08);transform:scale(1);color:#111}
+  0%   {background:#fff;border-color:#D1D5DB;transform:scale(1);color:#111;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+  6%   {background:var(--brand);border-color:var(--brand);transform:scale(1.16);color:#fff;box-shadow:0 0 0 8px rgba(76,29,149,.14),0 0 22px rgba(76,29,149,.45)}
+  13%  {background:var(--brand);border-color:var(--brand);transform:scale(1.12);color:#fff;box-shadow:0 0 0 4px rgba(76,29,149,.08),0 0 12px rgba(76,29,149,.3)}
+  20%  {background:#fff;border-color:#D1D5DB;transform:scale(1);color:#111;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+  100% {background:#fff;border-color:#D1D5DB;transform:scale(1);color:#111;box-shadow:0 2px 8px rgba(0,0,0,.06)}
 }
-.tl-item:nth-child(1) .tl-node{animation:nodeActivate 10.8s ease-in-out infinite 0s}
-.tl-item:nth-child(2) .tl-node{animation:nodeActivate 10.8s ease-in-out infinite 1.8s}
-.tl-item:nth-child(3) .tl-node{animation:nodeActivate 10.8s ease-in-out infinite 3.6s}
-.tl-item:nth-child(4) .tl-node{animation:nodeActivate 10.8s ease-in-out infinite 5.4s}
-.tl-item:nth-child(5) .tl-node{animation:nodeActivate 10.8s ease-in-out infinite 7.2s}
-.tl-item:nth-child(6) .tl-node{animation:nodeActivate 10.8s ease-in-out infinite 9.0s}
-
-/* time label flashes when node is active */
 @keyframes timeFlash{
-  0%,100%{color:var(--t3);font-weight:600}
-  10%,40%{color:var(--brand);font-weight:800}
-  55%    {color:var(--t3);font-weight:600}
+  0%,20%,100%{color:var(--t3);font-weight:600}
+  6%,13%     {color:var(--brand);font-weight:800}
 }
-.tl-item:nth-child(1) .tl-time{animation:timeFlash 10.8s ease-in-out infinite 0s}
-.tl-item:nth-child(2) .tl-time{animation:timeFlash 10.8s ease-in-out infinite 1.8s}
-.tl-item:nth-child(3) .tl-time{animation:timeFlash 10.8s ease-in-out infinite 3.6s}
-.tl-item:nth-child(4) .tl-time{animation:timeFlash 10.8s ease-in-out infinite 5.4s}
-.tl-item:nth-child(5) .tl-time{animation:timeFlash 10.8s ease-in-out infinite 7.2s}
-.tl-item:nth-child(6) .tl-time{animation:timeFlash 10.8s ease-in-out infinite 9.0s}
+.tl-item:nth-child(1) .tl-node {animation:nodeActivate 12s ease-in-out infinite 0s}
+.tl-item:nth-child(2) .tl-node {animation:nodeActivate 12s ease-in-out infinite 2s}
+.tl-item:nth-child(3) .tl-node {animation:nodeActivate 12s ease-in-out infinite 4s}
+.tl-item:nth-child(4) .tl-node {animation:nodeActivate 12s ease-in-out infinite 6s}
+.tl-item:nth-child(5) .tl-node {animation:nodeActivate 12s ease-in-out infinite 8s}
+.tl-item:nth-child(6) .tl-node {animation:nodeActivate 12s ease-in-out infinite 10s}
+.tl-item:nth-child(1) .tl-time {animation:timeFlash 12s ease-in-out infinite 0s}
+.tl-item:nth-child(2) .tl-time {animation:timeFlash 12s ease-in-out infinite 2s}
+.tl-item:nth-child(3) .tl-time {animation:timeFlash 12s ease-in-out infinite 4s}
+.tl-item:nth-child(4) .tl-time {animation:timeFlash 12s ease-in-out infinite 6s}
+.tl-item:nth-child(5) .tl-time {animation:timeFlash 12s ease-in-out infinite 8s}
+.tl-item:nth-child(6) .tl-time {animation:timeFlash 12s ease-in-out infinite 10s}
 
 .tl-time{font-size:13px;font-weight:600;letter-spacing:.03em;margin-bottom:7px;color:var(--t3)}
 .tl-evt{font-size:14.5px;color:var(--t3);line-height:1.6}
