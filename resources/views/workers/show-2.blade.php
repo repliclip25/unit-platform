@@ -415,12 +415,17 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
   transition:background .3s;
 }
 /* step label + desc */
-.pipe-label{
-  font-size:10px;font-weight:700;letter-spacing:.1em;
-  text-transform:uppercase;color:#9CA3AF;margin-bottom:4px;
-  transition:color .3s;line-height:1.3;
+.pipe-time{
+  font-size:11px;font-weight:600;color:#C4C9D4;
+  margin-bottom:6px;transition:color .3s;
+  font-variant-numeric:tabular-nums;
 }
-.pipe-desc{font-size:11.5px;color:#9CA3AF;line-height:1.5;transition:color .3s;max-width:90px}
+.pipe-label{
+  font-size:10px;font-weight:700;letter-spacing:.09em;
+  text-transform:uppercase;color:#9CA3AF;margin-bottom:5px;
+  transition:color .3s;line-height:1.35;
+}
+.pipe-desc{font-size:12px;color:#B0B6C2;line-height:1.55;transition:color .3s;max-width:95px}
 /* running state */
 .pipe-step.ps-running .pipe-node{
   border-color:var(--brand);
@@ -431,22 +436,22 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
 .pipe-step.ps-running .pipe-badge{background:var(--brand);animation:badgePulse 1s ease infinite}
 @keyframes badgePulse{0%,100%{box-shadow:0 0 0 0 rgba(var(--brand-rgb),.4)}50%{box-shadow:0 0 0 5px rgba(var(--brand-rgb),0)}}
 .pipe-step.ps-running .pipe-label{color:var(--brand)}
+.pipe-step.ps-running .pipe-time{color:var(--brand)}
 .pipe-step.ps-running .pipe-desc{color:var(--t2)}
 /* done state */
-.pipe-step.ps-done .pipe-node{
-  border-color:#22C55E;background:rgba(34,197,94,.05);
-}
+.pipe-step.ps-done .pipe-node{border-color:#22C55E;background:rgba(34,197,94,.05)}
 .pipe-step.ps-done .pipe-node svg{stroke:#22C55E}
 .pipe-step.ps-done .pipe-badge{background:#22C55E}
 .pipe-step.ps-done .pipe-label{color:#16A34A}
-/* running status ticker */
-.pipe-ticker{
-  font-size:12px;color:var(--brand);font-weight:600;
-  margin-top:6px;min-height:18px;
-  display:flex;align-items:center;gap:6px;
+.pipe-step.ps-done .pipe-time{color:#16A34A}
+/* ticker — sits below all step text, with breathing room */
+.pipe-ticker-row{
+  min-height:32px;margin-top:24px;margin-bottom:8px;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  font-size:13px;color:var(--brand);font-weight:600;
 }
 .pipe-ticker-dot{
-  width:6px;height:6px;border-radius:50%;background:var(--brand);
+  width:7px;height:7px;border-radius:50%;background:var(--brand);
   animation:tickDot 1s ease infinite;flex-shrink:0;
 }
 @keyframes tickDot{0%,100%{opacity:1}50%{opacity:.3}}
@@ -458,6 +463,7 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
   box-shadow:0 1px 4px rgba(0,0,0,.04);
   opacity:0;transform:translateY(8px);
   transition:opacity .4s,transform .4s;
+  margin-top:8px;
 }
 [data-theme="dark"] .mission-bar{background:#1a1a1a;border-color:rgba(var(--brand-rgb),.3)}
 .mission-bar.visible{opacity:1;transform:translateY(0)}
@@ -465,6 +471,27 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
 .mission-stats{display:flex;gap:40px}
 .mission-stat-n{font-size:1.4rem;font-weight:800;color:var(--brand);letter-spacing:-.03em}
 .mission-stat-l{font-size:11.5px;color:var(--t4);margin-top:2px}
+/* CTA buttons below pipeline */
+.pipe-cta{display:flex;align-items:center;gap:12px;margin-top:28px;flex-wrap:wrap}
+.btn-pipe-hire{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:13px 26px;border-radius:10px;
+  font-size:14.5px;font-weight:700;color:#fff;
+  background:var(--brand);
+  box-shadow:0 2px 12px rgba(var(--brand-rgb),.3);
+  transition:opacity .15s,transform .15s;
+}
+.btn-pipe-hire:hover{opacity:.9;transform:translateY(-1px)}
+.btn-pipe-test{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:12px 22px;border-radius:10px;
+  font-size:14.5px;font-weight:600;color:var(--brand);
+  border:1.5px solid rgba(var(--brand-rgb),.3);
+  background:rgba(var(--brand-rgb),.05);
+  transition:all .15s;
+}
+.btn-pipe-test:hover{background:rgba(var(--brand-rgb),.1);border-color:var(--brand)}
+.btn-pipe-test svg,.btn-pipe-hire svg{flex-shrink:0}
 @media(max-width:900px){
   .pipe-step{min-width:80px}
   .pipe-step:not(:last-child)::after{left:calc(50% + 30px)}
@@ -475,31 +502,6 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
   .pipe-node{width:56px;height:56px;border-radius:12px}
   .pipe-step:not(:last-child)::after{display:none}
 }
-[data-theme="dark"] .day-step-node{background:#111;border-color:#3D3D3D}
-.day-step-node img{width:100%;height:100%;object-fit:cover}
-.day-step-node svg{width:26px;height:26px;color:var(--t4)}
-.day-step-num{
-  position:absolute;bottom:-1px;right:-1px;
-  width:20px;height:20px;border-radius:6px 0 0 0;
-  background:var(--brand);
-  font-size:9px;font-weight:800;color:#fff;
-  display:flex;align-items:center;justify-content:center;
-  z-index:2;
-}
-.day-step-label{font-size:11px;font-weight:600;color:var(--brand);letter-spacing:.05em;text-transform:uppercase;margin-bottom:4px}
-.day-step-desc{font-size:12px;color:var(--t3);line-height:1.5}
-/* mission complete bar */
-.mission-bar{
-  display:flex;align-items:center;justify-content:space-between;
-  background:linear-gradient(135deg,rgba(var(--brand-rgb),.08),rgba(var(--brand-rgb),.03));
-  border:1px solid rgba(var(--brand-rgb),.2);
-  border-radius:14px;padding:18px 24px;flex-wrap:wrap;gap:16px;
-}
-.mission-txt{font-size:16px;font-weight:700;color:var(--text)}
-.mission-stats{display:flex;gap:32px}
-.mission-stat{text-align:center}
-.mission-stat-n{font-size:1.2rem;font-weight:800;color:var(--brand);letter-spacing:-.03em}
-.mission-stat-l{font-size:11px;color:var(--t4);margin-top:2px}
 
 /* ── TWO-COL SPLIT ── */
 .split-sec{background:var(--bg);border-top:1px solid var(--border)}
@@ -837,103 +839,102 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
         <div class="sec-eye">A day in {{ $worker['name'] }}'s life</div>
         <h2 class="sec-h" style="margin-bottom:0">Follow AVA through one renewal.</h2>
       </div>
-      <div class="day-client">
-        <div class="day-client-name">ABC Dental</div>
-        <div class="day-client-sub">Renewal Date: Tomorrow</div>
-      </div>
     </div>
 
-    {{-- AVA's real 8-stage pipeline --}}
+    {{-- AVA's real 8-stage pipeline (human-friendly labels) --}}
     <div class="pipeline-row" id="pipelineRow">
 
       <div class="pipe-step" data-step="0">
         <div class="pipe-node">
-          <svg viewBox="0 0 24 24"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1M12 3v13M8 7l4-4 4 4"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1M12 3v13M8 7l4-4 4 4"/></svg>
           <span class="pipe-badge">1</span>
         </div>
-        <div class="pipe-label">Inject &amp; Fetch</div>
-        <div class="pipe-desc">Insert into inbox, read back</div>
-        <div class="pipe-ticker" id="ticker-0"></div>
+        <div class="pipe-time">9:00 AM</div>
+        <div class="pipe-label">Task Received</div>
+        <div class="pipe-desc">AVA picks up a new renewal to handle</div>
       </div>
 
       <div class="pipe-step" data-step="1">
         <div class="pipe-node">
-          <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
           <span class="pipe-badge">2</span>
         </div>
-        <div class="pipe-label">Read Email</div>
-        <div class="pipe-desc">Parse &amp; extract fields</div>
-        <div class="pipe-ticker" id="ticker-1"></div>
+        <div class="pipe-time">9:00 AM</div>
+        <div class="pipe-label">Reads the Email</div>
+        <div class="pipe-desc">Understands what the customer needs</div>
       </div>
 
       <div class="pipe-step" data-step="2">
         <div class="pipe-node">
-          <svg viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
           <span class="pipe-badge">3</span>
         </div>
-        <div class="pipe-label">Classify</div>
-        <div class="pipe-desc">Category, priority &amp; type</div>
-        <div class="pipe-ticker" id="ticker-2"></div>
+        <div class="pipe-time">9:01 AM</div>
+        <div class="pipe-label">Figures Out Priority</div>
+        <div class="pipe-desc">Renewal, urgent, or routine — AVA decides</div>
       </div>
 
       <div class="pipe-step" data-step="3">
         <div class="pipe-node">
-          <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
           <span class="pipe-badge">4</span>
         </div>
-        <div class="pipe-label">Memory Lookup</div>
-        <div class="pipe-desc">Match client, asset &amp; rules</div>
-        <div class="pipe-ticker" id="ticker-3"></div>
+        <div class="pipe-time">9:01 AM</div>
+        <div class="pipe-label">Looks Up the Customer</div>
+        <div class="pipe-desc">History, past renewals &amp; preferences</div>
       </div>
 
       <div class="pipe-step" data-step="4">
         <div class="pipe-node">
-          <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
           <span class="pipe-badge">5</span>
         </div>
-        <div class="pipe-label">Log Transaction</div>
-        <div class="pipe-desc">Write to register</div>
-        <div class="pipe-ticker" id="ticker-4"></div>
+        <div class="pipe-time">9:02 AM</div>
+        <div class="pipe-label">Logs the Interaction</div>
+        <div class="pipe-desc">Every action recorded for your review</div>
       </div>
 
       <div class="pipe-step" data-step="5">
         <div class="pipe-node">
-          <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>
           <span class="pipe-badge">6</span>
         </div>
-        <div class="pipe-label">Select Template</div>
-        <div class="pipe-desc">Pick best-match template</div>
-        <div class="pipe-ticker" id="ticker-5"></div>
+        <div class="pipe-time">9:02 AM</div>
+        <div class="pipe-label">Picks the Right Message</div>
+        <div class="pipe-desc">Chooses the tone &amp; template that fits</div>
       </div>
 
       <div class="pipe-step" data-step="6">
         <div class="pipe-node">
-          <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4z"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4z"/></svg>
           <span class="pipe-badge">7</span>
         </div>
-        <div class="pipe-label">Draft Email</div>
-        <div class="pipe-desc">AI-personalised draft</div>
-        <div class="pipe-ticker" id="ticker-6"></div>
+        <div class="pipe-time">9:03 AM</div>
+        <div class="pipe-label">Writes the Email</div>
+        <div class="pipe-desc">Personalised, professional &amp; ready to send</div>
       </div>
 
       <div class="pipe-step" data-step="7">
         <div class="pipe-node">
-          <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013 12 19.79 19.79 0 01-.07 3.18 2 2 0 012 1h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 8.91A16 16 0 0018 20.91l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0124 21z"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/><polyline points="9 10 12 13 15 10"/></svg>
           <span class="pipe-badge">8</span>
         </div>
-        <div class="pipe-label">Push to Gmail</div>
-        <div class="pipe-desc">Create draft in inbox</div>
-        <div class="pipe-ticker" id="ticker-7"></div>
+        <div class="pipe-time">9:03 AM</div>
+        <div class="pipe-label">Lands in Your Inbox</div>
+        <div class="pipe-desc">Draft ready — you review &amp; approve</div>
       </div>
 
     </div>
 
-    {{-- Mission complete bar (appears when animation finishes) --}}
+    {{-- Single shared ticker row — below all steps --}}
+    <div class="pipe-ticker-row" id="pipeTickerRow"></div>
+
+    {{-- Mission complete bar --}}
     <div class="mission-bar" id="missionBar">
       <div class="mission-txt">Mission Complete 🎉</div>
       <div class="mission-stats">
         <div>
-          <div class="mission-stat-n">2 minutes</div>
+          <div class="mission-stat-n">3 minutes</div>
           <div class="mission-stat-l">Time Taken</div>
         </div>
         <div>
@@ -942,59 +943,66 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
         </div>
       </div>
     </div>
+
+    {{-- CTAs --}}
+    <div class="pipe-cta">
+      <a href="{{ route('register') }}" class="btn-pipe-hire">
+        Hire AVA
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+      <a href="{{ route('register') }}" class="btn-pipe-test">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        Run a Live Test
+      </a>
+    </div>
   </div>
 </section>
 
 <script>
 (function(){
-  var steps = document.querySelectorAll('#pipelineRow .pipe-step');
+  var steps      = document.querySelectorAll('#pipelineRow .pipe-step');
   var missionBar = document.getElementById('missionBar');
-  var STEP_DURATION = 1400; // ms per step active
-  var PAUSE_AFTER   = 2800; // ms mission complete visible before reset
+  var tickerRow  = document.getElementById('pipeTickerRow');
+  var STEP_MS  = 1500;
+  var PAUSE_MS = 3000;
 
   var tickerMessages = [
-    'Injecting task…',
-    'Parsing renewal email…',
-    'Classifying: renewal · high priority…',
-    'Looking up ABC Dental…',
-    'Writing to register TX-' + Math.random().toString(16).slice(2,10).toUpperCase() + '…',
-    'Selecting renewal template…',
-    'Drafting personalised email…',
-    'Pushing draft to Gmail…',
+    'AVA is picking up a new renewal task…',
+    'Reading the renewal email from your inbox…',
+    'Figuring out: renewal · high priority · expiring soon…',
+    'Pulling up customer history and past renewals…',
+    'Logging every action so you have a full audit trail…',
+    'Selecting the right tone and message template…',
+    'Writing a personalised renewal email for your customer…',
+    'Renewal draft ready and waiting in your inbox…',
   ];
 
   function clearAll(){
-    steps.forEach(function(s){
-      s.classList.remove('ps-running','ps-done');
-      var t = document.getElementById('ticker-'+s.dataset.step);
-      if(t) t.innerHTML = '';
-    });
+    steps.forEach(function(s){ s.classList.remove('ps-running','ps-done'); });
+    tickerRow.innerHTML = '';
     missionBar.classList.remove('visible');
   }
 
   function runStep(i){
     if(i >= steps.length){
-      // All done — show mission bar
+      tickerRow.innerHTML = '';
       missionBar.classList.add('visible');
-      setTimeout(function(){ clearAll(); setTimeout(function(){ runStep(0); },600); }, PAUSE_AFTER);
+      setTimeout(function(){
+        missionBar.classList.remove('visible');
+        setTimeout(function(){ clearAll(); runStep(0); }, 500);
+      }, PAUSE_MS);
       return;
     }
-    var step = steps[i];
-    step.classList.add('ps-running');
-    var ticker = document.getElementById('ticker-'+step.dataset.step);
-    if(ticker){
-      ticker.innerHTML = '<span class="pipe-ticker-dot"></span>' + tickerMessages[i];
-    }
+    steps[i].classList.add('ps-running');
+    tickerRow.innerHTML = '<span class="pipe-ticker-dot"></span>' + tickerMessages[i];
     setTimeout(function(){
-      step.classList.remove('ps-running');
-      step.classList.add('ps-done');
-      if(ticker) ticker.innerHTML = '';
-      runStep(i+1);
-    }, STEP_DURATION);
+      steps[i].classList.remove('ps-running');
+      steps[i].classList.add('ps-done');
+      runStep(i + 1);
+    }, STEP_MS);
   }
 
-  // Start after a short delay so the page has settled
-  setTimeout(function(){ runStep(0); }, 800);
+  setTimeout(function(){ runStep(0); }, 600);
 })();
 </script>
 
