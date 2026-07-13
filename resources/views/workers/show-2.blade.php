@@ -720,19 +720,6 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
     <div class="hero-text">
       <div class="hero-eye">Meet {{ $worker['name'] }}</div>
       <h1 class="hero-h">She never<br>forgets a renewal.</h1>
-      <p class="hero-p">{{ $worker['name'] }} works 24/7 to track renewals, send reminders, update records, and protect the revenue your business depends on.</p>
-      <div class="hero-btns">
-        <a href="{{ route('register') }}" class="btn-hire-hero">
-          Hire {{ $worker['name'] }} Today
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-        </a>
-        <a href="#day-in-life" class="btn-watch-hero">
-          <span class="btn-watch-icon">
-            <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-          </span>
-          Watch Full Day
-        </a>
-      </div>
     </div>
 
     {{-- Video controls bar --}}
