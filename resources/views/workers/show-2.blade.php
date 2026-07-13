@@ -334,12 +334,8 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
 .prob-top-h{font-size:clamp(2.2rem,4.5vw,3.6rem);font-weight:800;line-height:1.08;letter-spacing:-.03em;color:var(--text);margin-bottom:0}
 .prob-top-h span{color:var(--brand)}
 .prob-top-sub{font-size:1.05rem;color:var(--t3);margin-top:14px}
-/* main two-col: left=problems, right=solution — NO inner container boxing */
+/* full-width problem grid */
 .prob-split{
-  display:grid;
-  grid-template-columns:1fr 400px;
-  gap:clamp(32px,4vw,56px);
-  align-items:start;
   padding:0 var(--pad);
   max-width:var(--max);
   margin:0 auto;
@@ -354,24 +350,24 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
 .prob-left-icon svg{width:16px;height:16px;stroke:#fff;fill:none;stroke-width:2.5;stroke-linecap:round}
 .prob-left-title{font-size:19px;font-weight:800;color:var(--text);line-height:1.2}
 .prob-left-sub{font-size:13px;color:var(--t3);margin-top:3px}
-/* 4-col × 2-row problem grid — each item a small card */
-.prob-items{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+/* 4-col × 2-row problem grid — big open cards */
+.prob-items{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
 .prob-item{
   background:#fff;border:1.5px solid #E5E7EB;
-  border-radius:14px;padding:18px 16px;
-  display:flex;flex-direction:column;gap:8px;
+  border-radius:20px;padding:32px 28px;
+  display:flex;flex-direction:column;gap:16px;
 }
 [data-theme="dark"] .prob-item{background:#111;border-color:#2D2D2D}
 .prob-item-icon{
-  width:38px;height:38px;border-radius:50%;flex-shrink:0;
+  width:56px;height:56px;border-radius:16px;flex-shrink:0;
   background:#F3F4F6;
   display:flex;align-items:center;justify-content:center;
 }
 [data-theme="dark"] .prob-item-icon{background:#1a1a1a}
-.prob-item-icon svg{width:17px;height:17px;stroke:#374151;fill:none;stroke-width:1.8;stroke-linecap:round}
+.prob-item-icon svg{width:28px;height:28px;stroke:#374151;fill:none;stroke-width:1.6;stroke-linecap:round}
 [data-theme="dark"] .prob-item-icon svg{stroke:#9CA3AF}
-.prob-item-h{font-size:13px;font-weight:700;color:var(--text);line-height:1.35}
-.prob-item-p{font-size:12px;color:var(--t3);line-height:1.55}
+.prob-item-h{font-size:16px;font-weight:700;color:var(--text);line-height:1.3}
+.prob-item-p{font-size:13.5px;color:var(--t3);line-height:1.6}
 /* impact banner below items */
 .prob-impact{
   display:flex;align-items:center;gap:14px;
@@ -454,8 +450,7 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
 }
 .btn-prob-cta:hover{opacity:.9;transform:translateY(-1px)}
 .btn-prob-cta svg{flex-shrink:0}
-@media(max-width:1024px){.prob-split{grid-template-columns:1fr}}
-@media(max-width:768px){.prob-items{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:900px){.prob-items{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:480px){.prob-items{grid-template-columns:1fr}.prob-cta-strip{flex-direction:column;align-items:flex-start}}
 
 /* ── DAY IN LIFE / PIPELINE ── */
@@ -877,86 +872,47 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
     <p class="prob-top-sub">Deadlines slip. Money leaks. Opportunities disappear.</p>
   </div>
 
-  {{-- Two-col split --}}
+  {{-- Full-width problem grid --}}
   <div class="prob-split">
 
-    {{-- LEFT: flat, no card wrapper —  items sit directly on the page --}}
-    <div>
-      <div class="prob-left-header">
-        <div class="prob-left-icon">
-          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-        </div>
-        <div>
-          <div class="prob-left-title">Which of these problems hit your team?</div>
-          <div class="prob-left-sub">If you nodded at even one, you're not alone.</div>
-        </div>
+    <div class="prob-left-header">
+      <div class="prob-left-icon">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
       </div>
-
-      {{-- 4×2 grid of small item cards --}}
-      <div class="prob-items">
-        @php $problems = [
-          ['icon'=>'<path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/>','h'=>'Nobody owns renewals.','p'=>'Permits, licenses, contracts— no single owner, no accountability.'],
-          ['icon'=>'<path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/>','h'=>'Inbox chaos.','p'=>'Renewal emails get buried, deleted, or never even seen.'],
-          ['icon'=>'<line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/>','h'=>'Money leaks quietly.','p'=>'Unused software, duplicates, and forgotten vendors drain budgets.'],
-          ['icon'=>'<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>','h'=>'Licenses expire without warning.','p'=>'One missed renewal can halt operations or trigger fines.'],
-          ['icon'=>'<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>','h'=>'Hours wasted every week.','p'=>'Spreadsheets, portals, emails, follow-ups— it never ends.'],
-          ['icon'=>'<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/>','h'=>'Everyone has their own system.','p'=>'No single source of truth. No visibility. No accountability.'],
-          ['icon'=>'<circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3M12 17h.01"/>','h'=>'You don\'t know what\'s due next.','p'=>'You find out only when someone asks— or after the deadline.'],
-          ['icon'=>'<path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/>','h'=>'It depends on one person.','p'=>'Vacation, sick leave, resignation— institutional knowledge disappears.'],
-        ]; @endphp
-        @foreach($problems as $p)
-        <div class="prob-item">
-          <div class="prob-item-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">{!! $p['icon'] !!}</svg></div>
-          <div class="prob-item-h">{{ $p['h'] }}</div>
-          <div class="prob-item-p">{{ $p['p'] }}</div>
-        </div>
-        @endforeach
-      </div>
-
-      {{-- Impact banner below grid --}}
-      <div class="prob-impact">
-        <div class="prob-impact-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-        </div>
-        <div class="prob-impact-text">
-          Missed renewals don't just create problems. They cost <span>money, time, and credibility.</span>
-        </div>
+      <div>
+        <div class="prob-left-title">Which of these problems hit your team?</div>
+        <div class="prob-left-sub">If you nodded at even one, you're not alone.</div>
       </div>
     </div>
 
-    {{-- RIGHT: solution panel --}}
-    <div class="sol-panel">
-      <div class="sol-pill">
-        <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
-        The Solution
+    {{-- 4×2 grid --}}
+    <div class="prob-items">
+      @php $problems = [
+        ['icon'=>'<path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/>','h'=>'Nobody owns renewals.','p'=>'Permits, licenses, contracts— no single owner, no accountability.'],
+        ['icon'=>'<path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/>','h'=>'Inbox chaos.','p'=>'Renewal emails get buried, deleted, or never even seen.'],
+        ['icon'=>'<line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/>','h'=>'Money leaks quietly.','p'=>'Unused software, duplicates, and forgotten vendors drain budgets.'],
+        ['icon'=>'<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>','h'=>'Licenses expire without warning.','p'=>'One missed renewal can halt operations or trigger fines.'],
+        ['icon'=>'<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>','h'=>'Hours wasted every week.','p'=>'Spreadsheets, portals, emails, follow-ups— it never ends.'],
+        ['icon'=>'<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/>','h'=>'Everyone has their own system.','p'=>'No single source of truth. No visibility. No accountability.'],
+        ['icon'=>'<circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3M12 17h.01"/>','h'=>'You don\'t know what\'s due next.','p'=>'You find out only when someone asks— or after the deadline.'],
+        ['icon'=>'<path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/>','h'=>'It depends on one person.','p'=>'Vacation, sick leave, resignation— institutional knowledge disappears.'],
+      ]; @endphp
+      @foreach($problems as $p)
+      <div class="prob-item">
+        <div class="prob-item-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">{!! $p['icon'] !!}</svg></div>
+        <div class="prob-item-h">{{ $p['h'] }}</div>
+        <div class="prob-item-p">{{ $p['p'] }}</div>
       </div>
-      <div class="sol-meet">Meet <span>AVA.</span></div>
-      <div class="sol-role">Your Renewal Worker.</div>
-      <div class="sol-checks">
-        @foreach([
-          'Detects upcoming renewals automatically',
-          'Reads every renewal email in your inbox',
-          'Tracks every deadline across every system',
-          'Finds every subscription and contract',
-          'Drafts renewal responses and submissions',
-          'Reminds the right person at the right time',
-          'Keeps revenue and relationships protected',
-          'Works 24 / 7. Never forgets. Never sleeps.',
-        ] as $c)
-        <div class="sol-check">
-          <div class="sol-chk"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
-          {{ $c }}
-        </div>
-        @endforeach
+      @endforeach
+    </div>
+
+    {{-- Impact banner --}}
+    <div class="prob-impact">
+      <div class="prob-impact-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
       </div>
-      <div class="sol-peace">
-        <div class="sol-peace-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-        </div>
-        <div>
-          <div class="sol-peace-h">Peace of mind. Protected.</div>
-          <div class="sol-peace-p">AVA catches what humans miss — before it becomes a penalty, a lost client, or a failed compliance check.</div>
-        </div>
+      <div class="prob-impact-text">
+        Missed renewals don't just create problems. They cost <span>money, time, and credibility.</span>
       </div>
     </div>
 
