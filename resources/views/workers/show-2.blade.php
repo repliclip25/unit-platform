@@ -322,30 +322,48 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
 .center{text-align:center}.center .sec-p{max-width:520px;margin:0 auto}
 
 /* ── PROBLEM SECTION ── */
-.problem-sec{background:var(--bg);border-top:1px solid var(--border)}
-[data-theme="dark"] .problem-sec{background:#0D0D0D;border-color:#2D2D2D}
-.prob-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:clamp(32px,4vw,48px)}
+.problem-sec{background:#F9F9FB;padding:clamp(56px,7vw,88px) 0}
+[data-theme="dark"] .problem-sec{background:#0D0D0D}
+.prob-heading{text-align:center;margin-bottom:clamp(32px,4vw,48px)}
+.prob-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
 .prob-card{
-  background:var(--soft);border:1px solid var(--border);
-  border-radius:16px;padding:24px;
-  display:flex;flex-direction:column;gap:12px;
+  background:#fff;border-radius:18px;
+  padding:28px 24px 32px;
+  display:flex;flex-direction:column;gap:0;
+  box-shadow:0 1px 3px rgba(0,0,0,.06),0 4px 16px rgba(0,0,0,.04);
 }
-[data-theme="dark"] .prob-card{background:#111;border-color:#2D2D2D}
-.prob-card.solution{background:rgba(var(--brand-rgb),.06);border-color:rgba(var(--brand-rgb),.2)}
-[data-theme="dark"] .prob-card.solution{background:rgba(var(--brand-rgb),.12)}
-.prob-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;background:var(--bg);border:1px solid var(--border);flex-shrink:0}
-[data-theme="dark"] .prob-icon{background:#1a1a1a;border-color:#3D3D3D}
-.prob-icon svg{width:20px;height:20px;color:var(--t3)}
-.prob-card.solution .prob-icon{background:rgba(var(--brand-rgb),.1);border-color:rgba(var(--brand-rgb),.25)}
-.prob-card.solution .prob-icon svg{color:var(--brand)}
-.prob-h{font-size:15px;font-weight:700;color:var(--text)}
-.prob-p{font-size:13px;color:var(--t3);line-height:1.6}
-.prob-solution-tag{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--brand);display:flex;align-items:center;gap:6px}
-.prob-bullets{display:flex;flex-direction:column;gap:7px;margin-top:4px}
-.prob-bullet{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--t2)}
+[data-theme="dark"] .prob-card{background:#111;box-shadow:none;border:1px solid #2D2D2D}
+.prob-card.solution{
+  background:rgba(var(--brand-rgb),.07);
+  box-shadow:0 1px 3px rgba(var(--brand-rgb),.08),0 4px 16px rgba(var(--brand-rgb),.06);
+}
+[data-theme="dark"] .prob-card.solution{background:rgba(var(--brand-rgb),.14);border-color:rgba(var(--brand-rgb),.3)}
+/* icon: purple circle */
+.prob-icon{
+  width:52px;height:52px;border-radius:50%;
+  background:rgba(var(--brand-rgb),.1);
+  display:flex;align-items:center;justify-content:center;
+  margin-bottom:20px;flex-shrink:0;
+}
+.prob-icon svg{width:22px;height:22px;stroke:var(--brand);fill:none;stroke-width:1.8;stroke-linecap:round}
+.prob-h{font-size:16px;font-weight:700;color:var(--text);margin-bottom:10px;line-height:1.35}
+.prob-p{font-size:13.5px;color:var(--t3);line-height:1.65}
+/* solution card header */
+.prob-sol-header{display:flex;align-items:center;gap:10px;margin-bottom:18px}
+.prob-sol-avatar{width:44px;height:44px;border-radius:50%;object-fit:cover;object-position:center top;flex-shrink:0}
+.prob-sol-title{font-size:14px;font-weight:700;color:var(--brand)}
+/* solution bullets */
+.prob-bullets{display:flex;flex-direction:column;gap:11px}
+.prob-bullet{display:flex;align-items:center;gap:10px;font-size:14px;color:var(--t2)}
 [data-theme="dark"] .prob-bullet{color:#D1D5DB}
-.prob-check{width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:var(--brand)}
-.prob-check svg{width:10px;height:10px;stroke:#fff;stroke-width:2.5;fill:none}
+.prob-check{
+  width:22px;height:22px;border-radius:50%;flex-shrink:0;
+  background:var(--brand);
+  display:flex;align-items:center;justify-content:center;
+}
+.prob-check svg{width:11px;height:11px;stroke:#fff;stroke-width:2.5;fill:none;stroke-linecap:round}
+@media(max-width:900px){.prob-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:520px){.prob-grid{grid-template-columns:1fr}}
 
 /* ── DAY IN LIFE ── */
 .day-sec{background:var(--soft);border-top:1px solid var(--border)}
@@ -677,38 +695,48 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
 </section>
 
 {{-- THE PROBLEM --}}
-<section class="problem-sec sec">
+<section class="problem-sec">
   <div class="w">
-    <div class="center" style="margin-bottom:clamp(32px,4vw,48px)">
+    <div class="prob-heading">
       <div class="sec-eye">The Problem</div>
       <h2 class="sec-h">Too many renewals slip through the cracks.</h2>
     </div>
     <div class="prob-grid">
+
+      {{-- Card 1 --}}
       <div class="prob-card">
         <div class="prob-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+          <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
         </div>
         <div class="prob-h">Your team gets busy.</div>
         <p class="prob-p">Contracts get forgotten. Customers disappear.</p>
       </div>
+
+      {{-- Card 2 --}}
       <div class="prob-card">
         <div class="prob-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
         </div>
         <div class="prob-h">Manual reminders don't scale.</div>
         <p class="prob-p">Someone always slips through.</p>
       </div>
+
+      {{-- Card 3 --}}
       <div class="prob-card">
         <div class="prob-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+          <svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
         </div>
         <div class="prob-h">Every missed renewal costs money.</div>
         <p class="prob-p">Not because customers wanted to leave. Because nobody remembered.</p>
       </div>
+
+      {{-- Card 4: solution --}}
       <div class="prob-card solution">
-        <div class="prob-solution-tag">
-          <img src="/images/ava.png" alt="{{ $worker['name'] }}" style="width:22px;height:22px;border-radius:50%;object-fit:cover;object-position:center top">
-          {{ $worker['name'] }} changes that.
+        <div class="prob-sol-header">
+          <img src="/images/ava.png" alt="{{ $worker['name'] }}"
+               class="prob-sol-avatar"
+               onerror="this.style.display='none'">
+          <span class="prob-sol-title">{{ $worker['name'] }} changes that.</span>
         </div>
         <div class="prob-bullets">
           @foreach(['Detects upcoming renewals','Sends timely reminders','Customers renew','Revenue protected'] as $b)
@@ -719,6 +747,7 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
           @endforeach
         </div>
       </div>
+
     </div>
   </div>
 </section>
