@@ -337,8 +337,21 @@ body{font-family:var(--font-b);color:var(--text);background:var(--bg);-webkit-fo
   .ft-bottom{flex-direction:column;text-align:center}
 }
 @media(max-width:480px){
-  .wk-content{width:100%}
-  .wk-img-bg{display:none}
+  /* stack card: image on top, content below */
+  .wk-card{flex-direction:column;min-height:auto}
+  .wk-img-bg{
+    position:relative;width:100%;height:220px;
+    flex-shrink:0;
+  }
+  .wk-img-bg img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center top}
+  /* fade bottom of image into card background */
+  .wk-img-bg::after{
+    background:linear-gradient(to bottom,transparent 40%,#fff 100%);
+  }
+  [data-theme="dark"] .wk-img-bg::after{
+    background:linear-gradient(to bottom,transparent 40%,#111 100%);
+  }
+  .wk-content{width:100%;padding-top:8px}
   .behind-grid{grid-template-columns:1fr}
   .behind-item{border-right:none!important;border-bottom:1px solid var(--border)}
   .behind-item:last-child{border-bottom:none}
