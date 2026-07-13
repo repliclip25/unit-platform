@@ -365,25 +365,115 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
 @media(max-width:900px){.prob-grid{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:520px){.prob-grid{grid-template-columns:1fr}}
 
-/* ── DAY IN LIFE ── */
-.day-sec{background:var(--soft);border-top:1px solid var(--border)}
-[data-theme="dark"] .day-sec{background:#161616;border-color:#2D2D2D}
-.day-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:clamp(28px,4vw,44px)}
+/* ── DAY IN LIFE / PIPELINE ── */
+.day-sec{background:#F9F9FB;padding:clamp(56px,7vw,88px) 0}
+[data-theme="dark"] .day-sec{background:#111}
+.day-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:clamp(36px,5vw,56px)}
 .day-client{text-align:right}
 .day-client-name{font-size:14px;font-weight:700;color:var(--text)}
-.day-client-sub{font-size:12px;color:var(--t4);margin-top:2px}
-/* horizontal step flow */
-.day-flow{display:grid;grid-template-columns:repeat(6,1fr);gap:0;margin-bottom:32px;position:relative}
-.day-flow::before{content:'';position:absolute;top:36px;left:8%;right:8%;height:2px;background:var(--border);z-index:0}
-[data-theme="dark"] .day-flow::before{background:#3D3D3D}
-.day-step{display:flex;flex-direction:column;align-items:center;text-align:center;padding:0 6px;position:relative;z-index:1}
-.day-step-node{
-  width:72px;height:72px;border-radius:14px;
-  background:var(--bg);border:1.5px solid var(--border);
+.day-client-sub{font-size:12.5px;color:var(--t4);margin-top:2px}
+/* pipeline row */
+.pipeline-row{
+  display:flex;align-items:flex-start;
+  gap:0;margin-bottom:32px;
+  overflow-x:auto;padding-bottom:8px;
+}
+.pipeline-row::-webkit-scrollbar{height:4px}
+.pipeline-row::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+.pipe-step{
+  display:flex;flex-direction:column;align-items:center;
+  text-align:center;flex:1;min-width:96px;position:relative;
+}
+/* arrow connector */
+.pipe-step:not(:last-child)::after{
+  content:'→';
+  position:absolute;top:32px;left:calc(50% + 38px);
+  font-size:16px;color:var(--border);
+  line-height:1;z-index:1;pointer-events:none;
+}
+[data-theme="dark"] .pipe-step:not(:last-child)::after{color:#3D3D3D}
+.pipe-step.ps-active:not(:last-child)::after{color:var(--brand);opacity:.5}
+/* node */
+.pipe-node{
+  width:68px;height:68px;border-radius:16px;
+  background:#fff;border:1.5px solid #E5E7EB;
   display:flex;align-items:center;justify-content:center;
   margin-bottom:12px;position:relative;
-  box-shadow:0 2px 8px rgba(0,0,0,.06);
-  overflow:hidden;
+  box-shadow:0 1px 4px rgba(0,0,0,.06);
+  transition:border-color .3s,box-shadow .3s,background .3s;
+  flex-shrink:0;
+}
+[data-theme="dark"] .pipe-node{background:#1a1a1a;border-color:#3D3D3D}
+.pipe-node svg{width:24px;height:24px;stroke:#BCC0C9;fill:none;stroke-width:1.7;stroke-linecap:round;transition:stroke .3s}
+/* number badge */
+.pipe-badge{
+  position:absolute;bottom:-1px;right:-1px;
+  width:20px;height:20px;border-radius:6px 0 0 0;
+  background:#D1D5DB;
+  font-size:10px;font-weight:800;color:#fff;
+  display:flex;align-items:center;justify-content:center;
+  transition:background .3s;
+}
+/* step label + desc */
+.pipe-label{
+  font-size:10px;font-weight:700;letter-spacing:.1em;
+  text-transform:uppercase;color:#9CA3AF;margin-bottom:4px;
+  transition:color .3s;line-height:1.3;
+}
+.pipe-desc{font-size:11.5px;color:#9CA3AF;line-height:1.5;transition:color .3s;max-width:90px}
+/* running state */
+.pipe-step.ps-running .pipe-node{
+  border-color:var(--brand);
+  box-shadow:0 0 0 4px rgba(var(--brand-rgb),.12),0 2px 8px rgba(0,0,0,.08);
+  background:rgba(var(--brand-rgb),.04);
+}
+.pipe-step.ps-running .pipe-node svg{stroke:var(--brand)}
+.pipe-step.ps-running .pipe-badge{background:var(--brand);animation:badgePulse 1s ease infinite}
+@keyframes badgePulse{0%,100%{box-shadow:0 0 0 0 rgba(var(--brand-rgb),.4)}50%{box-shadow:0 0 0 5px rgba(var(--brand-rgb),0)}}
+.pipe-step.ps-running .pipe-label{color:var(--brand)}
+.pipe-step.ps-running .pipe-desc{color:var(--t2)}
+/* done state */
+.pipe-step.ps-done .pipe-node{
+  border-color:#22C55E;background:rgba(34,197,94,.05);
+}
+.pipe-step.ps-done .pipe-node svg{stroke:#22C55E}
+.pipe-step.ps-done .pipe-badge{background:#22C55E}
+.pipe-step.ps-done .pipe-label{color:#16A34A}
+/* running status ticker */
+.pipe-ticker{
+  font-size:12px;color:var(--brand);font-weight:600;
+  margin-top:6px;min-height:18px;
+  display:flex;align-items:center;gap:6px;
+}
+.pipe-ticker-dot{
+  width:6px;height:6px;border-radius:50%;background:var(--brand);
+  animation:tickDot 1s ease infinite;flex-shrink:0;
+}
+@keyframes tickDot{0%,100%{opacity:1}50%{opacity:.3}}
+/* mission complete bar */
+.mission-bar{
+  display:flex;align-items:center;justify-content:space-between;
+  background:#fff;border:1.5px solid rgba(var(--brand-rgb),.15);
+  border-radius:16px;padding:20px 28px;flex-wrap:wrap;gap:16px;
+  box-shadow:0 1px 4px rgba(0,0,0,.04);
+  opacity:0;transform:translateY(8px);
+  transition:opacity .4s,transform .4s;
+}
+[data-theme="dark"] .mission-bar{background:#1a1a1a;border-color:rgba(var(--brand-rgb),.3)}
+.mission-bar.visible{opacity:1;transform:translateY(0)}
+.mission-txt{font-size:17px;font-weight:700;color:var(--text)}
+.mission-stats{display:flex;gap:40px}
+.mission-stat-n{font-size:1.4rem;font-weight:800;color:var(--brand);letter-spacing:-.03em}
+.mission-stat-l{font-size:11.5px;color:var(--t4);margin-top:2px}
+@media(max-width:900px){
+  .pipe-step{min-width:80px}
+  .pipe-step:not(:last-child)::after{left:calc(50% + 30px)}
+}
+@media(max-width:640px){
+  .pipeline-row{gap:4px}
+  .pipe-step{min-width:70px}
+  .pipe-node{width:56px;height:56px;border-radius:12px}
+  .pipe-step:not(:last-child)::after{display:none}
 }
 [data-theme="dark"] .day-step-node{background:#111;border-color:#3D3D3D}
 .day-step-node img{width:100%;height:100%;object-fit:cover}
@@ -752,13 +842,13 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
   </div>
 </section>
 
-{{-- A DAY IN AVA'S LIFE --}}
-<section class="day-sec sec" id="day-in-life">
+{{-- A DAY IN AVA'S LIFE — AVA's real pipeline, animated --}}
+<section class="day-sec" id="day-in-life">
   <div class="w">
     <div class="day-top">
       <div>
         <div class="sec-eye">A day in {{ $worker['name'] }}'s life</div>
-        <h2 class="sec-h" style="margin-bottom:0">Follow {{ $worker['name'] }} through one renewal.</h2>
+        <h2 class="sec-h" style="margin-bottom:0">Follow AVA through one renewal.</h2>
       </div>
       <div class="day-client">
         <div class="day-client-name">ABC Dental</div>
@@ -766,39 +856,100 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
       </div>
     </div>
 
-    {{-- step flow --}}
-    <div class="day-flow">
-      @php
-        $daySteps = [
-          ['num'=>1,'label'=>'Ava notices','desc'=>'A contract is about to expire.','icon'=>'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>'],
-          ['num'=>2,'label'=>'Reviews history','desc'=>'She checks customer details and history.','icon'=>'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>'],
-          ['num'=>3,'label'=>'Prepares reminder','desc'=>'Personalized reminder is created.','icon'=>'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4z"/></svg>'],
-          ['num'=>4,'label'=>'Reminder sent','desc'=>'The reminder is delivered at the perfect time.','icon'=>'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 16.92v3a2 2 0 01-2.18 2A19.79 19.79 0 0112 18.69a19.5 19.5 0 01-5-5 19.79 19.79 0 01-3.07-8.67A2 2 0 015.91 3h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L10.09 10a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0124 17z"/></svg>'],
-          ['num'=>5,'label'=>'Customer renews','desc'=>'The customer renews with one click.','icon'=>'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>'],
-          ['num'=>6,'label'=>'Ava updates everything','desc'=>'CRM updated. Invoice logged. Task closed.','icon'=>'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>'],
-        ];
-      @endphp
-      @foreach($daySteps as $step)
-      <div class="day-step">
-        <div class="day-step-node">
-          {!! $step['icon'] !!}
-          <div class="day-step-num">{{ $step['num'] }}</div>
+    {{-- AVA's real 8-stage pipeline --}}
+    <div class="pipeline-row" id="pipelineRow">
+
+      <div class="pipe-step" data-step="0">
+        <div class="pipe-node">
+          <svg viewBox="0 0 24 24"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1M12 3v13M8 7l4-4 4 4"/></svg>
+          <span class="pipe-badge">1</span>
         </div>
-        <div class="day-step-label">{{ $step['label'] }}</div>
-        <div class="day-step-desc">{{ $step['desc'] }}</div>
+        <div class="pipe-label">Inject &amp; Fetch</div>
+        <div class="pipe-desc">Insert into inbox, read back</div>
+        <div class="pipe-ticker" id="ticker-0"></div>
       </div>
-      @endforeach
+
+      <div class="pipe-step" data-step="1">
+        <div class="pipe-node">
+          <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          <span class="pipe-badge">2</span>
+        </div>
+        <div class="pipe-label">Read Email</div>
+        <div class="pipe-desc">Parse &amp; extract fields</div>
+        <div class="pipe-ticker" id="ticker-1"></div>
+      </div>
+
+      <div class="pipe-step" data-step="2">
+        <div class="pipe-node">
+          <svg viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+          <span class="pipe-badge">3</span>
+        </div>
+        <div class="pipe-label">Classify</div>
+        <div class="pipe-desc">Category, priority &amp; type</div>
+        <div class="pipe-ticker" id="ticker-2"></div>
+      </div>
+
+      <div class="pipe-step" data-step="3">
+        <div class="pipe-node">
+          <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+          <span class="pipe-badge">4</span>
+        </div>
+        <div class="pipe-label">Memory Lookup</div>
+        <div class="pipe-desc">Match client, asset &amp; rules</div>
+        <div class="pipe-ticker" id="ticker-3"></div>
+      </div>
+
+      <div class="pipe-step" data-step="4">
+        <div class="pipe-node">
+          <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+          <span class="pipe-badge">5</span>
+        </div>
+        <div class="pipe-label">Log Transaction</div>
+        <div class="pipe-desc">Write to register</div>
+        <div class="pipe-ticker" id="ticker-4"></div>
+      </div>
+
+      <div class="pipe-step" data-step="5">
+        <div class="pipe-node">
+          <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          <span class="pipe-badge">6</span>
+        </div>
+        <div class="pipe-label">Select Template</div>
+        <div class="pipe-desc">Pick best-match template</div>
+        <div class="pipe-ticker" id="ticker-5"></div>
+      </div>
+
+      <div class="pipe-step" data-step="6">
+        <div class="pipe-node">
+          <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4z"/></svg>
+          <span class="pipe-badge">7</span>
+        </div>
+        <div class="pipe-label">Draft Email</div>
+        <div class="pipe-desc">AI-personalised draft</div>
+        <div class="pipe-ticker" id="ticker-6"></div>
+      </div>
+
+      <div class="pipe-step" data-step="7">
+        <div class="pipe-node">
+          <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013 12 19.79 19.79 0 01-.07 3.18 2 2 0 012 1h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 8.91A16 16 0 0018 20.91l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0124 21z"/></svg>
+          <span class="pipe-badge">8</span>
+        </div>
+        <div class="pipe-label">Push to Gmail</div>
+        <div class="pipe-desc">Create draft in inbox</div>
+        <div class="pipe-ticker" id="ticker-7"></div>
+      </div>
+
     </div>
 
-    {{-- mission complete --}}
-    <div class="mission-bar">
+    {{-- Mission complete bar (appears when animation finishes) --}}
+    <div class="mission-bar" id="missionBar">
       <div class="mission-txt">Mission Complete 🎉</div>
       <div class="mission-stats">
-        <div class="mission-stat">
+        <div>
           <div class="mission-stat-n">2 minutes</div>
           <div class="mission-stat-l">Time Taken</div>
         </div>
-        <div class="mission-stat">
+        <div>
           <div class="mission-stat-n">35 minutes</div>
           <div class="mission-stat-l">Human effort saved</div>
         </div>
@@ -806,6 +957,59 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
     </div>
   </div>
 </section>
+
+<script>
+(function(){
+  var steps = document.querySelectorAll('#pipelineRow .pipe-step');
+  var missionBar = document.getElementById('missionBar');
+  var STEP_DURATION = 1400; // ms per step active
+  var PAUSE_AFTER   = 2800; // ms mission complete visible before reset
+
+  var tickerMessages = [
+    'Injecting task…',
+    'Parsing renewal email…',
+    'Classifying: renewal · high priority…',
+    'Looking up ABC Dental…',
+    'Writing to register TX-' + Math.random().toString(16).slice(2,10).toUpperCase() + '…',
+    'Selecting renewal template…',
+    'Drafting personalised email…',
+    'Pushing draft to Gmail…',
+  ];
+
+  function clearAll(){
+    steps.forEach(function(s){
+      s.classList.remove('ps-running','ps-done');
+      var t = document.getElementById('ticker-'+s.dataset.step);
+      if(t) t.innerHTML = '';
+    });
+    missionBar.classList.remove('visible');
+  }
+
+  function runStep(i){
+    if(i >= steps.length){
+      // All done — show mission bar
+      missionBar.classList.add('visible');
+      setTimeout(function(){ clearAll(); setTimeout(function(){ runStep(0); },600); }, PAUSE_AFTER);
+      return;
+    }
+    var step = steps[i];
+    step.classList.add('ps-running');
+    var ticker = document.getElementById('ticker-'+step.dataset.step);
+    if(ticker){
+      ticker.innerHTML = '<span class="pipe-ticker-dot"></span>' + tickerMessages[i];
+    }
+    setTimeout(function(){
+      step.classList.remove('ps-running');
+      step.classList.add('ps-done');
+      if(ticker) ticker.innerHTML = '';
+      runStep(i+1);
+    }, STEP_DURATION);
+  }
+
+  // Start after a short delay so the page has settled
+  setTimeout(function(){ runStep(0); }, 800);
+})();
+</script>
 
 {{-- EVERYTHING AVA HAS ACCESS TO + LIVE PERFORMANCE --}}
 <section class="split-sec sec">
