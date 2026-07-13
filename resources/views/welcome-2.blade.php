@@ -368,14 +368,14 @@ body{
   object-fit:cover;
   object-position:center top;
   display:block;
-  transform:scale(1.6);
-  transform-origin:top center;
 }
-/* Fade so image blends into white card bg on the left */
+/* Fade: strong left-to-right + right edge clip so dark image bg never shows */
 .wk-img-bg::after{
   content:'';
   position:absolute;inset:0;
-  background:linear-gradient(to right,#ffffff 0%,rgba(255,255,255,.5) 40%,transparent 75%);
+  background:
+    linear-gradient(to right, #fff 0%, rgba(255,255,255,.92) 25%, rgba(255,255,255,.6) 52%, rgba(255,255,255,.35) 72%, rgba(255,255,255,.25) 100%),
+    linear-gradient(to left,  #fff 0%, transparent 18%);
 }
 
 /* Content — left side, z-index above image */
@@ -1050,7 +1050,7 @@ body{
       <!-- AVA -->
       <div class="wk-card" style="border-top:3px solid var(--ava)">
         <div class="wk-img-bg">
-          <img src="/images/ava-stand.png" alt="AVA" style="object-position:center 10%">
+          <img src="/images/ava-stand.png" alt="AVA" style="object-position:center 10%;transform:scale(1.5);transform-origin:top center">
         </div>
         <div class="wk-content">
           <div class="wk-head">
