@@ -586,8 +586,87 @@ body{
 .what-item-body p{font-size:13px;color:var(--t3);line-height:1.6}
 
 /* ── VIDEO ── */
-.video-sec{background:#fff;padding:clamp(60px,8vw,100px) 0}
+.video-sec{background:var(--soft);padding:clamp(52px,7vw,88px) 0}
 .video-grid{display:grid;grid-template-columns:1fr 1fr;gap:clamp(40px,6vw,72px);align-items:center}
+/* ── RESOURCES RAIL ── */
+.res-sec{background:var(--soft);padding:clamp(52px,7vw,88px) 0}
+[data-theme="dark"] .res-sec{background:#0D0D0D}
+.res-head{
+  display:flex;align-items:flex-end;justify-content:space-between;
+  margin-bottom:clamp(28px,4vw,40px);flex-wrap:wrap;gap:16px;
+}
+.res-head-left .sec-eye{margin-bottom:10px}
+.res-head-left .sec-h{margin-bottom:0;max-width:480px}
+.res-scroll-wrap{position:relative}
+.res-scroll-wrap::after{
+  content:'';position:absolute;right:0;top:0;bottom:0;width:60px;
+  background:linear-gradient(to left,var(--soft),transparent);
+  pointer-events:none;z-index:2;
+}
+[data-theme="dark"] .res-scroll-wrap::after{background:linear-gradient(to left,#0D0D0D,transparent)}
+.res-rail{
+  display:flex;gap:16px;
+  overflow-x:auto;padding-bottom:12px;
+  scrollbar-width:none;-ms-overflow-style:none;
+}
+.res-rail::-webkit-scrollbar{display:none}
+.res-card{
+  flex-shrink:0;width:280px;
+  background:#fff;border:1px solid var(--border);border-radius:16px;
+  overflow:hidden;display:flex;flex-direction:column;
+  transition:box-shadow .2s,transform .15s;
+  cursor:pointer;
+}
+[data-theme="dark"] .res-card{background:#111;border-color:#2D2D2D}
+.res-card:hover{box-shadow:0 8px 28px rgba(0,0,0,.1);transform:translateY(-3px)}
+[data-theme="dark"] .res-card:hover{box-shadow:0 8px 28px rgba(0,0,0,.4)}
+.res-thumb{
+  height:158px;display:flex;align-items:center;justify-content:center;
+  position:relative;overflow:hidden;
+}
+.res-thumb-icon{
+  width:48px;height:48px;border-radius:14px;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(255,255,255,.15);
+}
+.res-thumb-icon svg{width:24px;height:24px;stroke:#fff;fill:none}
+.res-play-ring{
+  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+}
+.res-play-btn{
+  width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.25);
+  border:2px solid rgba(255,255,255,.5);
+  display:flex;align-items:center;justify-content:center;
+  transition:background .2s,transform .15s;
+}
+.res-card:hover .res-play-btn{background:rgba(255,255,255,.4);transform:scale(1.1)}
+.res-play-btn svg{width:16px;height:16px;fill:#fff;stroke:none;margin-left:2px}
+.res-body{padding:16px 18px 20px;display:flex;flex-direction:column;flex:1}
+.res-badge{
+  display:inline-flex;align-items:center;gap:5px;
+  font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+  padding:3px 8px;border-radius:6px;margin-bottom:10px;width:fit-content;
+}
+.res-title{font-size:14.5px;font-weight:700;color:var(--text);line-height:1.4;margin-bottom:6px;flex:1}
+[data-theme="dark"] .res-title{color:#F3F4F6}
+.res-meta{font-size:12px;color:var(--t4);display:flex;align-items:center;gap:6px;margin-top:8px}
+.res-link{
+  display:inline-flex;align-items:center;gap:5px;
+  font-size:12.5px;font-weight:600;margin-top:10px;
+  color:var(--brand);transition:gap .15s;
+}
+.res-card:hover .res-link{gap:8px}
+/* badge colors */
+.badge-video{background:rgba(76,29,149,.1);color:var(--brand)}
+[data-theme="dark"] .badge-video{background:rgba(76,29,149,.25);color:#A78BFA}
+.badge-blog{background:rgba(16,185,129,.1);color:#059669}
+[data-theme="dark"] .badge-blog{background:rgba(16,185,129,.2);color:#6EE7B7}
+.badge-report{background:rgba(59,130,246,.1);color:#2563EB}
+[data-theme="dark"] .badge-report{background:rgba(59,130,246,.2);color:#93C5FD}
+.badge-insight{background:rgba(245,158,11,.1);color:#D97706}
+[data-theme="dark"] .badge-insight{background:rgba(245,158,11,.2);color:#FCD34D}
+
+/* ─── old video stuff (kept for potential re-use) ─── */
 .video-wrap{
   position:relative;border-radius:20px;overflow:hidden;
   background:#0D0D0D;aspect-ratio:16/9;
@@ -758,7 +837,8 @@ body{
 
 /* ── RESPONSIVE ── */
 @media(max-width:1024px){
-  .what-grid,.video-grid,.faq-grid{grid-template-columns:1fr}
+  .what-grid,.faq-grid{grid-template-columns:1fr}
+  .res-card{width:240px}
   .feat-grid{grid-template-columns:repeat(2,1fr)}
   .trust-platforms{justify-content:flex-start}
   .wk-grid{grid-template-columns:repeat(2,1fr)}
@@ -1188,26 +1268,134 @@ body{
 </section>
 
 <!-- VIDEO -->
-<section class="video-sec" id="video">
+<!-- RESOURCES RAIL -->
+<section class="res-sec" id="resources">
   <div class="w">
-    <div class="video-grid">
-      <div class="video-wrap">
-        {{-- swap src for real video when ready --}}
-        <div class="video-placeholder">
-          <div class="video-play" id="video-play">
-            <svg viewBox="0 0 24 24" fill="#fff" stroke="none"><path d="M8 5v14l11-7z"/></svg>
-          </div>
-          <span class="video-caption">Watch AVA's first day on the job</span>
-        </div>
+    <div class="res-head">
+      <div class="res-head-left">
+        <div class="sec-eye">Resources</div>
+        <h2 class="sec-h">From the field — videos, insights,<br>and real examples.</h2>
       </div>
-      <div class="video-right">
-        <div class="sec-eye">See it in action</div>
-        <h2 class="sec-h">Watch a worker handle a full day — start to finish.</h2>
-        <p>AVA wakes up, reads her inbox, drafts renewal responses, flags anything unusual, and files her daily report. All before your first coffee. This is what autonomous looks like.</p>
-        <a href="{{ route('register') }}" class="btn-hero" style="width:fit-content">
-          Hire Your First Worker
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-        </a>
+      <a href="{{ route('register') }}" class="btn-outline">
+        Browse all
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+    </div>
+    <div class="res-scroll-wrap">
+      <div class="res-rail">
+
+        <!-- Card 1: Video -->
+        <div class="res-card">
+          <div class="res-thumb" style="background:linear-gradient(135deg,#2D1B69,#4C1D95)">
+            <div class="res-play-ring">
+              <div class="res-play-btn">
+                <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+              </div>
+            </div>
+          </div>
+          <div class="res-body">
+            <span class="res-badge badge-video">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              Video
+            </span>
+            <div class="res-title">AVA's First Day: Watch a full renewal handled start to finish</div>
+            <div class="res-meta">8 min watch · AVA</div>
+            <span class="res-link">Watch now <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+          </div>
+        </div>
+
+        <!-- Card 2: Blog -->
+        <div class="res-card">
+          <div class="res-thumb" style="background:linear-gradient(135deg,#064E3B,#065F46)">
+            <div class="res-thumb-icon">
+              <svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>
+            </div>
+          </div>
+          <div class="res-body">
+            <span class="res-badge badge-blog">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4z"/></svg>
+              Blog
+            </span>
+            <div class="res-title">5 signs your team is doing work that a worker should be doing instead</div>
+            <div class="res-meta">6 min read · Operations</div>
+            <span class="res-link">Read post <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+          </div>
+        </div>
+
+        <!-- Card 3: Whitepaper -->
+        <div class="res-card">
+          <div class="res-thumb" style="background:linear-gradient(135deg,#1E3A5F,#1D4ED8)">
+            <div class="res-thumb-icon">
+              <svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round"><path d="M9 12h6M9 16h6M17 21H7a2 2 0 01-2-2V5a2 2 0 012-2h7l5 5v11a2 2 0 01-2 2z"/></svg>
+            </div>
+          </div>
+          <div class="res-body">
+            <span class="res-badge badge-report">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 4h16v16H4z"/><path d="M4 9h16M9 4v16"/></svg>
+              Whitepaper
+            </span>
+            <div class="res-title">The Future of Work: How AI workers change what your team actually does</div>
+            <div class="res-meta">14 pages · PDF download</div>
+            <span class="res-link">Download <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+          </div>
+        </div>
+
+        <!-- Card 4: Industry Insight -->
+        <div class="res-card">
+          <div class="res-thumb" style="background:linear-gradient(135deg,#78350F,#B45309)">
+            <div class="res-thumb-icon">
+              <svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+            </div>
+          </div>
+          <div class="res-body">
+            <span class="res-badge badge-insight">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+              Insight
+            </span>
+            <div class="res-title">Why renewal rates drop when teams grow — and how automation reverses it</div>
+            <div class="res-meta">3 min read · Real estate</div>
+            <span class="res-link">Read insight <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+          </div>
+        </div>
+
+        <!-- Card 5: Video -->
+        <div class="res-card">
+          <div class="res-thumb" style="background:linear-gradient(135deg,#1F1F2E,#3730A3)">
+            <div class="res-play-ring">
+              <div class="res-play-btn">
+                <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+              </div>
+            </div>
+          </div>
+          <div class="res-body">
+            <span class="res-badge badge-video">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              Video
+            </span>
+            <div class="res-title">DOX in action: 1,200 documents sorted in under 3 minutes</div>
+            <div class="res-meta">5 min watch · DOX</div>
+            <span class="res-link">Watch now <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+          </div>
+        </div>
+
+        <!-- Card 6: Blog -->
+        <div class="res-card">
+          <div class="res-thumb" style="background:linear-gradient(135deg,#14532D,#16A34A)">
+            <div class="res-thumb-icon">
+              <svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+            </div>
+          </div>
+          <div class="res-body">
+            <span class="res-badge badge-blog">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4z"/></svg>
+              Blog
+            </span>
+            <div class="res-title">Real feedback from teams who hired their first UNIT worker</div>
+            <div class="res-meta">8 min read · Customer stories</div>
+            <span class="res-link">Read post <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+          </div>
+        </div>
+
       </div>
     </div>
   </div>
