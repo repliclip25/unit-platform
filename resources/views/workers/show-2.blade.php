@@ -48,28 +48,69 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
 .w{max-width:var(--max);margin:0 auto;padding:0 var(--pad)}
 
 /* ── NAV ── */
-.nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(0,0,0,.7);backdrop-filter:blur(16px);border-bottom:1px solid rgba(255,255,255,.1)}
-.nav-i{display:flex;align-items:center;justify-content:space-between;height:62px;padding:0 var(--pad);max-width:var(--max);margin:0 auto}
-.logo-name{font-size:1.3rem;font-weight:800;color:#fff;letter-spacing:-.5px}
-.nav-r{display:flex;align-items:center;gap:10px}
-.btn-nav-ghost{font-size:13.5px;font-weight:500;color:rgba(255,255,255,.65);padding:8px 14px;border-radius:8px;transition:color .15s}
-.btn-nav-ghost:hover{color:#fff}
+.nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  background:#fff;
+  border-bottom:1px solid #EDEDED;
+  box-shadow:0 1px 3px rgba(0,0,0,.06);
+}
+.nav-i{
+  display:flex;align-items:center;justify-content:space-between;
+  height:68px;padding:0 var(--pad);max-width:var(--max);margin:0 auto;
+}
+/* logo */
+.nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none}
+.nav-logo-icon{
+  width:38px;height:38px;flex-shrink:0;
+}
+.nav-logo-text{}
+.nav-logo-name{
+  display:block;font-size:1.15rem;font-weight:800;
+  color:#0D0D0D;letter-spacing:-.4px;line-height:1.1;
+}
+.nav-logo-sub{
+  display:block;font-size:9px;font-weight:700;
+  letter-spacing:.18em;text-transform:uppercase;color:#9CA3AF;line-height:1;
+}
+/* center links */
+.nav-links{display:flex;align-items:center;gap:2px}
+.nav-link{
+  font-size:13.5px;font-weight:500;color:#374151;
+  padding:8px 13px;border-radius:8px;
+  transition:color .15s,background .15s;white-space:nowrap;
+}
+.nav-link:hover{color:#0D0D0D;background:#F5F5F5}
+/* right actions */
+.nav-actions{display:flex;align-items:center;gap:8px}
+.btn-login{
+  display:inline-flex;align-items:center;
+  padding:9px 20px;border-radius:99px;
+  font-size:14px;font-weight:600;color:#374151;
+  border:1.5px solid #D1D5DB;
+  transition:border-color .15s,color .15s;
+}
+.btn-login:hover{border-color:#9CA3AF;color:#0D0D0D}
 .btn-nav-hire{
   display:inline-flex;align-items:center;gap:7px;
-  padding:9px 20px;border-radius:99px;
+  padding:10px 22px;border-radius:99px;
   font-size:14px;font-weight:700;color:#fff;
   background:var(--brand);
-  box-shadow:0 2px 12px rgba(var(--brand-rgb),.4);
-  transition:opacity .15s,transform .15s;
+  box-shadow:0 2px 12px rgba(var(--brand-rgb),.35);
+  transition:opacity .15s,transform .15s;white-space:nowrap;
 }
 .btn-nav-hire:hover{opacity:.9;transform:translateY(-1px)}
+.btn-nav-hire svg{transition:transform .15s}
+.btn-nav-hire:hover svg{transform:translateX(2px)}
+/* mobile: hide center links */
+@media(max-width:900px){.nav-links{display:none}}
+@media(max-width:600px){.btn-login{display:none}}
 
 /* ── HERO ── */
 .hero-worker{
   position:relative;min-height:100vh;
   background:#000;overflow:hidden;
   display:flex;align-items:center;
-  padding-top:62px;
+  padding-top:68px;
 }
 .hero-bg{position:absolute;inset:0;z-index:0}
 .hero-bg img{width:100%;height:100%;object-fit:cover;object-position:center top;opacity:.55}
@@ -408,13 +449,44 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
 {{-- NAV --}}
 <nav class="nav">
   <div class="nav-i">
-    <a href="{{ route('home2') }}" class="logo-name">UNIT</a>
-    <div class="nav-r">
-      <a href="{{ route('workers.page') }}" class="btn-nav-ghost">All Workers</a>
+    {{-- Logo --}}
+    <a href="{{ route('home2') }}" class="nav-logo">
+      <svg class="nav-logo-icon" viewBox="0 0 38 38" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="19" cy="19" r="19" fill="#4C1D95"/>
+        {{-- sunburst rays --}}
+        <g stroke="#F5D97E" stroke-width="2" stroke-linecap="round">
+          <line x1="19" y1="4"  x2="19" y2="9"/>
+          <line x1="19" y1="29" x2="19" y2="34"/>
+          <line x1="4"  y1="19" x2="9"  y2="19"/>
+          <line x1="29" y1="19" x2="34" y2="19"/>
+          <line x1="8.1"  y1="8.1"  x2="11.6" y2="11.6"/>
+          <line x1="26.4" y1="26.4" x2="29.9" y2="29.9"/>
+          <line x1="29.9" y1="8.1"  x2="26.4" y2="11.6"/>
+          <line x1="11.6" y1="26.4" x2="8.1"  y2="29.9"/>
+        </g>
+        <circle cx="19" cy="19" r="5" fill="#F5D97E"/>
+      </svg>
+      <div class="nav-logo-text">
+        <span class="nav-logo-name">UNIT</span>
+        <span class="nav-logo-sub">AI Workers</span>
+      </div>
+    </a>
+
+    {{-- Center links --}}
+    <div class="nav-links">
+      <a href="{{ route('workers.page') }}" class="nav-link">Meet the Team</a>
+      <a href="#day-in-life" class="nav-link">How It Works</a>
+      <a href="#faq" class="nav-link">For Business</a>
+      <a href="#integrations" class="nav-link">Resources</a>
+      <a href="{{ route('pricing') }}" class="nav-link">Pricing</a>
+    </div>
+
+    {{-- Actions --}}
+    <div class="nav-actions">
       @auth
-        <a href="{{ route('dashboard') }}" class="btn-nav-ghost">Dashboard</a>
+        <a href="{{ route('dashboard') }}" class="btn-login">Dashboard</a>
       @else
-        <a href="{{ route('login') }}" class="btn-nav-ghost">Log in</a>
+        <a href="{{ route('login') }}" class="btn-login">Log in</a>
       @endauth
       <a href="{{ route('register') }}" class="btn-nav-hire">
         Hire {{ $worker['name'] }}
