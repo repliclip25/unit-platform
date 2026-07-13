@@ -470,5 +470,6 @@ Route::post('/influencer/apply', [InfluencerController::class, 'submitApplicatio
 
 // ── Homepage A/B test
 Route::get('/home2', fn() => view('welcome-2'))->name('home2');
+Route::get('/workers', fn() => view('workers'))->name('workers.page');
 
 require __DIR__.'/auth.php';
