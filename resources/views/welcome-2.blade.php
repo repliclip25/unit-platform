@@ -1071,7 +1071,7 @@ body{
       <!-- DOX -->
       <div class="wk-card" style="border-top:3px solid #111">
         <div class="wk-img-bg">
-          <img src="/images/ava.png" alt="DOX" style="object-position:center top">
+          <img src="/images/dox.png" alt="DOX" style="object-position:center top">
         </div>
         <div class="wk-content">
           <div class="wk-head">
@@ -1230,7 +1230,7 @@ body{
       </div>
       <div class="lc-row">
         <div class="lc-photo">
-          <img src="/images/ava.png" alt="Wake up">
+          <img src="/images/ava-life.png" alt="Wake up">
           <div class="lc-photo-body">
             <div class="lc-photo-step" style="color:var(--brand)">1. Wake Up</div>
             <div class="lc-photo-txt">Ready for the day at the desk.</div>
@@ -1238,7 +1238,7 @@ body{
         </div>
         <div class="lc-arrow">→</div>
         <div class="lc-photo">
-          <img src="/images/ava.png" alt="Receive work">
+          <img src="/images/dox-life.png" alt="Receive work">
           <div class="lc-photo-body">
             <div class="lc-photo-step" style="color:var(--text)">2. Receive Work</div>
             <div class="lc-photo-txt">New tasks. New opportunities.</div>
@@ -1246,7 +1246,7 @@ body{
         </div>
         <div class="lc-arrow">→</div>
         <div class="lc-photo">
-          <img src="/images/ava.png" alt="Do the work">
+          <img src="/images/mox-life.png" alt="Do the work">
           <div class="lc-photo-body">
             <div class="lc-photo-step" style="color:var(--text)">3. Do the Work</div>
             <div class="lc-photo-txt">Focus. Execute. Deliver results.</div>
@@ -1254,7 +1254,7 @@ body{
         </div>
         <div class="lc-arrow">→</div>
         <div class="lc-photo">
-          <img src="/images/ava.png" alt="Write their diary">
+          <img src="/images/nux-life.png" alt="Write their diary">
           <div class="lc-photo-body">
             <div class="lc-photo-step" style="color:var(--text)">4. Write Their Diary</div>
             <div class="lc-photo-txt">Reflect, learn, get better tomorrow.</div>
