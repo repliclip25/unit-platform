@@ -227,6 +227,14 @@ body{font-family:var(--font-b);color:var(--text);background:var(--bg);-webkit-fo
 .wk-bullet{display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:500;color:var(--t2)}
 .wk-check{width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .wk-check svg{width:10px;height:10px;stroke:#fff;stroke-width:2.5;fill:none}
+.wk-btns{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.btn-hire-wk{
+  display:inline-flex;align-items:center;gap:7px;
+  padding:10px 18px;border-radius:10px;
+  font-size:13px;font-weight:700;color:#fff;
+  width:fit-content;transition:opacity .15s,transform .1s;
+}
+.btn-hire-wk:hover{opacity:.88;transform:translateY(-1px)}
 .btn-watch-wk{
   display:inline-flex;align-items:center;gap:7px;
   padding:10px 18px;border-radius:10px;
@@ -484,10 +492,10 @@ body{font-family:var(--font-b);color:var(--text);background:var(--bg);-webkit-fo
             <div class="wk-bullet"><div class="wk-check" style="background:#4C1D95"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>Reduces churn</div>
             <div class="wk-bullet"><div class="wk-check" style="background:#4C1D95"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>Protects revenue</div>
           </div>
-          <a href="{{ route('workers.public.show', 'ava') }}" class="btn-watch-wk" style="color:#4C1D95;border-color:rgba(76,29,149,.3)">
-            Watch Ava's Day
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-          </a>
+          <div class="wk-btns">
+            <a href="{{ route('register') }}" class="btn-hire-wk" style="background:#4C1D95">Hire AVA <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+            <a href="{{ route('workers.public.show', 'ava') }}" class="btn-watch-wk" style="color:#4C1D95;border-color:rgba(76,29,149,.3)">Watch Ava's Day <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+          </div>
         </div>
       </div>
 
@@ -511,10 +519,10 @@ body{font-family:var(--font-b);color:var(--text);background:var(--bg);-webkit-fo
             <div class="wk-bullet"><div class="wk-check" style="background:#1F2937"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>Structures systems</div>
             <div class="wk-bullet"><div class="wk-check" style="background:#1F2937"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>Creates order</div>
           </div>
-          <a href="#" class="btn-watch-wk" style="color:#1F2937;border-color:rgba(31,41,55,.25)">
-            Watch Dox's Day
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-          </a>
+          <div class="wk-btns">
+            <a href="{{ route('register') }}" class="btn-hire-wk" style="background:#1F2937">Hire DOX <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+            <a href="#" class="btn-watch-wk" style="color:#1F2937;border-color:rgba(31,41,55,.25)">Watch Dox's Day <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+          </div>
         </div>
       </div>
 
@@ -538,10 +546,10 @@ body{font-family:var(--font-b);color:var(--text);background:var(--bg);-webkit-fo
             <div class="wk-bullet"><div class="wk-check" style="background:#B45309"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>Creates campaigns</div>
             <div class="wk-bullet"><div class="wk-check" style="background:#B45309"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>Delivers impact</div>
           </div>
-          <a href="#" class="btn-watch-wk" style="color:#B45309;border-color:rgba(180,83,9,.3)">
-            Watch Mox's Day
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-          </a>
+          <div class="wk-btns">
+            <a href="{{ route('register') }}" class="btn-hire-wk" style="background:#B45309">Hire MOX <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+            <a href="#" class="btn-watch-wk" style="color:#B45309;border-color:rgba(180,83,9,.3)">Watch Mox's Day <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+          </div>
         </div>
       </div>
 
@@ -565,10 +573,10 @@ body{font-family:var(--font-b);color:var(--text);background:var(--bg);-webkit-fo
             <div class="wk-bullet"><div class="wk-check" style="background:#1D4ED8"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>Publishes daily</div>
             <div class="wk-bullet"><div class="wk-check" style="background:#1D4ED8"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>Grows your reach</div>
           </div>
-          <a href="#" class="btn-watch-wk" style="color:#1D4ED8;border-color:rgba(29,78,216,.3)">
-            Watch Nux's Day
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-          </a>
+          <div class="wk-btns">
+            <a href="{{ route('register') }}" class="btn-hire-wk" style="background:#1D4ED8">Hire NUX <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+            <a href="#" class="btn-watch-wk" style="color:#1D4ED8;border-color:rgba(29,78,216,.3)">Watch Nux's Day <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+          </div>
         </div>
       </div>
 
