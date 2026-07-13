@@ -352,6 +352,8 @@ body{font-family:var(--font-b);color:var(--text);background:var(--bg);-webkit-fo
     background:linear-gradient(to bottom,transparent 40%,#111 100%);
   }
   .wk-content{width:100%;padding-top:8px}
+  /* reset AVA's scale transform on mobile */
+  .wk-img-bg img{transform:none!important;transform-origin:unset!important;object-position:center top!important}
   .behind-grid{grid-template-columns:1fr}
   .behind-item{border-right:none!important;border-bottom:1px solid var(--border)}
   .behind-item:last-child{border-bottom:none}
