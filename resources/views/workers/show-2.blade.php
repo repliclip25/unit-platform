@@ -321,80 +321,91 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
 .sec-p{font-size:1rem;color:var(--t3);line-height:1.7}
 .center{text-align:center}.center .sec-p{max-width:520px;margin:0 auto}
 
-/* ── PROBLEM SECTION (redesigned) ── */
+/* ── PROBLEM SECTION ── */
 .problem-sec{background:#fff;padding:clamp(60px,8vw,96px) 0 0}
 [data-theme="dark"] .problem-sec{background:#0D0D0D}
-.prob-top{text-align:center;margin-bottom:clamp(36px,5vw,56px);padding:0 var(--pad)}
+/* centered headline */
+.prob-top{text-align:center;margin-bottom:clamp(40px,5vw,64px)}
 .prob-top-eye{
-  display:inline-flex;align-items:center;gap:7px;
+  display:inline-flex;align-items:center;gap:6px;
   font-size:11px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;
-  color:var(--brand);margin-bottom:16px;
+  color:var(--brand);margin-bottom:18px;
 }
-.prob-top-eye svg{width:14px;height:14px;stroke:var(--brand);fill:none;stroke-width:2;stroke-linecap:round}
-.prob-top-h{font-size:clamp(2rem,4vw,3.2rem);font-weight:800;line-height:1.1;letter-spacing:-.03em;color:var(--text);margin-bottom:0}
+.prob-top-h{font-size:clamp(2.2rem,4.5vw,3.6rem);font-weight:800;line-height:1.08;letter-spacing:-.03em;color:var(--text);margin-bottom:0}
 .prob-top-h span{color:var(--brand)}
-.prob-top-sub{font-size:1rem;color:var(--t3);margin-top:14px}
-/* two-col layout — full width, no wasted space */
-.prob-split{display:grid;grid-template-columns:1fr 380px;gap:20px;align-items:start;max-width:var(--max);margin:0 auto;padding:0 var(--pad)}
-/* left: problems panel */
-.prob-panel{
+.prob-top-sub{font-size:1.05rem;color:var(--t3);margin-top:14px}
+/* main two-col: left=problems, right=solution — NO inner container boxing */
+.prob-split{
+  display:grid;
+  grid-template-columns:1fr 400px;
+  gap:clamp(32px,4vw,56px);
+  align-items:start;
+  padding:0 var(--pad);
+  max-width:var(--max);
+  margin:0 auto;
+}
+/* LEFT — flat, no card wrapper */
+.prob-left-header{display:flex;align-items:flex-start;gap:14px;margin-bottom:28px}
+.prob-left-icon{
+  width:38px;height:38px;border-radius:50%;flex-shrink:0;
+  background:var(--brand);
+  display:flex;align-items:center;justify-content:center;margin-top:2px;
+}
+.prob-left-icon svg{width:16px;height:16px;stroke:#fff;fill:none;stroke-width:2.5;stroke-linecap:round}
+.prob-left-title{font-size:19px;font-weight:800;color:var(--text);line-height:1.2}
+.prob-left-sub{font-size:13px;color:var(--t3);margin-top:3px}
+/* 4-col × 2-row problem grid — each item a small card */
+.prob-items{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.prob-item{
   background:#fff;border:1.5px solid #E5E7EB;
-  border-radius:20px;padding:32px 28px;
+  border-radius:14px;padding:18px 16px;
+  display:flex;flex-direction:column;gap:8px;
 }
-[data-theme="dark"] .prob-panel{background:#111;border-color:#2D2D2D}
-.prob-panel-h{display:flex;align-items:center;gap:12px;margin-bottom:4px}
-.prob-panel-icon{
-  width:36px;height:36px;border-radius:50%;flex-shrink:0;
-  background:#0D0D0D;display:flex;align-items:center;justify-content:center;
-}
-[data-theme="dark"] .prob-panel-icon{background:#fff}
-.prob-panel-icon svg{width:16px;height:16px;stroke:#fff;fill:none;stroke-width:2.5;stroke-linecap:round}
-[data-theme="dark"] .prob-panel-icon svg{stroke:#0D0D0D}
-.prob-panel-title{font-size:17px;font-weight:800;color:var(--text)}
-.prob-panel-sub{font-size:13px;color:var(--t3);margin-bottom:22px;padding-left:48px}
-.prob-items{display:grid;grid-template-columns:repeat(5,1fr);gap:20px 16px}
-.prob-item{display:flex;flex-direction:column;gap:7px}
+[data-theme="dark"] .prob-item{background:#111;border-color:#2D2D2D}
 .prob-item-icon{
-  width:36px;height:36px;border-radius:50%;flex-shrink:0;
+  width:38px;height:38px;border-radius:50%;flex-shrink:0;
   background:#F3F4F6;
-  display:flex;align-items:center;justify-content:center;margin-bottom:2px;
+  display:flex;align-items:center;justify-content:center;
 }
 [data-theme="dark"] .prob-item-icon{background:#1a1a1a}
-.prob-item-icon svg{width:16px;height:16px;stroke:#374151;fill:none;stroke-width:1.8;stroke-linecap:round}
+.prob-item-icon svg{width:17px;height:17px;stroke:#374151;fill:none;stroke-width:1.8;stroke-linecap:round}
 [data-theme="dark"] .prob-item-icon svg{stroke:#9CA3AF}
-.prob-item-h{font-size:12.5px;font-weight:700;color:var(--text);line-height:1.35}
-.prob-item-p{font-size:11.5px;color:var(--t3);line-height:1.55}
-/* right: solution panel */
+.prob-item-h{font-size:13px;font-weight:700;color:var(--text);line-height:1.35}
+.prob-item-p{font-size:12px;color:var(--t3);line-height:1.55}
+/* impact banner below items */
+.prob-impact{
+  display:flex;align-items:center;gap:14px;
+  margin-top:20px;
+  background:#F9F9FB;border:1.5px solid #E5E7EB;
+  border-radius:14px;padding:16px 20px;
+}
+[data-theme="dark"] .prob-impact{background:#111;border-color:#2D2D2D}
+.prob-impact-icon{
+  width:40px;height:40px;border-radius:10px;flex-shrink:0;
+  background:#E9E9FF;display:flex;align-items:center;justify-content:center;
+}
+[data-theme="dark"] .prob-impact-icon{background:rgba(var(--brand-rgb),.15)}
+.prob-impact-icon svg{width:20px;height:20px;stroke:var(--brand);fill:none;stroke-width:1.8;stroke-linecap:round}
+.prob-impact-text{font-size:14px;color:var(--text);line-height:1.55}
+.prob-impact-text span{color:var(--brand);font-weight:700}
+/* RIGHT — solution panel */
 .sol-panel{
-  border-radius:20px;overflow:hidden;
-  border:1.5px solid #E5E7EB;
-  display:flex;flex-direction:column;
+  background:#F8F8FD;border:1.5px solid #E5E7EB;
+  border-radius:20px;padding:24px 22px;
 }
-[data-theme="dark"] .sol-panel{border-color:#2D2D2D}
-.sol-header{
-  background:#0D0D0D;
-  padding:11px 20px;
-  font-size:11px;font-weight:700;letter-spacing:.13em;
-  text-transform:uppercase;color:#fff;text-align:center;
+[data-theme="dark"] .sol-panel{background:#111;border-color:#2D2D2D}
+.sol-pill{
+  display:inline-flex;align-items:center;gap:7px;
+  background:var(--brand);color:#fff;
+  font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  padding:6px 14px;border-radius:99px;margin-bottom:18px;
 }
-[data-theme="dark"] .sol-header{background:#1a1a1a}
-.sol-body{
-  background:#fff;padding:24px 22px;
-  display:flex;flex-direction:column;flex:1;
-}
-[data-theme="dark"] .sol-body{background:#111}
-.sol-meet{font-size:24px;font-weight:800;color:#0D0D0D;margin-bottom:2px}
+.sol-meet{font-size:26px;font-weight:800;color:#0D0D0D;margin-bottom:3px;line-height:1.1}
 [data-theme="dark"] .sol-meet{color:#F3F4F6}
 .sol-meet span{color:var(--brand)}
-.sol-role{font-size:13px;color:var(--t3);margin-bottom:20px}
-.sol-delivers{
-  font-size:22px;font-weight:800;color:#0D0D0D;
-  margin-bottom:16px;letter-spacing:-.02em;line-height:1.1;
-}
-[data-theme="dark"] .sol-delivers{color:#F3F4F6}
-.sol-delivers span{color:var(--brand)}
-.sol-checks{display:flex;flex-direction:column;gap:9px}
-.sol-check{display:flex;align-items:center;gap:10px;font-size:13.5px;color:#0D0D0D}
+.sol-role{font-size:14px;color:var(--t3);margin-bottom:20px}
+.sol-checks{display:flex;flex-direction:column;gap:10px;margin-bottom:20px}
+.sol-check{display:flex;align-items:center;gap:10px;font-size:14px;color:#0D0D0D}
 [data-theme="dark"] .sol-check{color:#F3F4F6}
 .sol-chk{
   width:22px;height:22px;border-radius:50%;flex-shrink:0;
@@ -402,78 +413,50 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
   display:flex;align-items:center;justify-content:center;
 }
 .sol-chk svg{width:11px;height:11px;stroke:#fff;stroke-width:2.5;fill:none;stroke-linecap:round}
-.sol-cta-bar{
-  background:#0D0D0D;color:#fff;
-  padding:16px 18px;margin-top:20px;border-radius:12px;
+.sol-peace{
+  display:flex;align-items:flex-start;gap:12px;
+  background:#fff;border:1.5px solid #E5E7EB;
+  border-radius:14px;padding:16px;
 }
-[data-theme="dark"] .sol-cta-bar{background:#1a1a1a}
-.sol-cta-title{font-size:14px;font-weight:700;color:#fff;display:flex;align-items:center;gap:7px;margin-bottom:5px}
-.sol-cta-desc{font-size:12px;color:rgba(255,255,255,.65);line-height:1.55}
-/* bottom 4-stat bar */
-.prob-stats-bar{
-  display:grid;grid-template-columns:repeat(4,1fr);
-  gap:0;border-top:1.5px solid #E5E7EB;margin-top:28px;
-}
-[data-theme="dark"] .prob-stats-bar{border-color:#2D2D2D}
-.prob-stat-item{
-  display:flex;align-items:flex-start;gap:14px;
-  padding:28px 24px;border-right:1.5px solid #E5E7EB;
-}
-[data-theme="dark"] .prob-stat-item{border-color:#2D2D2D}
-.prob-stat-item:last-child{border-right:none}
-.prob-stat-icon{
-  width:44px;height:44px;border-radius:50%;flex-shrink:0;
-  background:#F3F4F6;
-  display:flex;align-items:center;justify-content:center;margin-top:2px;
-}
-[data-theme="dark"] .prob-stat-icon{background:#1a1a1a}
-.prob-stat-icon svg{width:20px;height:20px;stroke:#374151;fill:none;stroke-width:1.8;stroke-linecap:round}
-[data-theme="dark"] .prob-stat-icon svg{stroke:#9CA3AF}
-.prob-stat-h{font-size:14px;font-weight:700;color:var(--text);line-height:1.35;margin-bottom:4px}
-.prob-stat-p{font-size:12.5px;color:var(--t3)}
-/* dark CTA footer strip */
+[data-theme="dark"] .sol-peace{background:#1a1a1a;border-color:#3D3D3D}
+.sol-peace-icon{width:36px;height:36px;border-radius:10px;flex-shrink:0;background:#E9E9FF;display:flex;align-items:center;justify-content:center}
+[data-theme="dark"] .sol-peace-icon{background:rgba(var(--brand-rgb),.15)}
+.sol-peace-icon svg{width:18px;height:18px;stroke:var(--brand);fill:none;stroke-width:2;stroke-linecap:round}
+.sol-peace-h{font-size:14px;font-weight:700;color:var(--brand);margin-bottom:4px}
+.sol-peace-p{font-size:12.5px;color:var(--t3);line-height:1.55}
+/* bottom CTA strip — full width */
 .prob-cta-strip{
-  background:#0F0B1E;
   display:flex;align-items:center;justify-content:space-between;
   flex-wrap:wrap;gap:20px;
-  padding:24px clamp(20px,5vw,48px);
+  padding:24px var(--pad);
+  margin-top:40px;
+  border-top:1.5px solid #E5E7EB;
+  max-width:var(--max);margin-left:auto;margin-right:auto;
 }
-.prob-strip-left{display:flex;align-items:center;gap:14px}
-.prob-strip-icon{
+[data-theme="dark"] .prob-cta-strip{border-color:#2D2D2D}
+.prob-cta-left{display:flex;align-items:center;gap:14px}
+.prob-cta-icon{
   width:44px;height:44px;border-radius:12px;flex-shrink:0;
-  background:var(--brand);display:flex;align-items:center;justify-content:center;
+  background:#F3F4F6;display:flex;align-items:center;justify-content:center;
 }
-.prob-strip-icon svg{width:22px;height:22px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round}
-.prob-strip-text{}
-.prob-strip-t1{font-size:14px;color:rgba(255,255,255,.6);line-height:1.4}
-.prob-strip-t1 span{color:var(--brand);font-weight:700}
-.prob-strip-t2{font-size:15px;font-weight:700;color:#fff;line-height:1.4}
-.prob-strip-t2 span{color:var(--brand)}
-.btn-strip{
+[data-theme="dark"] .prob-cta-icon{background:#1a1a1a}
+.prob-cta-icon svg{width:22px;height:22px;stroke:#374151;fill:none;stroke-width:1.8;stroke-linecap:round}
+[data-theme="dark"] .prob-cta-icon svg{stroke:#9CA3AF}
+.prob-cta-t1{font-size:15px;font-weight:700;color:var(--text)}
+.prob-cta-t2{font-size:13px;color:var(--t3);margin-top:2px}
+.prob-cta-t2 span{color:var(--brand);font-weight:600}
+.btn-prob-cta{
   display:inline-flex;align-items:center;gap:8px;
-  padding:13px 26px;border-radius:10px;
-  font-size:14.5px;font-weight:700;color:#0D0D0D;
-  background:#fff;
+  padding:14px 28px;border-radius:10px;
+  font-size:15px;font-weight:700;color:#fff;
+  background:var(--brand);
   transition:opacity .15s,transform .15s;white-space:nowrap;flex-shrink:0;
 }
-.btn-strip:hover{opacity:.9;transform:translateY(-1px)}
-.prob-strip-right{display:flex;align-items:center;gap:14px;flex-shrink:0}
-.prob-strip-avatars{display:flex}
-.prob-strip-av{
-  width:32px;height:32px;border-radius:50%;
-  border:2px solid #0F0B1E;
-  background:var(--brand);
-  display:flex;align-items:center;justify-content:center;
-  font-size:11px;font-weight:700;color:#fff;
-  margin-left:-8px;
-}
-.prob-strip-av:first-child{margin-left:0}
-.prob-strip-rating{}
-.prob-strip-stars{color:#F59E0B;font-size:13px;letter-spacing:1px}
-.prob-strip-rtext{font-size:11.5px;color:rgba(255,255,255,.5);margin-top:2px}
-@media(max-width:1024px){.prob-split{grid-template-columns:1fr;} .sol-panel{order:-1}}
-@media(max-width:768px){.prob-items{grid-template-columns:repeat(2,1fr)} .prob-stats-bar{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:480px){.prob-items{grid-template-columns:1fr} .prob-stats-bar{grid-template-columns:1fr} .prob-cta-strip{flex-direction:column;align-items:flex-start}}
+.btn-prob-cta:hover{opacity:.9;transform:translateY(-1px)}
+.btn-prob-cta svg{flex-shrink:0}
+@media(max-width:1024px){.prob-split{grid-template-columns:1fr}}
+@media(max-width:768px){.prob-items{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:480px){.prob-items{grid-template-columns:1fr}.prob-cta-strip{flex-direction:column;align-items:flex-start}}
 
 /* ── DAY IN LIFE / PIPELINE ── */
 .day-sec{background:#F9F9FB;padding:clamp(56px,7vw,88px) 0}
@@ -881,122 +864,119 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
 
 </section>
 
-{{-- THE PROBLEM (redesigned) --}}
+{{-- THE PROBLEM --}}
 <section class="problem-sec">
-  {{-- Top heading --}}
-  <div class="prob-top">
-      <div class="prob-top-eye">
-        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-        The Problem
-      </div>
-      <h2 class="prob-top-h">Renewals are everywhere.<br><span>Oversight is human.</span></h2>
-      <p class="prob-top-sub">Small misses. Quiet losses. Big consequences.</p>
+
+  {{-- Centered headline --}}
+  <div class="prob-top" style="padding:0 var(--pad)">
+    <div class="prob-top-eye">
+      <svg viewBox="0 0 24 24" width="13" height="13"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      The Problem
     </div>
-
-    {{-- Two-col split — no inner .w, uses its own padding --}}
-    <div class="prob-split">
-
-      {{-- LEFT: problems panel --}}
-      <div class="prob-panel">
-        <div class="prob-panel-h">
-          <div class="prob-panel-icon">
-            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-          </div>
-          <div class="prob-panel-title">Which of these problems sound familiar?</div>
-        </div>
-        <p class="prob-panel-sub">You're not alone. Every growing business faces these challenges daily.</p>
-        <div class="prob-items">
-          @php $problems = [
-            ['icon'=>'<path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/>','h'=>'Nobody owns renewals.','p'=>'Permits, licenses, contracts, domains— no clear owner.'],
-            ['icon'=>'<path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/>','h'=>'Your inbox is the system.','p'=>'Important emails get buried, deleted, or missed.'],
-            ['icon'=>'<line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/>','h'=>'Money leaks through unnoticed.','p'=>'Unused software, duplicate subscriptions, forgotten vendors.'],
-            ['icon'=>'<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>','h'=>'Licenses expire unexpectedly.','p'=>'One missed renewal can stop operations or create fines.'],
-            ['icon'=>'<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>','h'=>'Hours wasted weekly.','p'=>'Checking spreadsheets, portals, emails, and calendars.'],
-            ['icon'=>'<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/>','h'=>'Everyone uses a different system.','p'=>'Finance, Ops, IT— nobody sees the full picture.'],
-            ['icon'=>'<path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/>','h'=>'Manual reminders don\'t scale.','p'=>'Calendars, sticky notes, spreadsheets— something gets missed.'],
-            ['icon'=>'<circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3M12 17h.01"/>','h'=>'You don\'t know what\'s due next.','p'=>'You only find out when someone asks... or after the deadline.'],
-            ['icon'=>'<path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/>','h'=>'It depends on one person.','p'=>'Vacation, sick leave, resignation— knowledge walks out.'],
-            ['icon'=>'<polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>','h'=>'Customers quietly churn.','p'=>'Contracts lapse. Opportunities disappear. Revenue walks away.'],
-          ]; @endphp
-          @foreach($problems as $p)
-          <div class="prob-item">
-            <div class="prob-item-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">{!! $p['icon'] !!}</svg></div>
-            <div class="prob-item-h">{{ $p['h'] }}</div>
-            <div class="prob-item-p">{{ $p['p'] }}</div>
-          </div>
-          @endforeach
-        </div>
-      </div>
-
-      {{-- RIGHT: solution panel --}}
-      <div class="sol-panel">
-        <div class="sol-header">The Solution</div>
-        <div class="sol-body">
-          <div class="sol-meet">Meet <span>AVA</span></div>
-          <div class="sol-role">Your Renewal Worker.</div>
-          <div class="sol-delivers"><span>AVA</span> Delivers.</div>
-          <div class="sol-checks">
-            @foreach(['Watches every renewal','Reads every renewal email','Tracks every deadline','Finds every subscription','Drafts every renewal','Reminds the right people','Never takes vacation','Never forgets','Works 24 / 7'] as $c)
-            <div class="sol-check">
-              <div class="sol-chk"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
-              {{ $c }}
-            </div>
-            @endforeach
-          </div>
-          <div class="sol-cta-bar">
-            <div class="sol-cta-title">✨ Peace of mind. Protected.</div>
-            <div class="sol-cta-desc">AVA catches what humans miss—before it becomes a problem, a penalty, or a lost customer.</div>
-          </div>
-        </div>
-      </div>
-
-    </div>{{-- end .prob-split --}}
-
-  {{-- 4-stat bar --}}
-  <div class="prob-stats-bar">
-    @php $stats = [
-      ['icon'=>'<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/>','h'=>'Avoid penalties and legal risks','p'=>'Stay compliant. Stay protected.'],
-      ['icon'=>'<line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/>','h'=>'Save thousands in unnecessary renewals','p'=>'Stop paying for what you don\'t use.'],
-      ['icon'=>'<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>','h'=>'Save 10+ hours per week','p'=>'Your team focuses on real work.'],
-      ['icon'=>'<polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>','h'=>'Protect revenue and customer relationships','p'=>'Never miss another renewal opportunity.'],
-    ]; @endphp
-    @foreach($stats as $s)
-    <div class="prob-stat-item">
-      <div class="prob-stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">{!! $s['icon'] !!}</svg></div>
-      <div>
-        <div class="prob-stat-h">{{ $s['h'] }}</div>
-        <div class="prob-stat-p">{{ $s['p'] }}</div>
-      </div>
-    </div>
-    @endforeach
+    <h2 class="prob-top-h">Renewals are mission-critical.<br><span>But they're easy to miss.</span></h2>
+    <p class="prob-top-sub">Deadlines slip. Money leaks. Opportunities disappear.</p>
   </div>
 
-  {{-- Dark CTA strip --}}
-  <div class="prob-cta-strip">
-    <div class="prob-strip-left">
-      <div class="prob-strip-icon">
-        <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+  {{-- Two-col split --}}
+  <div class="prob-split">
+
+    {{-- LEFT: flat, no card wrapper —  items sit directly on the page --}}
+    <div>
+      <div class="prob-left-header">
+        <div class="prob-left-icon">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        </div>
+        <div>
+          <div class="prob-left-title">Which of these problems hit your team?</div>
+          <div class="prob-left-sub">If you nodded at even one, you're not alone.</div>
+        </div>
       </div>
-      <div class="prob-strip-text">
-        <div class="prob-strip-t1">Renewals are too important to leave to chance.</div>
-        <div class="prob-strip-t2"><span>AVA</span> protects what keeps your business running.</div>
+
+      {{-- 4×2 grid of small item cards --}}
+      <div class="prob-items">
+        @php $problems = [
+          ['icon'=>'<path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/>','h'=>'Nobody owns renewals.','p'=>'Permits, licenses, contracts— no single owner, no accountability.'],
+          ['icon'=>'<path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/>','h'=>'Inbox chaos.','p'=>'Renewal emails get buried, deleted, or never even seen.'],
+          ['icon'=>'<line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/>','h'=>'Money leaks quietly.','p'=>'Unused software, duplicates, and forgotten vendors drain budgets.'],
+          ['icon'=>'<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>','h'=>'Licenses expire without warning.','p'=>'One missed renewal can halt operations or trigger fines.'],
+          ['icon'=>'<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>','h'=>'Hours wasted every week.','p'=>'Spreadsheets, portals, emails, follow-ups— it never ends.'],
+          ['icon'=>'<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/>','h'=>'Everyone has their own system.','p'=>'No single source of truth. No visibility. No accountability.'],
+          ['icon'=>'<circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3M12 17h.01"/>','h'=>'You don\'t know what\'s due next.','p'=>'You find out only when someone asks— or after the deadline.'],
+          ['icon'=>'<path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/>','h'=>'It depends on one person.','p'=>'Vacation, sick leave, resignation— institutional knowledge disappears.'],
+        ]; @endphp
+        @foreach($problems as $p)
+        <div class="prob-item">
+          <div class="prob-item-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">{!! $p['icon'] !!}</svg></div>
+          <div class="prob-item-h">{{ $p['h'] }}</div>
+          <div class="prob-item-p">{{ $p['p'] }}</div>
+        </div>
+        @endforeach
+      </div>
+
+      {{-- Impact banner below grid --}}
+      <div class="prob-impact">
+        <div class="prob-impact-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <div class="prob-impact-text">
+          Missed renewals don't just create problems. They cost <span>money, time, and credibility.</span>
+        </div>
       </div>
     </div>
-    <a href="{{ route('register') }}" class="btn-strip">
+
+    {{-- RIGHT: solution panel --}}
+    <div class="sol-panel">
+      <div class="sol-pill">
+        <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+        The Solution
+      </div>
+      <div class="sol-meet">Meet <span>AVA.</span></div>
+      <div class="sol-role">Your Renewal Worker.</div>
+      <div class="sol-checks">
+        @foreach([
+          'Detects upcoming renewals automatically',
+          'Reads every renewal email in your inbox',
+          'Tracks every deadline across every system',
+          'Finds every subscription and contract',
+          'Drafts renewal responses and submissions',
+          'Reminds the right person at the right time',
+          'Keeps revenue and relationships protected',
+          'Works 24 / 7. Never forgets. Never sleeps.',
+        ] as $c)
+        <div class="sol-check">
+          <div class="sol-chk"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+          {{ $c }}
+        </div>
+        @endforeach
+      </div>
+      <div class="sol-peace">
+        <div class="sol-peace-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <div>
+          <div class="sol-peace-h">Peace of mind. Protected.</div>
+          <div class="sol-peace-p">AVA catches what humans miss — before it becomes a penalty, a lost client, or a failed compliance check.</div>
+        </div>
+      </div>
+    </div>
+
+  </div>{{-- end .prob-split --}}
+
+  {{-- Bottom CTA bar --}}
+  <div class="prob-cta-strip">
+    <div class="prob-cta-left">
+      <div class="prob-cta-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      </div>
+      <div>
+        <div class="prob-cta-t1">Renewals are too important to leave to chance.</div>
+        <div class="prob-cta-t2">Let <span>AVA</span> handle them — so your business keeps moving forward.</div>
+      </div>
+    </div>
+    <a href="{{ route('register') }}" class="btn-prob-cta">
       See AVA in Action
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
     </a>
-    <div class="prob-strip-right">
-      <div class="prob-strip-avatars">
-        @foreach(['A','B','C','D','E'] as $av)
-        <div class="prob-strip-av">{{ $av }}</div>
-        @endforeach
-      </div>
-      <div class="prob-strip-rating">
-        <div class="prob-strip-stars">★★★★★</div>
-        <div class="prob-strip-rtext">Trusted by operations teams<br>across 100+ industries</div>
-      </div>
-    </div>
   </div>
 
 </section>
