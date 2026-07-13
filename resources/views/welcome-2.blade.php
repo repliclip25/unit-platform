@@ -713,26 +713,20 @@ body{
   .hero-left{padding:40px var(--pad);text-align:center}
   .hero-btns{justify-content:center}
   .hero-proof{justify-content:center}
-  /* timeline: horizontal scroll on mobile */
-  .timeline-sec .w{overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:8px}
-  .tl{
-    display:flex;flex-direction:row;
-    grid-template-columns:unset;
-    gap:0;width:max-content;min-width:100%;
-  }
-  .tl-item{min-width:160px;padding:0 12px}
+  .tl{grid-template-columns:repeat(2,1fr)}
   .ft-grid{grid-template-columns:1fr}
   .ft-bottom{flex-direction:column;text-align:center}
-  /* lifecycle: horizontal scroll on mobile */
-  .lc-row{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:8px;gap:12px}
-  .lc-photo{min-width:200px;flex-shrink:0}
+  /* lifecycle: strip the card border, 2-col grid */
+  .lc-card{border:none;box-shadow:none;padding:0;background:transparent!important}
+  .lc-row{flex-wrap:wrap;gap:12px}
+  .lc-photo{min-width:calc(50% - 8px);flex:1}
 }
 @media(max-width:480px){
   .wk-grid{grid-template-columns:1fr}
+  .tl{grid-template-columns:repeat(2,1fr)}
   .hero-btns{flex-direction:column;align-items:stretch}
   .btn-hero,.btn-hero-ghost{justify-content:center}
-  .tl-item{min-width:140px}
-  .lc-photo{min-width:180px}
+  .lc-photo{min-width:calc(50% - 8px);flex:1}
 }
 </style>
 </head>
