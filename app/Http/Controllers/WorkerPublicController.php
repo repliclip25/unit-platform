@@ -104,9 +104,9 @@ class WorkerPublicController extends Controller
         ]);
     }
 
-    // ── v2 worker page (A/B layer — same data, new view)
+    // ── Per-worker public profile page (workers/public/{slug}.blade.php)
     public function show2(string $slug)
     {
-        return $this->show($slug, 'workers.show-2');
+        return $this->show($slug, "workers.public.{$slug}");
     }
 }

@@ -52,9 +52,7 @@ Route::get('/health', function () {
 
 // ─── Public routes ────────────────────────────────────────────────────────────
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', fn() => view('welcome-2'))->name('home');
 
 // Account deletion confirmation (token-authenticated, no login required)
 Route::get('/account/delete-confirm/{token}',  [\App\Http\Controllers\AccountDeletionController::class, 'confirm'])->name('account.delete-confirm');
@@ -468,8 +466,6 @@ Route::get('/referral', [ReferralController::class, 'index'])->name('referral.in
 Route::get('/influencer/apply',  [InfluencerController::class, 'apply'])->name('influencer.apply');
 Route::post('/influencer/apply', [InfluencerController::class, 'submitApplication'])->name('influencer.apply.submit');
 
-// ── Homepage A/B test
-Route::get('/home2', fn() => view('welcome-2'))->name('home2');
 Route::get('/workers', fn() => view('workers'))->name('workers.page');
 Route::get('/w2/{slug}', [WorkerPublicController::class, 'show2'])->name('workers.public.show2');
 
