@@ -234,7 +234,7 @@ body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-fon
   html,body{overflow:auto;height:auto}
   .ob-page{grid-template-columns:1fr;height:auto;overflow:visible}
 
-  /* Sidebar → slim sticky top bar */
+  /* Sidebar → slim top bar */
   .ob-sidebar{
     flex-direction:row;align-items:center;justify-content:space-between;
     padding:14px 20px;border-bottom:1px solid #E5E7EB;
@@ -255,30 +255,24 @@ body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-fon
     display:flex;flex-direction:column;
     width:100%;height:auto;max-height:none;
     border-radius:20px;
-    box-shadow:0 2px 12px rgba(0,0,0,.06);
+    box-shadow:0 2px 12px rgba(0,0,0,.08);
   }
 
-  /* Hero: keep full-bleed image, anchor it hard right */
-  .ob-hero{min-height:580px}
-  .ob-hero-img{
-    object-position:right top;
+  /* Hero: image is taller, content below via flex column */
+  .ob-hero{
+    min-height:340px;
+    /* image takes up ~40% of space */
   }
-  /* Stronger left-to-right fade so text area is clean white */
   .ob-hero-fade{
-    background:linear-gradient(to right,
-      #fff 0%,
-      #fff 40%,
-      rgba(255,255,255,.7) 60%,
-      rgba(255,255,255,.1) 80%,
-      transparent 100%
-    );
+    /* On mobile: fade from bottom, not from left */
+    background:linear-gradient(to top,#fff 0%,#fff 20%,rgba(255,255,255,.75) 40%,rgba(255,255,255,.2) 60%,transparent 80%);
   }
   .ob-hero-content{
     position:relative;z-index:2;
-    background:transparent;
-    padding:28px 24px;
-    max-width:70%;height:100%;
-    display:flex;flex-direction:column;justify-content:center;
+    padding:24px 24px 28px;
+    max-width:100%;height:auto;
+    display:flex;flex-direction:column;justify-content:flex-end;
+    /* Sit at bottom of hero over the image */
   }
   .ob-h1{font-size:1.75rem}
   .ob-sub{font-size:13.5px}
@@ -289,6 +283,8 @@ body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-fon
 
   /* Profile below hero — compact */
   .ob-profile{border-left:none;border-top:1px solid #F0F0F0;padding:20px 24px}
+
+  /* Hide the detail rows on mobile to keep it clean — show name/role + what list + button */
   .emp-divider{display:none}
   .emp-row{display:none}
   .emp-eyebrow{font-size:8px}
@@ -297,7 +293,7 @@ body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-fon
 
 /* ══ Phone (≤ 480px) ══ */
 @media(max-width:480px){
-  .ob-hero-img{height:220px}
+  .ob-hero{min-height:300px}
   .ob-hero-content{padding:20px 20px 24px}
   .ob-h1{font-size:1.5rem}
   .ob-card-area{padding:12px}
