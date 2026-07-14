@@ -352,7 +352,7 @@ body{
   overflow:hidden;
   display:flex;flex-direction:column;
   position:relative;
-  min-height:280px;
+  min-height:340px;
   transition:transform .2s,box-shadow .2s;
 }
 .wk-card:hover{transform:translateY(-4px);box-shadow:0 16px 40px rgba(0,0,0,0.08)}
@@ -361,7 +361,7 @@ body{
 .wk-img-bg{
   position:absolute;
   right:0;top:0;bottom:0;
-  width:55%;
+  width:42%;
   pointer-events:none;
 }
 .wk-img-bg img{
@@ -370,20 +370,20 @@ body{
   object-position:center top;
   display:block;
 }
-/* Fade: white → transparent, stops where content ends (~40%) */
+/* Fade: white → transparent */
 .wk-img-bg::after{
   content:'';
   position:absolute;inset:0;
-  background:linear-gradient(to right, #fff 0%, rgba(255,255,255,.85) 20%, rgba(255,255,255,.3) 38%, transparent 52%);
+  background:linear-gradient(to right, #fff 0%, rgba(255,255,255,.9) 25%, rgba(255,255,255,.4) 50%, transparent 68%);
 }
 
 /* Content — left side, z-index above image */
 .wk-content{
   position:relative;z-index:1;
-  padding:20px 18px 18px;
+  padding:22px 20px 20px;
   display:flex;flex-direction:column;
   flex:1;
-  width:65%; /* leave room for image on right */
+  width:72%;
 }
 /* Icon + name inline */
 .wk-head{display:flex;align-items:center;gap:9px;margin-bottom:6px}
@@ -406,21 +406,21 @@ body{
 .wk-bullet{display:flex;align-items:center;gap:8px;font-size:12.5px;color:#374151}
 .wk-check{width:18px;height:18px;border-radius:50%;background:#0D0D0D;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .wk-check svg{width:10px;height:10px;stroke:#fff;stroke-width:3}
-.wk-btns{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.wk-btns{display:flex;align-items:center;gap:7px;flex-wrap:nowrap;margin-top:auto}
 .btn-wk{
-  display:inline-flex;align-items:center;gap:7px;
-  padding:10px 16px;border-radius:10px;
-  font-size:13px;font-weight:700;color:#fff;background:#0D0D0D;
-  width:fit-content;white-space:nowrap;
+  display:inline-flex;align-items:center;gap:6px;
+  padding:9px 13px;border-radius:10px;
+  font-size:12px;font-weight:700;color:#fff;background:#0D0D0D;
+  white-space:nowrap;flex:1;justify-content:center;
   transition:opacity .15s,transform .1s;
 }
 .btn-wk:hover{opacity:.85;transform:translateY(-1px)}
 .btn-wk-outline{
-  display:inline-flex;align-items:center;gap:7px;
-  padding:10px 16px;border-radius:10px;
-  font-size:13px;font-weight:700;color:#0D0D0D;
+  display:inline-flex;align-items:center;gap:6px;
+  padding:9px 13px;border-radius:10px;
+  font-size:12px;font-weight:700;color:#0D0D0D;
   background:transparent;border:1.5px solid #E5E7EB;
-  width:fit-content;white-space:nowrap;
+  white-space:nowrap;flex:1;justify-content:center;
   transition:border-color .15s,transform .1s;
 }
 .btn-wk-outline:hover{border-color:#0D0D0D;transform:translateY(-1px)}

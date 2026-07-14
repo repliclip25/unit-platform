@@ -438,23 +438,23 @@ body{font-family:var(--font-b);color:var(--text);background:var(--bg);-webkit-fo
     <div class="feed-item"><span class="feed-dot green"></span><span class="feed-worker" style="color:#0D0D0D">AVA</span><span class="feed-action">Renewal drafted for Apex Property Group</span><span class="feed-time">3s ago</span></div>
     <div class="feed-item"><span class="feed-dot green"></span><span class="feed-worker" style="color:#fff">DOX</span><span class="feed-action">1,247 lease files sorted and tagged</span><span class="feed-time">14m ago</span></div>
     <div class="feed-item"><span class="feed-dot amber"></span><span class="feed-worker" style="color:#F59E0B">MOX</span><span class="feed-action">Brand mention found on LinkedIn — flagged for review</span><span class="feed-time">1m ago</span></div>
-    <div class="feed-item"><span class="feed-dot blue"></span><span class="feed-worker" style="color:#60A5FA">NUX</span><span class="feed-action">Campaign published across 3 channels</span><span class="feed-time">22m ago</span></div>
+    <div class="feed-item"><span class="feed-dot blue"></span><span class="feed-worker" style="color:#0D0D0D">NUX</span><span class="feed-action">Campaign published across 3 channels</span><span class="feed-time">22m ago</span></div>
     <div class="feed-item"><span class="feed-dot green"></span><span class="feed-worker" style="color:#0D0D0D">AVA</span><span class="feed-action">Follow-up sent to Sunrise LLC · renewal confirmed</span><span class="feed-time">8m ago</span></div>
     <div class="feed-item"><span class="feed-dot blue"></span><span class="feed-worker" style="color:#fff">DOX</span><span class="feed-action">Contract uploaded · client folder updated automatically</span><span class="feed-time">31m ago</span></div>
     <div class="feed-item"><span class="feed-dot amber"></span><span class="feed-worker" style="color:#F59E0B">MOX</span><span class="feed-action">National Coffee Day opportunity surfaced</span><span class="feed-time">2h ago</span></div>
     <div class="feed-item"><span class="feed-dot green"></span><span class="feed-worker" style="color:#0D0D0D">AVA</span><span class="feed-action">3 renewals processed before 9 AM · zero missed</span><span class="feed-time">today</span></div>
-    <div class="feed-item"><span class="feed-dot blue"></span><span class="feed-worker" style="color:#60A5FA">NUX</span><span class="feed-action">6 posts repurposed from last week's report</span><span class="feed-time">45m ago</span></div>
+    <div class="feed-item"><span class="feed-dot blue"></span><span class="feed-worker" style="color:#0D0D0D">NUX</span><span class="feed-action">6 posts repurposed from last week's report</span><span class="feed-time">45m ago</span></div>
     <div class="feed-item"><span class="feed-dot blue"></span><span class="feed-worker" style="color:#fff">DOX</span><span class="feed-action">Duplicate files removed · 340 MB recovered</span><span class="feed-time">1h ago</span></div>
     <!-- clone set -->
     <div class="feed-item"><span class="feed-dot green"></span><span class="feed-worker" style="color:#0D0D0D">AVA</span><span class="feed-action">Renewal drafted for Apex Property Group</span><span class="feed-time">3s ago</span></div>
     <div class="feed-item"><span class="feed-dot green"></span><span class="feed-worker" style="color:#fff">DOX</span><span class="feed-action">1,247 lease files sorted and tagged</span><span class="feed-time">14m ago</span></div>
     <div class="feed-item"><span class="feed-dot amber"></span><span class="feed-worker" style="color:#F59E0B">MOX</span><span class="feed-action">Brand mention found on LinkedIn — flagged for review</span><span class="feed-time">1m ago</span></div>
-    <div class="feed-item"><span class="feed-dot blue"></span><span class="feed-worker" style="color:#60A5FA">NUX</span><span class="feed-action">Campaign published across 3 channels</span><span class="feed-time">22m ago</span></div>
+    <div class="feed-item"><span class="feed-dot blue"></span><span class="feed-worker" style="color:#0D0D0D">NUX</span><span class="feed-action">Campaign published across 3 channels</span><span class="feed-time">22m ago</span></div>
     <div class="feed-item"><span class="feed-dot green"></span><span class="feed-worker" style="color:#0D0D0D">AVA</span><span class="feed-action">Follow-up sent to Sunrise LLC · renewal confirmed</span><span class="feed-time">8m ago</span></div>
     <div class="feed-item"><span class="feed-dot blue"></span><span class="feed-worker" style="color:#fff">DOX</span><span class="feed-action">Contract uploaded · client folder updated automatically</span><span class="feed-time">31m ago</span></div>
     <div class="feed-item"><span class="feed-dot amber"></span><span class="feed-worker" style="color:#F59E0B">MOX</span><span class="feed-action">National Coffee Day opportunity surfaced</span><span class="feed-time">2h ago</span></div>
     <div class="feed-item"><span class="feed-dot green"></span><span class="feed-worker" style="color:#0D0D0D">AVA</span><span class="feed-action">3 renewals processed before 9 AM · zero missed</span><span class="feed-time">today</span></div>
-    <div class="feed-item"><span class="feed-dot blue"></span><span class="feed-worker" style="color:#60A5FA">NUX</span><span class="feed-action">6 posts repurposed from last week's report</span><span class="feed-time">45m ago</span></div>
+    <div class="feed-item"><span class="feed-dot blue"></span><span class="feed-worker" style="color:#0D0D0D">NUX</span><span class="feed-action">6 posts repurposed from last week's report</span><span class="feed-time">45m ago</span></div>
     <div class="feed-item"><span class="feed-dot blue"></span><span class="feed-worker" style="color:#fff">DOX</span><span class="feed-action">Duplicate files removed · 340 MB recovered</span><span class="feed-time">1h ago</span></div>
   </div>
 </div>
@@ -524,10 +524,10 @@ body{font-family:var(--font-b);color:var(--text);background:var(--bg);-webkit-fo
         </div>
         <div class="wk-content">
           <div class="wk-head">
-            <div class="wk-icon" style="background:rgba(31,41,55,.09)">
+            <div class="wk-icon" style="background:rgba(0,0,0,.07)">
               <svg viewBox="0 0 24 24" fill="none" stroke="#0D0D0D" stroke-width="2" stroke-linecap="round"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>
             </div>
-            <div class="wk-name" style="color:#1F2937">DOX</div>
+            <div class="wk-name" style="color:#0D0D0D">DOX</div>
           </div>
           <div class="wk-role">Document Specialist</div>
           <p class="wk-quote">"I organize the documents nobody wants to touch."</p>
@@ -551,10 +551,10 @@ body{font-family:var(--font-b);color:var(--text);background:var(--bg);-webkit-fo
         </div>
         <div class="wk-content">
           <div class="wk-head">
-            <div class="wk-icon" style="background:rgba(180,83,9,.1)">
+            <div class="wk-icon" style="background:rgba(0,0,0,.07)">
               <svg viewBox="0 0 24 24" fill="none" stroke="#0D0D0D" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
             </div>
-            <div class="wk-name" style="color:#B45309">MOX</div>
+            <div class="wk-name" style="color:#0D0D0D">MOX</div>
           </div>
           <div class="wk-role">Brand Moments Hunter</div>
           <p class="wk-quote">"I search the world for moments your brand shouldn't miss."</p>
@@ -578,10 +578,10 @@ body{font-family:var(--font-b);color:var(--text);background:var(--bg);-webkit-fo
         </div>
         <div class="wk-content">
           <div class="wk-head">
-            <div class="wk-icon" style="background:rgba(29,78,216,.1)">
+            <div class="wk-icon" style="background:rgba(0,0,0,.07)">
               <svg viewBox="0 0 24 24" fill="none" stroke="#0D0D0D" stroke-width="2" stroke-linecap="round"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
             </div>
-            <div class="wk-name" style="color:#1D4ED8">NUX</div>
+            <div class="wk-name" style="color:#0D0D0D">NUX</div>
           </div>
           <div class="wk-role">Publishing Specialist</div>
           <p class="wk-quote">"I turn one idea into content people actually see."</p>
