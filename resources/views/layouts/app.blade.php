@@ -420,7 +420,7 @@
             <div>
                 <div class="px-3 mb-1.5 flex items-center justify-between">
                     <p class="nav-section-label text-xs uppercase tracking-widest font-semibold">My Team</p>
-                    <a href="{{ route('workers.deploy') }}" class="text-xs font-semibold" class="ac-text">+ Hire</a>
+                    <a href="{{ url('/workers') }}" class="text-xs font-semibold" class="ac-text">+ Hire</a>
                 </div>
                 @forelse($deployments as $dep)
                     @php $isActive = request()->segment(2) == $dep->id; @endphp
@@ -440,7 +440,7 @@
                 @empty
                     <div class="mx-1 px-3 py-4 rounded-lg text-center" style="border:1px dashed var(--border)">
                         <p class="text-xs mb-1" style="color:var(--text-faint)">No employees hired yet</p>
-                        <a href="{{ route('workers.deploy') }}" class="text-xs font-semibold" class="ac-text">Hire your first →</a>
+                        <a href="{{ url('/workers') }}" class="text-xs font-semibold" class="ac-text">Hire your first →</a>
                     </div>
                 @endforelse
             </div>

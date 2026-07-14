@@ -216,7 +216,7 @@ $initials    = collect(explode(' ', $user->name))->map(fn($w) => strtoupper($w[0
             @empty
             <div style="text-align:center;padding:20px 0">
                 <p style="font-size:13px;color:var(--text-muted);margin-bottom:10px">No employees hired yet.</p>
-                <a href="{{ route('workers.deploy') }}"
+                <a href="{{ url('/workers') }}"
                    style="font-size:12px;font-weight:700;padding:8px 16px;border-radius:9px;background:var(--accent);color:#ffffff;text-decoration:none">
                     Hire your first employee →
                 </a>
