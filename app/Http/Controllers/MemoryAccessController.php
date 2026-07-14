@@ -12,6 +12,11 @@ class MemoryAccessController extends Controller
 {
     private const ALLOWED_PERMISSIONS = ['view', 'copy', 'upload', 'modify'];
 
+    public function redirectToAccess()
+    {
+        return redirect()->route('memory')->withFragment('access');
+    }
+
     public static function generateProfileCode(): string
     {
         $chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';

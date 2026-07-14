@@ -150,7 +150,7 @@ Route::middleware(['auth', 'verified', 'onboarded', 'not-pending-del'])->group(f
     Route::delete('/memory/rules/{id}',           [MemoryController::class, 'destroyRule'])->name('memory.rules.destroy');
 
     // ── Memory access (collaboration) ─────────────────────────────────────────
-    Route::get( '/memory/access',                        fn() => redirect()->route('memory', [], 301)->withFragment('access'))->name('memory.access');
+    Route::get( '/memory/access',                        [MemoryAccessController::class, 'redirectToAccess'])->name('memory.access');
     Route::post('/memory/access/invite',                 [MemoryAccessController::class, 'invite'])->name('memory.access.invite');
     Route::post('/memory/access/{grant}/revoke',         [MemoryAccessController::class, 'revoke'])->name('memory.access.revoke');
     Route::get( '/memory/shared/{grant}',                [MemoryAccessController::class, 'sharedMemory'])->name('memory.shared');
