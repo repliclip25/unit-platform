@@ -617,7 +617,52 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
 .industry-label{font-size:11px;font-weight:600;color:var(--t3);text-align:center;line-height:1.3}
 
 /* testimonials */
+.testi-col{position:relative}
 .testi-grid{display:grid;grid-template-columns:1fr;gap:14px}
+.testi-blurred{filter:blur(5px);pointer-events:none;user-select:none;opacity:.7}
+.testi-overlay{
+  position:absolute;inset:0;
+  display:flex;align-items:center;justify-content:center;
+  z-index:10;
+}
+.testi-overlay-card{
+  background:#fff;
+  border:1.5px solid #E5E7EB;
+  border-radius:20px;
+  padding:32px 28px;
+  text-align:center;
+  max-width:340px;
+  box-shadow:0 8px 40px rgba(0,0,0,.1);
+}
+[data-theme="dark"] .testi-overlay-card{background:#111;border-color:#2D2D2D;box-shadow:0 8px 40px rgba(0,0,0,.4)}
+.tov-icon{
+  width:52px;height:52px;border-radius:16px;
+  background:#F3F4F6;
+  display:flex;align-items:center;justify-content:center;
+  margin:0 auto 16px;
+}
+[data-theme="dark"] .tov-icon{background:#1a1a1a}
+.tov-icon svg{width:26px;height:26px;stroke:#374151;fill:none;stroke-width:1.8;stroke-linecap:round}
+[data-theme="dark"] .tov-icon svg{stroke:#9CA3AF}
+.tov-h{font-size:17px;font-weight:800;color:var(--text);margin-bottom:8px;line-height:1.25}
+.tov-p{font-size:13px;color:var(--t3);line-height:1.6;margin-bottom:20px}
+.tov-badges{display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:20px;flex-wrap:wrap}
+.tov-badge{
+  display:inline-flex;align-items:center;gap:5px;
+  font-size:11.5px;font-weight:600;color:var(--t3);
+  background:#F3F4F6;border-radius:99px;padding:5px 12px;
+}
+[data-theme="dark"] .tov-badge{background:#1a1a1a;color:#9CA3AF}
+.btn-tov{
+  display:inline-flex;align-items:center;gap:8px;
+  width:100%;justify-content:center;
+  padding:13px 20px;border-radius:12px;
+  font-size:14px;font-weight:700;color:#fff;
+  background:#0D0D0D;
+  transition:opacity .15s;
+}
+.btn-tov:hover{opacity:.8}
+.tov-sub{font-size:11.5px;color:var(--t4);margin-top:12px}
 .testi-card{
   background:var(--soft);border:1px solid var(--border);
   border-radius:16px;padding:20px;
@@ -1206,9 +1251,10 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
           @endforeach
         </div>
       </div>
-      <div>
+      <div class="testi-col">
         <div class="sec-eye">What business owners say</div>
-        <div class="testi-grid">
+        {{-- Cards visible but blurred — real reviews coming --}}
+        <div class="testi-grid testi-blurred">
           @foreach($worker['testimonials'] as $t)
           <div class="testi-card">
             <div class="testi-stars">★★★★★</div>
@@ -1222,6 +1268,30 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
             </div>
           </div>
           @endforeach
+        </div>
+        {{-- Overlay soliciting real testimonials --}}
+        <div class="testi-overlay">
+          <div class="testi-overlay-card">
+            <div class="tov-icon">
+              <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+            </div>
+            <div class="tov-h">Have you used AVA?<br>We'd love to hear from you.</div>
+            <p class="tov-p">Share your experience and get featured here. Real stories from real operators — no scripts, no fluff.</p>
+            <div class="tov-badges">
+              <span class="tov-badge">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+                Featured on this page
+              </span>
+              <span class="tov-badge">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+                Shared on our socials
+              </span>
+            </div>
+            <a href="mailto:hello@unit.report?subject=My AVA Experience&body=Hi UNIT team, I'd like to share my experience with AVA..." class="btn-tov">
+              Share Your Experience →
+            </a>
+            <div class="tov-sub">Takes 2 minutes · We reply to every submission</div>
+          </div>
         </div>
       </div>
     </div>
