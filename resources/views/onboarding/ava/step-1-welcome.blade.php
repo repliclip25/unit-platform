@@ -111,7 +111,7 @@ body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-fon
   border-radius:20px;
   overflow:hidden;
   /* lighter shadow — card should feel elevated, not heavy */
-  box-shadow:0 4px 24px rgba(0,0,0,.08),0 1px 4px rgba(0,0,0,.04);
+  box-shadow:0 2px 12px rgba(0,0,0,.06),0 1px 3px rgba(0,0,0,.03);
   border:1px solid rgba(0,0,0,.07);
 }
 
