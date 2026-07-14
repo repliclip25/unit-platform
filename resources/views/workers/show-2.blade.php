@@ -633,30 +633,38 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
 .testi-rev{font-size:13px;font-weight:700;color:var(--t3);margin-top:6px}
 
 /* integrations */
-.integrations-sec{background:var(--soft);border-top:1px solid var(--border)}
-[data-theme="dark"] .integrations-sec{background:#161616;border-color:#2D2D2D}
-.int-logos{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px;align-items:center}
+.integrations-sec{background:#fff;border-top:1px solid var(--border);padding:clamp(56px,7vw,80px) 0}
+[data-theme="dark"] .integrations-sec{background:#0D0D0D;border-color:#2D2D2D}
+.int-top{margin-bottom:32px}
+.int-logos{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
 .int-logo{
-  display:flex;align-items:center;gap:8px;
-  padding:10px 16px;border-radius:10px;
-  background:var(--bg);border:1px solid var(--border);
-  font-size:13px;font-weight:600;color:var(--t2);
+  display:flex;align-items:center;gap:9px;
+  padding:12px 20px;border-radius:12px;
+  background:#fff;border:1.5px solid #E5E7EB;
+  font-size:14px;font-weight:600;color:var(--t2);
+  transition:border-color .15s,box-shadow .15s;
 }
+.int-logo:hover{border-color:#9CA3AF;box-shadow:0 2px 8px rgba(0,0,0,.06)}
 [data-theme="dark"] .int-logo{background:#111;border-color:#2D2D2D;color:#D1D5DB}
-.int-logo svg{width:18px;height:18px;flex-shrink:0}
-.int-more{font-size:13px;color:var(--t4);padding:10px 16px}
+.int-logo svg{width:18px;height:18px;flex-shrink:0;stroke:var(--t3)}
+.int-more{font-size:14px;color:var(--t4);padding:12px 4px;font-weight:500}
 
 /* security */
-.sec-badges{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-top:20px}
+.security-sec{background:var(--soft);border-top:1px solid var(--border);padding:clamp(56px,7vw,80px) 0}
+[data-theme="dark"] .security-sec{background:#161616;border-color:#2D2D2D}
+.sec-top{margin-bottom:32px}
+.sec-badges{display:grid;grid-template-columns:repeat(5,1fr);gap:16px}
 .sec-badge{
-  display:flex;flex-direction:column;align-items:center;gap:8px;
-  padding:16px 10px;border-radius:12px;
-  background:var(--bg);border:1px solid var(--border);text-align:center;
+  display:flex;flex-direction:column;align-items:center;gap:10px;
+  padding:24px 14px;border-radius:16px;
+  background:#fff;border:1.5px solid #E5E7EB;text-align:center;
 }
 [data-theme="dark"] .sec-badge{background:#111;border-color:#2D2D2D}
-.sec-badge svg{width:24px;height:24px;color:var(--text)}
-.sec-badge-label{font-size:11px;font-weight:600;color:var(--t2);line-height:1.35}
+.sec-badge svg{width:26px;height:26px;stroke:var(--text);fill:none;stroke-width:1.8}
+.sec-badge-label{font-size:12px;font-weight:600;color:var(--t2);line-height:1.4}
 [data-theme="dark"] .sec-badge-label{color:#D1D5DB}
+@media(max-width:768px){.sec-badges{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:480px){.sec-badges{grid-template-columns:repeat(2,1fr)}}
 
 /* ── FAQ ── */
 .faq-sec{background:var(--bg);border-top:1px solid var(--border)}
@@ -1221,53 +1229,60 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
 </section>
 
 {{-- INTEGRATIONS + SECURITY --}}
-<section class="integrations-sec sec">
+{{-- INTEGRATIONS --}}
+<section class="integrations-sec">
   <div class="w">
-    <div class="split-grid">
-      <div>
-        <div class="sec-eye">{{ $worker['name'] }} connects with</div>
-        <h2 class="sec-h" style="font-size:clamp(1.3rem,2.2vw,1.7rem);margin-bottom:8px">One-click connections. No complex setup.</h2>
-        <div class="int-logos">
-          @php
-            $integrations = [
-              ['Google Workspace','<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 22C6.48 22 2 17.52 2 12S6.48 2 12 2s10 4.48 10 10-4.48 10-10 10z"/><path d="M2 12h20M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>'],
-              ['HubSpot','<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2a5 5 0 015 5 5 5 0 01-5 5 5 5 0 01-5-5 5 5 0 015-5z"/><path d="M12 12c-5.33 0-8 2.67-8 4v2h16v-2c0-1.33-2.67-4-8-4z"/></svg>'],
-              ['Salesforce','<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h16v16H4z"/><path d="M4 9h16M9 4v16"/></svg>'],
-              ['Slack','<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>'],
-              ['QuickBooks','<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>'],
-              ['Outlook','<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>'],
-              ['Calendly','<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>'],
-              ['Stripe','<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>'],
-              ['Zapier','<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>'],
-            ];
-          @endphp
-          @foreach($integrations as $int)
-          <div class="int-logo">{!! $int[1] !!} {{ $int[0] }}</div>
-          @endforeach
-          <span class="int-more">+ More</span>
-        </div>
+    <div class="int-top">
+      <div class="sec-eye">{{ $worker['name'] }} connects with</div>
+      <h2 class="sec-h">One-click connections. No complex setup.</h2>
+    </div>
+    <div class="int-logos">
+      @php
+        $integrations = [
+          ['Google Workspace','<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 22C6.48 22 2 17.52 2 12S6.48 2 12 2s10 4.48 10 10-4.48 10-10 10z"/><path d="M2 12h20M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>'],
+          ['HubSpot','<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2a5 5 0 015 5 5 5 0 01-5 5 5 5 0 01-5-5 5 5 0 015-5z"/><path d="M12 12c-5.33 0-8 2.67-8 4v2h16v-2c0-1.33-2.67-4-8-4z"/></svg>'],
+          ['Salesforce','<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h16v16H4z"/><path d="M4 9h16M9 4v16"/></svg>'],
+          ['Slack','<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>'],
+          ['QuickBooks','<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>'],
+          ['Outlook','<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>'],
+          ['Calendly','<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>'],
+          ['Stripe','<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>'],
+          ['Zapier','<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>'],
+          ['Gmail','<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>'],
+          ['Notion','<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9h6M9 13h6M9 17h4"/></svg>'],
+        ];
+      @endphp
+      @foreach($integrations as $int)
+      <div class="int-logo">{!! $int[1] !!} {{ $int[0] }}</div>
+      @endforeach
+      <span class="int-more">+ More</span>
+    </div>
+  </div>
+</section>
+
+{{-- SECURITY --}}
+<section class="security-sec">
+  <div class="w">
+    <div class="sec-top">
+      <div class="sec-eye">Enterprise-grade security</div>
+      <h2 class="sec-h">Your data is safe. Your trust is everything.</h2>
+    </div>
+    <div class="sec-badges">
+      @php
+        $secBadges = [
+          ['SOC 2 Type II Compliant','<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>'],
+          ['Data encrypted in transit & at rest','<rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/>'],
+          ['Role-based access & permissions','<path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/>'],
+          ['Audit logs & activity history','<path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/>'],
+          ['GDPR Compliant','<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/>'],
+        ];
+      @endphp
+      @foreach($secBadges as $badge)
+      <div class="sec-badge">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">{!! $badge[1] !!}</svg>
+        <div class="sec-badge-label">{{ $badge[0] }}</div>
       </div>
-      <div>
-        <div class="sec-eye">Enterprise-grade security</div>
-        <h2 class="sec-h" style="font-size:clamp(1.3rem,2.2vw,1.7rem);margin-bottom:8px">Your data is safe. Your trust is everything.</h2>
-        <div class="sec-badges">
-          @php
-            $secBadges = [
-              ['SOC 2 Type II Compliant','<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>'],
-              ['Data encrypted in transit & at rest','<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>'],
-              ['Role-based access & permissions','<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>'],
-              ['Audit logs & activity history','<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>'],
-              ['GDPR Compliant','<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>'],
-            ];
-          @endphp
-          @foreach($secBadges as $badge)
-          <div class="sec-badge">
-            {!! $badge[1] !!}
-            <div class="sec-badge-label">{{ $badge[0] }}</div>
-          </div>
-          @endforeach
-        </div>
-      </div>
+      @endforeach
     </div>
   </div>
 </section>
