@@ -555,13 +555,12 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
 @keyframes badgePulse{0%,100%{box-shadow:0 0 0 0 rgba(0,0,0,.3)}50%{box-shadow:0 0 0 5px rgba(0,0,0,0)}}
 .pipe-step.ps-running .pipe-label{color:#0D0D0D;font-weight:800}
 .pipe-step.ps-running .pipe-time{color:#0D0D0D}
-/* done state — bold black border stays; swap icon for green check; time goes green */
+/* done state — bold black border stays; icon goes green; time stays black */
 .pipe-step.ps-done .pipe-node{border-color:#0D0D0D;border-width:2px;background:#fff}
-.pipe-step.ps-done .pipe-node svg{display:none}
-.pipe-step.ps-done .pipe-check{display:flex}
+.pipe-step.ps-done .pipe-node svg{display:block;stroke:#22C55E}
 .pipe-step.ps-done .pipe-badge{background:#0D0D0D}
 .pipe-step.ps-done .pipe-label{color:var(--t3)}
-.pipe-step.ps-done .pipe-time{color:#22C55E;font-weight:700}
+.pipe-step.ps-done .pipe-time{color:#0D0D0D;font-weight:600}
 /* ticker — sits below all step text, with breathing room */
 .pipe-ticker-row{
   min-height:32px;margin-top:24px;margin-bottom:8px;
@@ -590,7 +589,7 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
 .mission-stat-n{font-size:1.4rem;font-weight:800;color:var(--text);letter-spacing:-.03em}
 .mission-stat-l{font-size:11.5px;color:var(--t4);margin-top:2px}
 /* CTA buttons below pipeline */
-.pipe-cta{display:flex;align-items:center;gap:12px;margin-top:28px;flex-wrap:wrap}
+.pipe-cta{display:flex;align-items:center;gap:12px;margin-top:28px;flex-wrap:wrap;width:fit-content}
 .btn-pipe-hire{
   display:inline-flex;align-items:center;gap:8px;
   padding:13px 26px;border-radius:10px;
