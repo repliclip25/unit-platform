@@ -180,7 +180,8 @@ body{
   color:var(--text);
   margin-bottom:20px;
 }
-.hero-h em{font-style:normal;color:var(--brand)}
+.hero-h em{font-style:normal;position:relative;display:inline}
+.hero-h em::after{content:"";position:absolute;left:0;right:0;bottom:-3px;height:4px;background:#F5C518;border-radius:2px}
 .hero-p{
   font-size:clamp(.95rem,1.3vw,1.05rem);
   color:var(--t2);line-height:1.75;
@@ -327,7 +328,7 @@ body{
 
 /* ── SECTION ATOMS ── */
 .sec{padding:clamp(60px,8vw,100px) 0}
-.sec-eye{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--brand);margin-bottom:12px}
+.sec-eye{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#0D0D0D;margin-bottom:12px}
 .sec-h{
   font-family:var(--font-h);
   font-size:clamp(1.7rem,3.2vw,2.6rem);
@@ -445,14 +446,14 @@ body{
 */
 @keyframes nodeActivate{
   0%   {background:#fff;border-color:#D1D5DB;transform:scale(1);color:#111;box-shadow:0 2px 8px rgba(0,0,0,.06)}
-  6%   {background:var(--brand);border-color:var(--brand);transform:scale(1.16);color:#fff;box-shadow:0 0 0 8px rgba(0,0,0,.08),0 0 22px rgba(0,0,0,.2)}
-  13%  {background:var(--brand);border-color:var(--brand);transform:scale(1.12);color:#fff;box-shadow:0 0 0 4px rgba(0,0,0,.04),0 0 12px rgba(0,0,0,.12)}
+  6%   {background:#0D0D0D;border-color:#0D0D0D;transform:scale(1.16);color:#fff;box-shadow:0 0 0 8px rgba(0,0,0,.08),0 0 22px rgba(0,0,0,.2)}
+  13%  {background:#0D0D0D;border-color:#0D0D0D;transform:scale(1.12);color:#fff;box-shadow:0 0 0 4px rgba(0,0,0,.04),0 0 12px rgba(0,0,0,.12)}
   20%  {background:#fff;border-color:#D1D5DB;transform:scale(1);color:#111;box-shadow:0 2px 8px rgba(0,0,0,.06)}
   100% {background:#fff;border-color:#D1D5DB;transform:scale(1);color:#111;box-shadow:0 2px 8px rgba(0,0,0,.06)}
 }
 @keyframes timeFlash{
   0%,20%,100%{color:var(--t3);font-weight:600}
-  6%,13%     {color:var(--brand);font-weight:800}
+  6%,13%     {color:#0D0D0D;font-weight:800}
 }
 .tl-item:nth-child(1) .tl-node {animation:nodeActivate 12s ease-in-out infinite 0s}
 .tl-item:nth-child(2) .tl-node {animation:nodeActivate 12s ease-in-out infinite 2s}
@@ -550,16 +551,17 @@ body{
 .what-tag{
   display:inline-flex;align-items:center;gap:8px;
   padding:5px 12px;border-radius:99px;
-  background:rgba(124,58,237,.1);
+  background:rgba(0,0,0,.05);
   font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
-  color:var(--brand);margin-bottom:20px;
+  color:#0D0D0D;margin-bottom:20px;
 }
 .what-h{
   font-family:var(--font-h);font-size:clamp(1.8rem,3.2vw,2.6rem);
   font-weight:800;letter-spacing:-.03em;line-height:1.12;
   color:var(--text);margin-bottom:16px;
 }
-.what-h em{font-style:normal;color:var(--brand)}
+.what-h em{font-style:normal;position:relative;display:inline}
+.what-h em::after{content:"";position:absolute;left:0;right:0;bottom:-3px;height:4px;background:#F5C518;border-radius:2px}
 .what-sub{font-size:1rem;color:var(--t3);line-height:1.75;margin-bottom:28px;max-width:440px}
 .what-pills{display:flex;flex-wrap:wrap;gap:8px}
 .what-pill{
@@ -653,11 +655,11 @@ body{
 .res-link{
   display:inline-flex;align-items:center;gap:5px;
   font-size:12.5px;font-weight:600;margin-top:10px;
-  color:var(--brand);transition:gap .15s;
+  color:#0D0D0D;transition:gap .15s;
 }
 .res-card:hover .res-link{gap:8px}
 /* badge colors */
-.badge-video{background:rgba(245,197,24,.12);color:var(--brand)}
+.badge-video{background:rgba(245,197,24,.15);color:#0D0D0D}
 [data-theme="dark"] .badge-video{background:rgba(245,197,24,.15);color:#0D0D0D}
 .badge-blog{background:rgba(16,185,129,.1);color:#059669}
 [data-theme="dark"] .badge-blog{background:rgba(16,185,129,.2);color:#6EE7B7}
@@ -748,7 +750,7 @@ body{
   gap:32px;flex-wrap:wrap;
 }
 .cta-left{display:flex;align-items:center;gap:20px}
-.cta-icon{width:56px;height:56px;flex-shrink:0;color:var(--brand)}
+.cta-icon{width:56px;height:56px;flex-shrink:0;color:#0D0D0D}
 .cta-icon svg{width:56px;height:56px}
 .cta-text h2{
   font-family:var(--font-h);font-size:clamp(1.2rem,2.2vw,1.6rem);
@@ -1418,7 +1420,7 @@ body{
         <div class="lc-photo">
           <img src="/images/ava-life.png" alt="Wake up">
           <div class="lc-photo-body">
-            <div class="lc-photo-step" style="color:var(--brand)">1. Wake Up</div>
+            <div class="lc-photo-step" style="color:#0D0D0D">1. Wake Up</div>
             <div class="lc-photo-txt">Ready for the day at the desk.</div>
           </div>
         </div>
