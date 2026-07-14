@@ -231,6 +231,7 @@ body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-fon
    TABLET + MOBILE  (≤ 1024px)
 ══════════════════════════════ */
 @media(max-width:1024px){
+  .ob-hero-img{object-position:right top}
   html,body{overflow:auto;height:auto}
   .ob-page{grid-template-columns:1fr;height:auto;overflow:visible}
 
