@@ -367,21 +367,21 @@ body{font-family:var(--font-b);color:var(--text);background:var(--bg);-webkit-fo
 <!-- NAV -->
 <nav class="nav">
   <div class="w nav-i">
-    <a href="{{ route('home2') }}" class="logo"><span class="logo-name">UNIT</span></a>
+    <a href="{{ url("/") }}" class="logo"><span class="logo-name">UNIT</span></a>
     <ul class="nav-links">
-      <li><a href="{{ route('workers.page') }}" class="active">Meet the Team</a></li>
-      <li><a href="{{ route('home2') }}#timeline">How It Works</a></li>
+      <li><a href="{{ route('workers.page') }}" class="active">Meet the Workers</a></li>
+      <li><a href="{{ url('/') }}#timeline">How It Works</a></li>
       <li><a href="{{ route('marketplace') }}">For Business</a></li>
-      <li><a href="{{ route('home2') }}#resources">Resources</a></li>
+      <li><a href="{{ url('/') }}#resources">Resources</a></li>
       <li><a href="{{ route('pricing') }}">Pricing</a></li>
     </ul>
     <div class="nav-acts">
+      <a href="{{ route('login') }}" class="btn-login" style="border-radius:99px">Log in</a>
+      <a href="{{ route('register') }}" class="btn-cta">Hire Your First Worker <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
       <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">
         <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
         <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
       </button>
-      <a href="{{ route('login') }}" class="btn-login">Log in</a>
-      <a href="{{ route('register') }}" class="btn-cta">Hire Your First Worker <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
     </div>
     <button class="ham" id="ham" aria-label="Menu"><span></span><span></span><span></span></button>
   </div>
@@ -390,16 +390,18 @@ body{font-family:var(--font-b);color:var(--text);background:var(--bg);-webkit-fo
 <!-- MOBILE MENU -->
 <div class="mob-menu" id="mob">
   <div class="mob-top">
-    <a href="{{ route('home2') }}" class="logo"><span class="logo-name">UNIT</span></a>
+    <a href="{{ url("/") }}" class="logo"><span class="logo-name">UNIT</span></a>
     <button class="mob-close" id="mob-close">✕</button>
   </div>
   <div class="mob-links">
-    <a href="{{ route('workers.page') }}" onclick="closeMob()">Meet the Team</a>
-    <a href="{{ route('home2') }}#timeline" onclick="closeMob()">How It Works</a>
+    <a href="{{ route('workers.page') }}" onclick="closeMob()">Meet the Workers</a>
+    <a href="{{ url('/') }}#timeline" onclick="closeMob()">How It Works</a>
+    <a href="{{ route('marketplace') }}" onclick="closeMob()">For Business</a>
+    <a href="{{ url('/') }}#resources" onclick="closeMob()">Resources</a>
     <a href="{{ route('pricing') }}" onclick="closeMob()">Pricing</a>
   </div>
   <div class="mob-ctas">
-    <a href="{{ route('login') }}" class="btn-login" style="text-align:center;padding:12px">Log in</a>
+    <a href="{{ route('login') }}" class="btn-login" style="text-align:center;padding:12px;border-radius:99px">Log in</a>
     <a href="{{ route('register') }}" class="btn-cta" style="padding:12px;justify-content:center">Hire Your First Worker →</a>
   </div>
 </div>
