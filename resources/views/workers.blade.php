@@ -17,7 +17,7 @@ button{cursor:pointer;font-family:inherit;border:none;background:none}
 ul{list-style:none}
 
 :root{
-  --brand:#4C1D95;--brand-dark:#3B1578;
+  --brand:#F5C518;--brand-dark:#0D0D0D;
   --text:#0D0D0D;--t2:#374151;--t3:#6B7280;--t4:#9CA3AF;
   --border:#E5E7EB;--bg:#FFFFFF;--soft:#F8F8F6;
   --font-h:'Inter',sans-serif;--font-b:'Inter',sans-serif;
@@ -25,7 +25,7 @@ ul{list-style:none}
 }
 [data-theme="dark"]{
   --text:#F3F4F6;--t2:#D1D5DB;--t3:#9CA3AF;--t4:#6B7280;
-  --border:#2D2D2D;--bg:#0D0D0D;--soft:#161616;--brand:#7C3AED;
+  --border:#2D2D2D;--bg:#0D0D0D;--soft:#161616;--brand:#F5C518;
 }
 [data-theme="dark"] .nav{background:rgba(13,13,13,.92);border-color:#2D2D2D}
 [data-theme="dark"] .hero-page{background:#0D0D0D}
@@ -41,8 +41,8 @@ ul{list-style:none}
 [data-theme="dark"] .search-wrap input::placeholder{color:#6B7280}
 [data-theme="dark"] .search-wrap svg{color:#6B7280}
 [data-theme="dark"] .tag-btn{background:#1a1a1a;border-color:#3D3D3D;color:#9CA3AF}
-[data-theme="dark"] .tag-btn:hover{border-color:#7C3AED;color:#A78BFA}
-[data-theme="dark"] .tag-btn.on{background:#3B1578;border-color:#7C3AED;color:#A78BFA}
+[data-theme="dark"] .tag-btn:hover{border-color:#0D0D0D;color:#0D0D0D}
+[data-theme="dark"] .tag-btn.on{background:#0D0D0D;border-color:#0D0D0D;color:#fff}
 [data-theme="dark"] .behind-bar{background:#0D0D0D;border-color:#2D2D2D}
 [data-theme="dark"] .behind-item{border-color:#2D2D2D}
 [data-theme="dark"] .behind-icon{background:#1a1a1a}
@@ -74,7 +74,7 @@ body{font-family:var(--font-b);color:var(--text);background:var(--bg);-webkit-fo
 .nav-acts{display:flex;align-items:center;gap:10px}
 .btn-login{padding:8px 18px;border-radius:8px;font-size:14px;font-weight:600;color:var(--t2);border:1px solid var(--border);transition:all .15s}
 .btn-login:hover{border-color:#bbb;color:var(--text)}
-.btn-cta{padding:10px 22px;border-radius:99px;font-size:14px;font-weight:700;background:var(--brand);color:#fff;display:inline-flex;align-items:center;gap:6px;box-shadow:0 2px 12px rgba(107,43,242,.3);transition:opacity .15s,transform .15s}
+.btn-cta{padding:10px 22px;border-radius:99px;font-size:14px;font-weight:700;background:#0D0D0D;color:#fff;display:inline-flex;align-items:center;gap:6px;box-shadow:0 2px 12px rgba(0,0,0,.12);transition:opacity .15s,transform .15s}
 .btn-cta:hover{opacity:.9;transform:translateY(-1px)}
 .ham{display:none;flex-direction:column;gap:5px;padding:4px}
 .ham span{display:block;width:22px;height:2px;background:var(--text);border-radius:2px}
@@ -155,7 +155,7 @@ body{font-family:var(--font-b);color:var(--text);background:var(--bg);-webkit-fo
   outline:none;
   transition:border-color .15s,box-shadow .15s;
 }
-.search-wrap input:focus{border-color:var(--brand);box-shadow:0 0 0 3px rgba(76,29,149,.1)}
+.search-wrap input:focus{border-color:var(--brand);box-shadow:0 0 0 3px rgba(245,197,24,.12)}
 .search-wrap input::placeholder{color:var(--t4)}
 
 /* specialty tag pills */
@@ -272,7 +272,7 @@ body{font-family:var(--font-b);color:var(--text);background:var(--bg);-webkit-fo
 /* ── CTA ── */
 .cta-foot{background:var(--soft);padding:clamp(44px,6vw,72px) 0}
 .cta-foot-inner{
-  background:linear-gradient(135deg,#3B1578,#4C1D95);
+  background:#0D0D0D;
   border-radius:24px;padding:clamp(36px,5vw,56px) clamp(32px,5vw,60px);
   display:flex;align-items:center;justify-content:space-between;gap:32px;flex-wrap:wrap;
   position:relative;overflow:hidden;
@@ -434,25 +434,25 @@ body{font-family:var(--font-b);color:var(--text);background:var(--bg);-webkit-fo
 <!-- ACTIVITY FEED -->
 <div class="activity-feed">
   <div class="feed-track">
-    <div class="feed-item"><span class="feed-dot green"></span><span class="feed-worker" style="color:#7C3AED">AVA</span><span class="feed-action">Renewal drafted for Apex Property Group</span><span class="feed-time">3s ago</span></div>
+    <div class="feed-item"><span class="feed-dot green"></span><span class="feed-worker" style="color:#0D0D0D">AVA</span><span class="feed-action">Renewal drafted for Apex Property Group</span><span class="feed-time">3s ago</span></div>
     <div class="feed-item"><span class="feed-dot green"></span><span class="feed-worker" style="color:#fff">DOX</span><span class="feed-action">1,247 lease files sorted and tagged</span><span class="feed-time">14m ago</span></div>
     <div class="feed-item"><span class="feed-dot amber"></span><span class="feed-worker" style="color:#F59E0B">MOX</span><span class="feed-action">Brand mention found on LinkedIn — flagged for review</span><span class="feed-time">1m ago</span></div>
     <div class="feed-item"><span class="feed-dot blue"></span><span class="feed-worker" style="color:#60A5FA">NUX</span><span class="feed-action">Campaign published across 3 channels</span><span class="feed-time">22m ago</span></div>
-    <div class="feed-item"><span class="feed-dot green"></span><span class="feed-worker" style="color:#7C3AED">AVA</span><span class="feed-action">Follow-up sent to Sunrise LLC · renewal confirmed</span><span class="feed-time">8m ago</span></div>
+    <div class="feed-item"><span class="feed-dot green"></span><span class="feed-worker" style="color:#0D0D0D">AVA</span><span class="feed-action">Follow-up sent to Sunrise LLC · renewal confirmed</span><span class="feed-time">8m ago</span></div>
     <div class="feed-item"><span class="feed-dot blue"></span><span class="feed-worker" style="color:#fff">DOX</span><span class="feed-action">Contract uploaded · client folder updated automatically</span><span class="feed-time">31m ago</span></div>
     <div class="feed-item"><span class="feed-dot amber"></span><span class="feed-worker" style="color:#F59E0B">MOX</span><span class="feed-action">National Coffee Day opportunity surfaced</span><span class="feed-time">2h ago</span></div>
-    <div class="feed-item"><span class="feed-dot green"></span><span class="feed-worker" style="color:#7C3AED">AVA</span><span class="feed-action">3 renewals processed before 9 AM · zero missed</span><span class="feed-time">today</span></div>
+    <div class="feed-item"><span class="feed-dot green"></span><span class="feed-worker" style="color:#0D0D0D">AVA</span><span class="feed-action">3 renewals processed before 9 AM · zero missed</span><span class="feed-time">today</span></div>
     <div class="feed-item"><span class="feed-dot blue"></span><span class="feed-worker" style="color:#60A5FA">NUX</span><span class="feed-action">6 posts repurposed from last week's report</span><span class="feed-time">45m ago</span></div>
     <div class="feed-item"><span class="feed-dot blue"></span><span class="feed-worker" style="color:#fff">DOX</span><span class="feed-action">Duplicate files removed · 340 MB recovered</span><span class="feed-time">1h ago</span></div>
     <!-- clone set -->
-    <div class="feed-item"><span class="feed-dot green"></span><span class="feed-worker" style="color:#7C3AED">AVA</span><span class="feed-action">Renewal drafted for Apex Property Group</span><span class="feed-time">3s ago</span></div>
+    <div class="feed-item"><span class="feed-dot green"></span><span class="feed-worker" style="color:#0D0D0D">AVA</span><span class="feed-action">Renewal drafted for Apex Property Group</span><span class="feed-time">3s ago</span></div>
     <div class="feed-item"><span class="feed-dot green"></span><span class="feed-worker" style="color:#fff">DOX</span><span class="feed-action">1,247 lease files sorted and tagged</span><span class="feed-time">14m ago</span></div>
     <div class="feed-item"><span class="feed-dot amber"></span><span class="feed-worker" style="color:#F59E0B">MOX</span><span class="feed-action">Brand mention found on LinkedIn — flagged for review</span><span class="feed-time">1m ago</span></div>
     <div class="feed-item"><span class="feed-dot blue"></span><span class="feed-worker" style="color:#60A5FA">NUX</span><span class="feed-action">Campaign published across 3 channels</span><span class="feed-time">22m ago</span></div>
-    <div class="feed-item"><span class="feed-dot green"></span><span class="feed-worker" style="color:#7C3AED">AVA</span><span class="feed-action">Follow-up sent to Sunrise LLC · renewal confirmed</span><span class="feed-time">8m ago</span></div>
+    <div class="feed-item"><span class="feed-dot green"></span><span class="feed-worker" style="color:#0D0D0D">AVA</span><span class="feed-action">Follow-up sent to Sunrise LLC · renewal confirmed</span><span class="feed-time">8m ago</span></div>
     <div class="feed-item"><span class="feed-dot blue"></span><span class="feed-worker" style="color:#fff">DOX</span><span class="feed-action">Contract uploaded · client folder updated automatically</span><span class="feed-time">31m ago</span></div>
     <div class="feed-item"><span class="feed-dot amber"></span><span class="feed-worker" style="color:#F59E0B">MOX</span><span class="feed-action">National Coffee Day opportunity surfaced</span><span class="feed-time">2h ago</span></div>
-    <div class="feed-item"><span class="feed-dot green"></span><span class="feed-worker" style="color:#7C3AED">AVA</span><span class="feed-action">3 renewals processed before 9 AM · zero missed</span><span class="feed-time">today</span></div>
+    <div class="feed-item"><span class="feed-dot green"></span><span class="feed-worker" style="color:#0D0D0D">AVA</span><span class="feed-action">3 renewals processed before 9 AM · zero missed</span><span class="feed-time">today</span></div>
     <div class="feed-item"><span class="feed-dot blue"></span><span class="feed-worker" style="color:#60A5FA">NUX</span><span class="feed-action">6 posts repurposed from last week's report</span><span class="feed-time">45m ago</span></div>
     <div class="feed-item"><span class="feed-dot blue"></span><span class="feed-worker" style="color:#fff">DOX</span><span class="feed-action">Duplicate files removed · 340 MB recovered</span><span class="feed-time">1h ago</span></div>
   </div>
@@ -490,28 +490,28 @@ body{font-family:var(--font-b);color:var(--text);background:var(--bg);-webkit-fo
     <div class="wk-grid" id="wk-grid">
 
       <!-- AVA -->
-      <div class="wk-card" data-name="ava" data-tags="renewals" style="border-top:3px solid #4C1D95">
+      <div class="wk-card" data-name="ava" data-tags="renewals" style="border-top:3px solid #0D0D0D">
         <div class="wk-img-bg">
           <img src="/images/ava-stand.png" alt="AVA" style="object-position:center 10%;transform:scale(1.45);transform-origin:top center">
         </div>
         <div class="wk-content">
           <div class="wk-head">
-            <div class="wk-icon" style="background:rgba(107,43,242,.1)">
-              <svg viewBox="0 0 24 24" fill="none" stroke="#4C1D95" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+            <div class="wk-icon" style="background:rgba(245,197,24,.12)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#0D0D0D" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
             </div>
-            <div class="wk-name" style="color:#4C1D95">AVA</div>
+            <div class="wk-name" style="color:#0D0D0D">AVA</div>
           </div>
           <div class="wk-role">Renewals Specialist</div>
           <p class="wk-quote">"I remember the renewals everyone else forgets."</p>
           <div class="wk-bullets">
-            <div class="wk-bullet"><div class="wk-check" style="background:#4C1D95"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>Tracks every renewal</div>
-            <div class="wk-bullet"><div class="wk-check" style="background:#4C1D95"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>Sends reminders</div>
-            <div class="wk-bullet"><div class="wk-check" style="background:#4C1D95"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>Reduces churn</div>
-            <div class="wk-bullet"><div class="wk-check" style="background:#4C1D95"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>Protects revenue</div>
+            <div class="wk-bullet"><div class="wk-check" style="background:#0D0D0D"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>Tracks every renewal</div>
+            <div class="wk-bullet"><div class="wk-check" style="background:#0D0D0D"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>Sends reminders</div>
+            <div class="wk-bullet"><div class="wk-check" style="background:#0D0D0D"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>Reduces churn</div>
+            <div class="wk-bullet"><div class="wk-check" style="background:#0D0D0D"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>Protects revenue</div>
           </div>
           <div class="wk-btns">
-            <a href="{{ route('register') }}" class="btn-hire-wk" style="background:#4C1D95">Hire AVA <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
-            <a href="{{ route('workers.public.show', 'ava') }}" class="btn-watch-wk" style="color:#4C1D95;border-color:rgba(76,29,149,.3)">Watch Ava's Day <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+            <a href="{{ route('register') }}" class="btn-hire-wk" style="background:#0D0D0D">Hire AVA <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+            <a href="{{ route('workers.public.show', 'ava') }}" class="btn-watch-wk" style="color:#0D0D0D;border-color:#E5E7EB">Watch Ava's Day <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
           </div>
         </div>
       </div>

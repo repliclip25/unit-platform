@@ -17,11 +17,11 @@ button{cursor:pointer;font-family:inherit;border:none;background:none}
 ul{list-style:none}
 
 :root{
-  --brand:      #4C1D95;
-  --brand-dark: #3B1578;
-  --brand-soft: rgba(107,43,242,0.08);
+  --brand:      #F5C518;
+  --brand-dark: #0D0D0D;
+  --brand-soft: rgba(245,197,24,0.08);
 
-  --ava:  #4C1D95;
+  --ava:  #0D0D0D;
   --dox:  #111111;
   --mox:  #111111;
   --nux:  #111111;
@@ -50,7 +50,7 @@ ul{list-style:none}
   --border: #2D2D2D;
   --bg:     #0D0D0D;
   --soft:   #161616;
-  --brand:  #7C3AED;
+  --brand:  #F5C518;
 }
 [data-theme="dark"] .nav{background:rgba(13,13,13,.92);border-color:#2D2D2D}
 [data-theme="dark"] .lc-card,[data-theme="dark"] .lc-photo{background:#161616}
@@ -142,12 +142,12 @@ body{
 .btn-login:hover{border-color:#bbb;color:var(--text)}
 .btn-cta{
   padding:10px 22px;border-radius:99px;font-size:14px;font-weight:700;
-  background:var(--brand);color:#fff;
+  background:#0D0D0D;color:#fff;
   display:inline-flex;align-items:center;gap:6px;
   transition:opacity .15s,transform .15s,box-shadow .15s;
-  box-shadow:0 2px 12px rgba(107,43,242,0.3);
+  box-shadow:0 2px 12px rgba(0,0,0,0.15);
 }
-.btn-cta:hover{opacity:.9;transform:translateY(-1px);box-shadow:0 6px 20px rgba(107,43,242,0.35)}
+.btn-cta:hover{opacity:.9;transform:translateY(-1px);box-shadow:0 6px 20px rgba(0,0,0,0.15)}
 .ham{display:none;flex-direction:column;gap:5px;padding:4px}
 .ham span{display:block;width:22px;height:2px;background:var(--text);border-radius:2px}
 
@@ -189,12 +189,12 @@ body{
 .hero-btns{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:36px}
 .btn-hero{
   padding:13px 26px;border-radius:99px;font-size:15px;font-weight:700;
-  background:var(--brand);color:#fff;
+  background:#0D0D0D;color:#fff;
   display:inline-flex;align-items:center;gap:7px;
-  box-shadow:0 4px 20px rgba(107,43,242,0.38);
+  box-shadow:0 4px 20px rgba(0,0,0,0.15);
   transition:opacity .15s,transform .15s,box-shadow .15s;
 }
-.btn-hero:hover{opacity:.9;transform:translateY(-2px);box-shadow:0 10px 28px rgba(107,43,242,0.42)}
+.btn-hero:hover{opacity:.9;transform:translateY(-2px);box-shadow:0 10px 28px rgba(0,0,0,0.2)}
 .btn-hero-ghost{
   padding:12px 22px;border-radius:99px;font-size:15px;font-weight:600;
   color:var(--t2);border:1.5px solid var(--border);
@@ -445,8 +445,8 @@ body{
 */
 @keyframes nodeActivate{
   0%   {background:#fff;border-color:#D1D5DB;transform:scale(1);color:#111;box-shadow:0 2px 8px rgba(0,0,0,.06)}
-  6%   {background:var(--brand);border-color:var(--brand);transform:scale(1.16);color:#fff;box-shadow:0 0 0 8px rgba(76,29,149,.14),0 0 22px rgba(76,29,149,.45)}
-  13%  {background:var(--brand);border-color:var(--brand);transform:scale(1.12);color:#fff;box-shadow:0 0 0 4px rgba(76,29,149,.08),0 0 12px rgba(76,29,149,.3)}
+  6%   {background:var(--brand);border-color:var(--brand);transform:scale(1.16);color:#fff;box-shadow:0 0 0 8px rgba(0,0,0,.08),0 0 22px rgba(0,0,0,.2)}
+  13%  {background:var(--brand);border-color:var(--brand);transform:scale(1.12);color:#fff;box-shadow:0 0 0 4px rgba(0,0,0,.04),0 0 12px rgba(0,0,0,.12)}
   20%  {background:#fff;border-color:#D1D5DB;transform:scale(1);color:#111;box-shadow:0 2px 8px rgba(0,0,0,.06)}
   100% {background:#fff;border-color:#D1D5DB;transform:scale(1);color:#111;box-shadow:0 2px 8px rgba(0,0,0,.06)}
 }
@@ -472,7 +472,7 @@ body{
 .tl-evt strong{color:var(--text);display:block;margin-bottom:2px;font-weight:700}
 /* last two nodes start purple-tinted so they always feel "special" */
 .tl-item:nth-child(5) .tl-node,
-.tl-item:nth-child(6) .tl-node{border-color:rgba(76,29,149,.4)}
+.tl-item:nth-child(6) .tl-node{border-color:rgba(0,0,0,.15)}
 
 /* ── LIFECYCLE ── */
 .lifecycle{background:#fff;padding-top:0}
@@ -577,7 +577,7 @@ body{
 [data-theme="dark"] .what-item{background:#161616}
 .what-num{
   width:32px;height:32px;border-radius:9px;
-  background:var(--brand);color:#fff;
+  background:#0D0D0D;color:#fff;
   font-size:13px;font-weight:800;
   display:flex;align-items:center;justify-content:center;
   flex-shrink:0;
@@ -657,8 +657,8 @@ body{
 }
 .res-card:hover .res-link{gap:8px}
 /* badge colors */
-.badge-video{background:rgba(76,29,149,.1);color:var(--brand)}
-[data-theme="dark"] .badge-video{background:rgba(76,29,149,.25);color:#A78BFA}
+.badge-video{background:rgba(245,197,24,.12);color:var(--brand)}
+[data-theme="dark"] .badge-video{background:rgba(245,197,24,.15);color:#0D0D0D}
 .badge-blog{background:rgba(16,185,129,.1);color:#059669}
 [data-theme="dark"] .badge-blog{background:rgba(16,185,129,.2);color:#6EE7B7}
 .badge-report{background:rgba(59,130,246,.1);color:#2563EB}
@@ -682,7 +682,7 @@ body{
 }
 .video-play{
   width:64px;height:64px;border-radius:50%;
-  background:var(--brand);
+  background:#0D0D0D;
   display:flex;align-items:center;justify-content:center;
   box-shadow:0 0 0 12px rgba(124,58,237,.2);
   transition:transform .2s,box-shadow .2s;
@@ -760,8 +760,8 @@ body{
   display:inline-flex;align-items:center;gap:8px;
   padding:14px 28px;border-radius:12px;
   font-size:15px;font-weight:700;
-  background:var(--brand);color:#fff;
-  box-shadow:0 4px 20px rgba(76,29,149,.35);
+  background:#0D0D0D;color:#fff;
+  box-shadow:0 4px 20px rgba(0,0,0,.12);
   white-space:nowrap;
   transition:opacity .15s,transform .15s;
 }
@@ -992,7 +992,7 @@ body{
     <!-- set 1 -->
     <div class="feed-item">
       <span class="feed-dot green"></span>
-      <span class="feed-worker" style="color:#4C1D95">AVA</span>
+      <span class="feed-worker" style="color:#0D0D0D">AVA</span>
       <span class="feed-action">Renewal drafted for Apex Property Group</span>
       <span class="feed-time">3s ago</span>
     </div>
@@ -1016,7 +1016,7 @@ body{
     </div>
     <div class="feed-item">
       <span class="feed-dot green"></span>
-      <span class="feed-worker" style="color:#4C1D95">AVA</span>
+      <span class="feed-worker" style="color:#0D0D0D">AVA</span>
       <span class="feed-action">Follow-up sent to Sunrise LLC · renewal confirmed</span>
       <span class="feed-time">8m ago</span>
     </div>
@@ -1034,7 +1034,7 @@ body{
     </div>
     <div class="feed-item">
       <span class="feed-dot green"></span>
-      <span class="feed-worker" style="color:#4C1D95">AVA</span>
+      <span class="feed-worker" style="color:#0D0D0D">AVA</span>
       <span class="feed-action">3 renewals processed before 9 AM · zero missed</span>
       <span class="feed-time">today</span>
     </div>
@@ -1053,7 +1053,7 @@ body{
     <!-- set 2 — exact clone for seamless loop -->
     <div class="feed-item">
       <span class="feed-dot green"></span>
-      <span class="feed-worker" style="color:#4C1D95">AVA</span>
+      <span class="feed-worker" style="color:#0D0D0D">AVA</span>
       <span class="feed-action">Renewal drafted for Apex Property Group</span>
       <span class="feed-time">3s ago</span>
     </div>
@@ -1077,7 +1077,7 @@ body{
     </div>
     <div class="feed-item">
       <span class="feed-dot green"></span>
-      <span class="feed-worker" style="color:#4C1D95">AVA</span>
+      <span class="feed-worker" style="color:#0D0D0D">AVA</span>
       <span class="feed-action">Follow-up sent to Sunrise LLC · renewal confirmed</span>
       <span class="feed-time">8m ago</span>
     </div>
@@ -1095,7 +1095,7 @@ body{
     </div>
     <div class="feed-item">
       <span class="feed-dot green"></span>
-      <span class="feed-worker" style="color:#4C1D95">AVA</span>
+      <span class="feed-worker" style="color:#0D0D0D">AVA</span>
       <span class="feed-action">3 renewals processed before 9 AM · zero missed</span>
       <span class="feed-time">today</span>
     </div>
@@ -1132,7 +1132,7 @@ body{
         </div>
         <div class="wk-content">
           <div class="wk-head">
-            <div class="wk-icon" style="background:rgba(107,43,242,.1)">
+            <div class="wk-icon" style="background:rgba(245,197,24,.12)">
               <svg viewBox="0 0 24 24" fill="none" stroke="var(--ava)" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
             </div>
             <div class="wk-name" style="color:var(--ava)">AVA</div>
@@ -1286,7 +1286,7 @@ body{
 
         <!-- Card 1: Video -->
         <div class="res-card">
-          <div class="res-thumb" style="background:linear-gradient(135deg,#2D1B69,#4C1D95)">
+          <div class="res-thumb" style="background:#0D0D0D">
             <div class="res-play-ring">
               <div class="res-play-btn">
                 <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
