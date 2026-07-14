@@ -450,8 +450,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-// ── Public Worker Pages ────────────────────────────────────────────────
-Route::get('/w/{slug}', fn($slug) => redirect("/worker/{$slug}", 301)); // legacy redirect
 
 // ── Public Fast Track Submit (no auth) ────────────────────────────
 Route::post('/fast-track/submit', [ReferralController::class, 'fastTrackSubmit'])->name('fast-track.submit');
