@@ -455,10 +455,39 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
 .day-client-name{font-size:14px;font-weight:700;color:var(--text)}
 .day-client-sub{font-size:12.5px;color:var(--t4);margin-top:2px}
 /* pipeline row */
+/* spinning border container */
+@property --pipe-angle{syntax:'<angle>';inherits:false;initial-value:0deg}
+.pipe-wrap{
+  position:relative;
+  border-radius:20px;
+  padding:2px;
+  background:
+    conic-gradient(from var(--pipe-angle),
+      #E5E7EB 0%,#E5E7EB 80%,
+      #0D0D0D 87%,
+      #E5E7EB 93%,#E5E7EB 100%)
+    border-box;
+  animation:pipeSpin 4s linear infinite;
+  margin-bottom:32px;
+}
+[data-theme="dark"] .pipe-wrap{
+  background:
+    conic-gradient(from var(--pipe-angle),
+      #2D2D2D 0%,#2D2D2D 80%,
+      #fff 87%,
+      #2D2D2D 93%,#2D2D2D 100%)
+    border-box;
+}
+@keyframes pipeSpin{to{--pipe-angle:360deg}}
+.pipe-wrap-inner{
+  background:#fff;border-radius:18px;
+  padding:28px 24px 20px;
+}
+[data-theme="dark"] .pipe-wrap-inner{background:#161616}
 .pipeline-row{
   display:flex;align-items:flex-start;
-  gap:0;margin-bottom:32px;
-  overflow-x:auto;padding-bottom:8px;
+  gap:0;
+  overflow-x:auto;padding-bottom:4px;
 }
 .pipeline-row::-webkit-scrollbar{height:4px}
 .pipeline-row::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
@@ -507,21 +536,30 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
   font-variant-numeric:tabular-nums;min-height:16px;
   transition:color .3s;
 }
+/* check circle inside node — hidden by default */
+.pipe-check{
+  display:none;
+  width:34px;height:34px;border-radius:50%;
+  background:#22C55E;
+  align-items:center;justify-content:center;flex-shrink:0;
+}
+.pipe-check svg{width:16px;height:16px;stroke:#fff;stroke-width:2.5;fill:none;stroke-linecap:round}
 /* running state */
 .pipe-step.ps-running .pipe-node{
-  border-color:#0D0D0D;
-  box-shadow:0 0 0 4px rgba(0,0,0,.08),0 2px 8px rgba(0,0,0,.08);
-  background:rgba(0,0,0,.02);
+  border-color:#0D0D0D;border-width:2px;
+  box-shadow:0 0 0 3px rgba(0,0,0,.08);
+  background:#fff;
 }
 .pipe-step.ps-running .pipe-node svg{stroke:#0D0D0D}
 .pipe-step.ps-running .pipe-badge{background:#0D0D0D;animation:badgePulse 1s ease infinite}
 @keyframes badgePulse{0%,100%{box-shadow:0 0 0 0 rgba(0,0,0,.3)}50%{box-shadow:0 0 0 5px rgba(0,0,0,0)}}
-.pipe-step.ps-running .pipe-label{color:#0D0D0D}
+.pipe-step.ps-running .pipe-label{color:#0D0D0D;font-weight:800}
 .pipe-step.ps-running .pipe-time{color:#0D0D0D}
-/* done state — only icon and time go green, everything else stays neutral */
-.pipe-step.ps-done .pipe-node{border-color:#E5E7EB;background:#fff}
-.pipe-step.ps-done .pipe-node svg{stroke:#22C55E}
-.pipe-step.ps-done .pipe-badge{background:#E5E7EB;color:#374151}
+/* done state — bold black border stays; swap icon for green check; time goes green */
+.pipe-step.ps-done .pipe-node{border-color:#0D0D0D;border-width:2px;background:#fff}
+.pipe-step.ps-done .pipe-node svg{display:none}
+.pipe-step.ps-done .pipe-check{display:flex}
+.pipe-step.ps-done .pipe-badge{background:#0D0D0D}
 .pipe-step.ps-done .pipe-label{color:var(--t3)}
 .pipe-step.ps-done .pipe-time{color:#22C55E;font-weight:700}
 /* ticker — sits below all step text, with breathing room */
@@ -993,11 +1031,14 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
     </div>
 
     {{-- AVA's real 8-stage pipeline (human-friendly labels) --}}
-    <div class="pipeline-row" id="pipelineRow">
+    <div class="pipe-wrap">
+      <div class="pipe-wrap-inner">
+      <div class="pipeline-row" id="pipelineRow">
 
       <div class="pipe-step" data-step="0" data-time="9:00 AM">
         <div class="pipe-node">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1M12 3v13M8 7l4-4 4 4"/></svg>
+          <div class="pipe-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
           <span class="pipe-badge">1</span>
         </div>
         <div class="pipe-label">Task Received</div>
@@ -1007,6 +1048,7 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
       <div class="pipe-step" data-step="1" data-time="9:00 AM">
         <div class="pipe-node">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          <div class="pipe-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
           <span class="pipe-badge">2</span>
         </div>
         <div class="pipe-label">Reads the Email</div>
@@ -1016,6 +1058,7 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
       <div class="pipe-step" data-step="2" data-time="9:01 AM">
         <div class="pipe-node">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+          <div class="pipe-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
           <span class="pipe-badge">3</span>
         </div>
         <div class="pipe-label">Figures Out Priority</div>
@@ -1025,6 +1068,7 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
       <div class="pipe-step" data-step="3" data-time="9:01 AM">
         <div class="pipe-node">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+          <div class="pipe-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
           <span class="pipe-badge">4</span>
         </div>
         <div class="pipe-label">Looks Up the Customer</div>
@@ -1034,6 +1078,7 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
       <div class="pipe-step" data-step="4" data-time="9:02 AM">
         <div class="pipe-node">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+          <div class="pipe-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
           <span class="pipe-badge">5</span>
         </div>
         <div class="pipe-label">Logs the Interaction</div>
@@ -1043,6 +1088,7 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
       <div class="pipe-step" data-step="5" data-time="9:02 AM">
         <div class="pipe-node">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>
+          <div class="pipe-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
           <span class="pipe-badge">6</span>
         </div>
         <div class="pipe-label">Picks the Right Message</div>
@@ -1052,6 +1098,7 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
       <div class="pipe-step" data-step="6" data-time="9:03 AM">
         <div class="pipe-node">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4z"/></svg>
+          <div class="pipe-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
           <span class="pipe-badge">7</span>
         </div>
         <div class="pipe-label">Writes the Email</div>
@@ -1061,11 +1108,16 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
       <div class="pipe-step" data-step="7" data-time="9:03 AM">
         <div class="pipe-node">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/><polyline points="9 10 12 13 15 10"/></svg>
+          <div class="pipe-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
           <span class="pipe-badge">8</span>
         </div>
         <div class="pipe-label">Lands in Your Inbox</div>
         <div class="pipe-time"></div>
       </div>
+
+      </div>{{-- end pipeline-row --}}
+      </div>{{-- end pipe-wrap-inner --}}
+    </div>{{-- end pipe-wrap --}}
 
     </div>
 
