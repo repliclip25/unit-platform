@@ -467,6 +467,6 @@ Route::get('/influencer/apply',  [InfluencerController::class, 'apply'])->name('
 Route::post('/influencer/apply', [InfluencerController::class, 'submitApplication'])->name('influencer.apply.submit');
 
 Route::get('/workers', fn() => view('workers'))->name('workers.page');
-Route::get('/w2/{slug}', [WorkerPublicController::class, 'show2'])->name('workers.public.show2');
+Route::get('/workers/{slug}', [WorkerPublicController::class, 'show2'])->name('workers.public.show2');
 
 require __DIR__.'/auth.php';

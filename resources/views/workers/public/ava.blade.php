@@ -848,7 +848,7 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
 {{-- NAV --}}
 <nav class="nav">
   <div class="nav-i">
-    <a href="{{ route('home2') }}" class="nav-logo">UNIT</a>
+    <a href="{{ url("/") }}" class="nav-logo">UNIT</a>
 
     <div class="nav-links">
       <a href="{{ route('workers.page') }}" class="nav-link">Meet the Team</a>
