@@ -518,12 +518,12 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
 @keyframes badgePulse{0%,100%{box-shadow:0 0 0 0 rgba(0,0,0,.3)}50%{box-shadow:0 0 0 5px rgba(0,0,0,0)}}
 .pipe-step.ps-running .pipe-label{color:#0D0D0D}
 .pipe-step.ps-running .pipe-time{color:#0D0D0D}
-/* done state */
-.pipe-step.ps-done .pipe-node{border-color:#22C55E;background:rgba(34,197,94,.05)}
+/* done state — only icon and time go green, everything else stays neutral */
+.pipe-step.ps-done .pipe-node{border-color:#E5E7EB;background:#fff}
 .pipe-step.ps-done .pipe-node svg{stroke:#22C55E}
-.pipe-step.ps-done .pipe-badge{background:#22C55E}
-.pipe-step.ps-done .pipe-label{color:#16A34A}
-.pipe-step.ps-done .pipe-time{color:#16A34A}
+.pipe-step.ps-done .pipe-badge{background:#E5E7EB;color:#374151}
+.pipe-step.ps-done .pipe-label{color:var(--t3)}
+.pipe-step.ps-done .pipe-time{color:#22C55E;font-weight:700}
 /* ticker — sits below all step text, with breathing room */
 .pipe-ticker-row{
   min-height:32px;margin-top:24px;margin-bottom:8px;
@@ -576,8 +576,8 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
   .pipe-step:not(:last-child)::after{left:calc(50% + 30px)}
 }
 @media(max-width:640px){
-  .pipeline-row{gap:4px}
-  .pipe-step{min-width:70px}
+  .pipeline-row{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;overflow:visible}
+  .pipe-step{min-width:0}
   .pipe-node{width:56px;height:56px;border-radius:12px}
   .pipe-step:not(:last-child)::after{display:none}
 }
@@ -1061,7 +1061,7 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
   var steps      = document.querySelectorAll('#pipelineRow .pipe-step');
   var missionBar = document.getElementById('missionBar');
   var tickerRow  = document.getElementById('pipeTickerRow');
-  var STEP_MS  = 1500;
+  var STEP_MS  = 2200;
   var PAUSE_MS = 3000;
 
   var tickerMessages = [
