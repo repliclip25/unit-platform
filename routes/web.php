@@ -451,7 +451,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 });
 
 // ── Public Worker Pages ────────────────────────────────────────────────
-Route::get('/w/{slug}', [WorkerPublicController::class, 'show'])->name('workers.public.show'); // public — no auth
+Route::get('/w/{slug}', fn($slug) => redirect("/worker/{$slug}", 301)); // legacy redirect
 
 // ── Public Fast Track Submit (no auth) ────────────────────────────
 Route::post('/fast-track/submit', [ReferralController::class, 'fastTrackSubmit'])->name('fast-track.submit');
@@ -467,6 +467,6 @@ Route::get('/influencer/apply',  [InfluencerController::class, 'apply'])->name('
 Route::post('/influencer/apply', [InfluencerController::class, 'submitApplication'])->name('influencer.apply.submit');
 
 Route::get('/workers', fn() => view('workers'))->name('workers.page');
-Route::get('/workers/{slug}', [WorkerPublicController::class, 'show2'])->name('workers.public.show2');
+Route::get('/worker/{slug}', [WorkerPublicController::class, 'show2'])->name('workers.public.show2');
 
 require __DIR__.'/auth.php';

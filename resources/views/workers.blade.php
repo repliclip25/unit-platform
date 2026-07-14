@@ -515,7 +515,7 @@ body{font-family:var(--font-b);color:var(--text);background:var(--bg);-webkit-fo
           </div>
           <div class="wk-btns">
             <a href="{{ route('register') }}" class="btn-hire-wk" style="background:#0D0D0D">Hire AVA <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
-            <a href="{{ route('workers.public.show', 'ava') }}" class="btn-watch-wk" style="color:#0D0D0D;border-color:#E5E7EB">Watch Ava's Day <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+            <a href="{{ route('workers.public.show2', 'ava') }}" class="btn-watch-wk" style="color:#0D0D0D;border-color:#E5E7EB">Watch Ava's Day <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
           </div>
         </div>
       </div>
@@ -677,7 +677,7 @@ body{font-family:var(--font-b);color:var(--text);background:var(--bg);-webkit-fo
       <div>
         <div class="ft-col-h">Workers</div>
         <div class="ft-links">
-          <a href="{{ route('workers.public.show', 'ava') }}">AVA — Renewals</a>
+          <a href="{{ route('workers.public.show2', 'ava') }}">AVA — Renewals</a>
           <a href="#">DOX — Documents</a>
           <a href="#">MOX — Brand</a>
           <a href="#">NUX — Content</a>

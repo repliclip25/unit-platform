@@ -1163,7 +1163,7 @@ body{
             <div class="wk-bullet"><div class="wk-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>Protects revenue</div>
           </div>
           <div class="wk-btns">
-            <a href="{{ route('workers.public.show', 'ava') }}" class="btn-wk-outline">Watch Ava's Day <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+            <a href="{{ route('workers.public.show2', 'ava') }}" class="btn-wk-outline">Watch Ava's Day <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
             <a href="{{ route('register') }}" class="btn-wk">Hire AVA <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
           </div>
         </div>
@@ -1686,7 +1686,7 @@ body{
       <div>
         <div class="ft-col-h">Workers</div>
         <div class="ft-links">
-          <a href="{{ route('workers.public.show', 'ava') }}">AVA — Renewal Coordinator</a>
+          <a href="{{ route('workers.public.show2', 'ava') }}">AVA — Renewal Coordinator</a>
           <a href="{{ route('marketplace') }}">All Workers</a>
           <a href="{{ route('referral.index') }}">Refer &amp; Earn</a>
         </div>
