@@ -94,7 +94,7 @@ body{
 .nav-links a.active{font-weight:700;color:#0D0D0D}
 .nav-acts{display:flex;align-items:center;gap:10px}
 .btn-login{
-  padding:8px 18px;border-radius:8px;font-size:14px;font-weight:600;
+  padding:8px 18px;border-radius:99px;font-size:14px;font-weight:600;
   color:var(--t2);border:1px solid var(--border);transition:all .15s;
 }
 .btn-login:hover{border-color:#bbb;color:var(--text)}
