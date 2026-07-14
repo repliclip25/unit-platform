@@ -231,11 +231,10 @@ body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-fon
    TABLET + MOBILE  (≤ 1024px)
 ══════════════════════════════ */
 @media(max-width:1024px){
-  .ob-hero-img{object-position:right top}
   html,body{overflow:auto;height:auto}
   .ob-page{grid-template-columns:1fr;height:auto;overflow:visible}
 
-  /* Sidebar → slim top bar */
+  /* Sidebar → slim sticky top bar */
   .ob-sidebar{
     flex-direction:row;align-items:center;justify-content:space-between;
     padding:14px 20px;border-bottom:1px solid #E5E7EB;
@@ -256,24 +255,35 @@ body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-fon
     display:flex;flex-direction:column;
     width:100%;height:auto;max-height:none;
     border-radius:20px;
-    box-shadow:0 2px 12px rgba(0,0,0,.08);
+    box-shadow:0 2px 12px rgba(0,0,0,.06);
   }
 
-  /* Hero: image is taller, content below via flex column */
+  /* Hero: switch to static layout — image on top, text below */
   .ob-hero{
-    min-height:340px;
-    /* image takes up ~40% of space */
+    display:flex;flex-direction:column;
+    min-height:unset;
+    background:#ebe8e2;
   }
-  .ob-hero-fade{
-    /* On mobile: fade from bottom, not from left */
-    background:linear-gradient(to top,#fff 0%,#fff 20%,rgba(255,255,255,.75) 40%,rgba(255,255,255,.2) 60%,transparent 80%);
+  /* Image: static block, right-anchored, cropped to show face */
+  .ob-hero-img{
+    position:static;
+    display:block;
+    width:100%;
+    height:260px;
+    object-fit:cover;
+    object-position:center 10%;
+    border-radius:0;
   }
+  /* Hide the absolute overlay fade — not needed when image is static */
+  .ob-hero-fade{display:none}
+
+  /* Text content: below the image, on white bg */
   .ob-hero-content{
-    position:relative;z-index:2;
+    position:static;
+    background:#fff;
     padding:24px 24px 28px;
     max-width:100%;height:auto;
-    display:flex;flex-direction:column;justify-content:flex-end;
-    /* Sit at bottom of hero over the image */
+    display:flex;flex-direction:column;justify-content:flex-start;
   }
   .ob-h1{font-size:1.75rem}
   .ob-sub{font-size:13.5px}
@@ -284,8 +294,6 @@ body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-fon
 
   /* Profile below hero — compact */
   .ob-profile{border-left:none;border-top:1px solid #F0F0F0;padding:20px 24px}
-
-  /* Hide the detail rows on mobile to keep it clean — show name/role + what list + button */
   .emp-divider{display:none}
   .emp-row{display:none}
   .emp-eyebrow{font-size:8px}
@@ -294,7 +302,7 @@ body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-fon
 
 /* ══ Phone (≤ 480px) ══ */
 @media(max-width:480px){
-  .ob-hero{min-height:300px}
+  .ob-hero-img{height:220px}
   .ob-hero-content{padding:20px 20px 24px}
   .ob-h1{font-size:1.5rem}
   .ob-card-area{padding:12px}
