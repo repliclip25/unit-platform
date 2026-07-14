@@ -258,32 +258,27 @@ body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-fon
     box-shadow:0 2px 12px rgba(0,0,0,.06);
   }
 
-  /* Hero: switch to static layout — image on top, text below */
-  .ob-hero{
-    display:flex;flex-direction:column;
-    min-height:unset;
-    background:#ebe8e2;
-  }
-  /* Image: static block, right-anchored, cropped to show face */
+  /* Hero: keep full-bleed image, anchor it hard right */
+  .ob-hero{min-height:580px}
   .ob-hero-img{
-    position:static;
-    display:block;
-    width:100%;
-    height:260px;
-    object-fit:cover;
-    object-position:center 10%;
-    border-radius:0;
+    object-position:right top;
   }
-  /* Hide the absolute overlay fade — not needed when image is static */
-  .ob-hero-fade{display:none}
-
-  /* Text content: below the image, on white bg */
+  /* Stronger left-to-right fade so text area is clean white */
+  .ob-hero-fade{
+    background:linear-gradient(to right,
+      #fff 0%,
+      #fff 40%,
+      rgba(255,255,255,.7) 60%,
+      rgba(255,255,255,.1) 80%,
+      transparent 100%
+    );
+  }
   .ob-hero-content{
-    position:static;
-    background:#fff;
-    padding:24px 24px 28px;
-    max-width:100%;height:auto;
-    display:flex;flex-direction:column;justify-content:flex-start;
+    position:relative;z-index:2;
+    background:transparent;
+    padding:28px 24px;
+    max-width:70%;height:100%;
+    display:flex;flex-direction:column;justify-content:center;
   }
   .ob-h1{font-size:1.75rem}
   .ob-sub{font-size:13.5px}
