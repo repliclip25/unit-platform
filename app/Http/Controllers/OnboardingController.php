@@ -862,6 +862,8 @@ class OnboardingController extends Controller
         return in_array($type, $completed);
     }
 
+    public function publicIntentMeta(?string $slug): ?array { return $this->intentMeta($slug); }
+
     private function intentMeta(?string $slug): ?array
     {
         if (!$slug) return null;

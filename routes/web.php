@@ -467,4 +467,15 @@ Route::post('/influencer/apply', [InfluencerController::class, 'submitApplicatio
 Route::get('/workers', fn() => view('workers'))->name('workers.page');
 Route::get('/worker/{slug}', [WorkerPublicController::class, 'show2'])->name('workers.public.show2');
 
+// ── AVA Onboarding v2 (new UI — parallel to existing flow) ────────────────
+Route::middleware(['auth', 'verified'])->prefix('hire/ava')->name('hire.ava.')->group(function () {
+    Route::get('/welcome',    fn() => view('onboarding.ava.step-1-welcome', [
+        'intentMeta' => (new \App\Http\Controllers\OnboardingController)->publicIntentMeta('ava'),
+    ]))->name('welcome');
+    Route::get('/workspace',    fn() => view('onboarding.ava.step-2-workspace'))->name('workspace');
+    Route::get('/orientation',  fn() => view('onboarding.ava.step-3-orientation'))->name('orientation');
+    Route::get('/assignment',   fn() => view('onboarding.ava.step-4-assignment'))->name('assignment');
+    Route::get('/onshift',      fn() => view('onboarding.ava.step-5-onshift'))->name('onshift');
+});
+
 require __DIR__.'/auth.php';
