@@ -378,14 +378,11 @@ body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-fon
 
         {{-- RUNNING state: shown when TX is active --}}
         <div id="runningArea" style="{{ $watchTxId ? '' : 'display:none' }}">
-          <div style="padding:16px;border-radius:14px;background:#fff;border:1.5px solid #E5E7EB;margin-bottom:12px">
-            <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
-              <div style="width:8px;height:8px;border-radius:50%;background:#F5C518;animation:pdot 1s ease infinite;flex-shrink:0"></div>
-              <span style="font-size:12.5px;font-weight:700;color:#0D0D0D">Ava is working...</span>
-            </div>
-            <p style="font-size:11.5px;color:#6B7280;line-height:1.55">She's reading the email and drafting your reply. This usually takes 20–40 seconds.</p>
+          <div style="padding:14px 16px;border-radius:14px;background:#fff;border:1.5px solid #E5E7EB;margin-bottom:12px;display:flex;align-items:center;gap:10px">
+            <div style="width:8px;height:8px;border-radius:50%;background:#F5C518;animation:pdot 1s ease infinite;flex-shrink:0"></div>
+            <span style="font-size:12px;font-weight:700;color:#0D0D0D">Ava is on it — watch the pipeline</span>
           </div>
-          <div style="font-size:10.5px;color:#9CA3AF;text-align:center;font-weight:500">TX: {{ $watchTxId }}</div>
+          <div style="font-size:10.5px;color:#9CA3AF;text-align:center;font-weight:500" id="runningTxLabel">TX: {{ $watchTxId }}</div>
         </div>
 
         @endif
@@ -530,43 +527,46 @@ function setStage(n, statusText1, statusText2){
 }
 
 function showDraft(data){
-  const draft = data.draft_output;
-  if(!draft) return;
+  clearInterval(pollTimer);
+  clearTimeout(_pollTimeout);
 
-  document.getElementById('draftWaiting').style.display = 'none';
-  document.getElementById('draftContent').style.display = 'block';
-
-  const subject = draft.subject || data.classify_output?.subject || 'Renewal Response';
-  const body    = draft.body   || draft.draft || '';
-  const toName  = data.memory_output?.contact_name || data.memory_output?.client_name || 'Client';
-
-  document.getElementById('draftTo').textContent      = toName;
-  document.getElementById('draftSubject').textContent  = subject;
-  document.getElementById('draftBody').textContent     = body;
-
-  // Confidence
-  const conf = draft.confidence_score ?? 0.82;
-  const pct  = Math.round(conf * 100);
-  const circ = 88;
-  document.getElementById('confFill').style.strokeDashoffset = circ - (circ * conf);
-  document.getElementById('confLabel').textContent = pct + '% confidence';
-  document.getElementById('confidenceRow').style.display = 'flex';
-
-  // AVA says
-  document.getElementById('avaQuote').textContent = 'How did I do?';
-  document.getElementById('avaSub').textContent   = 'Let me know if you\'d like me to adjust anything.';
-  document.getElementById('avaActions').style.opacity = '1';
-  document.getElementById('avaActions').style.pointerEvents = 'auto';
-
-  // Swap running area back to input (allow running again)
+  // Always advance pipeline to stage 3 — draft_ready means Ava is done
+  setStage(3);
+  stage = 3;
   resetToInput();
 
-  // Store draft ID for approve action
   window._txId = data.tx_id;
   window._gmailDraftId = data.gmail_draft_id;
 
-  setStage(3);
-  stage = 3;
+  const draft = data.draft_output;
+
+  if(draft){
+    document.getElementById('draftWaiting').style.display = 'none';
+    document.getElementById('draftContent').style.display = 'block';
+
+    const subject = draft.subject || data.classify_output?.subject || 'Renewal Response';
+    const body    = draft.body   || draft.draft || '';
+    const toName  = data.memory_output?.contact_name || data.memory_output?.client_name || 'Client';
+
+    document.getElementById('draftTo').textContent     = toName;
+    document.getElementById('draftSubject').textContent = subject;
+    document.getElementById('draftBody').textContent    = body;
+
+    const conf = draft.confidence_score ?? 0.82;
+    const pct  = Math.round(conf * 100);
+    const circ = 88;
+    document.getElementById('confFill').style.strokeDashoffset = circ - (circ * conf);
+    document.getElementById('confLabel').textContent = pct + '% confidence';
+    document.getElementById('confidenceRow').style.display = 'flex';
+  } else {
+    // Draft exists but output not yet written — still show success state
+    document.getElementById('draftWaiting').querySelector('p').textContent = "Draft ready — check your Transactions.";
+  }
+
+  document.getElementById('avaQuote').textContent = 'How did I do?';
+  document.getElementById('avaSub').textContent   = "I drafted a reply. Review it below or in your Transactions.";
+  document.getElementById('avaActions').style.opacity = '1';
+  document.getElementById('avaActions').style.pointerEvents = 'auto';
 }
 
 const ERROR_MESSAGES = {
@@ -691,6 +691,7 @@ function submitRun(){
   if(!DEP_ID){ return; }
   document.getElementById('inputArea').style.display   = 'none';
   document.getElementById('runningArea').style.display = '';
+  document.getElementById('runningTxLabel').textContent = 'Submitting...';
   setStage(1, 'Reading email...', null);
   stage = 1;
   document.getElementById('fastTrackForm').submit();
