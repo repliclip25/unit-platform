@@ -28,7 +28,7 @@ body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-fon
 .ob-step-num{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;position:relative;z-index:1;flex-shrink:0}
 .ob-step.pending .ob-step-num{background:#E8E7E4;color:#888;border:1.5px solid #DCDCDC}
 .ob-step.active  .ob-step-num{background:#0D0D0D;color:#fff;box-shadow:0 0 0 4px rgba(0,0,0,.1)}
-.ob-step.done    .ob-step-num{background:#0D0D0D;color:#fff}
+.ob-step.done    .ob-step-num{background:#22c55e;color:#fff}
 .ob-step-body{padding-top:4px;padding-bottom:28px}
 .ob-step:last-child .ob-step-body{padding-bottom:0}
 .ob-step-label{font-size:13.5px;font-weight:700;color:#0D0D0D;line-height:1.2}
@@ -67,11 +67,16 @@ body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-fon
 
 /* Step eyebrow */
 .ob-step-tag{
-  display:inline-flex;align-items:center;gap:8px;
+  display:inline-flex;align-items:center;gap:9px;
   font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
-  color:#9CA3AF;margin-bottom:20px;width:fit-content;
+  color:#6B7280;margin-bottom:20px;width:fit-content;
 }
-.ob-step-tag-dot{width:7px;height:7px;border-radius:50%;background:#F5C518;flex-shrink:0}
+.ob-step-tag-icon{
+  width:22px;height:22px;border-radius:6px;
+  background:#0D0D0D;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.ob-step-tag-icon svg{width:12px;height:12px;stroke:#fff;stroke-width:2;fill:none}
 
 .ob-h1{
   font-size:clamp(1.8rem,2.4vw,2.4rem);
@@ -101,56 +106,49 @@ body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-fon
 .btn-gmail-sub{font-size:10.5px;color:rgba(255,255,255,.55);line-height:1}
 .btn-gmail svg.arrow{width:17px;height:17px;stroke:#fff;stroke-width:2.5;flex-shrink:0}
 
-/* Social proof */
-.ob-proof{display:flex;align-items:center;gap:10px}
-.ob-proof-avs{display:flex}
-.ob-proof-avs img{width:28px;height:28px;border-radius:50%;border:2px solid #fff;margin-left:-7px;object-fit:cover;box-shadow:0 1px 4px rgba(0,0,0,.12)}
-.ob-proof-avs img:first-child{margin-left:0}
-.ob-proof-txt{font-size:12px;color:#6B7280;line-height:1.45}
-.ob-proof-txt strong{color:#0D0D0D;display:block}
+/* "Your data is safe" strip — replaces social proof in hero */
+.ob-safe-strip{
+  display:flex;align-items:flex-start;gap:10px;
+  background:#fff;border:1px solid #E5E7EB;
+  border-radius:12px;padding:12px 14px;
+  max-width:310px;
+}
+.ob-safe-strip-icon{
+  width:28px;height:28px;border-radius:7px;
+  background:#F0FDF4;border:1px solid #DCFCE7;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.ob-safe-strip-icon svg{width:13px;height:13px;stroke:#16a34a;stroke-width:2.2}
+.ob-safe-strip-title{font-size:11.5px;font-weight:700;color:#0D0D0D;margin-bottom:3px}
+.ob-safe-strip-body{font-size:11.5px;color:#4B5563;line-height:1.5}
 
 /* ── RIGHT PANEL (same structure as step-1 profile) ── */
 .ob-profile{
   background:#fff;border-left:1px solid #F0F0F0;
   padding:28px 22px;display:flex;flex-direction:column;overflow-y:auto;
 }
-.emp-eyebrow{font-size:9px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:#9CA3AF;margin-bottom:10px}
+.emp-eyebrow{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#6B7280;margin-bottom:10px}
 .emp-name{font-size:1.65rem;font-weight:900;letter-spacing:-.04em;color:#0D0D0D;line-height:1}
-.emp-role{font-size:12.5px;color:#6B7280;margin-top:4px;margin-bottom:16px}
-.emp-divider{border:none;border-top:1px solid #F3F4F6;margin:0 0 12px}
-.emp-row{display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid #F9FAFB}
+.emp-role{font-size:13px;color:#374151;margin-top:4px;margin-bottom:16px}
+.emp-divider{border:none;border-top:1px solid #F0F0F0;margin:0 0 12px}
+.emp-row{display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid #F5F5F5}
 .emp-row:last-child{border-bottom:none}
-.emp-row-key{display:flex;align-items:center;gap:6px;font-size:11.5px;color:#9CA3AF}
-.emp-row-key svg{width:12px;height:12px;stroke:#D1D5DB;stroke-width:1.8;flex-shrink:0}
-.emp-row-val{font-size:11.5px;font-weight:700;display:flex;align-items:center;gap:5px}
+.emp-row-key{display:flex;align-items:center;gap:6px;font-size:12px;color:#6B7280;font-weight:500}
+.emp-row-key svg{width:13px;height:13px;stroke:#9CA3AF;stroke-width:1.8;flex-shrink:0}
+.emp-row-val{font-size:12px;font-weight:700;display:flex;align-items:center;gap:5px}
 .emp-row-val.amber{color:#D97706}
-.emp-row-val.grey{color:#9CA3AF}
+.emp-row-val.grey{color:#6B7280}
 .status-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
 .dot-amber{background:#F59E0B}
 .dot-grey{background:#D1D5DB}
 
 .ob-lock-note{
   display:flex;align-items:flex-start;gap:7px;
-  font-size:11.5px;color:#9CA3AF;line-height:1.55;
+  font-size:12px;color:#6B7280;line-height:1.55;
   margin-bottom:0;margin-top:12px;
 }
-.ob-lock-note svg{width:12px;height:12px;stroke:#C4C4C4;flex-shrink:0;margin-top:2px}
-.ob-lock-note strong{color:#6B7280;font-weight:600}
-
-.ob-safe-card{
-  margin-top:auto;
-  background:#F0FDF4;border:1px solid #DCFCE7;
-  border-radius:12px;padding:14px;
-  display:flex;align-items:flex-start;gap:10px;
-}
-.ob-safe-icon{
-  width:30px;height:30px;border-radius:7px;
-  background:#fff;border:1px solid #DCFCE7;
-  display:flex;align-items:center;justify-content:center;flex-shrink:0;
-}
-.ob-safe-icon svg{width:14px;height:14px;stroke:#16a34a;stroke-width:2.2}
-.ob-safe-title{font-size:9px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;color:#16a34a;margin-bottom:4px}
-.ob-safe-body{font-size:11px;color:#4B7A5C;line-height:1.6}
+.ob-lock-note svg{width:13px;height:13px;stroke:#9CA3AF;flex-shrink:0;margin-top:2px}
+.ob-lock-note strong{color:#374151;font-weight:600}
 
 /* ══ MOBILE ══ */
 @media(max-width:1024px){
@@ -279,7 +277,10 @@ body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-fon
         <div class="ob-hero-content">
 
           <div class="ob-step-tag">
-            <span class="ob-step-tag-dot"></span>
+            <div class="ob-step-tag-icon">
+              {{-- Mailbox icon --}}
+              <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+            </div>
             Step 2 of 5
           </div>
 
@@ -313,16 +314,13 @@ body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-fon
             <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M12 5l7 7-7 7"/></svg>
           </a>
 
-          <div class="ob-proof">
-            <div class="ob-proof-avs">
-              <img src="/images/ava.png" alt="">
-              <img src="/images/ava-stand.png" alt="">
-              <img src="/images/ava-life.png" alt="">
-              <img src="/images/ava.png" alt="" style="filter:hue-rotate(40deg) saturate(.8)">
+          <div class="ob-safe-strip">
+            <div class="ob-safe-strip-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
             </div>
-            <div class="ob-proof-txt">
-              <strong>2,847+ businesses</strong>
-              already connected
+            <div>
+              <div class="ob-safe-strip-title">Your data is safe</div>
+              <div class="ob-safe-strip-body">Ava only accesses the data you allow. You can revoke access at any time.</div>
             </div>
           </div>
 
@@ -369,16 +367,6 @@ body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-fon
         <div class="ob-lock-note">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="11" width="18" height="11" rx="2"/><path stroke-linecap="round" d="M7 11V7a5 5 0 0110 0v4"/></svg>
           <span><strong>Secure OAuth 2.0</strong> — We never see or store your password.</span>
-        </div>
-
-        <div class="ob-safe-card">
-          <div class="ob-safe-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-          </div>
-          <div>
-            <div class="ob-safe-title">Your Data Is Safe</div>
-            <div class="ob-safe-body">Ava only accesses the data you allow. You can revoke access at any time.</div>
-          </div>
         </div>
 
       </div>

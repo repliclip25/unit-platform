@@ -65,7 +65,7 @@ body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-fon
 }
 .ob-step.pending .ob-step-num{background:#E8E7E4;color:#888;border:1.5px solid #DCDCDC}
 .ob-step.active  .ob-step-num{background:#0D0D0D;color:#fff;box-shadow:0 0 0 4px rgba(0,0,0,.1)}
-.ob-step.done    .ob-step-num{background:#0D0D0D;color:#fff}
+.ob-step.done    .ob-step-num{background:#22c55e;color:#fff}
 
 .ob-step-body{padding-top:4px;padding-bottom:28px}
 .ob-step:last-child .ob-step-body{padding-bottom:0}
