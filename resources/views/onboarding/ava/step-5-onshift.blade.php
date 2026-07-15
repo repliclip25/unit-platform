@@ -332,36 +332,62 @@ body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-fon
         @endif
 
         @if(!$depId)
-        <div class="ob-no-dep">No AVA deployment found. Complete the previous steps to set up your workspace first.</div>
+        <div class="ob-no-dep">No AVA deployment found. Complete the previous steps first.</div>
         @elseif(!$hasGmail)
         <div class="ob-no-dep">Connect your Gmail in Step 2 before running Ava's first assignment.</div>
         @endif
 
         @if($depId)
-        {{-- Drop zone + paste area --}}
-        <div class="ob-dropzone" id="dropzone" onclick="togglePaste()">
-          <div class="ob-dropzone-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
-          </div>
-          <div class="ob-dropzone-title">Drag &amp; drop an email here</div>
-          <div class="ob-dropzone-hint">or paste the content</div>
-          <textarea id="emailPaste" name="email_content" placeholder="Paste email content here..." onclick="event.stopPropagation()"></textarea>
-        </div>
 
-        <form method="POST" action="{{ route('hire.ava.onshift.run') }}" id="fastTrackForm">
-          @csrf
-          <button type="button" class="ob-inbox-btn" onclick="submitRun()">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
-            Give Ava a sample assignment
-          </button>
-          <button type="button" class="btn-run" id="runBtn" onclick="submitRun()">
-            <span id="runLabel">
+        {{-- Trial counter --}}
+        @php
+          $billing = \Illuminate\Support\Facades\DB::table('deployment_billing')->where('deployment_id', $depId)->first();
+          $trialsUsed  = $billing?->trial_transactions_used  ?? 0;
+          $trialsLimit = $billing?->trial_transactions_limit ?? 10;
+          $isSubscribed = $billing?->status === 'active';
+        @endphp
+        @if(!$isSubscribed)
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-radius:10px;background:#F4F3F1;border:1px solid #E5E7EB;margin-bottom:14px">
+          <span style="font-size:11px;font-weight:600;color:#6B7280">Trial transactions</span>
+          <span style="font-size:12px;font-weight:800;color:{{ $trialsUsed >= $trialsLimit ? '#DC2626' : '#0D0D0D' }}">{{ $trialsUsed }} / {{ $trialsLimit }}</span>
+        </div>
+        @endif
+
+        {{-- INPUT state: shown when no active TX --}}
+        <div id="inputArea" style="{{ $watchTxId ? 'display:none' : '' }}">
+          <div class="ob-dropzone" id="dropzone" onclick="togglePaste()">
+            <div class="ob-dropzone-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+            </div>
+            <div class="ob-dropzone-title">Drag &amp; drop an email here</div>
+            <div class="ob-dropzone-hint">or paste the content</div>
+            <textarea id="emailPaste" name="email_content" placeholder="Paste email content here..." onclick="event.stopPropagation()"></textarea>
+          </div>
+          <form method="POST" action="{{ route('hire.ava.onshift.run') }}" id="fastTrackForm">
+            @csrf
+            <button type="button" class="ob-inbox-btn" onclick="submitRun()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+              Use a sample renewal email
+            </button>
+            <button type="button" class="btn-run" id="runBtn" onclick="submitRun()">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
               Give Ava this assignment
-            </span>
-            <div class="spinner" id="runSpinner"></div>
-          </button>
-        </form>
+            </button>
+          </form>
+        </div>
+
+        {{-- RUNNING state: shown when TX is active --}}
+        <div id="runningArea" style="{{ $watchTxId ? '' : 'display:none' }}">
+          <div style="padding:16px;border-radius:14px;background:#fff;border:1.5px solid #E5E7EB;margin-bottom:12px">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+              <div style="width:8px;height:8px;border-radius:50%;background:#F5C518;animation:pdot 1s ease infinite;flex-shrink:0"></div>
+              <span style="font-size:12.5px;font-weight:700;color:#0D0D0D">Ava is working...</span>
+            </div>
+            <p style="font-size:11.5px;color:#6B7280;line-height:1.55">She's reading the email and drafting your reply. This usually takes 20–40 seconds.</p>
+          </div>
+          <div style="font-size:10.5px;color:#9CA3AF;text-align:center;font-weight:500">TX: {{ $watchTxId }}</div>
+        </div>
+
         @endif
       </div>
 
@@ -532,6 +558,9 @@ function showDraft(data){
   document.getElementById('avaActions').style.opacity = '1';
   document.getElementById('avaActions').style.pointerEvents = 'auto';
 
+  // Swap running area back to input (allow running again)
+  resetToInput();
+
   // Store draft ID for approve action
   window._txId = data.tx_id;
   window._gmailDraftId = data.gmail_draft_id;
@@ -568,9 +597,15 @@ const ERROR_MESSAGES = {
   },
 };
 
+function resetToInput(){
+  document.getElementById('inputArea').style.display  = '';
+  document.getElementById('runningArea').style.display = 'none';
+}
+
 function showError(s, stageLabel){
   clearInterval(pollTimer);
   clearTimeout(_pollTimeout);
+  resetToInput();
   const msg = ERROR_MESSAGES[s] || { quote: 'Ava ran into an issue.', sub: 'Check the dashboard for details.', stage: 'Error' };
 
   // Surface in AVA Says
@@ -654,9 +689,10 @@ function startPollWithTimeout(){
 
 function submitRun(){
   if(!DEP_ID){ return; }
-  document.getElementById('runLabel').style.display = 'none';
-  document.getElementById('runSpinner').style.display = 'block';
-  document.getElementById('runBtn').disabled = true;
+  document.getElementById('inputArea').style.display   = 'none';
+  document.getElementById('runningArea').style.display = '';
+  setStage(1, 'Reading email...', null);
+  stage = 1;
   document.getElementById('fastTrackForm').submit();
 }
 

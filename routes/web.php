@@ -111,8 +111,9 @@ Route::middleware(['auth'])->group(function () {
     // Pipeline status — accessible to any authenticated user (tenant-scoped inside the controller)
     Route::get('/qa/pipeline/{txId}', [\App\Http\Controllers\QAController::class, 'pipelineStatus'])->name('qa.pipeline-status');
 
-    // AVA fast-track status — needed by onboarding Step 5 before onboarding is complete
-    Route::get('/workers/ava/status/{txId}', [\App\Http\Controllers\WorkerController::class, 'fastTrackStatus'])->name('ava.status.onboarding');
+    // AVA fast-track status polling — auth only, no onboarded gate (used by Step 5 before onboarding completes)
+    Route::get('/workers/ava/status/{txId}', [\App\Http\Controllers\WorkerController::class, 'fastTrackStatus'])->name('ava.status');
+
 });
 
 // All other authenticated routes require verified email + completed onboarding
@@ -186,7 +187,7 @@ Route::middleware(['auth', 'verified', 'onboarded', 'not-pending-del'])->group(f
     Route::get('/workers/{slug}/schema',                             [WorkerController::class, 'schema'])->name('workers.schema');
     Route::get('/workers/{slug}/billing',                            [WorkerController::class, 'billing'])->name('workers.billing');
     Route::post('/workers/{id}/fast-track',                          [WorkerController::class, 'fastTrack'])->name('workers.fast-track');
-    Route::get('/workers/ava/status/{txId}',                         [WorkerController::class, 'fastTrackStatus'])->name('ava.status');
+    // moved to auth-only group below — needs to work before onboarding complete
 
     // ── Worker: Memory ──────────────────────────────────────────────────────
     Route::get('/workers/{slug}/memory',                             [WorkerMemoryController::class, 'index'])->name('workers.memory');
