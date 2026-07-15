@@ -478,7 +478,7 @@ Route::middleware(['auth', 'verified'])->prefix('hire/ava')->name('hire.ava.')->
     Route::get('/assignment',   [\App\Http\Controllers\OnboardingController::class, 'showAvaAssignment'])->name('assignment');
     Route::post('/assignment',  [\App\Http\Controllers\OnboardingController::class, 'quickAddAvaMemory'])->name('assignment.quickadd');
     Route::post('/assignment/continue', [\App\Http\Controllers\OnboardingController::class, 'advanceAvaMemory'])->name('assignment.continue');
-    Route::get('/onshift',      fn() => view('onboarding.ava.step-5-onshift'))->name('onshift');
+    Route::get('/onshift',      [\App\Http\Controllers\OnboardingController::class, 'showAvaOnShift'])->name('onshift');
 });
 
 require __DIR__.'/auth.php';

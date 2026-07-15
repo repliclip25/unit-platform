@@ -477,6 +477,6 @@ body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-fon
 })();
 </script>
 
-<x-self-learn page="hire.ava.orientation" />
+<x-self-learn pageKey="hire.ava.orientation" />
 </body>
 </html>

@@ -864,6 +864,24 @@ class OnboardingController extends Controller
 
     public function publicIntentMeta(?string $slug): ?array { return $this->intentMeta($slug); }
 
+    public function showAvaOnShift()
+    {
+        $userId     = auth()->id();
+        $deployment = DB::table('worker_deployments')
+            ->where('user_id', $userId)
+            ->where('worker_slug', 'ava')
+            ->orderByDesc('created_at')
+            ->first();
+
+        $credential = $deployment
+            ? DB::table('user_gmail_credentials')->where('id', $deployment->credential_id)->first()
+            : null;
+
+        $watchTxId = session('ava_onshift_tx');
+
+        return view('onboarding.ava.step-5-onshift', compact('deployment', 'credential', 'watchTxId'));
+    }
+
     public function showAvaAssignment()
     {
         $userId   = auth()->id();
