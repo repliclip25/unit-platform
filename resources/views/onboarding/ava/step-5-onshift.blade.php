@@ -497,7 +497,7 @@ const DEP_ID  = {{ $depId ?? 'null' }};
 const STATUS_URL = '/workers/ava/status/';
 const CSRF    = document.querySelector('meta[name=csrf-token]').content;
 
-let txId      = {{ $watchTxId ? '"'.$watchTxId.'"' : 'null' }};
+let txId      = @json($watchTxId);
 let pollTimer = null;
 let stage     = 0; // 0=idle, 1=analyzing, 2=drafting, 3=done
 
