@@ -325,6 +325,12 @@ body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-fon
         <h1 class="ob-h1">Let's give Ava her <span class="ob-gold">first assignment.</span></h1>
         <p class="ob-sub">Send a real renewal email and Ava will draft a reply for you. You're always in control.</p>
 
+        @if(session('error'))
+        <div class="ob-no-dep" style="background:rgba(239,68,68,.08);border-color:rgba(239,68,68,.3);color:#991b1b">
+          {{ session('error') }}
+        </div>
+        @endif
+
         @if(!$depId)
         <div class="ob-no-dep">No AVA deployment found. Complete the previous steps to set up your workspace first.</div>
         @elseif(!$hasGmail)
