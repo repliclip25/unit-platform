@@ -342,22 +342,20 @@ body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-fon
           <textarea id="emailPaste" name="email_content" placeholder="Paste email content here..." onclick="event.stopPropagation()"></textarea>
         </div>
 
-        <form method="POST" action="{{ route('workers.fast-track', $depId) }}" id="fastTrackForm">
+        <form method="POST" action="{{ route('hire.ava.onshift.run') }}" id="fastTrackForm">
           @csrf
-          <input type="hidden" name="credential_id" value="{{ $credential?->id }}">
-          <button type="button" class="ob-inbox-btn" onclick="runFastTrack()">
+          <button type="button" class="ob-inbox-btn" onclick="submitRun()">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
-            Choose from your inbox
+            Give Ava a sample assignment
+          </button>
+          <button type="button" class="btn-run" id="runBtn" onclick="submitRun()">
+            <span id="runLabel">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+              Give Ava this assignment
+            </span>
+            <div class="spinner" id="runSpinner"></div>
           </button>
         </form>
-
-        <button class="btn-run" id="runBtn" onclick="runFastTrack()">
-          <span id="runLabel">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-            Give Ava this assignment
-          </span>
-          <div class="spinner" id="runSpinner"></div>
-        </button>
         @endif
       </div>
 
@@ -557,39 +555,12 @@ function poll(){
     }).catch(() => {});
 }
 
-function runFastTrack(){
-  if(!DEP_ID){ alert('No deployment found.'); return; }
-
-  // Start visual immediately
-  setStage(1, 'Reading email...', null);
-  stage = 1;
-
-  // Show spinner
+function submitRun(){
+  if(!DEP_ID){ return; }
   document.getElementById('runLabel').style.display = 'none';
   document.getElementById('runSpinner').style.display = 'block';
   document.getElementById('runBtn').disabled = true;
-
-  // Submit the form
-  const form = document.getElementById('fastTrackForm');
-  const fd   = new FormData(form);
-
-  fetch(form.action, { method: 'POST', headers: { 'X-CSRF-TOKEN': CSRF, 'Accept': 'application/json' }, body: fd })
-    .then(r => {
-      // The controller redirects — catch the tx_id from the redirect URL or re-poll
-      // Since it redirects, we look at the response URL for ?watch=
-      const url = r.url || '';
-      const match = url.match(/watch=([^&]+)/);
-      if(match) txId = match[1];
-      // Start polling regardless
-      pollTimer = setInterval(poll, 1800);
-      setStage(1, 'Reading email...', null);
-      // Advance to stage 2 after 3s simulation
-      setTimeout(() => { if(stage < 2){ setStage(2, null, 'Writing reply...'); stage = 2; } }, 3000);
-    })
-    .catch(() => {
-      // Fallback: just submit the form normally
-      form.submit();
-    });
+  document.getElementById('fastTrackForm').submit();
 }
 
 function approveDraft(){
@@ -614,8 +585,13 @@ function editDraft(){
   }
 }
 
-// Resume polling if we have a txId from session
-if(txId){ pollTimer = setInterval(poll, 1800); poll(); }
+// On page load with ?watch=txId — job was just dispatched, start polling
+if(txId){
+  setStage(1, 'Reading email...', null);
+  stage = 1;
+  poll(); // immediate first hit
+  pollTimer = setInterval(poll, 2000);
+}
 </script>
 
 <x-self-learn pageKey="hire.ava.onshift" />

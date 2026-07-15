@@ -864,7 +864,7 @@ class OnboardingController extends Controller
 
     public function publicIntentMeta(?string $slug): ?array { return $this->intentMeta($slug); }
 
-    public function showAvaOnShift()
+    public function showAvaOnShift(Request $request)
     {
         $userId     = auth()->id();
         $deployment = DB::table('worker_deployments')
@@ -877,9 +877,87 @@ class OnboardingController extends Controller
             ? DB::table('user_gmail_credentials')->where('id', $deployment->credential_id)->first()
             : null;
 
-        $watchTxId = session('ava_onshift_tx');
+        $watchTxId = $request->query('watch') ?? session('ava_onshift_tx');
 
         return view('onboarding.ava.step-5-onshift', compact('deployment', 'credential', 'watchTxId'));
+    }
+
+    public function runAvaOnShift(Request $request)
+    {
+        $userId     = auth()->id();
+        $deployment = DB::table('worker_deployments')
+            ->where('user_id', $userId)->where('worker_slug', 'ava')
+            ->orderByDesc('created_at')->first();
+
+        if (!$deployment) {
+            return redirect()->route('hire.ava.onshift')->with('error', 'No AVA deployment found.');
+        }
+
+        $credential = DB::table('user_gmail_credentials')
+            ->where('id', $deployment->credential_id)->first();
+
+        if (!$credential) {
+            return redirect()->route('hire.ava.onshift')->with('error', 'No Gmail account connected.');
+        }
+
+        // Build or load fast track scenario
+        $scenario = DB::table('fast_track_scenarios')->where('deployment_id', $deployment->id)->first();
+        if (!$scenario) {
+            DB::table('fast_track_scenarios')->insert([
+                'deployment_id'     => $deployment->id,
+                'user_id'           => $userId,
+                'scenario_title'    => 'Domain Renewal Test',
+                'sender_name'       => 'Namecheap Renewals Team',
+                'sender_email'      => 'renewals@namecheap.com',
+                'asset_name'        => 'yourdomain.com',
+                'asset_type'        => 'Domain',
+                'contact_name'      => auth()->user()->name,
+                'renewal_price'     => '$12.98/year',
+                'days_until_expiry' => 14,
+                'created_at'        => now(),
+                'updated_at'        => now(),
+            ]);
+            $scenario = DB::table('fast_track_scenarios')->where('deployment_id', $deployment->id)->first();
+        }
+
+        $expiryDate  = now()->addDays($scenario->days_until_expiry)->format('F j, Y');
+        $sampleEmail = implode("\n", [
+            "From: {$scenario->sender_name} <{$scenario->sender_email}>",
+            "To: {$credential->gmail_address}",
+            "Subject: {$scenario->asset_type} Renewal Notice — {$scenario->asset_name} expires in {$scenario->days_until_expiry} days",
+            "",
+            "Dear {$scenario->contact_name},",
+            "",
+            "This is a reminder that your {$scenario->asset_type} {$scenario->asset_name} is due for renewal on {$expiryDate}.",
+            "",
+            "{$scenario->asset_type}: {$scenario->asset_name}",
+            "Renewal Date: {$expiryDate}",
+            "Renewal Price: {$scenario->renewal_price}",
+            "Contact Email: " . auth()->user()->email,
+            "",
+            "Please renew before it expires.",
+            "",
+            "Thank you,",
+            $scenario->sender_name,
+        ]);
+
+        $txService = app(\App\Platform\Services\TransactionService::class);
+        $tx = $txService->create('ava-renewal-coordinator', [
+            'source'             => 'fast_track_test',
+            'fast_track'         => true,
+            'user_id'            => $userId,
+            'deployment_id'      => $deployment->id,
+            'credential_id'      => $credential->id,
+            'fast_track_from'    => "{$scenario->sender_name} <{$scenario->sender_email}>",
+            'fast_track_subject' => "{$scenario->asset_type} Renewal Notice — {$scenario->asset_name} expires in {$scenario->days_until_expiry} days",
+            'fast_track_body'    => $sampleEmail,
+        ]);
+
+        $contract     = WorkerRegistry::resolveActive($deployment->worker_slug);
+        $fastTrackJob = $contract->fastTrackJobClass() ?: $contract->ingestJobClass();
+        $fastTrackJob::dispatch($tx->tx_id)->onQueue($txService->queueForTx($tx));
+
+        return redirect()->route('hire.ava.onshift', ['watch' => $tx->tx_id]);
     }
 
     public function showAvaAssignment()
