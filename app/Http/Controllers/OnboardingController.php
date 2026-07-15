@@ -864,6 +864,40 @@ class OnboardingController extends Controller
 
     public function publicIntentMeta(?string $slug): ?array { return $this->intentMeta($slug); }
 
+    public function showAvaOrientation()
+    {
+        $contract = \App\Platform\Services\WorkerRegistry::resolve('ava');
+        $personas = $contract?->personas() ?? [];
+        $current  = \Illuminate\Support\Facades\DB::table('users')->where('id', auth()->id())->value('persona');
+        return view('onboarding.ava.step-3-orientation', compact('personas', 'current'));
+    }
+
+    public function saveAvaPersona(\Illuminate\Http\Request $request)
+    {
+        $persona  = $request->input('persona');
+        $contract = \App\Platform\Services\WorkerRegistry::resolve('ava');
+        $allowed  = array_keys($contract?->personas() ?? []);
+
+        if (!in_array($persona, $allowed)) {
+            return back()->withErrors(['persona' => 'Please select your business type to continue.']);
+        }
+
+        $wos   = WorkerOnboardingService::load(auth()->id());
+        $depId = $wos?->deployment_id ?? session('onboarding_deployment_id');
+
+        if ($depId) {
+            \Illuminate\Support\Facades\DB::table('worker_deployments')
+                ->where('id', $depId)->update(['persona' => $persona]);
+            $this->seedPersonaRules($depId, auth()->id(), $contract, $persona);
+        }
+        \Illuminate\Support\Facades\DB::table('users')
+            ->where('id', auth()->id())->update(['persona' => $persona]);
+
+        if ($wos) WorkerOnboardingService::advanceStep($wos->id, 'persona');
+
+        return redirect()->route('hire.ava.assignment');
+    }
+
     public function saveOrientation(\Illuminate\Http\Request $request)
     {
         $fields = ['business_basics', 'customers', 'renewal_process', 'communication_style', 'knowledge_resources', 'faq_objections'];

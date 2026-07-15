@@ -473,8 +473,8 @@ Route::middleware(['auth', 'verified'])->prefix('hire/ava')->name('hire.ava.')->
         'intentMeta' => (new \App\Http\Controllers\OnboardingController)->publicIntentMeta('ava'),
     ]))->name('welcome');
     Route::get('/workspace',    fn() => view('onboarding.ava.step-2-workspace'))->name('workspace');
-    Route::get('/orientation',  fn() => view('onboarding.ava.step-3-orientation', ['saved' => session('ava_orientation', [])]))->name('orientation');
-    Route::post('/orientation', [\App\Http\Controllers\OnboardingController::class, 'saveOrientation'])->name('orientation.save');
+    Route::get('/orientation',  [\App\Http\Controllers\OnboardingController::class, 'showAvaOrientation'])->name('orientation');
+    Route::post('/orientation', [\App\Http\Controllers\OnboardingController::class, 'saveAvaPersona'])->name('orientation.save');
     Route::get('/assignment',   fn() => view('onboarding.ava.step-4-assignment'))->name('assignment');
     Route::get('/onshift',      fn() => view('onboarding.ava.step-5-onshift'))->name('onshift');
 });
