@@ -110,6 +110,9 @@ Route::middleware(['auth'])->group(function () {
 
     // Pipeline status — accessible to any authenticated user (tenant-scoped inside the controller)
     Route::get('/qa/pipeline/{txId}', [\App\Http\Controllers\QAController::class, 'pipelineStatus'])->name('qa.pipeline-status');
+
+    // AVA fast-track status — needed by onboarding Step 5 before onboarding is complete
+    Route::get('/workers/ava/status/{txId}', [\App\Http\Controllers\WorkerController::class, 'fastTrackStatus'])->name('ava.status.onboarding');
 });
 
 // All other authenticated routes require verified email + completed onboarding

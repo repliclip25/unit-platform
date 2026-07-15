@@ -900,23 +900,41 @@ class OnboardingController extends Controller
             return redirect()->route('hire.ava.onshift')->with('error', 'No Gmail account connected.');
         }
 
-        // Build or load fast track scenario
+        // Build scenario from user's real memory (first asset + contact), fallback to generic
+        $firstAsset   = DB::table('assets')->where('user_id', $userId)->whereNull('deleted_at')->orderBy('created_at')->first();
+        $firstContact = $firstAsset
+            ? DB::table('contacts')->where('user_id', $userId)->where('client_id', $firstAsset->client_id)->whereNull('deleted_at')->first()
+            : DB::table('contacts')->where('user_id', $userId)->whereNull('deleted_at')->orderBy('created_at')->first();
+        $firstClient  = $firstAsset
+            ? DB::table('clients')->where('id', $firstAsset->client_id)->first()
+            : null;
+
+        $assetName    = $firstAsset?->name    ?? 'yourdomain.com';
+        $assetType    = $firstAsset?->type    ?? 'Domain';
+        $contactName  = $firstContact?->name  ?? auth()->user()->name;
+        $contactEmail = $firstContact?->email ?? auth()->user()->email;
+        $clientName   = $firstClient?->name   ?? null;
+
+        // Upsert scenario with real data
         $scenario = DB::table('fast_track_scenarios')->where('deployment_id', $deployment->id)->first();
+        $scenarioData = [
+            'deployment_id'     => $deployment->id,
+            'user_id'           => $userId,
+            'scenario_title'    => ($assetType ?? 'Renewal') . ' Demo',
+            'sender_name'       => 'Renewal Notices',
+            'sender_email'      => 'renewals@notices.example.com',
+            'asset_name'        => $assetName,
+            'asset_type'        => ucfirst($assetType),
+            'contact_name'      => $contactName,
+            'renewal_price'     => '$0.00',
+            'days_until_expiry' => 14,
+            'updated_at'        => now(),
+        ];
         if (!$scenario) {
-            DB::table('fast_track_scenarios')->insert([
-                'deployment_id'     => $deployment->id,
-                'user_id'           => $userId,
-                'scenario_title'    => 'Domain Renewal Test',
-                'sender_name'       => 'Namecheap Renewals Team',
-                'sender_email'      => 'renewals@namecheap.com',
-                'asset_name'        => 'yourdomain.com',
-                'asset_type'        => 'Domain',
-                'contact_name'      => auth()->user()->name,
-                'renewal_price'     => '$12.98/year',
-                'days_until_expiry' => 14,
-                'created_at'        => now(),
-                'updated_at'        => now(),
-            ]);
+            DB::table('fast_track_scenarios')->insert(array_merge($scenarioData, ['created_at' => now()]));
+            $scenario = DB::table('fast_track_scenarios')->where('deployment_id', $deployment->id)->first();
+        } else {
+            DB::table('fast_track_scenarios')->where('id', $scenario->id)->update($scenarioData);
             $scenario = DB::table('fast_track_scenarios')->where('deployment_id', $deployment->id)->first();
         }
 
@@ -933,7 +951,7 @@ class OnboardingController extends Controller
             "{$scenario->asset_type}: {$scenario->asset_name}",
             "Renewal Date: {$expiryDate}",
             "Renewal Price: {$scenario->renewal_price}",
-            "Contact Email: " . auth()->user()->email,
+            "Contact Email: " . $contactEmail,
             "",
             "Please renew before it expires.",
             "",
