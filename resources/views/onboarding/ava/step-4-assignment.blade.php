@@ -345,79 +345,84 @@ body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-fon
 
           <p class="ob-sub">A new employee becomes more useful after learning who your customers are. The same is true here. You only need one {{ $clientNoun }} to get started.</p>
 
-          {{-- Success flash --}}
           @if(session('quick_add_success'))
           <div class="ob-flash">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-            {{ session('quick_add_success') }} added. Add another or continue when ready.
+            {{ session('quick_add_success') }} added. Continue when ready.
           </div>
           @endif
 
-          {{-- Quick-add form --}}
-          <div class="ob-form">
-            <div class="ob-form-title">Add a {{ $clientNoun }} to Ava's memory</div>
+          @if($hasClients)
+            {{-- Memory exists: show coverage → Continue → add-more at bottom --}}
+            <div style="background:rgba(34,197,94,.07);border:1px solid rgba(34,197,94,.2);border-radius:12px;padding:12px 14px;margin-bottom:16px">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+                <span style="font-size:12px;font-weight:700;color:#374151">Memory Coverage</span>
+                <span style="font-size:12px;font-weight:800;color:#22c55e">{{ $coveragePct }}%</span>
+              </div>
+              <div style="height:5px;background:rgba(34,197,94,.15);border-radius:99px;overflow:hidden;margin-bottom:6px">
+                <div style="height:100%;width:{{ $coveragePct }}%;background:#22c55e;border-radius:99px"></div>
+              </div>
+              <p style="font-size:11.5px;color:#16a34a;font-weight:600">Ava knows <strong>{{ $clientCount }} {{ $clientCount === 1 ? $clientNoun : $clientPlural }}</strong>. She's ready to work.</p>
+            </div>
 
-            @if($errors->any())
-            <p class="ob-form-error">{{ $errors->first() }}</p>
-            @endif
-
-            <form method="POST" action="{{ route('hire.ava.assignment.quickadd') }}">
+            <form method="POST" action="{{ route('hire.ava.assignment.continue') }}" style="margin-bottom:20px">
               @csrf
-              <div class="ob-form-grid">
-                <div class="ob-field">
-                  <label>{{ ucfirst($clientNoun) }} / Company <span class="ob-field-req">*</span></label>
-                  <input type="text" name="client_name" value="{{ old('client_name') }}" placeholder="{{ $exClient }}" autocomplete="off">
-                </div>
-                <div class="ob-field">
-                  <label>Contact name <span class="ob-field-req">*</span></label>
-                  <input type="text" name="contact_name" value="{{ old('contact_name') }}" placeholder="e.g. Maria Torres">
-                </div>
-                <div class="ob-field">
-                  <label>Contact email <span class="ob-field-req">*</span></label>
-                  <input type="email" name="contact_email" value="{{ old('contact_email') }}" placeholder="e.g. maria@company.com">
-                </div>
-                <div class="ob-field">
-                  <label>{{ ucfirst($assetNoun) }} name <span class="ob-field-req">*</span></label>
-                  <input type="text" name="asset_name" value="{{ old('asset_name') }}" placeholder="{{ $exAsset }}">
-                </div>
-                <div class="ob-field">
-                  <label>{{ ucfirst($assetNoun) }} type</label>
-                  <select name="asset_type">
-                    @foreach($assetTypeOptions as $val => $label)
-                    <option value="{{ $val }}" {{ old('asset_type') === $val ? 'selected' : '' }}>{{ $label }}</option>
-                    @endforeach
-                  </select>
-                </div>
-                <div class="ob-field">
-                  <label>Renewal date</label>
-                  <input type="date" name="renewal_date" value="{{ old('renewal_date') }}">
-                </div>
-              </div>
-
-              <div class="ob-form-actions">
-                <button type="submit" class="btn-add">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
-                  Add {{ $clientNoun }}
-                </button>
-                <a href="{{ route('memory.import.template', 'clients') }}" class="ob-import-link" target="_blank">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
-                  Import CSV
-                </a>
-              </div>
+              <button type="submit" class="btn-continue is-active">
+                Continue — Put Ava On Shift
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M12 5l7 7-7 7"/></svg>
+              </button>
             </form>
-          </div>
 
-          @if(!$hasClients)
-          <p class="ob-hint" style="margin-bottom:14px">You can add more {{ $clientPlural }} from your dashboard to improve Ava's accuracy.</p>
+            {{-- Add more — secondary, bottom of page --}}
+            <div class="ob-form" style="opacity:.75">
+              <div class="ob-form-title">Add another {{ $clientNoun }} (optional)</div>
+              <form method="POST" action="{{ route('hire.ava.assignment.quickadd') }}">
+                @csrf
+                <div class="ob-form-grid">
+                  <div class="ob-field"><label>{{ ucfirst($clientNoun) }} / Company <span class="ob-field-req">*</span></label><input type="text" name="client_name" value="{{ old('client_name') }}" placeholder="{{ $exClient }}" autocomplete="off"></div>
+                  <div class="ob-field"><label>Contact name <span class="ob-field-req">*</span></label><input type="text" name="contact_name" value="{{ old('contact_name') }}" placeholder="e.g. Maria Torres"></div>
+                  <div class="ob-field"><label>Contact email <span class="ob-field-req">*</span></label><input type="email" name="contact_email" value="{{ old('contact_email') }}" placeholder="e.g. maria@company.com"></div>
+                  <div class="ob-field"><label>{{ ucfirst($assetNoun) }} name <span class="ob-field-req">*</span></label><input type="text" name="asset_name" value="{{ old('asset_name') }}" placeholder="{{ $exAsset }}"></div>
+                  <div class="ob-field"><label>{{ ucfirst($assetNoun) }} type</label><select name="asset_type">@foreach($assetTypeOptions as $val => $label)<option value="{{ $val }}">{{ $label }}</option>@endforeach</select></div>
+                  <div class="ob-field"><label>Renewal date</label><input type="date" name="renewal_date" value="{{ old('renewal_date') }}"></div>
+                </div>
+                <div class="ob-form-actions">
+                  <button type="submit" class="btn-add"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>Add {{ $clientNoun }}</button>
+                  <a href="{{ route('memory.import.template', 'clients') }}" class="ob-import-link" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>Import CSV</a>
+                </div>
+              </form>
+            </div>
+
+          @else
+            {{-- No memory: surface the form, disabled Continue below --}}
+            <div class="ob-form">
+              <div class="ob-form-title">Add a {{ $clientNoun }} to Ava's memory</div>
+              @if($errors->any())<p class="ob-form-error">{{ $errors->first() }}</p>@endif
+              <form method="POST" action="{{ route('hire.ava.assignment.quickadd') }}">
+                @csrf
+                <div class="ob-form-grid">
+                  <div class="ob-field"><label>{{ ucfirst($clientNoun) }} / Company <span class="ob-field-req">*</span></label><input type="text" name="client_name" value="{{ old('client_name') }}" placeholder="{{ $exClient }}" autocomplete="off"></div>
+                  <div class="ob-field"><label>Contact name <span class="ob-field-req">*</span></label><input type="text" name="contact_name" value="{{ old('contact_name') }}" placeholder="e.g. Maria Torres"></div>
+                  <div class="ob-field"><label>Contact email <span class="ob-field-req">*</span></label><input type="email" name="contact_email" value="{{ old('contact_email') }}" placeholder="e.g. maria@company.com"></div>
+                  <div class="ob-field"><label>{{ ucfirst($assetNoun) }} name <span class="ob-field-req">*</span></label><input type="text" name="asset_name" value="{{ old('asset_name') }}" placeholder="{{ $exAsset }}"></div>
+                  <div class="ob-field"><label>{{ ucfirst($assetNoun) }} type</label><select name="asset_type">@foreach($assetTypeOptions as $val => $label)<option value="{{ $val }}" {{ old('asset_type') === $val ? 'selected' : '' }}>{{ $label }}</option>@endforeach</select></div>
+                  <div class="ob-field"><label>Renewal date</label><input type="date" name="renewal_date" value="{{ old('renewal_date') }}"></div>
+                </div>
+                <div class="ob-form-actions">
+                  <button type="submit" class="btn-add"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>Add {{ $clientNoun }}</button>
+                  <a href="{{ route('memory.import.template', 'clients') }}" class="ob-import-link" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>Import CSV</a>
+                </div>
+              </form>
+            </div>
+
+            <form method="POST" action="{{ route('hire.ava.assignment.continue') }}">
+              @csrf
+              <button type="submit" class="btn-continue" disabled style="opacity:.3;cursor:not-allowed">
+                Continue — Put Ava On Shift
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M12 5l7 7-7 7"/></svg>
+              </button>
+            </form>
           @endif
-
-          <form method="POST" action="{{ route('hire.ava.assignment.continue') }}" style="margin-top:{{ $hasClients ? 'auto' : '0' }}">
-            @csrf
-            <button type="submit" class="btn-continue {{ $hasClients ? 'is-active' : '' }}">
-              Continue — Put Ava On Shift
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M12 5l7 7-7 7"/></svg>
-            </button>
-          </form>
 
         </div>
       </div>
