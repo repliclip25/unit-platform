@@ -101,6 +101,7 @@ class RegisteredUserController extends Controller
             session(['onboarding_intent_worker' => $workerIntent]);
         }
 
-        return redirect()->route('onboarding');
+        // If user arrived via a hire flow (e.g. /hire/ava/welcome), send them there
+        return redirect()->intended(route('onboarding'));
     }
 }

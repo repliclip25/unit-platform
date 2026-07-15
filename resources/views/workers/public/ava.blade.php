@@ -867,7 +867,7 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
       @else
         <a href="{{ route('login') }}" class="btn-login">Log in</a>
       @endauth
-      <a href="{{ route('register') }}" class="btn-nav-hire">
+      <a href="{{ route('hire.ava.welcome') }}" class="btn-nav-hire">
         Hire Your First Worker
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
       </a>
@@ -935,7 +935,7 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
     <div class="hc-revenue-label">Revenue Protected</div>
     <div class="hc-revenue-amount">${{ number_format($totalTx * 3.85, 0) }}</div>
     <div class="hc-revenue-streak">{{ $deploymentCount * 18 }}-day streak 🔥</div>
-    <a href="{{ route('register') }}" class="hc-feed-btn">
+    <a href="{{ route('hire.ava.welcome') }}" class="hc-feed-btn">
       View Live Feed →
     </a>
   </div>
@@ -1012,7 +1012,7 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
         <div class="prob-cta-t2">Let <span>AVA</span> handle them — so your business keeps moving forward.</div>
       </div>
     </div>
-    <a href="{{ route('register') }}" class="btn-prob-cta">
+    <a href="{{ route('hire.ava.welcome') }}" class="btn-prob-cta">
       See AVA in Action
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
     </a>
@@ -1141,11 +1141,11 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
 
     {{-- CTAs --}}
     <div class="pipe-cta">
-      <a href="{{ route('register') }}" class="btn-pipe-hire">
+      <a href="{{ route('hire.ava.welcome') }}" class="btn-pipe-hire">
         Hire AVA
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
       </a>
-      <a href="{{ route('register') }}" class="btn-pipe-test">
+      <a href="{{ route('hire.ava.welcome') }}" class="btn-pipe-test">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
         Run a Live Test
       </a>
@@ -1416,7 +1416,7 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
       <div>
         <div class="sec-eye">Frequently asked questions</div>
         <h2 class="sec-h">Everything you want to know about {{ $worker['name'] }}.</h2>
-        <a href="{{ route('register') }}" class="btn-nav-hire" style="display:inline-flex;margin-top:8px">
+        <a href="{{ route('hire.ava.welcome') }}" class="btn-nav-hire" style="display:inline-flex;margin-top:8px">
           Get started free
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
         </a>
@@ -1444,7 +1444,7 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
         <div class="cta-final-eyebrow">Your workday ended.</div>
         <h2 class="cta-final-h">{{ $worker['name'] }}'s <em>didn't.</em></h2>
         <p class="cta-final-sub">Tomorrow {{ $worker['name'] }} will protect someone else's business. Or yours.</p>
-        <a href="{{ route('register') }}" class="btn-cta-final">
+        <a href="{{ route('hire.ava.welcome') }}" class="btn-cta-final">
           Hire {{ $worker['name'] }} Today
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
         </a>
@@ -1465,7 +1465,7 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
       <div class="ft-links">
         <a href="{{ route('workers.page') }}">All Workers</a>
         <a href="{{ route('pricing') }}">Pricing</a>
-        <a href="{{ route('register') }}">Get Started</a>
+        <a href="{{ route('hire.ava.welcome') }}">Get Started</a>
         <a href="{{ route('login') }}">Log In</a>
       </div>
       <div class="ft-copy">© {{ date('Y') }} UNIT. All rights reserved.</div>

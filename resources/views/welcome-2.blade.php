@@ -910,7 +910,7 @@ body{
     </ul>
     <div class="nav-acts">
       <a href="{{ route('login') }}" class="btn-login" style="border-radius:99px">Log in</a>
-      <a href="{{ route('register') }}" class="btn-cta">
+      <a href="{{ route('hire.ava.welcome') }}" class="btn-cta">
         Hire Your First Worker
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
       </a>
@@ -942,7 +942,7 @@ body{
   </div>
   <div class="mob-ctas">
     <a href="{{ route('login') }}" class="btn-login" style="text-align:center;padding:12px;border-radius:99px">Log in</a>
-    <a href="{{ route('register') }}" class="btn-cta" style="padding:12px;justify-content:center">Hire Your First Worker →</a>
+    <a href="{{ route('hire.ava.welcome') }}" class="btn-cta" style="padding:12px;justify-content:center">Hire Your First Worker →</a>
   </div>
 </div>
 
@@ -963,7 +963,7 @@ body{
           Meet the Team
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
         </a>
-        <a href="{{ route('register') }}" class="btn-hero-ghost">
+        <a href="{{ route('hire.ava.welcome') }}" class="btn-hero-ghost">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M10 8l6 4-6 4V8z" fill="currentColor" stroke="none"/></svg>
           Watch Their First Day
         </a>
@@ -1164,7 +1164,7 @@ body{
           </div>
           <div class="wk-btns">
             <a href="{{ route('workers.public.show2', 'ava') }}" class="btn-wk-outline">Watch Ava's Day <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
-            <a href="{{ route('register') }}" class="btn-wk">Hire AVA <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+            <a href="{{ route('hire.ava.welcome') }}" class="btn-wk">Hire AVA <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
           </div>
         </div>
       </div>
@@ -1191,7 +1191,7 @@ body{
           </div>
           <div class="wk-btns">
             <a href="#" class="btn-wk-outline">Watch Dox's Day <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
-            <a href="{{ route('register') }}" class="btn-wk">Hire DOX <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+            <a href="{{ route('hire.ava.welcome') }}" class="btn-wk">Hire DOX <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
           </div>
         </div>
       </div>
@@ -1218,7 +1218,7 @@ body{
           </div>
           <div class="wk-btns">
             <a href="#" class="btn-wk-outline">Watch Mox's Day <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
-            <a href="{{ route('register') }}" class="btn-wk">Hire MOX <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+            <a href="{{ route('hire.ava.welcome') }}" class="btn-wk">Hire MOX <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
           </div>
         </div>
       </div>
@@ -1245,7 +1245,7 @@ body{
           </div>
           <div class="wk-btns">
             <a href="#" class="btn-wk-outline">Watch Nux's Day <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
-            <a href="{{ route('register') }}" class="btn-wk">Hire NUX <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+            <a href="{{ route('hire.ava.welcome') }}" class="btn-wk">Hire NUX <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
           </div>
         </div>
       </div>
@@ -1320,7 +1320,7 @@ body{
         <div class="sec-eye">Resources</div>
         <h2 class="sec-h">From the field — videos, insights,<br>and real examples.</h2>
       </div>
-      <a href="{{ route('register') }}" class="btn-outline">
+      <a href="{{ route('hire.ava.welcome') }}" class="btn-outline">
         Browse all
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
       </a>
@@ -1453,7 +1453,7 @@ body{
         <div class="sec-eye">Every worker has a life</div>
         <h2 class="sec-h">They wake up. They receive work. They improve. They write about their day.</h2>
         <p>They're not just tools. They're consistent, reliable, and always getting better.</p>
-        <a href="{{ route('register') }}" class="btn-outline">
+        <a href="{{ route('hire.ava.welcome') }}" class="btn-outline">
           See Inside Their World
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
         </a>
@@ -1548,7 +1548,7 @@ body{
         <div class="sec-eye">FAQ</div>
         <h2 class="what-h" style="margin-bottom:16px">Not an app.<br>Not a bot.<br><em>A worker.</em></h2>
         <p style="font-size:.975rem;color:var(--t3);line-height:1.75;margin-bottom:20px">A UNIT worker is a system built from your day-to-day workflow. It runs without hand-holding, handles its job end-to-end, and reports back to you — so you always know what was done and why.</p>
-        <a href="{{ route('register') }}" class="btn-outline">
+        <a href="{{ route('hire.ava.welcome') }}" class="btn-outline">
           Get started free
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
         </a>
@@ -1615,7 +1615,7 @@ body{
         </div>
       </div>
       <div class="cta-right">
-        <a href="{{ route('register') }}" class="btn-cta-main">
+        <a href="{{ route('hire.ava.welcome') }}" class="btn-cta-main">
           Hire Your First Worker
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
         </a>
@@ -1697,7 +1697,7 @@ body{
           <a href="#timeline">How It Works</a>
           <a href="{{ route('marketplace') }}">Marketplace</a>
           <a href="{{ route('pricing') }}">Pricing</a>
-          <a href="{{ route('register') }}">Sign Up Free</a>
+          <a href="{{ route('hire.ava.welcome') }}">Sign Up Free</a>
         </div>
       </div>
       <div>
