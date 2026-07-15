@@ -8,51 +8,49 @@
 <link rel="icon" type="image/png" href="/logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Caveat:wght@500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%;overflow:hidden}
 body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-font-smoothing:antialiased}
 
-/* ══════════════════════════════
-   PAGE SHELL
-   sidebar | content area
-   content area stacks: main-row / trust-bar
-══════════════════════════════ */
 .ob-page{
   display:grid;
   grid-template-columns:260px 1fr;
-  grid-template-rows:1fr auto;
   height:100vh;
   overflow:hidden;
 }
 
-/* ══════════════════════════════
-   SIDEBAR — identical to step-1
-══════════════════════════════ */
 .ob-sidebar{
-  grid-row:1/3;
   background:#F4F3F1;
   display:flex;flex-direction:column;
   padding:32px 24px;
   overflow-y:auto;
-  border-right:1px solid #E8E7E4;
 }
-.ob-logo{font-size:21px;font-weight:900;letter-spacing:-.04em;color:#0D0D0D;margin-bottom:44px}
-
+.ob-logo{
+  font-size:21px;font-weight:900;letter-spacing:-.04em;
+  color:#0D0D0D;margin-bottom:44px;
+}
 .ob-steps{display:flex;flex-direction:column;flex:1}
 .ob-step{display:flex;align-items:flex-start;gap:14px;position:relative}
 .ob-step:not(:last-child) .ob-step-rail::after{
-  content:'';position:absolute;left:13px;top:30px;
-  width:2px;height:calc(100% - 6px);background:#DCDCDC;border-radius:2px;
+  content:'';position:absolute;
+  left:13px;top:30px;
+  width:2px;height:calc(100% - 6px);
+  background:#DCDCDC;border-radius:2px;
 }
 .ob-step.done:not(:last-child) .ob-step-rail::after{background:#0D0D0D}
-.ob-step-rail{position:relative;flex-shrink:0;display:flex;flex-direction:column;align-items:center;padding-bottom:32px}
+.ob-step-rail{
+  position:relative;flex-shrink:0;
+  display:flex;flex-direction:column;align-items:center;
+  padding-bottom:32px;
+}
 .ob-step:last-child .ob-step-rail{padding-bottom:0}
 .ob-step-num{
   width:28px;height:28px;border-radius:50%;
   display:flex;align-items:center;justify-content:center;
-  font-size:12px;font-weight:800;position:relative;z-index:1;flex-shrink:0;
+  font-size:12px;font-weight:800;
+  position:relative;z-index:1;flex-shrink:0;
 }
 .ob-step.pending .ob-step-num{background:#E8E7E4;color:#888;border:1.5px solid #DCDCDC}
 .ob-step.active  .ob-step-num{background:#0D0D0D;color:#fff;box-shadow:0 0 0 4px rgba(0,0,0,.1)}
@@ -76,217 +74,199 @@ body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-fon
 .ob-security-title{font-size:12px;font-weight:700;color:#0D0D0D}
 .ob-security p{font-size:11px;color:#6B7280;line-height:1.55}
 
-/* ══════════════════════════════
-   MAIN ROW — 3 columns
-   left panel | desk image | right panel
-══════════════════════════════ */
-.ob-main{
-  display:grid;
-  grid-template-columns:300px 1fr 240px;
+.ob-card-area{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:20px 24px 20px 12px;
   overflow:hidden;
 }
+.ob-card{
+  display:grid;
+  grid-template-columns:1fr 290px;
+  width:100%;height:100%;
+  max-height:calc(100vh - 40px);
+  border-radius:20px;
+  overflow:hidden;
+  box-shadow:0 2px 12px rgba(0,0,0,.06),0 1px 3px rgba(0,0,0,.03);
+  border:1px solid rgba(0,0,0,.07);
+}
 
-/* ── LEFT PANEL ── */
-.ob-left{
-  background:#fff;
-  border-right:1px solid #F0F0F0;
-  padding:40px 28px;
+/* ── Hero (workspace image) ── */
+.ob-hero{position:relative;overflow:hidden;background:#1c1a17}
+.ob-hero-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center center}
+.ob-hero-fade{
+  position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:linear-gradient(to right,#fff 0%,#fff 20%,rgba(255,255,255,.88) 34%,rgba(255,255,255,.4) 52%,transparent 70%);
+}
+.ob-hero-content{
+  position:relative;z-index:2;
+  padding:40px 36px;
+  max-width:420px;height:100%;
   display:flex;flex-direction:column;justify-content:center;
-  overflow-y:auto;
 }
 
-.ob-eyebrow{
-  display:flex;align-items:center;gap:8px;
+/* Step eyebrow — replaces the badge from step 1 */
+.ob-step-tag{
+  display:inline-flex;align-items:center;gap:8px;
   font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
-  color:#9CA3AF;margin-bottom:18px;
+  color:#9CA3AF;margin-bottom:20px;width:fit-content;
 }
-.ob-eyebrow svg{width:14px;height:14px;fill:#F5C518;stroke:none;flex-shrink:0}
+.ob-step-tag-dot{
+  width:7px;height:7px;border-radius:50%;
+  background:#F5C518;flex-shrink:0;
+}
 
 .ob-h1{
-  font-size:clamp(1.55rem,1.9vw,2rem);
-  font-weight:900;letter-spacing:-.04em;line-height:1.08;
+  font-size:clamp(1.8rem,2.4vw,2.4rem);
+  font-weight:900;letter-spacing:-.04em;line-height:1.07;
   color:#0D0D0D;margin-bottom:14px;
 }
-.ob-sub{
-  font-size:13.5px;color:#6B7280;line-height:1.75;
-  margin-bottom:28px;
-}
+.ob-sub{font-size:14px;color:#374151;line-height:1.72;margin-bottom:20px}
 
-/* Gmail button */
+/* Ava quote bubble — same as step 1 */
+.ob-bubble{
+  background:#fff;border:1px solid #E5E7EB;
+  border-radius:16px;border-bottom-left-radius:4px;
+  padding:14px 18px;margin-bottom:24px;max-width:310px;
+  box-shadow:0 1px 6px rgba(0,0,0,.04);
+}
+.ob-bubble-icon{width:26px;height:26px;border-radius:50%;background:#F5C518;display:flex;align-items:center;justify-content:center;margin-bottom:8px}
+.ob-bubble-icon svg{width:13px;height:13px;stroke:#0D0D0D;stroke-width:2.5}
+.ob-bubble p{font-size:13px;color:#374151;line-height:1.65}
+.ob-bubble p+p{margin-top:5px}
+
+/* Trust bar inside hero — same as social proof in step 1 */
+.ob-proof{display:flex;align-items:center;gap:10px}
+.ob-proof-avs{display:flex}
+.ob-proof-avs img{width:28px;height:28px;border-radius:50%;border:2px solid #fff;margin-left:-7px;object-fit:cover;box-shadow:0 1px 4px rgba(0,0,0,.12)}
+.ob-proof-avs img:first-child{margin-left:0}
+.ob-proof-txt{font-size:12px;color:#6B7280;line-height:1.45}
+.ob-proof-txt strong{color:#0D0D0D;display:block}
+
+/* ── Right panel (action panel) ── */
+.ob-profile{
+  background:#fff;border-left:1px solid #F0F0F0;
+  padding:28px 22px;
+  display:flex;flex-direction:column;
+  overflow-y:auto;
+}
+.emp-eyebrow{font-size:9px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:#9CA3AF;margin-bottom:10px}
+.emp-name{font-size:1.65rem;font-weight:900;letter-spacing:-.04em;color:#0D0D0D;line-height:1}
+.emp-role{font-size:12.5px;color:#6B7280;margin-top:4px;margin-bottom:16px}
+.emp-divider{border:none;border-top:1px solid #F3F4F6;margin:0 0 12px}
+
+.emp-row{display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid #F9FAFB}
+.emp-row:last-child{border-bottom:none}
+.emp-row-key{display:flex;align-items:center;gap:6px;font-size:11.5px;color:#9CA3AF}
+.emp-row-key svg{width:12px;height:12px;stroke:#D1D5DB;stroke-width:1.8;flex-shrink:0}
+.emp-row-val{font-size:11.5px;font-weight:700;color:#0D0D0D}
+.emp-row-val.amber{color:#D97706;display:flex;align-items:center;gap:5px}
+.emp-row-val.grey{color:#9CA3AF;display:flex;align-items:center;gap:5px}
+.status-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.dot-amber{background:#F59E0B}
+.dot-grey{background:#D1D5DB}
+
+/* Gmail connect button — same weight as Hire Ava in step 1 */
 .btn-gmail{
-  display:flex;align-items:center;gap:14px;
-  padding:14px 18px;border-radius:14px;
-  background:#0D0D0D;color:#fff;
-  border:none;cursor:pointer;width:100%;text-align:left;
+  display:flex;align-items:center;gap:12px;
+  width:100%;
+  padding:14px 16px;border-radius:13px;
+  background:#0D0D0D;color:#fff;border:none;cursor:pointer;
   text-decoration:none;
+  font-size:14px;font-weight:800;letter-spacing:-.01em;
   transition:opacity .15s,transform .1s;
-  margin-bottom:16px;
+  margin-bottom:12px;
 }
 .btn-gmail:hover{opacity:.88;transform:translateY(-1px)}
 .btn-gmail-icon{
-  width:36px;height:36px;border-radius:8px;background:#fff;
+  width:32px;height:32px;border-radius:7px;background:#fff;
   display:flex;align-items:center;justify-content:center;flex-shrink:0;
 }
-.btn-gmail-label{display:flex;flex-direction:column;gap:2px}
-.btn-gmail-main{font-size:14.5px;font-weight:800;letter-spacing:-.01em;color:#fff}
-.btn-gmail-sub{font-size:11px;color:rgba(255,255,255,.55)}
+.btn-gmail-text{display:flex;flex-direction:column;flex:1}
+.btn-gmail-main{font-size:14px;font-weight:800;color:#fff}
+.btn-gmail-sub{font-size:11px;color:rgba(255,255,255,.55);margin-top:1px}
+.btn-gmail svg.arrow{width:16px;height:16px;stroke:#fff;stroke-width:2.5;flex-shrink:0}
 
 .ob-lock-note{
-  display:flex;align-items:flex-start;gap:8px;
-  font-size:12px;color:#9CA3AF;line-height:1.5;
+  display:flex;align-items:flex-start;gap:7px;
+  font-size:11.5px;color:#9CA3AF;line-height:1.55;
+  margin-bottom:20px;
 }
-.ob-lock-note svg{width:13px;height:13px;stroke:#C4C4C4;flex-shrink:0;margin-top:1px}
+.ob-lock-note svg{width:12px;height:12px;stroke:#C4C4C4;flex-shrink:0;margin-top:2px}
 .ob-lock-note strong{color:#6B7280;font-weight:600}
 
-/* ── CENTER: DESK IMAGE ── */
-.ob-desk{
-  position:relative;overflow:hidden;
-  background:#1c1a17;
-}
-.ob-desk-img{
-  position:absolute;inset:0;width:100%;height:100%;
-  object-fit:cover;object-position:center center;
-}
-/* Annotations overlay */
-.ob-annotations{
-  position:absolute;inset:0;z-index:2;pointer-events:none;
-}
-.ann{
-  position:absolute;
-  font-family:'Caveat',cursive;
-  font-size:18px;font-weight:600;
-  color:rgba(20,18,14,.75);
-  display:flex;align-items:center;gap:4px;
-}
-.ann svg{width:28px;height:28px;fill:none;stroke:rgba(20,18,14,.5);stroke-width:1.5;flex-shrink:0}
-.ann-desk { bottom:32%; left:8% }
-.ann-inbox{ top:28%;  left:44% }
-.ann-trust{ bottom:32%; right:6% }
-
-/* ── RIGHT PANEL ── */
-.ob-right{
-  background:#F9F9F8;
-  border-left:1px solid #F0F0F0;
-  padding:28px 20px;
-  display:flex;flex-direction:column;gap:0;
-  overflow-y:auto;
-}
-
-.ob-right-eyebrow{
-  font-size:8.5px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;
-  color:#9CA3AF;margin-bottom:12px;
-}
-
-/* AVA employee card */
-.ob-emp-card{
-  background:#fff;border:1px solid #F0F0F0;border-radius:12px;
-  padding:14px;margin-bottom:16px;
-  display:flex;align-items:center;gap:10px;
-}
-.ob-emp-avatar{
-  width:38px;height:38px;border-radius:8px;
-  background:#0D0D0D;color:#F5C518;
-  display:flex;align-items:center;justify-content:center;
-  font-size:16px;font-weight:900;flex-shrink:0;
-}
-.ob-emp-name{font-size:15px;font-weight:900;letter-spacing:-.03em;color:#0D0D0D;line-height:1}
-.ob-emp-role{font-size:11px;color:#9CA3AF;margin-top:3px}
-
-/* Status rows */
-.ob-status-section{
-  background:#fff;border:1px solid #F0F0F0;border-radius:12px;
-  padding:14px;margin-bottom:16px;
-}
-.ob-status-section-label{
-  font-size:8.5px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;
-  color:#9CA3AF;margin-bottom:10px;
-}
-.ob-status-row{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:6px 0;
-}
-.ob-status-row+.ob-status-row{border-top:1px solid #F9FAFB}
-.ob-status-key{font-size:12px;color:#9CA3AF}
-.ob-status-val{font-size:12px;font-weight:700;display:flex;align-items:center;gap:5px}
-.dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
-.dot-amber{background:#F59E0B}
-.dot-grey{background:#D1D5DB}
-.val-amber{color:#D97706}
-.val-grey{color:#9CA3AF}
-
-/* Safety card */
+/* Safety card at bottom — same position as setup-note in step 1 */
 .ob-safe-card{
-  background:#fff;border:1px solid #F0F0F0;border-radius:12px;
-  padding:14px;margin-top:auto;
+  margin-top:auto;
+  background:#F0FDF4;border:1px solid #DCFCE7;
+  border-radius:12px;padding:14px;
   display:flex;align-items:flex-start;gap:10px;
 }
 .ob-safe-icon{
-  width:32px;height:32px;border-radius:8px;
-  background:#F0FDF4;border:1px solid #DCFCE7;
+  width:30px;height:30px;border-radius:7px;
+  background:#fff;border:1px solid #DCFCE7;
   display:flex;align-items:center;justify-content:center;flex-shrink:0;
 }
-.ob-safe-icon svg{width:15px;height:15px;stroke:#16a34a;stroke-width:2}
-.ob-safe-title{
-  font-size:8.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
-  color:#16a34a;margin-bottom:4px;
-}
-.ob-safe-body{font-size:11px;color:#6B7280;line-height:1.6}
-
-/* ══ TRUST BAR ══ */
-.ob-trust{
-  grid-column:2;
-  background:#fff;border-top:1px solid #EBEBEB;
-  padding:11px 28px;
-  display:flex;align-items:center;gap:24px;
-  overflow:hidden;
-}
-.ob-trust-shield{display:flex;align-items:center;gap:7px;white-space:nowrap;flex-shrink:0}
-.ob-trust-shield svg{width:13px;height:13px;stroke:#C4C4C4;flex-shrink:0}
-.ob-trust-shield span{font-size:11.5px;color:#9CA3AF}
-.ob-trust-sep{width:1px;height:14px;background:#E5E7EB;flex-shrink:0}
-.ob-trust-logos{display:flex;align-items:center;gap:22px;flex:1}
-.ob-trust-logo{
-  font-size:12px;font-weight:700;color:#C4C4C4;
-  display:flex;align-items:center;gap:5px;white-space:nowrap;
-}
-.ob-trust-logo svg{width:12px;height:12px;fill:#C4C4C4}
+.ob-safe-icon svg{width:14px;height:14px;stroke:#16a34a;stroke-width:2.2}
+.ob-safe-title{font-size:9px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;color:#16a34a;margin-bottom:4px}
+.ob-safe-body{font-size:11px;color:#4B7A5C;line-height:1.6}
 
 /* ══ MOBILE ══ */
 @media(max-width:1024px){
   html,body{overflow:auto;height:auto}
-  .ob-page{grid-template-columns:1fr;grid-template-rows:auto 1fr auto;height:auto}
-
+  .ob-page{grid-template-columns:1fr;height:auto;overflow:visible}
   .ob-sidebar{
-    grid-row:1;border-right:none;border-bottom:1px solid #E8E7E4;
     flex-direction:row;align-items:center;justify-content:space-between;
-    padding:14px 20px;position:sticky;top:0;z-index:10;background:#fff;
+    padding:14px 20px;border-bottom:1px solid #E5E7EB;
+    background:#fff;position:sticky;top:0;z-index:10;
   }
-  .ob-logo{margin-bottom:0;font-size:17px}
-  .ob-steps{flex-direction:row;gap:6px;flex:0}
+  .ob-logo{margin-bottom:0;font-size:18px}
+  .ob-steps{flex-direction:row;gap:8px;flex:0;align-items:center}
   .ob-step{flex-direction:column;align-items:center;gap:0}
   .ob-step-rail{padding-bottom:0}
   .ob-step:not(:last-child) .ob-step-rail::after{display:none}
   .ob-step-body{display:none}
-  .ob-step-num{width:24px;height:24px;font-size:11px}
+  .ob-step-num{width:26px;height:26px;font-size:11px}
   .ob-security{display:none}
 
-  .ob-main{grid-template-columns:1fr;grid-row:2}
-  .ob-desk{height:260px;order:1}
-  .ob-left{order:2;padding:24px 20px;border-right:none;border-top:1px solid #F0F0F0}
-  .ob-right{order:3;border-left:none;border-top:1px solid #F0F0F0}
-  .ob-trust{grid-column:1;order:4}
-
-  .ann-desk{bottom:15%;left:6%;font-size:15px}
-  .ann-inbox{top:20%;left:36%;font-size:15px}
-  .ann-trust{bottom:15%;right:4%;font-size:15px}
+  .ob-card-area{padding:16px;overflow:visible;height:auto;align-items:flex-start}
+  .ob-card{
+    display:flex;flex-direction:column;
+    width:100%;height:auto;max-height:none;
+    box-shadow:0 2px 12px rgba(0,0,0,.08);
+  }
+  .ob-hero{min-height:340px}
+  .ob-hero-fade{
+    background:linear-gradient(to top,#fff 0%,#fff 20%,rgba(255,255,255,.75) 40%,rgba(255,255,255,.2) 60%,transparent 80%);
+  }
+  .ob-hero-content{
+    padding:24px 24px 28px;
+    max-width:100%;height:auto;
+    display:flex;flex-direction:column;justify-content:flex-end;
+  }
+  .ob-h1{font-size:1.75rem}
+  .ob-sub{font-size:13.5px}
+  .ob-bubble{max-width:100%}
+  .ob-profile{border-left:none;border-top:1px solid #F0F0F0;padding:20px 24px}
+  .btn-gmail{font-size:14px}
+}
+@media(max-width:480px){
+  .ob-hero{min-height:280px}
+  .ob-hero-content{padding:20px 20px 24px}
+  .ob-h1{font-size:1.5rem}
+  .ob-card-area{padding:12px}
+  .ob-profile{padding:20px}
 }
 </style>
 </head>
 <body>
 
+@php $firstName = explode(' ', auth()->user()->name ?? 'there')[0]; @endphp
+
 <div class="ob-page">
 
-  {{-- ══ SIDEBAR ══ --}}
+  {{-- ══ SIDEBAR — step 2 active, step 1 done ══ --}}
   <aside class="ob-sidebar">
     <div class="ob-logo">UNIT</div>
     <div class="ob-steps">
@@ -341,132 +321,117 @@ body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-fon
     </div>
   </aside>
 
-  {{-- ══ MAIN ROW ══ --}}
-  <div class="ob-main">
+  {{-- ══ FLOATING CARD ══ --}}
+  <div class="ob-card-area">
+    <div class="ob-card">
 
-    {{-- LEFT: text + action --}}
-    <div class="ob-left">
-      <div class="ob-eyebrow">
-        <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-        Step 2 of 5
-      </div>
+      {{-- Hero: workspace scene --}}
+      <div class="ob-hero">
+        <img class="ob-hero-img" src="/images/ava-life.png" alt="Ava's workspace">
+        <div class="ob-hero-fade"></div>
+        <div class="ob-hero-content">
 
-      <h1 class="ob-h1">Every worker needs<br>a workspace.</h1>
+          <div class="ob-step-tag">
+            <span class="ob-step-tag-dot"></span>
+            Step 2 of 5
+          </div>
 
-      <p class="ob-sub">
-        Ava works inside your Gmail.<br>
-        Give her access so she can begin<br>
-        monitoring renewals and preparing<br>
-        drafts for you.
-      </p>
+          <h1 class="ob-h1">
+            Every worker<br>
+            needs a<br>
+            workspace.
+          </h1>
 
-      <a href="{{ route('ava.gmail.authorize') }}" class="btn-gmail">
-        <div class="btn-gmail-icon">
-          <svg width="20" height="20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
-            <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-            <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/>
-            <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
-          </svg>
-        </div>
-        <div class="btn-gmail-label">
-          <span class="btn-gmail-main">Set Up Workspace</span>
-          <span class="btn-gmail-sub">Connect Gmail</span>
-        </div>
-      </a>
+          <p class="ob-sub">
+            Ava works inside your Gmail.<br>
+            Give her access so she can begin<br>
+            monitoring renewals and preparing<br>
+            drafts for you.
+          </p>
 
-      <div class="ob-lock-note">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="11" width="18" height="11" rx="2"/><path stroke-linecap="round" d="M7 11V7a5 5 0 0110 0v4"/></svg>
-        <span><strong>Secure OAuth 2.0</strong><br>We never see or store your password.</span>
-      </div>
-    </div>
+          <div class="ob-bubble">
+            <div class="ob-bubble-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+            </div>
+            <p>Hi {{ $firstName }},</p>
+            <p>Just connect your Gmail and I'll handle the rest.</p>
+            <p>I'll never send anything without your approval.</p>
+          </div>
 
-    {{-- CENTER: desk image with annotations --}}
-    <div class="ob-desk">
-      <img class="ob-desk-img"
-           src="/images/ava-desk.png"
-           alt="Ava's desk"
-           onerror="this.style.opacity='.15'">
+          <div class="ob-proof">
+            <div class="ob-proof-avs">
+              <img src="/images/ava.png" alt="">
+              <img src="/images/ava-stand.png" alt="">
+              <img src="/images/ava-life.png" alt="">
+              <img src="/images/ava.png" alt="" style="filter:hue-rotate(40deg) saturate(.8)">
+            </div>
+            <div class="ob-proof-txt">
+              <strong>2,847+ businesses</strong>
+              already connected
+            </div>
+          </div>
 
-      <div class="ob-annotations">
-        <div class="ann ann-desk">
-          {{-- curved arrow pointing right-down --}}
-          <svg viewBox="0 0 40 40"><path d="M8 8 Q10 28 32 32" stroke-linecap="round"/><path d="M28 36 L32 28 L36 34" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          Her desk
-        </div>
-        <div class="ann ann-inbox">
-          <svg viewBox="0 0 40 40"><path d="M32 8 Q30 28 8 32" stroke-linecap="round"/><path d="M4 30 L10 28 L8 34" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          Her inbox
-        </div>
-        <div class="ann ann-trust">
-          <svg viewBox="0 0 40 40"><path d="M8 8 Q10 28 32 32" stroke-linecap="round"/><path d="M28 36 L32 28 L36 34" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          Your trust
-        </div>
-      </div>
-    </div>
-
-    {{-- RIGHT: employee status --}}
-    <div class="ob-right">
-
-      <div class="ob-right-eyebrow">Employee Status</div>
-
-      <div class="ob-emp-card">
-        <div class="ob-emp-avatar">A</div>
-        <div>
-          <div class="ob-emp-name">AVA</div>
-          <div class="ob-emp-role">Renewal Specialist</div>
         </div>
       </div>
 
-      <div class="ob-status-section">
-        <div class="ob-status-section-label">Workspace Setup</div>
-        <div class="ob-status-row">
-          <span class="ob-status-key">Workspace</span>
-          <span class="ob-status-val val-amber"><span class="dot dot-amber"></span>Preparing...</span>
+      {{-- Right panel: workspace action --}}
+      <div class="ob-profile">
+        <div class="emp-eyebrow">Workspace Setup</div>
+        <div class="emp-name">AVA</div>
+        <div class="emp-role">Renewal Specialist</div>
+
+        <hr class="emp-divider">
+
+        <div class="emp-row">
+          <span class="emp-row-key">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="11" width="18" height="11" rx="2"/><path stroke-linecap="round" d="M7 11V7a5 5 0 0110 0v4"/></svg>
+            Workspace
+          </span>
+          <span class="emp-row-val amber"><span class="status-dot dot-amber"></span>Preparing...</span>
         </div>
-        <div class="ob-status-row">
-          <span class="ob-status-key">Access</span>
-          <span class="ob-status-val val-grey"><span class="dot dot-grey"></span>Not connected</span>
+        <div class="emp-row">
+          <span class="emp-row-key">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+            Gmail Access
+          </span>
+          <span class="emp-row-val grey"><span class="status-dot dot-grey"></span>Not connected</span>
         </div>
+
+        <div class="emp-eyebrow" style="margin-top:16px">Action Required</div>
+
+        <a href="{{ route('ava.gmail.authorize') }}" class="btn-gmail">
+          <div class="btn-gmail-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+              <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+              <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/>
+              <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+            </svg>
+          </div>
+          <div class="btn-gmail-text">
+            <span class="btn-gmail-main">Set Up Workspace</span>
+            <span class="btn-gmail-sub">Connect Gmail</span>
+          </div>
+          <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+
+        <div class="ob-lock-note">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="11" width="18" height="11" rx="2"/><path stroke-linecap="round" d="M7 11V7a5 5 0 0110 0v4"/></svg>
+          <span><strong>Secure OAuth 2.0</strong> — We never see or store your password.</span>
+        </div>
+
+        <div class="ob-safe-card">
+          <div class="ob-safe-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </div>
+          <div>
+            <div class="ob-safe-title">Your Data Is Safe</div>
+            <div class="ob-safe-body">Ava only accesses the data you allow. You can revoke access at any time.</div>
+          </div>
+        </div>
+
       </div>
 
-      <div class="ob-safe-card">
-        <div class="ob-safe-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
-        </div>
-        <div>
-          <div class="ob-safe-title">Your Data Is Safe</div>
-          <div class="ob-safe-body">Ava only accesses the data you allow. You can revoke access at any time.</div>
-        </div>
-      </div>
-
-    </div>
-  </div>
-
-  {{-- ══ TRUST BAR ══ --}}
-  <div class="ob-trust">
-    <div class="ob-trust-shield">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-      <span>Trusted by 2,847+ businesses worldwide</span>
-    </div>
-    <div class="ob-trust-sep"></div>
-    <div class="ob-trust-logos">
-      <div class="ob-trust-logo">
-        <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-        Capterra
-      </div>
-      <div class="ob-trust-logo">
-        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/></svg>
-        Google
-      </div>
-      <div class="ob-trust-logo">
-        <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-        Trustpilot
-      </div>
-      <div class="ob-trust-logo">
-        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3"/></svg>
-        GetApp
-      </div>
     </div>
   </div>
 
