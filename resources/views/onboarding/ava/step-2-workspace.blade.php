@@ -210,13 +210,17 @@ body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-fon
     <div class="ob-logo">UNIT</div>
     <div class="ob-steps">
 
-      <div class="ob-step done">
-        <div class="ob-step-rail"><div class="ob-step-num">✓</div></div>
+      <a href="{{ route('hire.ava.welcome') }}" class="ob-step done" style="text-decoration:none">
+        <div class="ob-step-rail">
+          <div class="ob-step-num">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+        </div>
         <div class="ob-step-body">
           <div class="ob-step-label">Meet Ava</div>
           <div class="ob-step-desc">Introduce your worker</div>
         </div>
-      </div>
+      </a>
       <div class="ob-step active">
         <div class="ob-step-rail"><div class="ob-step-num">2</div></div>
         <div class="ob-step-body">
@@ -302,7 +306,7 @@ body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-fon
           </a>
 
           <div class="ob-safe-strip">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="11" width="18" height="11" rx="2"/><path stroke-linecap="round" d="M7 11V7a5 5 0 0110 0v4"/></svg>
             <div>
               <div class="ob-safe-strip-title">Your data is safe</div>
               <div class="ob-safe-strip-body">Ava only accesses the data you allow. You can revoke access at any time.</div>
