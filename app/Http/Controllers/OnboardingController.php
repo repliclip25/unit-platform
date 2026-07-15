@@ -864,6 +864,97 @@ class OnboardingController extends Controller
 
     public function publicIntentMeta(?string $slug): ?array { return $this->intentMeta($slug); }
 
+    public function showAvaAssignment()
+    {
+        $userId   = auth()->id();
+        $contract = \App\Platform\Services\WorkerRegistry::resolve('ava');
+
+        $persona    = DB::table('users')->where('id', $userId)->value('persona');
+        $allPersonas = $contract?->personas() ?? [];
+        $personaDef  = ($persona && isset($allPersonas[$persona])) ? $allPersonas[$persona] : null;
+
+        $mc = $personaDef['memory_copy'] ?? [
+            'client_noun'        => 'client',
+            'client_noun_plural' => 'clients',
+            'asset_noun'         => 'asset',
+            'example_client'     => 'Acme Corp',
+            'example_asset'      => 'Service Agreement',
+        ];
+        $assetTypeOptions = $personaDef['asset_types'] ?? ['other' => 'Other'];
+
+        $clientCount  = DB::table('clients')->where('user_id', $userId)->whereNull('deleted_at')->count();
+        $contactCount = DB::table('contacts')->where('user_id', $userId)->whereNull('deleted_at')->count();
+        $assetCount   = DB::table('assets')->where('user_id', $userId)->whereNull('deleted_at')->count();
+
+        $recentClients = DB::table('clients')
+            ->where('user_id', $userId)->whereNull('deleted_at')
+            ->orderByDesc('created_at')->limit(5)->get();
+
+        $platformTemplates = DB::table('email_templates')
+            ->where('user_id', $userId)->orWhereNull('user_id')
+            ->get();
+
+        return view('onboarding.ava.step-4-assignment', compact(
+            'mc', 'assetTypeOptions', 'clientCount', 'contactCount',
+            'assetCount', 'recentClients', 'platformTemplates', 'persona', 'personaDef'
+        ));
+    }
+
+    public function quickAddAvaMemory(\Illuminate\Http\Request $request)
+    {
+        $request->validate([
+            'client_name'   => 'required|string|max:120',
+            'contact_name'  => 'required|string|max:120',
+            'contact_email' => 'required|email|max:200',
+            'asset_name'    => 'required|string|max:200',
+            'asset_type'    => 'nullable|string|max:60',
+            'renewal_date'  => 'nullable|date',
+        ]);
+
+        $userId = auth()->id();
+
+        $clientId = DB::table('clients')
+            ->where('user_id', $userId)->whereNull('deleted_at')
+            ->where('name', $request->client_name)->value('id');
+
+        if (!$clientId) {
+            $clientId = DB::table('clients')->insertGetId([
+                'user_id' => $userId, 'name' => $request->client_name,
+                'created_at' => now(), 'updated_at' => now(),
+            ]);
+        }
+
+        $contactExists = DB::table('contacts')
+            ->where('user_id', $userId)->where('client_id', $clientId)
+            ->where('email', $request->contact_email)->whereNull('deleted_at')->exists();
+
+        if (!$contactExists) {
+            DB::table('contacts')->insert([
+                'user_id' => $userId, 'client_id' => $clientId,
+                'name' => $request->contact_name, 'email' => $request->contact_email,
+                'created_at' => now(), 'updated_at' => now(),
+            ]);
+        }
+
+        DB::table('assets')->insert([
+            'user_id' => $userId, 'client_id' => $clientId,
+            'name' => $request->asset_name,
+            'type' => $request->asset_type ?: 'other',
+            'renewal_date' => $request->renewal_date ?: null,
+            'created_at' => now(), 'updated_at' => now(),
+        ]);
+
+        return redirect()->route('hire.ava.assignment')
+            ->with('quick_add_success', $request->client_name);
+    }
+
+    public function advanceAvaMemory()
+    {
+        $wos = WorkerOnboardingService::load(auth()->id());
+        if ($wos) WorkerOnboardingService::advanceStep($wos->id, 'memory');
+        return redirect()->route('hire.ava.onshift');
+    }
+
     public function showAvaOrientation()
     {
         $contract = \App\Platform\Services\WorkerRegistry::resolve('ava');

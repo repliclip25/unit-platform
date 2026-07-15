@@ -475,7 +475,9 @@ Route::middleware(['auth', 'verified'])->prefix('hire/ava')->name('hire.ava.')->
     Route::get('/workspace',    fn() => view('onboarding.ava.step-2-workspace'))->name('workspace');
     Route::get('/orientation',  [\App\Http\Controllers\OnboardingController::class, 'showAvaOrientation'])->name('orientation');
     Route::post('/orientation', [\App\Http\Controllers\OnboardingController::class, 'saveAvaPersona'])->name('orientation.save');
-    Route::get('/assignment',   fn() => view('onboarding.ava.step-4-assignment'))->name('assignment');
+    Route::get('/assignment',   [\App\Http\Controllers\OnboardingController::class, 'showAvaAssignment'])->name('assignment');
+    Route::post('/assignment',  [\App\Http\Controllers\OnboardingController::class, 'quickAddAvaMemory'])->name('assignment.quickadd');
+    Route::post('/assignment/continue', [\App\Http\Controllers\OnboardingController::class, 'advanceAvaMemory'])->name('assignment.continue');
     Route::get('/onshift',      fn() => view('onboarding.ava.step-5-onshift'))->name('onshift');
 });
 
