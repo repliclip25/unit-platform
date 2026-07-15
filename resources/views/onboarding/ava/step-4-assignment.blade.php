@@ -195,18 +195,14 @@ body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-fon
 .btn-continue{
   display:flex;align-items:center;justify-content:space-between;
   padding:13px 18px;border-radius:13px;
-  background:#0D0D0D;color:#fff;border:none;cursor:pointer;
+  background:#0D0D0D;color:#fff;border:none;cursor:not-allowed;
   font-size:13.5px;font-weight:800;letter-spacing:-.01em;
   transition:opacity .15s,transform .1s;width:100%;
-  text-decoration:none;
+  text-decoration:none;opacity:.35;pointer-events:none;
 }
-.btn-continue:hover{opacity:.88;transform:translateY(-1px)}
+.btn-continue.is-active{opacity:1;pointer-events:auto;cursor:pointer}
+.btn-continue.is-active:hover{opacity:.88;transform:translateY(-1px)}
 .btn-continue svg{width:16px;height:16px;stroke:#fff;stroke-width:2.5;flex-shrink:0}
-.btn-continue.ghost{
-  background:transparent;color:#9CA3AF;border:1.5px solid #E5E7EB;
-  font-size:12px;font-weight:600;
-}
-.btn-continue.ghost:hover{color:#374151;border-color:#9CA3AF;transform:none;opacity:1}
 
 /* ══ MOBILE ══ */
 @media(max-width:1024px){
@@ -411,7 +407,16 @@ body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-fon
             </form>
           </div>
 
-          <p class="ob-hint">You can add more {{ $clientPlural }} from your dashboard to improve Ava's accuracy.</p>
+          <p class="ob-hint" style="margin-bottom:14px">You can add more {{ $clientPlural }} from your dashboard to improve Ava's accuracy.</p>
+
+          {{-- Primary action lives here, active only when memory has at least one client --}}
+          <form method="POST" action="{{ route('hire.ava.assignment.continue') }}">
+            @csrf
+            <button type="submit" class="btn-continue {{ $hasClients ? 'is-active' : '' }}">
+              Continue — Put Ava On Shift
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </button>
+          </form>
 
         </div>
       </div>
@@ -458,9 +463,9 @@ body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-fon
           </div>
         @endif
 
-        {{-- Seed sample data --}}
-        <div class="ob-seed-form">
-          @if(!$hasClients)
+        {{-- Seed sample data (only when no clients) --}}
+        @if(!$hasClients)
+        <div style="margin-top:auto">
           <form method="POST" action="{{ route('onboarding.memory.seed') }}">
             @csrf
             <button type="submit" class="btn-seed">
@@ -468,24 +473,8 @@ body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-fon
               Load sample data to explore first
             </button>
           </form>
-          @endif
-
-          {{-- Continue --}}
-          <form method="POST" action="{{ route('hire.ava.assignment.continue') }}">
-            @csrf
-            @if($hasClients)
-            <button type="submit" class="btn-continue">
-              Continue — Put Ava On Shift
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M12 5l7 7-7 7"/></svg>
-            </button>
-            @else
-            <button type="submit" class="btn-continue ghost">
-              Skip for now — add clients later
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M12 5l7 7-7 7"/></svg>
-            </button>
-            @endif
-          </form>
         </div>
+        @endif
 
       </div>
 
