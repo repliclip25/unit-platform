@@ -407,10 +407,11 @@ body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-fon
             </form>
           </div>
 
+          @if(!$hasClients)
           <p class="ob-hint" style="margin-bottom:14px">You can add more {{ $clientPlural }} from your dashboard to improve Ava's accuracy.</p>
+          @endif
 
-          {{-- Primary action lives here, active only when memory has at least one client --}}
-          <form method="POST" action="{{ route('hire.ava.assignment.continue') }}">
+          <form method="POST" action="{{ route('hire.ava.assignment.continue') }}" style="margin-top:{{ $hasClients ? 'auto' : '0' }}">
             @csrf
             <button type="submit" class="btn-continue {{ $hasClients ? 'is-active' : '' }}">
               Continue — Put Ava On Shift
