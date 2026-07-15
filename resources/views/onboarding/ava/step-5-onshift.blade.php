@@ -538,7 +538,7 @@ function showDraft(data){
 
 function poll(){
   if(!txId) return;
-  fetch(STATUS_URL + txId, { headers: { 'X-CSRF-TOKEN': CSRF, 'Accept': 'application/json' } })
+  fetch(STATUS_URL + txId, { credentials: 'same-origin', headers: { 'X-CSRF-TOKEN': CSRF, 'Accept': 'application/json' } })
     .then(r => r.json())
     .then(data => {
       const s = data.status;
@@ -573,6 +573,7 @@ function approveDraft(){
   if(!window._txId) return;
   fetch('/transactions/' + window._txId + '/decide', {
     method: 'POST',
+    credentials: 'same-origin',
     headers: { 'X-CSRF-TOKEN': CSRF, 'Content-Type': 'application/json', 'Accept': 'application/json' },
     body: JSON.stringify({ decision: 'approve' })
   }).then(() => {
