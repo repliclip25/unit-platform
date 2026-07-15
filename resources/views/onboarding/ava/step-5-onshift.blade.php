@@ -561,10 +561,16 @@ const ERROR_MESSAGES = {
     sub:   "The email was manually dismissed before I could finish. Run another assignment when you're ready.",
     stage: "Dismissed"
   },
+  timeout: {
+    quote: "I'm taking longer than expected.",
+    sub:   "The pipeline might be busy or the queue worker is restarting. Try again in a moment — your setup is intact.",
+    stage: "Timed out"
+  },
 };
 
 function showError(s, stageLabel){
   clearInterval(pollTimer);
+  clearTimeout(_pollTimeout);
   const msg = ERROR_MESSAGES[s] || { quote: 'Ava ran into an issue.', sub: 'Check the dashboard for details.', stage: 'Error' };
 
   // Surface in AVA Says
@@ -602,6 +608,7 @@ function poll(){
       // ── Terminal success ──
       if(['draft_ready','approved','sent'].includes(s) || data.draft_output){
         clearInterval(pollTimer);
+        clearTimeout(_pollTimeout);
         showDraft(data);
         return;
       }
@@ -622,12 +629,27 @@ function poll(){
       } else if(s === 'logging' || s === 'selecting_template'){
         setStage(2, null, 'Selecting template...');
         stage = 2;
+      } else {
+        // Any other status (received, ingest, queued, etc.) — show stage 1 active so user sees movement
+        if(stage < 1){ setStage(1, 'Processing...', null); stage = 1; }
       }
-      // If status is still 'received'/'ingest', stay on stage 1 waiting
     })
     .catch(() => {
       // Network error — don't freeze, just skip this tick
     });
+}
+
+let _pollTimeout = null;
+function startPollWithTimeout(){
+  poll();
+  pollTimer = setInterval(poll, 2000);
+  // 60s safety net: if nothing resolved, show a timeout error
+  _pollTimeout = setTimeout(() => {
+    if(stage < 3){
+      clearInterval(pollTimer);
+      showError('timeout');
+    }
+  }, 60000);
 }
 
 function submitRun(){
@@ -665,8 +687,7 @@ function editDraft(){
 if(txId){
   setStage(1, 'Reading email...', null);
   stage = 1;
-  poll(); // immediate first hit
-  pollTimer = setInterval(poll, 2000);
+  startPollWithTimeout();
 }
 </script>
 
