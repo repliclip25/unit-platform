@@ -864,6 +864,30 @@ class OnboardingController extends Controller
 
     public function publicIntentMeta(?string $slug): ?array { return $this->intentMeta($slug); }
 
+    public function saveOrientation(\Illuminate\Http\Request $request)
+    {
+        $fields = ['business_basics', 'customers', 'renewal_process', 'communication_style', 'knowledge_resources', 'faq_objections'];
+        $data   = array_filter($request->only($fields), fn($v) => !is_null($v) && $v !== '');
+
+        // Store in session so Step 4 can also read it before deployment exists
+        session(['ava_orientation' => $data]);
+
+        // Persist to deployment if one already exists for this user
+        $deployment = \Illuminate\Support\Facades\DB::table('worker_deployments')
+            ->where('user_id', auth()->id())
+            ->where('worker_slug', 'ava')
+            ->orderByDesc('created_at')
+            ->first();
+
+        if ($deployment) {
+            \Illuminate\Support\Facades\DB::table('worker_deployments')
+                ->where('id', $deployment->id)
+                ->update(['orientation_data' => json_encode($data)]);
+        }
+
+        return redirect()->route('hire.ava.assignment');
+    }
+
     private function intentMeta(?string $slug): ?array
     {
         if (!$slug) return null;
