@@ -407,8 +407,7 @@ body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-fon
           </div>
 
           {{-- Primary action BEFORE social proof --}}
-          <form method="POST" action="{{ route('onboarding.step.handle', 'welcome') }}">
-            @csrf
+          <form method="GET" action="{{ route('hire.ava.workspace') }}">
             <button type="submit" class="btn-hire">
               Hire Ava
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M12 5l7 7-7 7"/></svg>
