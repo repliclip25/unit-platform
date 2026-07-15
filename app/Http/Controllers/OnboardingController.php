@@ -945,6 +945,7 @@ class OnboardingController extends Controller
         $tx = $txService->create('ava-renewal-coordinator', [
             'source'             => 'fast_track_test',
             'fast_track'         => true,
+            'onboarding_demo'    => true,
             'user_id'            => $userId,
             'deployment_id'      => $deployment->id,
             'credential_id'      => $credential->id,

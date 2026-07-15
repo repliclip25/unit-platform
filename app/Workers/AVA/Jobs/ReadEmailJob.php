@@ -29,10 +29,12 @@ class ReadEmailJob implements ShouldQueue
 
     public function handle(ClaudeService $claude): void
     {
-        // New-transaction gate: trial quota, spend cap, paused — checked before any work
-        UsageGuard::checkNew($this->txId);
-
         $input = UnitPlatform::getInput($this->txId);
+
+        // Skip billing gate for onboarding demo runs so new users can complete setup
+        if (!($input->raw['onboarding_demo'] ?? false)) {
+            UsageGuard::checkNew($this->txId);
+        }
         $claude->configure($input->modelFor('read'), $input->userId, $input->workerSlug);
         UnitPlatform::setStatus($this->txId, 'reading');
 
