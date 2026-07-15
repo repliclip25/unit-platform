@@ -442,8 +442,8 @@ body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-fon
         <div class="ob-ava-profile">
           <img src="/images/ava.png" alt="AVA" class="ob-ava-avatar">
         </div>
-        <p class="ob-ava-quote" id="avaQuote">How did I do?</p>
-        <p class="ob-ava-quote-sub" id="avaSub">Let me know if you'd like me to adjust anything.</p>
+        <p class="ob-ava-quote" id="avaQuote">{{ $watchTxId ? 'Working on it...' : 'Ready when you are.' }}</p>
+        <p class="ob-ava-quote-sub" id="avaSub">{{ $watchTxId ? 'I\'ll update you as I go.' : 'Give me an assignment and I\'ll get started.' }}</p>
 
         <div class="ob-ava-actions" id="avaActions" style="opacity:.3;pointer-events:none">
           <button class="btn-approve" id="approveBtn" onclick="approveDraft()">
@@ -454,7 +454,11 @@ body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-fon
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
             I'll make some edits
           </button>
-          <a href="{{ route('dashboard') }}" class="btn-edit" style="text-decoration:none;margin-top:6px;border-color:#E5E7EB;font-size:11.5px;color:#9CA3AF">
+          <button class="btn-edit" id="retryBtn" onclick="location.href='{{ route('hire.ava.onshift') }}'" style="display:none;border-color:#FCA5A5;color:#DC2626">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+            Try again
+          </button>
+          <a href="{{ route('dashboard') }}" class="btn-edit" id="dashBtn" style="text-decoration:none;margin-top:6px;border-color:#E5E7EB;font-size:11.5px;color:#9CA3AF">
             Go to dashboard →
           </a>
         </div>
@@ -536,29 +540,94 @@ function showDraft(data){
   stage = 3;
 }
 
+const ERROR_MESSAGES = {
+  blocked: {
+    quote: "I hit a billing limit and couldn't finish.",
+    sub:   "Your trial quota is used up. Subscribe or contact support to continue — your setup is saved.",
+    stage: "Blocked by billing policy"
+  },
+  failed: {
+    quote: "Something went wrong on my end.",
+    sub:   "I ran into a technical error processing this email. Try running again, or check the dashboard.",
+    stage: "Processing failed"
+  },
+  rejected: {
+    quote: "This email didn't match my rules.",
+    sub:   "It didn't meet the criteria in your capture rules, so I skipped it. You can adjust your rules in the dashboard.",
+    stage: "Skipped by rules"
+  },
+  dismissed: {
+    quote: "This one was dismissed.",
+    sub:   "The email was manually dismissed before I could finish. Run another assignment when you're ready.",
+    stage: "Dismissed"
+  },
+};
+
+function showError(s, stageLabel){
+  clearInterval(pollTimer);
+  const msg = ERROR_MESSAGES[s] || { quote: 'Ava ran into an issue.', sub: 'Check the dashboard for details.', stage: 'Error' };
+
+  // Surface in AVA Says
+  document.getElementById('avaQuote').textContent = msg.quote;
+  document.getElementById('avaSub').textContent   = msg.sub;
+
+  // Show retry + dashboard in actions area, hide approve/edit
+  document.getElementById('avaActions').style.opacity      = '1';
+  document.getElementById('avaActions').style.pointerEvents = 'auto';
+  document.getElementById('approveBtn').style.display      = 'none';
+  document.getElementById('editBtn').style.display         = 'none';
+  document.getElementById('retryBtn').style.display        = 'flex';
+
+  // Mark whichever stage was active as errored
+  const activeStage = document.querySelector('.ob-stage.is-active');
+  if(activeStage){
+    activeStage.classList.remove('is-active');
+    activeStage.style.background = 'rgba(239,68,68,.04)';
+    activeStage.querySelector('.ob-stage-status-dot').style.background = '#ef4444';
+    activeStage.querySelector('[id^=status]').textContent = msg.stage;
+  }
+}
+
 function poll(){
   if(!txId) return;
   fetch(STATUS_URL + txId, { credentials: 'same-origin', headers: { 'X-CSRF-TOKEN': CSRF, 'Accept': 'application/json' } })
-    .then(r => r.json())
+    .then(r => {
+      if(r.status === 401){ showError('failed'); clearInterval(pollTimer); return null; }
+      return r.json();
+    })
     .then(data => {
+      if(!data) return;
       const s = data.status;
-      if(['draft_ready','approved','sent'].includes(s)){
+
+      // ── Terminal success ──
+      if(['draft_ready','approved','sent'].includes(s) || data.draft_output){
         clearInterval(pollTimer);
         showDraft(data);
-      } else if(data.draft_output){
-        clearInterval(pollTimer);
-        showDraft(data);
-      } else if(data.classify_output || data.memory_output){
+        return;
+      }
+
+      // ── Terminal failures — surface immediately ──
+      if(['blocked','failed','rejected','dismissed'].includes(s)){
+        showError(s);
+        return;
+      }
+
+      // ── In-progress — advance stages ──
+      if(data.classify_output || data.memory_output || s === 'drafting' || s === 'generating'){
         setStage(2, null, 'Writing reply...');
         stage = 2;
-      } else if(data.read_output){
-        setStage(1, 'Classifying email...', null);
-      } else if(['failed','rejected','dismissed','blocked'].includes(s)){
-        clearInterval(pollTimer);
-        document.getElementById('avaQuote').textContent = 'Something went wrong.';
-        document.getElementById('avaSub').textContent   = 'Check the dashboard for details.';
+      } else if(data.read_output || s === 'reading' || s === 'classifying'){
+        setStage(1, s === 'classifying' ? 'Classifying email...' : 'Reading email...', null);
+        stage = 1;
+      } else if(s === 'logging' || s === 'selecting_template'){
+        setStage(2, null, 'Selecting template...');
+        stage = 2;
       }
-    }).catch(() => {});
+      // If status is still 'received'/'ingest', stay on stage 1 waiting
+    })
+    .catch(() => {
+      // Network error — don't freeze, just skip this tick
+    });
 }
 
 function submitRun(){
