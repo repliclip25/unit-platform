@@ -691,6 +691,29 @@ body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-fon
         <a href="/transactions" class="ob-sc-view-link">View in Dashboard →</a>
       </div>
 
+      {{-- Draft preview card --}}
+      <div id="scDraftCard" style="display:none;padding:14px 20px;border-top:1px solid #F0F0F0;border-bottom:1px solid #F0F0F0;background:#fff">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+          <span style="font-size:9.5px;font-weight:700;color:#9CA3AF;letter-spacing:.1em;text-transform:uppercase">Draft Ready</span>
+          <span style="display:flex;align-items:center;gap:4px;font-size:9px;font-weight:700;color:#15803D;background:#DCFCE7;border-radius:99px;padding:2px 8px">
+            <span style="width:5px;height:5px;border-radius:50%;background:#22c55e;display:inline-block"></span>
+            In your Gmail Drafts
+          </span>
+        </div>
+        <div style="background:#F9FAFB;border:1px solid #E5E7EB;border-radius:10px;padding:12px 14px;margin-bottom:10px">
+          <div style="font-size:10.5px;font-weight:700;color:#374151;margin-bottom:4px" id="scDraftSubject">—</div>
+          <div style="font-size:11px;color:#6B7280;line-height:1.5;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden" id="scDraftBody"></div>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button onclick="scApproveDraft()" id="scApproveBtn" style="flex:1;padding:8px;border-radius:8px;background:#0D0D0D;color:#fff;border:none;font-size:11px;font-weight:700;font-family:inherit;cursor:pointer">
+            Approve &amp; send
+          </button>
+          <a href="/transactions" style="flex:1;padding:8px;border-radius:8px;background:#fff;color:#374151;border:1.5px solid #E5E7EB;font-size:11px;font-weight:700;text-align:center;text-decoration:none;display:flex;align-items:center;justify-content:center">
+            Review in full
+          </a>
+        </div>
+      </div>
+
       <div class="ob-sc-stats">
         <div class="ob-sc-stats-title">Today's Summary</div>
         <div class="ob-sc-stats-grid">
@@ -796,14 +819,45 @@ function showDraft(data){
   const clientName = data.memory_output?.client_name || data.classify_output?.client || '';
   if(clientName) document.getElementById('scStep1Sub').textContent = clientName;
 
-  // Update stats: increment since page load reflects the current TX
-  const curDetected = parseInt(document.getElementById('scStatDetected').textContent) || 0;
-  const curDrafted  = parseInt(document.getElementById('scStatDrafted').textContent) || 0;
-  const curAwaiting = parseInt(document.getElementById('scStatAwaiting').textContent) || 0;
-  // If this TX just finished, stats may already include it (loaded from DB); ensure at least 1
-  if(curDetected === 0) document.getElementById('scStatDetected').textContent = '1';
-  if(curDrafted  === 0) document.getElementById('scStatDrafted').textContent  = '1';
-  if(curAwaiting === 0) document.getElementById('scStatAwaiting').textContent = '1';
+  // Update stats — ensure at least 1 for this TX
+  if(!parseInt(document.getElementById('scStatDetected').textContent)) document.getElementById('scStatDetected').textContent = '1';
+  if(!parseInt(document.getElementById('scStatDrafted').textContent))  document.getElementById('scStatDrafted').textContent  = '1';
+  if(!parseInt(document.getElementById('scStatAwaiting').textContent)) document.getElementById('scStatAwaiting').textContent = '1';
+
+  // Populate draft card
+  const draft = data.draft_output;
+  if(draft){
+    const subject = draft.subject || data.classify_output?.subject || 'Renewal Response';
+    const body    = draft.body || draft.draft || '';
+    document.getElementById('scDraftSubject').textContent = subject;
+    document.getElementById('scDraftBody').textContent    = body;
+    document.getElementById('scDraftCard').style.display  = '';
+    window._scTxId = data.tx_id;
+    window._scGmailDraftId = data.gmail_draft_id;
+  } else {
+    // No draft output yet — show a prompt to check Gmail
+    document.getElementById('scDraftCard').innerHTML = '<div style="padding:4px 0;font-size:12px;color:#374151;font-weight:600">📬 Your draft is in Gmail.</div><div style="font-size:11px;color:#9CA3AF;margin-top:4px">Check your Drafts folder to review and send.</div>';
+    document.getElementById('scDraftCard').style.display = '';
+  }
+}
+
+function scApproveDraft(){
+  if(!window._scTxId) return;
+  const btn = document.getElementById('scApproveBtn');
+  btn.textContent = 'Approving...';
+  btn.disabled = true;
+  fetch('/transactions/' + window._scTxId + '/decide', {
+    method: 'POST',
+    credentials: 'same-origin',
+    headers: { 'X-CSRF-TOKEN': CSRF, 'Content-Type': 'application/json', 'Accept': 'application/json' },
+    body: JSON.stringify({ decision: 'approve' })
+  }).then(() => {
+    btn.textContent = '✓ Approved — check Gmail Drafts';
+    btn.style.background = '#22c55e';
+  }).catch(() => {
+    btn.textContent = 'Approve & send';
+    btn.disabled = false;
+  });
 }
 
 const ERROR_MESSAGES = {
