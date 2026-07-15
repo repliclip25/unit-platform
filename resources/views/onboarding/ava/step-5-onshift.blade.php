@@ -130,11 +130,32 @@ body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-fon
 
 /* AVA image area */
 .ob-stage-img{
-  flex:1;position:relative;overflow:hidden;min-height:0;
+  flex:1;position:relative;overflow:hidden;min-height:0;max-height:220px;
   background:#F4F3F1;
 }
 .ob-stage-img img{width:100%;height:100%;object-fit:cover;object-position:center top;opacity:.35;transition:opacity .5s}
 .ob-stage.is-active .ob-stage-img img,.ob-stage.is-done .ob-stage-img img{opacity:1}
+
+/* ── SUCCESS PANEL (replaces stage 1+2 on completion) ── */
+.ob-success-panel{
+  display:none;flex-direction:column;align-items:center;justify-content:center;
+  border-right:1px solid #F0F0F0;background:#F4F3F1;overflow:hidden;
+  position:relative;text-align:center;
+}
+.ob-success-panel.is-visible{display:flex}
+.ob-success-panel img{
+  width:100%;height:220px;object-fit:cover;object-position:center top;
+  border-bottom:1px solid #E8E7E4;
+}
+.ob-success-msg{padding:20px 24px}
+.ob-success-msg h3{font-size:15px;font-weight:800;color:#0D0D0D;margin-bottom:6px}
+.ob-success-msg p{font-size:11.5px;color:#6B7280;line-height:1.6}
+.ob-success-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  background:#DCFCE7;color:#15803D;border-radius:99px;
+  font-size:10px;font-weight:700;padding:4px 10px;margin-bottom:10px;
+}
+.ob-success-badge svg{width:11px;height:11px;stroke:currentColor;stroke-width:2.5;fill:none}
 
 /* Pulse overlay when active */
 .ob-stage.is-active .ob-stage-img::after{
@@ -388,6 +409,19 @@ body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-fon
         @endif
       </div>
 
+      {{-- SUCCESS PANEL: shown on completion, spans stage 1+2 columns --}}
+      <div class="ob-success-panel" id="successPanel">
+        <img src="/images/ava-desk.png" alt="Ava completed the assignment" id="successImg">
+        <div class="ob-success-msg">
+          <div class="ob-success-badge">
+            <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+            Assignment complete
+          </div>
+          <h3>Ava drafted your reply.</h3>
+          <p>Review it on the right, then approve or edit before it sends.</p>
+        </div>
+      </div>
+
       {{-- STAGE 1: Analyzing --}}
       <div class="ob-stage" id="stage1">
         <div class="ob-stage-header">
@@ -481,8 +515,13 @@ body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-fon
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
             Try again
           </button>
-          <a href="{{ route('dashboard') }}" class="btn-edit" id="dashBtn" style="text-decoration:none;margin-top:6px;border-color:#E5E7EB;font-size:11.5px;color:#9CA3AF">
-            Go to dashboard →
+          {{-- Next step button — shown on success --}}
+          <a href="{{ route('dashboard') }}" class="btn-approve" id="nextBtn" style="display:none;text-decoration:none;background:#22c55e">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+            Go to your dashboard
+          </a>
+          <a href="{{ route('hire.ava.onshift') }}" class="btn-edit" style="text-decoration:none;margin-top:2px;border-color:#E5E7EB;font-size:11.5px;color:#9CA3AF">
+            Run another assignment
           </a>
         </div>
       </div>
@@ -530,10 +569,17 @@ function showDraft(data){
   clearInterval(pollTimer);
   clearTimeout(_pollTimeout);
 
-  // Always advance pipeline to stage 3 — draft_ready means Ava is done
   setStage(3);
   stage = 3;
   resetToInput();
+
+  // Swap stage 1 + 2 → success panel
+  document.getElementById('stage1').style.display = 'none';
+  document.getElementById('stage2').style.display = 'none';
+  const sp = document.getElementById('successPanel');
+  sp.classList.add('is-visible');
+  // Make it span the two hidden columns in the grid
+  sp.style.gridColumn = '2 / 4';
 
   window._txId = data.tx_id;
   window._gmailDraftId = data.gmail_draft_id;
@@ -559,14 +605,16 @@ function showDraft(data){
     document.getElementById('confLabel').textContent = pct + '% confidence';
     document.getElementById('confidenceRow').style.display = 'flex';
   } else {
-    // Draft exists but output not yet written — still show success state
     document.getElementById('draftWaiting').querySelector('p').textContent = "Draft ready — check your Transactions.";
   }
 
   document.getElementById('avaQuote').textContent = 'How did I do?';
-  document.getElementById('avaSub').textContent   = "I drafted a reply. Review it below or in your Transactions.";
+  document.getElementById('avaSub').textContent   = "I drafted a reply. Review it on the right.";
   document.getElementById('avaActions').style.opacity = '1';
   document.getElementById('avaActions').style.pointerEvents = 'auto';
+  // Show next-step button
+  document.getElementById('nextBtn').style.display = 'flex';
+  document.getElementById('approveBtn').style.display = 'flex';
 }
 
 const ERROR_MESSAGES = {
