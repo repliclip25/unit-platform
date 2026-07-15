@@ -883,15 +883,11 @@ class OnboardingController extends Controller
         $firstName = explode(' ', trim($user->name))[0];
 
         // Today's summary stats for the success card
-        $todayStart  = now()->startOfDay();
-        $todayTxs    = DB::table('transactions')
-            ->where('user_id', $userId)
-            ->where('created_at', '>=', $todayStart)
-            ->get();
+        $todayStart = now()->startOfDay()->toDateTimeString();
         $todayStats = [
-            'detected'  => $todayTxs->count(),
-            'drafted'   => $todayTxs->whereIn('status', ['draft_ready','approved','sent'])->count(),
-            'awaiting'  => $todayTxs->where('status', 'draft_ready')->count(),
+            'detected' => DB::table('transactions')->where('user_id', $userId)->where('created_at', '>=', $todayStart)->count(),
+            'drafted'  => DB::table('transactions')->where('user_id', $userId)->where('created_at', '>=', $todayStart)->whereIn('status', ['draft_ready','approved','sent'])->count(),
+            'awaiting' => DB::table('transactions')->where('user_id', $userId)->where('created_at', '>=', $todayStart)->where('status', 'draft_ready')->count(),
         ];
 
         return view('onboarding.ava.step-5-onshift', compact('deployment', 'credential', 'watchTxId', 'firstName', 'todayStats'));

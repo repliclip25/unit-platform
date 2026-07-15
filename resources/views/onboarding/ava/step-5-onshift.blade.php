@@ -688,7 +688,7 @@ body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-fon
             <div><div class="ob-sc-feed-text" style="font-weight:700">Reply ready for your review</div></div>
           </div>
         </div>
-        <a href="{{ route('transactions.index') }}" class="ob-sc-view-link">View in Dashboard →</a>
+        <a href="/transactions" class="ob-sc-view-link">View in Dashboard →</a>
       </div>
 
       <div class="ob-sc-stats">
