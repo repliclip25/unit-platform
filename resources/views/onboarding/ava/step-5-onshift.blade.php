@@ -629,16 +629,21 @@ function showError(s, stageLabel){
   }
 }
 
+let _pollCount = 0;
 function poll(){
   if(!txId) return;
+  _pollCount++;
   fetch(STATUS_URL + txId, { credentials: 'same-origin', headers: { 'X-CSRF-TOKEN': CSRF, 'Accept': 'application/json' } })
     .then(r => {
+      document.getElementById('avaSub').textContent = 'Poll #' + _pollCount + ' → HTTP ' + r.status;
       if(r.status === 401){ showError('failed'); clearInterval(pollTimer); return null; }
+      if(r.status === 404){ document.getElementById('avaSub').textContent = 'TX not found (404) — check user_id match'; return null; }
       return r.json();
     })
     .then(data => {
       if(!data) return;
       const s = data.status;
+      document.getElementById('avaSub').textContent = 'Poll #' + _pollCount + ' status: ' + s;
 
       // ── Terminal success ──
       if(['draft_ready','approved','sent'].includes(s) || data.draft_output){
@@ -665,12 +670,11 @@ function poll(){
         setStage(2, null, 'Selecting template...');
         stage = 2;
       } else {
-        // Any other status (received, ingest, queued, etc.) — show stage 1 active so user sees movement
         if(stage < 1){ setStage(1, 'Processing...', null); stage = 1; }
       }
     })
-    .catch(() => {
-      // Network error — don't freeze, just skip this tick
+    .catch((err) => {
+      document.getElementById('avaSub').textContent = 'Poll #' + _pollCount + ' error: ' + err.message;
     });
 }
 
@@ -719,6 +723,9 @@ function editDraft(){
     window.open('https://mail.google.com/mail/u/0/#drafts', '_blank');
   }
 }
+
+// Debug: show txId state on load
+document.getElementById('avaSub').textContent = txId ? 'JS ready, txId: ' + txId : 'JS ready, no txId';
 
 // On page load with ?watch=txId — job was just dispatched, start polling
 if(txId){
