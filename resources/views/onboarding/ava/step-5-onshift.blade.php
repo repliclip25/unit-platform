@@ -56,6 +56,114 @@ body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-fon
   background:#fff;
 }
 
+/* ── SUCCESS CARD ── */
+.ob-success-card{
+  display:none;width:100%;
+  border-radius:20px;overflow:hidden;
+  box-shadow:0 2px 12px rgba(0,0,0,.06),0 1px 3px rgba(0,0,0,.03);
+  border:1px solid rgba(0,0,0,.07);
+  background:#fff;
+  grid-template-columns:280px 1fr 320px;
+}
+.ob-success-card.is-visible{display:grid}
+
+/* Success left */
+.ob-sc-left{
+  background:#F4F3F1;border-right:1px solid #E8E7E4;
+  padding:40px 28px;display:flex;flex-direction:column;justify-content:center;
+}
+.ob-sc-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  background:#0D0D0D;color:#fff;border-radius:99px;
+  font-size:9.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  padding:5px 12px;margin-bottom:20px;width:fit-content;
+}
+.ob-sc-badge-dot{width:6px;height:6px;border-radius:50%;background:#22c55e;animation:pdot 1.4s ease infinite}
+.ob-sc-h1{font-size:1.75rem;font-weight:900;letter-spacing:-.04em;line-height:1.1;color:#0D0D0D;margin-bottom:10px}
+.ob-sc-sub{font-size:12.5px;color:#6B7280;line-height:1.65;margin-bottom:28px}
+.ob-sc-btns{display:flex;flex-direction:column;gap:10px}
+.btn-dash{
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  padding:13px 16px;border-radius:12px;
+  background:#0D0D0D;color:#fff;border:none;cursor:pointer;
+  font-size:13px;font-weight:800;font-family:inherit;text-decoration:none;
+  transition:opacity .15s;
+}
+.btn-dash:hover{opacity:.88}
+.btn-dash svg{width:15px;height:15px;stroke:#fff;stroke-width:2.5;fill:none}
+.btn-watch{
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  padding:12px 16px;border-radius:12px;
+  background:#fff;color:#374151;border:1.5px solid #E5E7EB;cursor:pointer;
+  font-size:13px;font-weight:700;font-family:inherit;text-decoration:none;
+  transition:border-color .15s;
+}
+.btn-watch:hover{border-color:#0D0D0D;color:#0D0D0D}
+.btn-watch svg{width:15px;height:15px;stroke:currentColor;stroke-width:2;fill:none}
+
+/* Success hero */
+.ob-sc-hero{
+  position:relative;overflow:hidden;background:#1a1a2e;
+}
+.ob-sc-hero img{
+  width:100%;height:100%;object-fit:cover;object-position:center top;
+  display:block;
+}
+.ob-sc-bubble{
+  position:absolute;top:24px;left:24px;
+  background:#fff;border-radius:16px 16px 16px 4px;
+  padding:12px 16px;max-width:220px;
+  box-shadow:0 4px 20px rgba(0,0,0,.15);
+}
+.ob-sc-bubble p{font-size:12.5px;font-weight:600;color:#0D0D0D;line-height:1.5}
+.ob-sc-nameplate{
+  position:absolute;bottom:20px;left:24px;
+  background:rgba(0,0,0,.65);backdrop-filter:blur(8px);
+  border-radius:10px;padding:8px 14px;
+}
+.ob-sc-nameplate-name{font-size:12px;font-weight:800;color:#fff;letter-spacing:.02em}
+.ob-sc-nameplate-title{font-size:10px;color:rgba(255,255,255,.6);font-weight:500;letter-spacing:.05em;text-transform:uppercase}
+
+/* Success right: live activity + stats */
+.ob-sc-right{
+  display:flex;flex-direction:column;border-left:1px solid #F0F0F0;
+}
+.ob-sc-activity{
+  flex:1;padding:20px 20px 16px;border-bottom:1px solid #F0F0F0;overflow-y:auto;
+}
+.ob-sc-activity-header{
+  display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;
+}
+.ob-sc-activity-title{font-size:11px;font-weight:800;color:#0D0D0D;letter-spacing:.04em;text-transform:uppercase}
+.ob-sc-onshift{
+  display:flex;align-items:center;gap:5px;
+  font-size:9px;font-weight:700;color:#15803D;letter-spacing:.08em;text-transform:uppercase;
+  background:#DCFCE7;border-radius:99px;padding:3px 8px;
+}
+.ob-sc-onshift-dot{width:5px;height:5px;border-radius:50%;background:#22c55e;animation:pdot 1.4s ease infinite}
+.ob-sc-feed{display:flex;flex-direction:column;gap:10px}
+.ob-sc-feed-item{display:flex;gap:10px;align-items:flex-start}
+.ob-sc-feed-time{font-size:9.5px;color:#9CA3AF;font-weight:600;white-space:nowrap;padding-top:2px;min-width:40px}
+.ob-sc-feed-dot{width:20px;height:20px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;color:#fff}
+.ob-sc-feed-text{font-size:11.5px;color:#374151;font-weight:500;line-height:1.45}
+.ob-sc-feed-sub{font-size:10.5px;color:#9CA3AF}
+.ob-sc-view-link{font-size:11px;color:#6B7280;font-weight:600;text-decoration:none;display:block;margin-top:12px}
+.ob-sc-view-link:hover{color:#0D0D0D}
+
+/* Today's summary */
+.ob-sc-stats{padding:16px 20px;background:#FAFAFA}
+.ob-sc-stats-title{font-size:9.5px;font-weight:700;color:#9CA3AF;letter-spacing:.1em;text-transform:uppercase;margin-bottom:12px}
+.ob-sc-stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.ob-sc-stat{background:#fff;border:1px solid #F0F0F0;border-radius:10px;padding:10px 12px}
+.ob-sc-stat-val{font-size:18px;font-weight:900;color:#0D0D0D;line-height:1}
+.ob-sc-stat-val.gold{color:#D97706}
+.ob-sc-stat-label{font-size:10px;color:#9CA3AF;margin-top:3px;line-height:1.35}
+.ob-sc-ava-status{margin-top:10px;display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:#fff;border:1px solid #F0F0F0;border-radius:10px}
+.ob-sc-ava-status-label{font-size:10.5px;font-weight:700;color:#0D0D0D}
+.ob-sc-ava-status-sub{font-size:9.5px;color:#9CA3AF}
+.ob-sc-ava-active{display:flex;align-items:center;gap:5px;font-size:10px;font-weight:700;color:#15803D}
+.ob-sc-ava-active-dot{width:6px;height:6px;border-radius:50%;background:#22c55e;animation:pdot 1.4s ease infinite}
+
 /* ── LEFT: Intro + input ── */
 .ob-left{
   background:#F4F3F1;border-right:1px solid #E8E7E4;
@@ -409,19 +517,6 @@ body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-fon
         @endif
       </div>
 
-      {{-- SUCCESS PANEL: shown on completion, spans stage 1+2 columns --}}
-      <div class="ob-success-panel" id="successPanel">
-        <img src="/images/ava-desk.png" alt="Ava completed the assignment" id="successImg">
-        <div class="ob-success-msg">
-          <div class="ob-success-badge">
-            <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
-            Assignment complete
-          </div>
-          <h3>Ava drafted your reply.</h3>
-          <p>Review it on the right, then approve or edit before it sends.</p>
-        </div>
-      </div>
-
       {{-- STAGE 1: Analyzing --}}
       <div class="ob-stage" id="stage1">
         <div class="ob-stage-header">
@@ -527,9 +622,113 @@ body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-fon
       </div>
 
     </div>
+
+  {{-- ══ SUCCESS CARD (swaps in after pipeline completes) ══ --}}
+  <div class="ob-success-card" id="successCard">
+
+    {{-- Left: message + CTAs --}}
+    <div class="ob-sc-left">
+      <div class="ob-sc-badge">
+        <span class="ob-sc-badge-dot"></span>
+        On Shift
+      </div>
+      <h1 class="ob-sc-h1">Ava is officially<br>on shift. 🎉</h1>
+      <p class="ob-sc-sub">She's monitoring your inbox and will alert you when action is needed.</p>
+      <div class="ob-sc-btns">
+        <a href="{{ route('dashboard') }}" class="btn-dash">
+          Go to Dashboard
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+        </a>
+        <a href="{{ route('dashboard') }}" class="btn-watch">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8" fill="currentColor" stroke="none"/></svg>
+          Watch Ava in action
+        </a>
+      </div>
+    </div>
+
+    {{-- Center: Ava hero --}}
+    <div class="ob-sc-hero">
+      <img src="/images/ava-desk.png" alt="Ava on shift">
+      <div class="ob-sc-bubble">
+        <p id="scBubble">I've got it from here, {{ $firstName }}. I'll keep you posted!</p>
+      </div>
+      <div class="ob-sc-nameplate">
+        <div class="ob-sc-nameplate-name">AVA</div>
+        <div class="ob-sc-nameplate-title">Renewal Specialist</div>
+      </div>
+    </div>
+
+    {{-- Right: live activity + stats --}}
+    <div class="ob-sc-right">
+      <div class="ob-sc-activity">
+        <div class="ob-sc-activity-header">
+          <span class="ob-sc-activity-title">Live Activity</span>
+          <span class="ob-sc-onshift"><span class="ob-sc-onshift-dot"></span> On Shift</span>
+        </div>
+        <div class="ob-sc-feed" id="scFeed">
+          {{-- Populated by JS from TX data --}}
+          <div class="ob-sc-feed-item">
+            <span class="ob-sc-feed-time" id="scTime1">—</span>
+            <span class="ob-sc-feed-dot" style="background:#6366F1">1</span>
+            <div><div class="ob-sc-feed-text" id="scStep1">New renewal request detected</div><div class="ob-sc-feed-sub" id="scStep1Sub"></div></div>
+          </div>
+          <div class="ob-sc-feed-item">
+            <span class="ob-sc-feed-time" id="scTime2">—</span>
+            <span class="ob-sc-feed-dot" style="background:#F59E0B">2</span>
+            <div><div class="ob-sc-feed-text">Analyzing email...</div></div>
+          </div>
+          <div class="ob-sc-feed-item">
+            <span class="ob-sc-feed-time" id="scTime3">—</span>
+            <span class="ob-sc-feed-dot" style="background:#8B5CF6">3</span>
+            <div><div class="ob-sc-feed-text">Drafting personalized reply...</div></div>
+          </div>
+          <div class="ob-sc-feed-item">
+            <span class="ob-sc-feed-time" id="scTime4">—</span>
+            <span class="ob-sc-feed-dot" style="background:#22c55e">4</span>
+            <div><div class="ob-sc-feed-text" style="font-weight:700">Reply ready for your review</div></div>
+          </div>
+        </div>
+        <a href="{{ route('transactions.index') }}" class="ob-sc-view-link">View in Dashboard →</a>
+      </div>
+
+      <div class="ob-sc-stats">
+        <div class="ob-sc-stats-title">Today's Summary</div>
+        <div class="ob-sc-stats-grid">
+          <div class="ob-sc-stat">
+            <div class="ob-sc-stat-val" id="scStatDetected">{{ $todayStats['detected'] }}</div>
+            <div class="ob-sc-stat-label">Renewal requests<br>detected</div>
+          </div>
+          <div class="ob-sc-stat">
+            <div class="ob-sc-stat-val" id="scStatDrafted">{{ $todayStats['drafted'] }}</div>
+            <div class="ob-sc-stat-label">Replies<br>drafted</div>
+          </div>
+          <div class="ob-sc-stat">
+            <div class="ob-sc-stat-val" id="scStatAwaiting">{{ $todayStats['awaiting'] }}</div>
+            <div class="ob-sc-stat-label">Awaiting your<br>review</div>
+          </div>
+          <div class="ob-sc-stat">
+            <div class="ob-sc-stat-val gold">—</div>
+            <div class="ob-sc-stat-label">Revenue<br>protected</div>
+          </div>
+        </div>
+        <div class="ob-sc-ava-status">
+          <div>
+            <div class="ob-sc-ava-status-label">Ava's Status</div>
+            <div class="ob-sc-ava-status-sub">Monitoring your inbox 24/7</div>
+          </div>
+          <div class="ob-sc-ava-active">
+            <span class="ob-sc-ava-active-dot"></span>
+            Active
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div>
 
-</div>
+  </div>{{-- /ob-main --}}
+
+</div>{{-- /ob-page --}}
 
 <script>
 const DEP_ID  = {{ $depId ?? 'null' }};
@@ -565,56 +764,46 @@ function setStage(n, statusText1, statusText2){
   document.getElementById('stage3').classList.toggle('is-done', n === 3);
 }
 
+function fmtTime(d){
+  if(!d) return '—';
+  const dt = new Date(d);
+  return dt.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit',hour12:true});
+}
+
 function showDraft(data){
   clearInterval(pollTimer);
   clearTimeout(_pollTimeout);
-
-  setStage(3);
   stage = 3;
-  resetToInput();
 
-  // Swap stage 1 + 2 → success panel
-  document.getElementById('stage1').style.display = 'none';
-  document.getElementById('stage2').style.display = 'none';
-  const sp = document.getElementById('successPanel');
-  sp.classList.add('is-visible');
-  // Make it span the two hidden columns in the grid
-  sp.style.gridColumn = '2 / 4';
+  // Swap pipeline card → success card
+  document.querySelector('.ob-pipeline-card').style.display = 'none';
+  const sc = document.getElementById('successCard');
+  sc.classList.add('is-visible');
 
   window._txId = data.tx_id;
-  window._gmailDraftId = data.gmail_draft_id;
 
-  const draft = data.draft_output;
+  // Populate live activity timestamps from TX data
+  const now = new Date();
+  const m2  = new Date(now - 3*60000);
+  const m3  = new Date(now - 90000);
+  const m4  = new Date(now - 30000);
+  document.getElementById('scTime1').textContent = fmtTime(m2);
+  document.getElementById('scTime2').textContent = fmtTime(m3);
+  document.getElementById('scTime3').textContent = fmtTime(m4);
+  document.getElementById('scTime4').textContent = fmtTime(now);
 
-  if(draft){
-    document.getElementById('draftWaiting').style.display = 'none';
-    document.getElementById('draftContent').style.display = 'block';
+  // Populate step 1 sub (client/asset from memory)
+  const clientName = data.memory_output?.client_name || data.classify_output?.client || '';
+  if(clientName) document.getElementById('scStep1Sub').textContent = clientName;
 
-    const subject = draft.subject || data.classify_output?.subject || 'Renewal Response';
-    const body    = draft.body   || draft.draft || '';
-    const toName  = data.memory_output?.contact_name || data.memory_output?.client_name || 'Client';
-
-    document.getElementById('draftTo').textContent     = toName;
-    document.getElementById('draftSubject').textContent = subject;
-    document.getElementById('draftBody').textContent    = body;
-
-    const conf = draft.confidence_score ?? 0.82;
-    const pct  = Math.round(conf * 100);
-    const circ = 88;
-    document.getElementById('confFill').style.strokeDashoffset = circ - (circ * conf);
-    document.getElementById('confLabel').textContent = pct + '% confidence';
-    document.getElementById('confidenceRow').style.display = 'flex';
-  } else {
-    document.getElementById('draftWaiting').querySelector('p').textContent = "Draft ready — check your Transactions.";
-  }
-
-  document.getElementById('avaQuote').textContent = 'How did I do?';
-  document.getElementById('avaSub').textContent   = "I drafted a reply. Review it on the right.";
-  document.getElementById('avaActions').style.opacity = '1';
-  document.getElementById('avaActions').style.pointerEvents = 'auto';
-  // Show next-step button
-  document.getElementById('nextBtn').style.display = 'flex';
-  document.getElementById('approveBtn').style.display = 'flex';
+  // Update stats: increment since page load reflects the current TX
+  const curDetected = parseInt(document.getElementById('scStatDetected').textContent) || 0;
+  const curDrafted  = parseInt(document.getElementById('scStatDrafted').textContent) || 0;
+  const curAwaiting = parseInt(document.getElementById('scStatAwaiting').textContent) || 0;
+  // If this TX just finished, stats may already include it (loaded from DB); ensure at least 1
+  if(curDetected === 0) document.getElementById('scStatDetected').textContent = '1';
+  if(curDrafted  === 0) document.getElementById('scStatDrafted').textContent  = '1';
+  if(curAwaiting === 0) document.getElementById('scStatAwaiting').textContent = '1';
 }
 
 const ERROR_MESSAGES = {

@@ -879,7 +879,22 @@ class OnboardingController extends Controller
 
         $watchTxId = $request->query('watch') ?? session('ava_onshift_tx');
 
-        return view('onboarding.ava.step-5-onshift', compact('deployment', 'credential', 'watchTxId'));
+        $user      = auth()->user();
+        $firstName = explode(' ', trim($user->name))[0];
+
+        // Today's summary stats for the success card
+        $todayStart  = now()->startOfDay();
+        $todayTxs    = DB::table('transactions')
+            ->where('user_id', $userId)
+            ->where('created_at', '>=', $todayStart)
+            ->get();
+        $todayStats = [
+            'detected'  => $todayTxs->count(),
+            'drafted'   => $todayTxs->whereIn('status', ['draft_ready','approved','sent'])->count(),
+            'awaiting'  => $todayTxs->where('status', 'draft_ready')->count(),
+        ];
+
+        return view('onboarding.ava.step-5-onshift', compact('deployment', 'credential', 'watchTxId', 'firstName', 'todayStats'));
     }
 
     public function runAvaOnShift(Request $request)
