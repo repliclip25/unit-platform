@@ -71,12 +71,7 @@ body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-fon
   font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
   color:#6B7280;margin-bottom:20px;width:fit-content;
 }
-.ob-step-tag-icon{
-  width:22px;height:22px;border-radius:6px;
-  background:#0D0D0D;
-  display:flex;align-items:center;justify-content:center;flex-shrink:0;
-}
-.ob-step-tag-icon svg{width:12px;height:12px;stroke:#fff;stroke-width:2;fill:none}
+.ob-step-tag svg{width:16px;height:16px;stroke:#6B7280;stroke-width:2;fill:none;flex-shrink:0}
 
 .ob-h1{
   font-size:clamp(1.8rem,2.4vw,2.4rem);
@@ -113,14 +108,9 @@ body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-fon
   border-radius:12px;padding:12px 14px;
   max-width:310px;
 }
-.ob-safe-strip-icon{
-  width:28px;height:28px;border-radius:7px;
-  background:#F0FDF4;border:1px solid #DCFCE7;
-  display:flex;align-items:center;justify-content:center;flex-shrink:0;
-}
-.ob-safe-strip-icon svg{width:13px;height:13px;stroke:#16a34a;stroke-width:2.2}
-.ob-safe-strip-title{font-size:11.5px;font-weight:700;color:#0D0D0D;margin-bottom:3px}
-.ob-safe-strip-body{font-size:11.5px;color:#4B5563;line-height:1.5}
+.ob-safe-strip svg{width:18px;height:18px;stroke:#16a34a;stroke-width:2;fill:none;flex-shrink:0;margin-top:1px}
+.ob-safe-strip-title{font-size:12px;font-weight:700;color:#0D0D0D;margin-bottom:3px}
+.ob-safe-strip-body{font-size:12px;color:#4B5563;line-height:1.5}
 
 /* ── RIGHT PANEL (same structure as step-1 profile) ── */
 .ob-profile{
@@ -277,10 +267,7 @@ body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-fon
         <div class="ob-hero-content">
 
           <div class="ob-step-tag">
-            <div class="ob-step-tag-icon">
-              {{-- Mailbox icon --}}
-              <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
-            </div>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
             Step 2 of 5
           </div>
 
@@ -315,9 +302,7 @@ body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-fon
           </a>
 
           <div class="ob-safe-strip">
-            <div class="ob-safe-strip-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-            </div>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
             <div>
               <div class="ob-safe-strip-title">Your data is safe</div>
               <div class="ob-safe-strip-body">Ava only accesses the data you allow. You can revoke access at any time.</div>
