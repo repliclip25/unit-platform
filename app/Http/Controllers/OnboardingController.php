@@ -1070,17 +1070,51 @@ class OnboardingController extends Controller
             return back()->withErrors(['persona' => 'Please select your business type to continue.']);
         }
 
-        $wos   = WorkerOnboardingService::load(auth()->id());
-        $depId = $wos?->deployment_id ?? session('onboarding_deployment_id');
+        $userId = auth()->id();
 
-        if ($depId) {
-            \Illuminate\Support\Facades\DB::table('worker_deployments')
-                ->where('id', $depId)->update(['persona' => $persona]);
-            $this->seedPersonaRules($depId, auth()->id(), $contract, $persona);
+        // Find or create the AVA deployment for this user
+        $deployment = DB::table('worker_deployments')
+            ->where('user_id', $userId)->where('worker_slug', 'ava')
+            ->orderByDesc('created_at')->first();
+
+        if (!$deployment) {
+            // Auto-provision: find Gmail credential connected during Step 2
+            $credential = DB::table('user_gmail_credentials')
+                ->where('user_id', $userId)->orderByDesc('created_at')->first();
+
+            $depId = DB::table('worker_deployments')->insertGetId([
+                'user_id'       => $userId,
+                'worker_slug'   => 'ava',
+                'name'          => 'AVA — Renewal Coordinator',
+                'status'        => 'active',
+                'credential_id' => $credential?->id,
+                'persona'       => $persona,
+                'config'        => json_encode([]),
+                'created_at'    => now(),
+                'updated_at'    => now(),
+            ]);
+
+            // Provision trial billing row
+            DB::table('deployment_billing')->insert([
+                'user_id'                   => $userId,
+                'deployment_id'             => $depId,
+                'worker_slug'               => 'ava',
+                'status'                    => 'trial',
+                'trial_transactions_used'   => 0,
+                'trial_transactions_limit'  => 10,
+                'created_at'                => now(),
+                'updated_at'                => now(),
+            ]);
+        } else {
+            $depId = $deployment->id;
+            DB::table('worker_deployments')->where('id', $depId)->update(['persona' => $persona]);
         }
-        \Illuminate\Support\Facades\DB::table('users')
-            ->where('id', auth()->id())->update(['persona' => $persona]);
 
+        $this->seedPersonaRules($depId, $userId, $contract, $persona);
+
+        DB::table('users')->where('id', $userId)->update(['persona' => $persona]);
+
+        $wos = WorkerOnboardingService::load($userId);
         if ($wos) WorkerOnboardingService::advanceStep($wos->id, 'persona');
 
         return redirect()->route('hire.ava.assignment');
