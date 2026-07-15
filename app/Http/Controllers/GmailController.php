@@ -102,6 +102,18 @@ class GmailController extends Controller
             ? "Gmail connected and inbox watch activated for {$email}. Your worker is now monitoring."
             : "Gmail connected: {$email}. Deploy a worker to start monitoring.";
 
+        // Return to /hire/ava/orientation if triggered from the new onboarding flow
+        if (session('hire_ava_gmail_return')) {
+            session()->forget('hire_ava_gmail_return');
+
+            if (!$user->onboarding_gmail_at) {
+                DB::table('users')->where('id', $user->id)
+                    ->update(['onboarding_gmail_at' => now()]);
+            }
+
+            return redirect()->route('hire.ava.orientation')->with('gmail_connected', $email);
+        }
+
         // Return to onboarding wizard if that's where the OAuth was triggered from
         if (session('onboarding_gmail_return')) {
             session()->forget('onboarding_gmail_return');
@@ -312,6 +324,9 @@ class GmailController extends Controller
     // AUTHENTICATED
     public function authorize()
     {
+        // Flag so the callback knows to return to the /hire/ava flow
+        session(['hire_ava_gmail_return' => true]);
+
         $query = http_build_query([
             'client_id'     => config('services.gmail.client_id'),
             'redirect_uri'  => config('services.gmail.redirect_uri'),

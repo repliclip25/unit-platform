@@ -102,14 +102,11 @@ body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-fon
 .ob-persona input[type=radio]{position:absolute;opacity:0;width:0;height:0}
 
 .ob-persona-icon{
-  width:36px;height:36px;border-radius:10px;
-  background:#F4F3F1;border:1px solid #E8E7E4;
+  width:26px;height:26px;
   display:flex;align-items:center;justify-content:center;flex-shrink:0;
-  transition:background .15s,border-color .15s;
 }
-.ob-persona.is-selected .ob-persona-icon{background:#0D0D0D;border-color:#0D0D0D}
-.ob-persona-icon svg{width:17px;height:17px;stroke:#374151;stroke-width:1.8;fill:none;transition:stroke .15s}
-.ob-persona.is-selected .ob-persona-icon svg{stroke:#fff}
+.ob-persona-icon svg{width:22px;height:22px;stroke:#9CA3AF;stroke-width:1.8;fill:none;transition:stroke .15s}
+.ob-persona.is-selected .ob-persona-icon svg{stroke:#0D0D0D}
 
 .ob-persona-body{flex:1;min-width:0}
 .ob-persona-label{font-size:13px;font-weight:800;color:#0D0D0D;line-height:1.2;margin-bottom:3px}
@@ -339,6 +336,13 @@ body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-fon
 
           <form method="POST" action="{{ route('hire.ava.orientation.save') }}" id="personaForm">
             @csrf
+
+            @if(session('gmail_connected'))
+            <div style="background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.22);border-radius:10px;padding:10px 14px;margin-bottom:14px;font-size:12.5px;color:#16a34a;display:flex;align-items:center;gap:8px">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              Gmail connected — {{ session('gmail_connected') }}. Now tell Ava what you do.
+            </div>
+            @endif
 
             @if($errors->any())
             <div style="background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);border-radius:10px;padding:10px 14px;margin-bottom:14px;font-size:12.5px;color:#dc2626">
