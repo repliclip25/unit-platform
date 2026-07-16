@@ -43,7 +43,7 @@ body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-fon
 .ob-security p{font-size:11px;color:#6B7280;line-height:1.55}
 
 /* ── MAIN AREA ── */
-.ob-main{display:flex;align-items:stretch;padding:20px 24px 20px 12px;overflow:hidden;gap:0}
+.ob-main{display:flex;align-items:stretch;padding:20px 24px 20px 12px;overflow:hidden;gap:0;background:#EEECEA}
 
 /* Wide card — horizontal pipeline */
 .ob-pipeline-card{
