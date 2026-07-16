@@ -144,6 +144,85 @@ class DashboardController extends Controller
         ));
     }
 
+    // ── AVA Desk ───────────────────────────────────────────────────────────────
+    public function avaDesk()
+    {
+        $userId = auth()->id();
+
+        $dep = DB::table('worker_deployments')
+            ->where('user_id', $userId)
+            ->where('worker_slug', 'ava')
+            ->whereIn('status', ['active', 'paused'])
+            ->first();
+
+        if (!$dep) {
+            return redirect()->route('dashboard');
+        }
+
+        $depId = $dep->id;
+        $today = now()->startOfDay();
+
+        // Pipeline counts
+        $incomingCount  = DB::table('transactions')->where('deployment_id', $depId)->whereDate('created_at', today())->count();
+        $inProgressCount= DB::table('transactions')->where('deployment_id', $depId)
+            ->whereNotIn('status', ['draft_ready','approved','sent','failed','dismissed','filtered_out','rejected','blocked'])
+            ->count();
+        $waitingCount   = DB::table('transactions')->where('deployment_id', $depId)->where('status', 'draft_ready')->whereNull('human_decision')->count();
+        $completedCount = DB::table('transactions')->where('deployment_id', $depId)->whereIn('status', ['approved','sent'])->whereDate('updated_at', today())->count();
+
+        // Approvals queue (draft_ready, newest first, limit 5)
+        $approvals = DB::table('transactions')
+            ->where('deployment_id', $depId)
+            ->where('status', 'draft_ready')
+            ->whereNull('human_decision')
+            ->orderByDesc('created_at')
+            ->limit(5)
+            ->get();
+
+        // Recent activity (last 6 transactions)
+        $activity = DB::table('transactions')
+            ->where('deployment_id', $depId)
+            ->orderByDesc('created_at')
+            ->limit(6)
+            ->get();
+
+        // Current task (most recent in-progress)
+        $currentTask = DB::table('transactions')
+            ->where('deployment_id', $depId)
+            ->whereNotIn('status', ['draft_ready','approved','sent','failed','dismissed','filtered_out','rejected','blocked'])
+            ->orderByDesc('updated_at')
+            ->first()
+            ?? DB::table('transactions')->where('deployment_id', $depId)->orderByDesc('id')->first();
+
+        // Memory stats
+        $clientCount  = DB::table('clients')->where('user_id', $userId)->count();
+        $contactCount = DB::table('contacts')->where('user_id', $userId)->count();
+        $assetCount   = DB::table('assets')->where('user_id', $userId)->count();
+        $memoryTotal  = max(1, $clientCount + $contactCount + $assetCount);
+        $memoryPct    = min(100, (int) round(($clientCount / max(1, $memoryTotal)) * 100));
+
+        // All deployments for worker switcher sidebar
+        $allDeployments = DB::table('worker_deployments')
+            ->where('user_id', $userId)
+            ->whereIn('status', ['active','paused'])
+            ->orderBy('created_at')
+            ->get();
+
+        $registryRow = DB::table('worker_registry')->where('slug', 'ava')->first();
+        $profileImg  = $registryRow?->profile_image ? asset('storage/' . $registryRow->profile_image) : null;
+        $coverImg    = $registryRow?->cover_image   ? asset('storage/' . $registryRow->cover_image)   : null;
+
+        $workStatus  = $dep->status === 'active' ? 'Working' : 'Paused';
+        $firstName   = explode(' ', trim(auth()->user()->name))[0];
+
+        return view('dashboard.ava-desk', compact(
+            'dep', 'depId', 'incomingCount', 'inProgressCount', 'waitingCount', 'completedCount',
+            'approvals', 'activity', 'currentTask', 'clientCount', 'contactCount', 'assetCount',
+            'memoryPct', 'allDeployments', 'registryRow', 'profileImg', 'coverImg',
+            'workStatus', 'firstName'
+        ));
+    }
+
     // ── Save desk card preferences ─────────────────────────────────────────────
     public function deskSave(Request $request)
     {
