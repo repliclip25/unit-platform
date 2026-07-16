@@ -697,11 +697,11 @@ body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-fon
       </div>
 
       <div class="ob-sc-btns">
-        <a href="{{ route('dashboard') }}" class="btn-dash">
-          Go to Dashboard
+        <a href="{{ route('desk.ava') }}" class="btn-dash">
+          Go to AVA's Desk
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
         </a>
-        <a href="{{ route('dashboard') }}" class="btn-watch">
+        <a href="{{ route('desk.ava') }}" class="btn-watch">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8" fill="currentColor" stroke="none"/></svg>
           Watch Ava in action
         </a>

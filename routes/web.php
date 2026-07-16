@@ -4,6 +4,7 @@ use App\Http\Controllers\BillingController;
 use App\Http\Controllers\QAController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\DeskController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\WorkerController;
 use App\Http\Controllers\WorkerMemoryController;
@@ -122,9 +123,11 @@ Route::middleware(['auth', 'verified', 'onboarded', 'not-pending-del'])->group(f
     // ── Transaction status polling (used by fast-track pipeline UI) ─────────
     Route::get('/transactions/{txId}/status', [TransactionController::class, 'status'])->name('transactions.status');
 
-    // ── Command Center ──────────────────────────────────────────────────────
+    // ── Command Center (admin) ──────────────────────────────────────────────
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-    Route::get('/dashboard/ava', [DashboardController::class, 'avaDesk'])->name('dashboard.ava');
+
+    // ── Worker Desks ────────────────────────────────────────────────────────
+    Route::get('/desk/ava', [DeskController::class, 'ava'])->name('desk.ava');
     Route::post('/dashboard/desk/save',    [DashboardController::class, 'deskSave'])->name('dashboard.desk.save');
     Route::post('/dashboard/desk/dismiss', [DashboardController::class, 'deskDismiss'])->name('dashboard.desk.dismiss');
     Route::post('/self-learn/dismiss', [DashboardController::class, 'selfLearnDismiss'])->name('self-learn.dismiss');
