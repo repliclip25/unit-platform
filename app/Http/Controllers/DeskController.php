@@ -58,14 +58,18 @@ class DeskController extends Controller
         $clientCount  = DB::table('clients')->where('user_id', $userId)->count();
         $contactCount = DB::table('contacts')->where('user_id', $userId)->count();
 
-        // All deployments for potential worker switcher
+        // All deployments for worker switcher sidebar
         $allDeployments = DB::table('worker_deployments')
             ->where('user_id', $userId)
             ->whereIn('status', ['active','paused'])
             ->orderBy('created_at')
             ->get();
 
-        $registryRow = DB::table('worker_registry')->where('slug', 'ava')->first();
+        // Registry rows keyed by slug for sidebar avatars
+        $slugs = $allDeployments->pluck('worker_slug')->unique()->values()->all();
+        $registryRows = DB::table('worker_registry')->whereIn('slug', $slugs)->get()->keyBy('slug');
+
+        $registryRow = $registryRows->get('ava');
         $profileImg  = $registryRow?->profile_image ? asset('storage/' . $registryRow->profile_image) : null;
         $coverImg    = $registryRow?->cover_image   ? asset('storage/' . $registryRow->cover_image)   : null;
 
@@ -75,7 +79,7 @@ class DeskController extends Controller
         return view('desk.ava', compact(
             'dep', 'depId', 'incomingCount', 'inProgressCount', 'waitingCount', 'completedCount',
             'approvals', 'activity', 'currentTask', 'clientCount', 'contactCount',
-            'allDeployments', 'registryRow', 'profileImg', 'coverImg',
+            'allDeployments', 'registryRows', 'registryRow', 'profileImg', 'coverImg',
             'workStatus', 'firstName'
         ));
     }
