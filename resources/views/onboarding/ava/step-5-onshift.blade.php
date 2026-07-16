@@ -80,7 +80,13 @@ body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-fon
 }
 .ob-sc-badge-dot{width:6px;height:6px;border-radius:50%;background:#22c55e;animation:pdot 1.4s ease infinite}
 .ob-sc-h1{font-size:1.75rem;font-weight:900;letter-spacing:-.04em;line-height:1.1;color:#0D0D0D;margin-bottom:10px}
-.ob-sc-sub{font-size:12.5px;color:#6B7280;line-height:1.65;margin-bottom:28px}
+.ob-sc-sub{font-size:12.5px;color:#6B7280;line-height:1.65;margin-bottom:20px}
+/* Inline stats in left panel */
+.ob-sc-left-stats{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:24px}
+.ob-sc-left-stat{background:#fff;border:1px solid #E8E7E4;border-radius:10px;padding:10px 12px}
+.ob-sc-left-stat-val{font-size:22px;font-weight:900;color:#0D0D0D;line-height:1}
+.ob-sc-left-stat-val.gold{color:#D97706}
+.ob-sc-left-stat-label{font-size:10px;color:#9CA3AF;margin-top:3px;line-height:1.3}
 .ob-sc-btns{display:flex;flex-direction:column;gap:10px}
 .btn-dash{
   display:flex;align-items:center;justify-content:center;gap:8px;
@@ -150,19 +156,17 @@ body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-fon
 .ob-sc-view-link{font-size:11px;color:#6B7280;font-weight:600;text-decoration:none;display:block;margin-top:12px}
 .ob-sc-view-link:hover{color:#0D0D0D}
 
-/* Today's summary */
-.ob-sc-stats{padding:16px 20px;background:#FAFAFA}
-.ob-sc-stats-title{font-size:9.5px;font-weight:700;color:#9CA3AF;letter-spacing:.1em;text-transform:uppercase;margin-bottom:12px}
-.ob-sc-stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.ob-sc-stat{background:#fff;border:1px solid #F0F0F0;border-radius:10px;padding:10px 12px}
-.ob-sc-stat-val{font-size:18px;font-weight:900;color:#0D0D0D;line-height:1}
-.ob-sc-stat-val.gold{color:#D97706}
-.ob-sc-stat-label{font-size:10px;color:#9CA3AF;margin-top:3px;line-height:1.35}
-.ob-sc-ava-status{margin-top:10px;display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:#fff;border:1px solid #F0F0F0;border-radius:10px}
-.ob-sc-ava-status-label{font-size:10.5px;font-weight:700;color:#0D0D0D}
-.ob-sc-ava-status-sub{font-size:9.5px;color:#9CA3AF}
-.ob-sc-ava-active{display:flex;align-items:center;gap:5px;font-size:10px;font-weight:700;color:#15803D}
-.ob-sc-ava-active-dot{width:6px;height:6px;border-radius:50%;background:#22c55e;animation:pdot 1.4s ease infinite}
+/* Mobile dark activity panel */
+@media(max-width:1024px){
+  .ob-sc-activity{background:#0D0D0D;border-radius:0}
+  .ob-sc-activity-title{color:#fff}
+  .ob-sc-onshift{background:rgba(34,197,94,.15);color:#4ade80}
+  .ob-sc-feed-time{color:#6B7280}
+  .ob-sc-feed-text{color:#F9FAFB}
+  .ob-sc-feed-sub{color:#6B7280}
+  .ob-sc-view-link{color:#6B7280}
+  .ob-sc-view-link:hover{color:#fff}
+}
 
 /* ── LEFT: Intro + input ── */
 .ob-left{
@@ -387,10 +391,11 @@ body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-fon
 
   /* Success card mobile */
   .ob-success-card{grid-template-columns:1fr!important;border-radius:16px}
-  .ob-sc-left{padding:28px 20px}
-  .ob-sc-hero{min-height:260px}
-  .ob-sc-right{border-left:none;border-top:1px solid #F0F0F0}
-  .ob-sc-stats-grid{grid-template-columns:1fr 1fr}
+  .ob-sc-left{padding:28px 20px;order:1}
+  .ob-sc-hero{min-height:280px;order:2}
+  .ob-sc-right{border-left:none;border-top:1px solid #F0F0F0;order:3}
+  .ob-sc-left-stats{grid-template-columns:1fr 1fr}
+  .ob-sc-left-stat-val{font-size:28px}
 }
 </style>
 </head>
@@ -641,6 +646,30 @@ body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-fon
       </div>
       <h1 class="ob-sc-h1">Ava is officially<br>on shift. 🎉</h1>
       <p class="ob-sc-sub">She's monitoring your inbox and will alert you when action is needed.</p>
+
+      {{-- Today's stats --}}
+      <div class="ob-sc-left-stats">
+        <div class="ob-sc-left-stat">
+          <div class="ob-sc-left-stat-val" id="scStatDetected">{{ $todayStats['detected'] }}</div>
+          <div class="ob-sc-left-stat-label">Renewal requests detected</div>
+        </div>
+        <div class="ob-sc-left-stat">
+          <div class="ob-sc-left-stat-val" id="scStatDrafted">{{ $todayStats['drafted'] }}</div>
+          <div class="ob-sc-left-stat-label">Replies drafted</div>
+        </div>
+        <div class="ob-sc-left-stat">
+          <div class="ob-sc-left-stat-val" id="scStatAwaiting">{{ $todayStats['awaiting'] }}</div>
+          <div class="ob-sc-left-stat-label">Awaiting your review</div>
+        </div>
+        <div class="ob-sc-left-stat">
+          <div style="display:flex;align-items:center;gap:5px">
+            <span class="ob-sc-ava-active-dot" style="width:7px;height:7px;border-radius:50%;background:#22c55e;animation:pdot 1.4s ease infinite;display:inline-block;flex-shrink:0"></span>
+            <span class="ob-sc-left-stat-val" style="font-size:14px">Active</span>
+          </div>
+          <div class="ob-sc-left-stat-label">Monitoring inbox 24/7</div>
+        </div>
+      </div>
+
       <div class="ob-sc-btns">
         <a href="{{ route('dashboard') }}" class="btn-dash">
           Go to Dashboard
@@ -695,7 +724,7 @@ body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-fon
             <div><div class="ob-sc-feed-text" style="font-weight:700">Reply ready for your review</div></div>
           </div>
         </div>
-        <a href="/transactions" class="ob-sc-view-link">View in Dashboard →</a>
+        <a href="/transactions" class="ob-sc-view-link">View Live Feed →</a>
       </div>
 
       {{-- Draft card with Gmail chrome --}}
@@ -737,37 +766,6 @@ body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-fon
         </div>
       </div>
 
-      <div class="ob-sc-stats">
-        <div class="ob-sc-stats-title">Today's Summary</div>
-        <div class="ob-sc-stats-grid">
-          <div class="ob-sc-stat">
-            <div class="ob-sc-stat-val" id="scStatDetected">{{ $todayStats['detected'] }}</div>
-            <div class="ob-sc-stat-label">Renewal requests<br>detected</div>
-          </div>
-          <div class="ob-sc-stat">
-            <div class="ob-sc-stat-val" id="scStatDrafted">{{ $todayStats['drafted'] }}</div>
-            <div class="ob-sc-stat-label">Replies<br>drafted</div>
-          </div>
-          <div class="ob-sc-stat">
-            <div class="ob-sc-stat-val" id="scStatAwaiting">{{ $todayStats['awaiting'] }}</div>
-            <div class="ob-sc-stat-label">Awaiting your<br>review</div>
-          </div>
-          <div class="ob-sc-stat">
-            <div class="ob-sc-stat-val gold">—</div>
-            <div class="ob-sc-stat-label">Revenue<br>protected</div>
-          </div>
-        </div>
-        <div class="ob-sc-ava-status">
-          <div>
-            <div class="ob-sc-ava-status-label">Ava's Status</div>
-            <div class="ob-sc-ava-status-sub">Monitoring your inbox 24/7</div>
-          </div>
-          <div class="ob-sc-ava-active">
-            <span class="ob-sc-ava-active-dot"></span>
-            Active
-          </div>
-        </div>
-      </div>
     </div>
 
   </div>
