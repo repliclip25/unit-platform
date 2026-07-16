@@ -64,7 +64,7 @@ body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-fon
   border:1px solid rgba(0,0,0,.07);
   background:#fff;
   grid-template-columns:260px minmax(0,1fr) 360px;
-  max-height:calc(100vh - 40px);
+  height:calc(100vh - 40px);
 }
 .ob-success-card.is-visible{display:grid}
 
@@ -112,7 +112,7 @@ body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-fon
 /* Success hero */
 .ob-sc-hero{
   position:relative;overflow:hidden;background:#1a1a2e;
-  max-height:100%;
+  height:100%;
 }
 .ob-sc-hero img{
   width:100%;height:100%;object-fit:cover;object-position:center 20%;
@@ -165,9 +165,14 @@ body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-fon
 /* Draft chrome bar */
 .sc-draft-chrome{background:#F1F3F4;border-bottom:1px solid #E0E0E0;padding:7px 12px;display:flex;align-items:center;gap:7px;flex-shrink:0}
 /* Draft body grows */
-.sc-draft-body{flex:1;overflow-y:auto;padding:16px 18px}
-.sc-draft-subject{font-size:13px;font-weight:700;color:#202124;margin-bottom:8px;line-height:1.35}
-.sc-draft-preview{font-size:12.5px;color:#5F6368;line-height:1.6}
+.sc-draft-body{flex:1;overflow-y:auto;padding:12px 16px}
+/* Email header rows */
+.sc-draft-header-row{display:flex;align-items:baseline;gap:6px;padding:5px 0;border-bottom:1px solid #F1F3F4}
+.sc-draft-header-label{font-size:11px;color:#5F6368;font-weight:600;width:48px;flex-shrink:0}
+.sc-draft-header-value{font-size:12px;color:#202124;font-weight:500;line-height:1.4}
+.sc-draft-subject-row{padding:8px 0 10px;border-bottom:1px solid #E8EAED;margin-bottom:10px}
+.sc-draft-subject-text{font-size:14px;font-weight:700;color:#202124;line-height:1.3}
+.sc-draft-preview{font-size:12.5px;color:#3C4043;line-height:1.75;white-space:pre-wrap}
 /* Draft actions */
 .sc-draft-actions{padding:12px 18px;border-top:1px solid #E0E0E0;display:flex;gap:8px;flex-shrink:0}
 .sc-draft-actions button,.sc-draft-actions a{flex:1;padding:10px;border-radius:9px;font-size:12px;font-weight:700;text-align:center;cursor:pointer}
@@ -408,7 +413,9 @@ body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-fon
   .ob-arrow{display:none}
 
   /* Success card mobile */
-  .ob-success-card{grid-template-columns:1fr!important;border-radius:16px}
+  .ob-success-card{grid-template-columns:1fr!important;border-radius:16px;height:auto}
+  .ob-sc-hero{height:300px}
+  #scDraftCard{min-height:320px}
   .ob-sc-left{padding:28px 20px;order:1}
   .ob-sc-hero{min-height:280px;order:2}
   .ob-sc-right{border-left:none;border-top:1px solid #F0F0F0;order:3}
@@ -765,7 +772,17 @@ body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-fon
           </svg>
         </div>
         <div class="sc-draft-body">
-          <div class="sc-draft-subject" id="scDraftSubject">—</div>
+          <div class="sc-draft-header-row">
+            <span class="sc-draft-header-label">To</span>
+            <span class="sc-draft-header-value" id="scDraftTo">—</span>
+          </div>
+          <div class="sc-draft-header-row">
+            <span class="sc-draft-header-label">From</span>
+            <span class="sc-draft-header-value" id="scDraftFrom">{{ auth()->user()->email }}</span>
+          </div>
+          <div class="sc-draft-subject-row">
+            <div class="sc-draft-subject-text" id="scDraftSubject">—</div>
+          </div>
           <div class="sc-draft-preview" id="scDraftBody"></div>
         </div>
         <div class="sc-draft-actions">
@@ -856,10 +873,12 @@ function showDraft(data){
   // Populate draft card
   const draft = data.draft_output;
   if(draft){
-    const subject = draft.subject || data.classify_output?.subject || 'Renewal Response';
-    const body    = draft.body || draft.draft || '';
+    const subject   = draft.subject || data.classify_output?.subject || 'Renewal Response';
+    const body      = draft.body || draft.draft || '';
+    const toAddr    = draft.to || data.classify_output?.from || data.email_metadata?.from || '';
     document.getElementById('scDraftSubject').textContent = subject;
     document.getElementById('scDraftBody').textContent    = body;
+    if(toAddr) document.getElementById('scDraftTo').textContent = toAddr;
     document.getElementById('scDraftCard').style.display  = '';
     window._scTxId = data.tx_id;
     window._scGmailDraftId = data.gmail_draft_id;
