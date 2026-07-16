@@ -63,14 +63,16 @@ body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-fon
   box-shadow:0 2px 12px rgba(0,0,0,.06),0 1px 3px rgba(0,0,0,.03);
   border:1px solid rgba(0,0,0,.07);
   background:#fff;
-  grid-template-columns:280px 1fr 320px;
+  grid-template-columns:260px minmax(0,1fr) 360px;
+  max-height:calc(100vh - 40px);
 }
 .ob-success-card.is-visible{display:grid}
 
 /* Success left */
 .ob-sc-left{
   background:#F4F3F1;border-right:1px solid #E8E7E4;
-  padding:40px 28px;display:flex;flex-direction:column;justify-content:center;
+  padding:28px 22px;display:flex;flex-direction:column;justify-content:center;
+  overflow-y:auto;
 }
 .ob-sc-badge{
   display:inline-flex;align-items:center;gap:6px;
@@ -110,9 +112,10 @@ body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-fon
 /* Success hero */
 .ob-sc-hero{
   position:relative;overflow:hidden;background:#1a1a2e;
+  max-height:100%;
 }
 .ob-sc-hero img{
-  width:100%;height:100%;object-fit:cover;object-position:center top;
+  width:100%;height:100%;object-fit:cover;object-position:center 20%;
   display:block;
 }
 .ob-sc-bubble{
@@ -130,31 +133,46 @@ body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-fon
 .ob-sc-nameplate-name{font-size:12px;font-weight:800;color:#fff;letter-spacing:.02em}
 .ob-sc-nameplate-title{font-size:10px;color:rgba(255,255,255,.6);font-weight:500;letter-spacing:.05em;text-transform:uppercase}
 
-/* Success right: live activity + stats */
+/* Success right: live activity + draft */
 .ob-sc-right{
-  display:flex;flex-direction:column;border-left:1px solid #F0F0F0;
+  display:flex;flex-direction:column;border-left:1px solid #F0F0F0;overflow:hidden;
 }
 .ob-sc-activity{
-  flex:1;padding:20px 20px 16px;border-bottom:1px solid #F0F0F0;overflow-y:auto;
+  flex:0 0 auto;padding:18px 20px 14px;border-bottom:1px solid #F0F0F0;
 }
 .ob-sc-activity-header{
-  display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;
+  display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;
 }
-.ob-sc-activity-title{font-size:11px;font-weight:800;color:#0D0D0D;letter-spacing:.04em;text-transform:uppercase}
+.ob-sc-activity-title{font-size:10px;font-weight:800;color:#0D0D0D;letter-spacing:.08em;text-transform:uppercase}
 .ob-sc-onshift{
   display:flex;align-items:center;gap:5px;
   font-size:9px;font-weight:700;color:#15803D;letter-spacing:.08em;text-transform:uppercase;
   background:#DCFCE7;border-radius:99px;padding:3px 8px;
 }
 .ob-sc-onshift-dot{width:5px;height:5px;border-radius:50%;background:#22c55e;animation:pdot 1.4s ease infinite}
-.ob-sc-feed{display:flex;flex-direction:column;gap:10px}
+.ob-sc-feed{display:flex;flex-direction:column;gap:8px}
 .ob-sc-feed-item{display:flex;gap:10px;align-items:flex-start}
-.ob-sc-feed-time{font-size:9.5px;color:#9CA3AF;font-weight:600;white-space:nowrap;padding-top:2px;min-width:40px}
-.ob-sc-feed-dot{width:20px;height:20px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;color:#fff}
-.ob-sc-feed-text{font-size:11.5px;color:#374151;font-weight:500;line-height:1.45}
-.ob-sc-feed-sub{font-size:10.5px;color:#9CA3AF}
-.ob-sc-view-link{font-size:11px;color:#6B7280;font-weight:600;text-decoration:none;display:block;margin-top:12px}
+.ob-sc-feed-time{font-size:10px;color:#9CA3AF;font-weight:600;white-space:nowrap;padding-top:2px;min-width:44px}
+.ob-sc-feed-dot{width:22px;height:22px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;color:#fff}
+.ob-sc-feed-text{font-size:12px;color:#374151;font-weight:600;line-height:1.4}
+.ob-sc-feed-sub{font-size:11px;color:#9CA3AF}
+.ob-sc-view-link{font-size:11px;color:#9CA3AF;font-weight:600;text-decoration:none;display:block;margin-top:10px}
 .ob-sc-view-link:hover{color:#0D0D0D}
+
+/* Draft card fills the remaining height */
+#scDraftCard{flex:1;display:flex;flex-direction:column;overflow:hidden}
+#scDraftCard > div:not(:last-child){flex-shrink:0}
+/* Draft chrome bar */
+.sc-draft-chrome{background:#F1F3F4;border-bottom:1px solid #E0E0E0;padding:7px 12px;display:flex;align-items:center;gap:7px;flex-shrink:0}
+/* Draft body grows */
+.sc-draft-body{flex:1;overflow-y:auto;padding:16px 18px}
+.sc-draft-subject{font-size:13px;font-weight:700;color:#202124;margin-bottom:8px;line-height:1.35}
+.sc-draft-preview{font-size:12.5px;color:#5F6368;line-height:1.6}
+/* Draft actions */
+.sc-draft-actions{padding:12px 18px;border-top:1px solid #E0E0E0;display:flex;gap:8px;flex-shrink:0}
+.sc-draft-actions button,.sc-draft-actions a{flex:1;padding:10px;border-radius:9px;font-size:12px;font-weight:700;text-align:center;cursor:pointer}
+.sc-btn-approve{background:#0D0D0D;color:#fff;border:none;font-family:inherit}
+.sc-btn-review{background:#fff;color:#374151;border:1.5px solid #E5E7EB;text-decoration:none;display:flex;align-items:center;justify-content:center}
 
 /* Mobile dark activity panel */
 @media(max-width:1024px){
@@ -727,42 +745,32 @@ body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-fon
         <a href="/transactions" class="ob-sc-view-link">View Live Feed →</a>
       </div>
 
-      {{-- Draft card with Gmail chrome --}}
-      <div id="scDraftCard" style="display:none;border-top:1px solid #F0F0F0;border-bottom:1px solid #F0F0F0">
-        {{-- Browser chrome bar --}}
-        <div style="background:#F1F3F4;border-bottom:1px solid #E0E0E0;padding:7px 12px;display:flex;align-items:center;gap:8px">
-          {{-- Traffic lights --}}
+      {{-- Draft card: fills remaining height, hidden until draft is ready --}}
+      <div id="scDraftCard" style="display:none">
+        <div class="sc-draft-chrome">
           <span style="width:10px;height:10px;border-radius:50%;background:#FF5F57;display:inline-block;flex-shrink:0"></span>
           <span style="width:10px;height:10px;border-radius:50%;background:#FEBC2E;display:inline-block;flex-shrink:0"></span>
           <span style="width:10px;height:10px;border-radius:50%;background:#28C840;display:inline-block;flex-shrink:0"></span>
-          {{-- URL bar --}}
-          <div style="flex:1;background:#fff;border:1px solid #DADCE0;border-radius:99px;padding:3px 10px;display:flex;align-items:center;gap:6px;margin:0 6px">
-            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#5F6368" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path stroke-linecap="round" d="M7 11V7a5 5 0 0110 0v4"/></svg>
-            <span style="font-size:9.5px;color:#5F6368;font-family:inherit;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">mail.google.com/mail/u/0/#drafts</span>
+          <div style="flex:1;background:#fff;border:1px solid #DADCE0;border-radius:99px;padding:3px 10px;display:flex;align-items:center;gap:6px;margin:0 6px;min-width:0">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#5F6368" stroke-width="2" style="flex-shrink:0"><rect x="3" y="11" width="18" height="11" rx="2"/><path stroke-linecap="round" d="M7 11V7a5 5 0 0110 0v4"/></svg>
+            <span style="font-size:9.5px;color:#5F6368;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">mail.google.com/mail/u/0/#drafts</span>
           </div>
-          {{-- Gmail logo --}}
-          <svg width="40" height="14" viewBox="0 0 55 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0">
+          <svg width="40" height="14" viewBox="0 0 55 18" fill="none" style="flex-shrink:0">
             <path d="M3.9 14.4V8.1L0 5.1V13.2C0 13.85 0.54 14.4 1.2 14.4H3.9Z" fill="#4285F4"/>
             <path d="M19.5 14.4H22.2C22.86 14.4 23.4 13.86 23.4 13.2V5.1L19.5 8.1V14.4Z" fill="#34A853"/>
             <path d="M19.5 2.4L11.7 8.25L3.9 2.4V8.1L11.7 13.95L19.5 8.1V2.4Z" fill="#EA4335"/>
             <path d="M0 5.1L3.9 8.1V2.4L2.1 1.08C1.29 0.48 0 1.05 0 2.07V5.1Z" fill="#C5221F"/>
             <path d="M23.4 5.1V2.07C23.4 1.05 22.11 0.48 21.3 1.08L19.5 2.4V8.1L23.4 5.1Z" fill="#FBBC04"/>
-            <text x="27" y="13" font-family="Arial,sans-serif" font-size="11" font-weight="400" fill="#5F6368">Gmail</text>
+            <text x="27" y="13" font-family="Arial,sans-serif" font-size="11" fill="#5F6368">Gmail</text>
           </svg>
         </div>
-        {{-- Draft content --}}
-        <div style="padding:14px 16px;background:#fff">
-          <div style="font-size:10.5px;font-weight:700;color:#202124;margin-bottom:6px" id="scDraftSubject">—</div>
-          <div style="font-size:11px;color:#5F6368;line-height:1.55;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden" id="scDraftBody"></div>
+        <div class="sc-draft-body">
+          <div class="sc-draft-subject" id="scDraftSubject">—</div>
+          <div class="sc-draft-preview" id="scDraftBody"></div>
         </div>
-        {{-- Actions --}}
-        <div style="display:flex;gap:8px;padding:0 16px 14px">
-          <button onclick="scApproveDraft()" id="scApproveBtn" style="flex:1;padding:8px;border-radius:8px;background:#0D0D0D;color:#fff;border:none;font-size:11px;font-weight:700;font-family:inherit;cursor:pointer">
-            Approve &amp; send
-          </button>
-          <a href="/transactions" style="flex:1;padding:8px;border-radius:8px;background:#fff;color:#374151;border:1.5px solid #E5E7EB;font-size:11px;font-weight:700;text-align:center;text-decoration:none;display:flex;align-items:center;justify-content:center">
-            Review in full
-          </a>
+        <div class="sc-draft-actions">
+          <button onclick="scApproveDraft()" id="scApproveBtn" class="sc-btn-approve">Approve &amp; send</button>
+          <a href="/transactions" class="sc-btn-review">Review in full</a>
         </div>
       </div>
 
