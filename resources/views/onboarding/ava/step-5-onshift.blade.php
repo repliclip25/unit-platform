@@ -64,6 +64,7 @@ body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-fon
   border:1px solid rgba(0,0,0,.07);
   background:#fff;
   grid-template-columns:260px minmax(0,1fr) 360px;
+  grid-template-rows:1fr;
   height:calc(100vh - 40px);
 }
 .ob-success-card.is-visible{display:grid}
@@ -112,7 +113,7 @@ body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-fon
 /* Success hero */
 .ob-sc-hero{
   position:relative;overflow:hidden;background:#1a1a2e;
-  height:100%;
+  min-height:0;
 }
 .ob-sc-hero img{
   width:100%;height:100%;object-fit:cover;object-position:center 20%;
@@ -160,7 +161,7 @@ body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-fon
 .ob-sc-view-link:hover{color:#0D0D0D}
 
 /* Draft card fills the remaining height */
-#scDraftCard{flex:1;display:flex;flex-direction:column;overflow:hidden}
+#scDraftCard{flex:1;display:flex;flex-direction:column;overflow:hidden;border-top:1px solid #E8EAED}
 #scDraftCard > div:not(:last-child){flex-shrink:0}
 /* Draft chrome bar */
 .sc-draft-chrome{background:#F1F3F4;border-bottom:1px solid #E0E0E0;padding:7px 12px;display:flex;align-items:center;gap:7px;flex-shrink:0}
