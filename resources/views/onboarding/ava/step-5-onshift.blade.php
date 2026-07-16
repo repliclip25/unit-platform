@@ -384,6 +384,13 @@ body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-fon
   .ob-stage{min-height:280px}
   .ob-ava-says{padding:20px}
   .ob-arrow{display:none}
+
+  /* Success card mobile */
+  .ob-success-card{grid-template-columns:1fr!important;border-radius:16px}
+  .ob-sc-left{padding:28px 20px}
+  .ob-sc-hero{min-height:260px}
+  .ob-sc-right{border-left:none;border-top:1px solid #F0F0F0}
+  .ob-sc-stats-grid{grid-template-columns:1fr 1fr}
 }
 </style>
 </head>
@@ -691,20 +698,36 @@ body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-fon
         <a href="/transactions" class="ob-sc-view-link">View in Dashboard →</a>
       </div>
 
-      {{-- Draft preview card --}}
-      <div id="scDraftCard" style="display:none;padding:14px 20px;border-top:1px solid #F0F0F0;border-bottom:1px solid #F0F0F0;background:#fff">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
-          <span style="font-size:9.5px;font-weight:700;color:#9CA3AF;letter-spacing:.1em;text-transform:uppercase">Draft Ready</span>
-          <span style="display:flex;align-items:center;gap:4px;font-size:9px;font-weight:700;color:#15803D;background:#DCFCE7;border-radius:99px;padding:2px 8px">
-            <span style="width:5px;height:5px;border-radius:50%;background:#22c55e;display:inline-block"></span>
-            In your Gmail Drafts
-          </span>
+      {{-- Draft card with Gmail chrome --}}
+      <div id="scDraftCard" style="display:none;border-top:1px solid #F0F0F0;border-bottom:1px solid #F0F0F0">
+        {{-- Browser chrome bar --}}
+        <div style="background:#F1F3F4;border-bottom:1px solid #E0E0E0;padding:7px 12px;display:flex;align-items:center;gap:8px">
+          {{-- Traffic lights --}}
+          <span style="width:10px;height:10px;border-radius:50%;background:#FF5F57;display:inline-block;flex-shrink:0"></span>
+          <span style="width:10px;height:10px;border-radius:50%;background:#FEBC2E;display:inline-block;flex-shrink:0"></span>
+          <span style="width:10px;height:10px;border-radius:50%;background:#28C840;display:inline-block;flex-shrink:0"></span>
+          {{-- URL bar --}}
+          <div style="flex:1;background:#fff;border:1px solid #DADCE0;border-radius:99px;padding:3px 10px;display:flex;align-items:center;gap:6px;margin:0 6px">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#5F6368" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path stroke-linecap="round" d="M7 11V7a5 5 0 0110 0v4"/></svg>
+            <span style="font-size:9.5px;color:#5F6368;font-family:inherit;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">mail.google.com/mail/u/0/#drafts</span>
+          </div>
+          {{-- Gmail logo --}}
+          <svg width="40" height="14" viewBox="0 0 55 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0">
+            <path d="M3.9 14.4V8.1L0 5.1V13.2C0 13.85 0.54 14.4 1.2 14.4H3.9Z" fill="#4285F4"/>
+            <path d="M19.5 14.4H22.2C22.86 14.4 23.4 13.86 23.4 13.2V5.1L19.5 8.1V14.4Z" fill="#34A853"/>
+            <path d="M19.5 2.4L11.7 8.25L3.9 2.4V8.1L11.7 13.95L19.5 8.1V2.4Z" fill="#EA4335"/>
+            <path d="M0 5.1L3.9 8.1V2.4L2.1 1.08C1.29 0.48 0 1.05 0 2.07V5.1Z" fill="#C5221F"/>
+            <path d="M23.4 5.1V2.07C23.4 1.05 22.11 0.48 21.3 1.08L19.5 2.4V8.1L23.4 5.1Z" fill="#FBBC04"/>
+            <text x="27" y="13" font-family="Arial,sans-serif" font-size="11" font-weight="400" fill="#5F6368">Gmail</text>
+          </svg>
         </div>
-        <div style="background:#F9FAFB;border:1px solid #E5E7EB;border-radius:10px;padding:12px 14px;margin-bottom:10px">
-          <div style="font-size:10.5px;font-weight:700;color:#374151;margin-bottom:4px" id="scDraftSubject">—</div>
-          <div style="font-size:11px;color:#6B7280;line-height:1.5;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden" id="scDraftBody"></div>
+        {{-- Draft content --}}
+        <div style="padding:14px 16px;background:#fff">
+          <div style="font-size:10.5px;font-weight:700;color:#202124;margin-bottom:6px" id="scDraftSubject">—</div>
+          <div style="font-size:11px;color:#5F6368;line-height:1.55;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden" id="scDraftBody"></div>
         </div>
-        <div style="display:flex;gap:8px">
+        {{-- Actions --}}
+        <div style="display:flex;gap:8px;padding:0 16px 14px">
           <button onclick="scApproveDraft()" id="scApproveBtn" style="flex:1;padding:8px;border-radius:8px;background:#0D0D0D;color:#fff;border:none;font-size:11px;font-weight:700;font-family:inherit;cursor:pointer">
             Approve &amp; send
           </button>
