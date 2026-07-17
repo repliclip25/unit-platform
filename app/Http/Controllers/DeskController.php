@@ -55,8 +55,12 @@ class DeskController extends Controller
             ?? DB::table('transactions')->where('deployment_id', $depId)->orderByDesc('id')->first();
 
         // Memory
-        $clientCount  = DB::table('clients')->where('user_id', $userId)->count();
-        $contactCount = DB::table('contacts')->where('user_id', $userId)->count();
+        $clientCount     = DB::table('clients')->where('user_id', $userId)->count();
+        $contactCount    = DB::table('contacts')->where('user_id', $userId)->count();
+        $assetCount      = rescue(fn() => DB::table('assets')->where('user_id', $userId)->count(), 0, false);
+        $ruleCount       = rescue(fn() => DB::table('ava_rules')->where('deployment_id', $depId)->count(), 0, false);
+        $templateCount   = rescue(fn() => DB::table('email_templates')->where('user_id', $userId)->where('worker_slug', 'ava')->count(), 0, false);
+        $credentialCount = rescue(fn() => DB::table('deployment_credentials')->where('deployment_id', $depId)->count(), 0, false);
 
         // All deployments for worker switcher sidebar
         $allDeployments = DB::table('worker_deployments')
@@ -73,14 +77,16 @@ class DeskController extends Controller
         $profileImg  = $registryRow?->profile_image ? asset('storage/' . $registryRow->profile_image) : null;
         $coverImg    = $registryRow?->cover_image   ? asset('storage/' . $registryRow->cover_image)   : null;
 
+        $tokenTotal = rescue(fn() => (int) DB::table('usage_events')->where('user_id', $userId)->sum(DB::raw('tokens_input + tokens_output')), 0, false);
         $workStatus = $dep->status === 'active' ? 'Working' : 'Paused';
         $firstName  = explode(' ', trim(auth()->user()->name))[0];
 
         return view('desk.ava', compact(
             'dep', 'depId', 'incomingCount', 'inProgressCount', 'waitingCount', 'completedCount',
             'approvals', 'activity', 'currentTask', 'clientCount', 'contactCount',
+            'assetCount', 'ruleCount', 'templateCount', 'credentialCount',
             'allDeployments', 'registryRows', 'registryRow', 'profileImg', 'coverImg',
-            'workStatus', 'firstName'
+            'workStatus', 'firstName', 'tokenTotal'
         ));
     }
 }
