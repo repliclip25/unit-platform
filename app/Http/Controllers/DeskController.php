@@ -62,22 +62,44 @@ class DeskController extends Controller
         $templateCount   = rescue(fn() => DB::table('email_templates')->where('user_id', $userId)->where('worker_slug', 'ava')->count(), 0, false);
         $credentialCount = rescue(fn() => DB::table('user_gmail_credentials')->where('user_id', $userId)->where('is_active', true)->count(), 0, false);
 
-        // All deployments for worker switcher sidebar — one entry per worker slug
-        $allDeployments = DB::table('worker_deployments')
+        // Deployed workers for this user, one row per slug
+        $deployedBySlug = DB::table('worker_deployments')
             ->where('user_id', $userId)
-            ->whereIn('status', ['active','paused'])
+            ->whereIn('status', ['active', 'paused'])
             ->orderBy('created_at')
             ->get()
             ->unique('worker_slug')
-            ->values();
+            ->keyBy('worker_slug');
 
-        // Registry rows keyed by slug for sidebar avatars
-        $slugs = $allDeployments->pluck('worker_slug')->unique()->values()->all();
-        $registryRows = DB::table('worker_registry')->whereIn('slug', $slugs)->get()->keyBy('slug');
+        // Full UNIT worker catalog — deployed workers show active, the rest show as upsell/inactive
+        $catalogMeta = [
+            'ava' => ['name' => 'AVA', 'role' => 'Renewal Specialist'],
+            'dox' => ['name' => 'DOX', 'role' => 'Document Specialist'],
+            'mox' => ['name' => 'MOX', 'role' => 'Brand Moments Hunter'],
+            'nux' => ['name' => 'NUX', 'role' => 'Publishing Specialist'],
+        ];
+        $catalogSlugs = array_keys($catalogMeta);
+
+        $registryRows = DB::table('worker_registry')->whereIn('slug', $catalogSlugs)->get()->keyBy('slug');
 
         $registryRow = $registryRows->get('ava');
         $profileImg  = $registryRow?->profile_image ? asset('storage/' . $registryRow->profile_image) : null;
         $coverImg    = $registryRow?->cover_image   ? asset('storage/' . $registryRow->cover_image)   : null;
+
+        $workerCatalog = collect($catalogSlugs)->map(function ($slug) use ($catalogMeta, $deployedBySlug, $registryRows, $profileImg) {
+            $wDep = $deployedBySlug->get($slug);
+            $wReg = $registryRows->get($slug);
+            return (object) [
+                'slug'   => $slug,
+                'name'   => $catalogMeta[$slug]['name'],
+                'role'   => $catalogMeta[$slug]['role'],
+                'active' => (bool) $wDep,
+                'status' => $wDep->status ?? null,
+                'image'  => $slug === 'ava' && $profileImg
+                    ? $profileImg
+                    : ($wReg?->profile_image ? asset('storage/' . $wReg->profile_image) : asset('images/' . $slug . '.png')),
+            ];
+        });
 
         $tokenTotal = rescue(fn() => (int) DB::table('usage_events')->where('user_id', $userId)->sum(DB::raw('tokens_input + tokens_output')), 0, false);
         $workStatus = $dep->status === 'active' ? 'Working' : 'Paused';
@@ -87,7 +109,7 @@ class DeskController extends Controller
             'dep', 'depId', 'incomingCount', 'inProgressCount', 'waitingCount', 'completedCount',
             'approvals', 'activity', 'currentTask', 'clientCount', 'contactCount',
             'assetCount', 'ruleCount', 'templateCount', 'credentialCount',
-            'allDeployments', 'registryRows', 'registryRow', 'profileImg', 'coverImg',
+            'workerCatalog', 'registryRows', 'registryRow', 'profileImg', 'coverImg',
             'workStatus', 'firstName', 'tokenTotal'
         ));
     }

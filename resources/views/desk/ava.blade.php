@@ -225,30 +225,32 @@ $tokenFmt = $tokenTotal >= 1000000
         <a href="{{ route('workers.page') }}" class="ob-hire-btn">+ Hire</a>
       </div>
 
-      @foreach($allDeployments as $wd)
+      @foreach($workerCatalog as $wc)
       @php
-        $wReg  = $registryRows->get($wd->worker_slug);
-        $wImg  = ($wd->worker_slug==='ava' && $profileImg) ? $profileImg : ($wReg?->profile_image ? asset('storage/'.$wReg->profile_image) : null);
-        $wDot  = $wd->status==='active' ? '#22c55e' : '#f59e0b';
-        $wHref = $wd->worker_slug==='ava' ? route('desk.ava') : '#';
-        $wRole = $wReg->tagline ?? ucfirst($wd->worker_slug).' Specialist';
-        $isActive = $wd->worker_slug==='ava';
+        $wDot  = $wc->status==='active' ? '#22c55e' : '#f59e0b';
+        $wHref = !$wc->active ? route('workers.page') : ($wc->slug==='ava' ? route('desk.ava') : route('workers.show',$wc->slug));
+        $isActive = $wc->active && $wc->slug==='ava';
       @endphp
-      <a href="{{ $wHref }}" class="ob-step {{ $isActive ? 'active' : 'done' }}" style="text-decoration:none">
+      <a href="{{ $wHref }}" class="ob-step {{ $isActive ? 'active' : ($wc->active ? 'done' : 'pending') }}" style="text-decoration:none{{ !$wc->active ? ';opacity:.5' : '' }}">
         <div class="ob-step-rail">
           <div class="ob-step-num" style="{{ !$isActive ? 'background:#E8E7E4;border:none;padding:0' : 'padding:0' }}">
-            @if($wImg)
-              <img src="{{ $wImg }}" style="width:100%;height:100%;object-fit:cover;display:block" alt="">
+            @if($wc->image)
+              <img src="{{ $wc->image }}" style="width:100%;height:100%;object-fit:cover;display:block{{ !$wc->active ? ';filter:grayscale(1)' : '' }}" alt="" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+              <span style="display:none;font-size:11px;font-weight:800;color:{{ $isActive?'#fff':'#6B7280' }};width:100%;height:100%;align-items:center;justify-content:center">{{ substr($wc->name,0,1) }}</span>
             @else
-              <span style="font-size:11px;font-weight:800;color:{{ $isActive?'#fff':'#6B7280' }}">{{ strtoupper(substr($wd->worker_slug,0,1)) }}</span>
+              <span style="font-size:11px;font-weight:800;color:{{ $isActive?'#fff':'#6B7280' }}">{{ substr($wc->name,0,1) }}</span>
             @endif
           </div>
         </div>
         <div class="ob-step-body">
-          <div class="ob-step-label">{{ strtoupper($wd->worker_slug) }}</div>
+          <div class="ob-step-label">{{ $wc->name }}</div>
           <div class="ob-step-desc">
-            <span style="width:5px;height:5px;border-radius:50%;background:{{ $wDot }};flex-shrink:0;display:inline-block;animation:{{ $wd->status==='active'?'pdot 1.4s ease infinite':'none' }}"></span>
-            {{ $wRole }}
+            @if($wc->active)
+              <span style="width:5px;height:5px;border-radius:50%;background:{{ $wDot }};flex-shrink:0;display:inline-block;animation:{{ $wc->status==='active'?'pdot 1.4s ease infinite':'none' }}"></span>
+              {{ $wc->role }}
+            @else
+              Not hired — {{ $wc->role }}
+            @endif
           </div>
         </div>
       </a>
