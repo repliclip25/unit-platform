@@ -62,12 +62,14 @@ class DeskController extends Controller
         $templateCount   = rescue(fn() => DB::table('email_templates')->where('user_id', $userId)->where('worker_slug', 'ava')->count(), 0, false);
         $credentialCount = rescue(fn() => DB::table('user_gmail_credentials')->where('user_id', $userId)->where('is_active', true)->count(), 0, false);
 
-        // All deployments for worker switcher sidebar
+        // All deployments for worker switcher sidebar — one entry per worker slug
         $allDeployments = DB::table('worker_deployments')
             ->where('user_id', $userId)
             ->whereIn('status', ['active','paused'])
             ->orderBy('created_at')
-            ->get();
+            ->get()
+            ->unique('worker_slug')
+            ->values();
 
         // Registry rows keyed by slug for sidebar avatars
         $slugs = $allDeployments->pluck('worker_slug')->unique()->values()->all();
