@@ -45,16 +45,18 @@ body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-fon
 /* ── CARD AREA ── */
 .ob-card-area{display:flex;align-items:center;justify-content:center;padding:20px 24px 20px 12px;overflow:hidden}
 .ob-card{
-  display:grid;grid-template-columns:1fr 290px;
+  display:grid;grid-template-columns:1fr 320px;
   width:100%;height:100%;max-height:calc(100vh - 40px);
   border-radius:20px;overflow:hidden;
   box-shadow:0 2px 12px rgba(0,0,0,.06),0 1px 3px rgba(0,0,0,.03);
   border:1px solid rgba(0,0,0,.07);
+  position:relative;
 }
+/* Full-card Ava background */
+.ob-card-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 15%;z-index:0;display:block}
 
 /* ── HERO ── */
-.ob-hero{position:relative;overflow:hidden;background:#1e1b18;display:flex;flex-direction:column}
-.ob-hero-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 20%}
+.ob-hero{position:relative;overflow:hidden;background:transparent;display:flex;flex-direction:column;z-index:1}
 .ob-hero-fade{
   position:absolute;inset:0;z-index:1;pointer-events:none;
   background:linear-gradient(to right,#fff 0%,#fff 30%,rgba(255,255,255,.9) 44%,rgba(255,255,255,.3) 62%,transparent 78%);
@@ -88,6 +90,7 @@ body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-fon
 .ob-profile{
   background:#fff;border-left:1px solid #F0F0F0;
   padding:24px 20px;display:flex;flex-direction:column;overflow-y:auto;
+  position:relative;z-index:1;
 }
 .emp-eyebrow{font-size:9px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:#9CA3AF;margin-bottom:8px}
 .emp-name{font-size:1.5rem;font-weight:900;letter-spacing:-.04em;color:#0D0D0D;line-height:1}
@@ -184,7 +187,7 @@ $previewDraft = $previewTx ? json_decode($previewTx->draft_output??'{}',true)   
       @foreach($allDeployments as $wd)
       @php
         $wReg=$registryRows->get($wd->worker_slug);
-        $wImg=$wReg?->profile_image?asset('storage/'.$wReg->profile_image):null;
+        $wImg=($wd->worker_slug==='ava'&&$profileImg) ? $profileImg : ($wReg?->profile_image?asset('storage/'.$wReg->profile_image):null);
         $wDot=$wd->status==='active'?'#22c55e':'#f59e0b';
         $wHref=$wd->worker_slug==='ava'?route('desk.ava'):'#';
         $wRole=$wReg->tagline??ucfirst($wd->worker_slug).' Specialist';
@@ -193,12 +196,10 @@ $previewDraft = $previewTx ? json_decode($previewTx->draft_output??'{}',true)   
       <a href="{{ $wHref }}" class="ob-step {{ $isActive?'active':'done' }}" style="text-decoration:none;margin-bottom:0">
         <div class="ob-step-rail">
           <div class="ob-step-num" style="{{ $isActive?'':'background:#E8E7E4;border:none;overflow:hidden;padding:0' }}">
-            @if($isActive)
-              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><circle cx="12" cy="12" r="4" fill="#fff"/></svg>
-            @elseif($wImg)
+            @if($wImg)
               <img src="{{ $wImg }}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:block" alt="">
             @else
-              <span style="font-size:11px;font-weight:800;color:#6B7280">{{ strtoupper(substr($wd->worker_slug,0,1)) }}</span>
+              <span style="font-size:11px;font-weight:800;color:{{ $isActive?'#fff':'#6B7280' }}">{{ strtoupper(substr($wd->worker_slug,0,1)) }}</span>
             @endif
           </div>
         </div>
@@ -232,11 +233,13 @@ $previewDraft = $previewTx ? json_decode($previewTx->draft_output??'{}',true)   
   <div class="ob-card-area">
     <div class="ob-card">
 
+      {{-- Full-card Ava background --}}
+      @if($coverImg)
+        <img class="ob-card-bg" src="{{ $coverImg }}" alt="">
+      @endif
+
       {{-- ── HERO ── --}}
       <div class="ob-hero">
-        @if($coverImg)
-          <img class="ob-hero-img" src="{{ $coverImg }}" alt="AVA">
-        @endif
         <div class="ob-hero-fade"></div>
 
         <div class="ob-bubble">
