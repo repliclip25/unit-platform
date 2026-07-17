@@ -165,8 +165,9 @@ body{font-family:'Inter',sans-serif;background:var(--db-bg);color:var(--db-text)
 
 /* ══ MOBILE ══ */
 @media(max-width:1024px){
-  html,body{overflow:auto;height:auto}
-  .ob-shell{height:auto;overflow:visible}
+  html,body{overflow-x:hidden;overflow-y:auto;height:auto;width:100%}
+  .ob-shell{height:auto;overflow:visible;width:100%}
+  .ob-hero-content,.ob-card,.ob-page,.ob-stat-grid{min-width:0}
   .ob-topbar{height:auto;padding:12px 16px;flex-wrap:wrap;gap:6px}
   .ob-topbar-logo{font-size:18px}
   .ob-topbar-email{display:none}
@@ -261,7 +262,7 @@ $tokenFmt = $tokenTotal >= 1000000
     {{-- MY WORKERS --}}
     <div class="ob-steps">
       <div class="ob-workers-hd">
-        MY WORKERS
+        <a href="{{ route('profile.show') }}" style="color:inherit;text-decoration:none">{{ strtoupper($firstName) }}'S WORKERS</a>
         <a href="{{ route('workers.page') }}" class="ob-hire-btn">+ Hire</a>
       </div>
 
@@ -295,11 +296,6 @@ $tokenFmt = $tokenTotal >= 1000000
         </div>
       </a>
       @endforeach
-
-      <a href="{{ route('workers.page') }}" class="ob-step pending" style="text-decoration:none;margin-top:4px">
-        <div class="ob-step-rail"><div class="ob-step-num" style="background:#F4F3F1;border:1.5px dashed #D1D5DB;color:#9CA3AF;font-size:16px;font-weight:400">+</div></div>
-        <div class="ob-step-body"><div class="ob-step-label">Hire a worker</div></div>
-      </a>
     </div>
 
     {{-- Links below workers --}}
@@ -358,14 +354,14 @@ $tokenFmt = $tokenTotal >= 1000000
           <p class="ob-sub">Renewal Specialist · Monitoring your inbox and protecting your renewals.</p>
 
           {{-- Today's numbers --}}
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px;flex-shrink:0">
+          <div class="ob-stat-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px;flex-shrink:0;min-width:0">
             @foreach([
               [$incomingCount,'Renewal requests detected','#6366f1'],
               [$incomingCount,'Replies drafted','#8b5cf6'],
               [$waitingCount,'Awaiting your review','#f59e0b'],
               [$completedCount,'Completed today','#22c55e'],
             ] as [$val,$lbl,$clr])
-            <div style="background:rgba(255,255,255,.92);border:1px solid rgba(0,0,0,.08);border-radius:10px;padding:11px 13px;backdrop-filter:blur(4px)">
+            <div style="min-width:0;background:rgba(255,255,255,.92);border:1px solid rgba(0,0,0,.08);border-radius:10px;padding:11px 13px;backdrop-filter:blur(4px)">
               <div style="font-size:24px;font-weight:900;letter-spacing:-.04em;color:{{ $clr }};line-height:1">{{ $val }}</div>
               <div style="font-size:10px;color:#9CA3AF;margin-top:3px;line-height:1.35">{{ $lbl }}</div>
             </div>
