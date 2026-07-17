@@ -147,7 +147,7 @@ body{font-family:'Inter',sans-serif;background:var(--db-bg);color:var(--db-text)
 .ob-sc-view-link:hover{color:var(--db-text)}
 
 /* Draft */
-.sc-draft-wrap{flex:1;display:flex;flex-direction:column;overflow:hidden;border-top:1px solid #E8EAED;margin:10px -20px 0}
+.sc-draft-wrap{flex:1;display:flex;flex-direction:column;overflow:hidden;border-top:1px solid #E8EAED;margin:10px -20px 0;background:#fff}
 .sc-draft-chrome{background:#F1F3F4;border-bottom:1px solid #E0E0E0;padding:6px 12px;display:flex;align-items:center;gap:6px;flex-shrink:0}
 .sc-draft-body{flex:1;overflow-y:auto;padding:11px 16px}
 .sc-draft-header-row{display:flex;align-items:baseline;gap:6px;padding:4px 0;border-bottom:1px solid #F1F3F4}
@@ -168,16 +168,16 @@ body{font-family:'Inter',sans-serif;background:var(--db-bg);color:var(--db-text)
   html,body{overflow-x:hidden;overflow-y:auto;height:auto;width:100%}
   .ob-shell{height:auto;overflow:visible;width:100%}
   /* Any nested flex/grid child can refuse to shrink below its content's min-content width
-     and blow out the layout horizontally — force min-width:0 through the whole card subtree */
-  .ob-card,.ob-card *{min-width:0}
-  .ob-page{min-width:0}
+     and blow out the layout horizontally — force min-width:0 through the entire page */
+  .ob-shell,.ob-shell *{min-width:0}
   .ob-topbar{height:auto;padding:12px 16px;flex-wrap:wrap;gap:6px}
   .ob-topbar-logo{font-size:18px}
   .ob-topbar-email{display:none}
-  .ob-page{grid-template-columns:1fr;height:auto;overflow:visible}
+  .ob-topbar-name{max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .ob-page{display:block;height:auto;overflow:visible;width:100%}
   /* Workers become a horizontal strip in the header — swipe to navigate */
-  .ob-sidebar{flex-direction:column;padding:0;overflow:visible;border-bottom:none}
-  .ob-steps{display:flex;flex-direction:row;align-items:center;gap:8px;padding:10px 16px;overflow-x:auto;flex:none;-webkit-overflow-scrolling:touch}
+  .ob-sidebar{width:100%;flex-direction:column;padding:0;overflow:hidden;border-bottom:none}
+  .ob-steps{display:flex;flex-direction:row;align-items:center;gap:8px;padding:10px 16px;overflow-x:auto;width:100%;flex:none;-webkit-overflow-scrolling:touch}
   .ob-workers-hd{margin-bottom:0;flex-shrink:0;gap:8px}
   .ob-step{flex-shrink:0;align-items:center;gap:8px;background:var(--db-card);border:1.5px solid var(--db-border);border-radius:99px;padding:5px 12px 5px 6px}
   .ob-step.active{border-color:var(--db-invert-bg)}
@@ -189,8 +189,8 @@ body{font-family:'Inter',sans-serif;background:var(--db-bg);color:var(--db-text)
   .ob-step-desc{display:none}
   .ob-links-section{display:none}
   .ob-security{display:none}
-  .ob-card-area{padding:16px;overflow:visible;height:auto;align-items:flex-start}
-  .ob-card{display:flex;flex-direction:column;width:100%;height:auto;max-height:none;box-shadow:0 2px 12px rgba(0,0,0,.08);position:static}
+  .ob-card-area{padding:16px;overflow:visible;height:auto;align-items:flex-start;width:100%}
+  .ob-card{display:flex;flex-direction:column;width:100%;height:auto;max-height:none;box-shadow:0 2px 12px rgba(0,0,0,.08);border:none;position:static}
   .ob-card-bg{display:none}
   .ob-hero{display:flex;flex-direction:column;min-height:unset;background:var(--db-card)}
   .ob-hero-content{position:static;background:var(--db-card);padding:20px;max-width:100%;height:auto;overflow-y:visible;order:1}
@@ -239,6 +239,7 @@ $tokenFmt = $tokenTotal >= 1000000
 <div class="ob-topbar">
   <div class="ob-topbar-logo">UNIT</div>
   <div class="ob-topbar-right">
+    <a href="{{ route('profile.show') }}" class="ob-topbar-name" style="text-decoration:none">{{ auth()->user()->name }}</a>
     <button class="ob-theme-toggle" id="theme-toggle" type="button" title="Toggle dark/light mode" aria-label="Toggle theme"></button>
     <div class="ob-menu-wrap">
       <button class="ob-hamburger" id="menu-toggle" type="button" aria-label="Menu">
