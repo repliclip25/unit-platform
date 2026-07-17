@@ -192,6 +192,94 @@ body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-fon
 .emp-note-sig svg{width:16px;height:16px;fill:#FDA4AF}
 
 @keyframes pdot{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* ══ MOBILE ══ */
+@media(max-width:768px){
+  html,body{height:auto;overflow:auto}
+
+  /* Page becomes single column, sidebar hidden */
+  .ob-page{display:block;height:auto;overflow:visible}
+  .ob-sidebar{display:none}
+
+  /* Card area fills screen width, no padding constraints */
+  .ob-card-area{padding:0;display:block;overflow:visible}
+  .ob-card{display:block;border-radius:0;border:none;box-shadow:none;height:auto;max-height:none}
+
+  /* ── MOBILE TOP NAV ── */
+  .mob-nav{display:flex;align-items:center;justify-content:space-between;padding:16px 20px 12px;background:#fff;position:sticky;top:0;z-index:50;border-bottom:1px solid #F0F0F0}
+  .mob-nav-logo{font-size:20px;font-weight:900;letter-spacing:-.04em;color:#0D0D0D}
+  .mob-avatars{display:flex;align-items:center}
+  .mob-av{width:34px;height:34px;border-radius:50%;border:2.5px solid #fff;overflow:hidden;margin-left:-8px;background:#E8E7E4;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#6B7280;flex-shrink:0}
+  .mob-av img{width:100%;height:100%;object-fit:cover;display:block}
+  .mob-av-count{width:34px;height:34px;border-radius:50%;border:2.5px solid #fff;background:#0D0D0D;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#fff;margin-left:-8px;flex-shrink:0}
+
+  /* ── MOBILE HERO CARD ── */
+  .mob-hero-card{position:relative;margin:12px 16px;border-radius:20px;overflow:hidden;min-height:260px;background:#1e1b18}
+  .mob-hero-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 10%}
+  .mob-hero-fade{position:absolute;inset:0;background:linear-gradient(to right,rgba(0,0,0,.75) 0%,rgba(0,0,0,.6) 40%,rgba(0,0,0,.1) 70%,transparent 100%)}
+  .mob-hero-content{position:relative;z-index:2;padding:22px 20px 22px;max-width:65%}
+  .mob-onshift{display:inline-flex;align-items:center;gap:6px;background:#0D0D0D;border-radius:99px;padding:5px 10px;margin-bottom:14px}
+  .mob-onshift-dot{width:6px;height:6px;border-radius:50%;background:#22c55e;animation:pdot 1.4s ease infinite}
+  .mob-onshift-text{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#fff}
+  .mob-hero-title{font-size:1.6rem;font-weight:900;letter-spacing:-.04em;color:#fff;line-height:1.1;margin-bottom:8px}
+  .mob-hero-desc{font-size:12.5px;color:rgba(255,255,255,.8);line-height:1.55;margin-bottom:18px}
+  .mob-hero-btns{display:flex;flex-direction:column;gap:8px}
+  .mob-btn-primary{display:flex;align-items:center;justify-content:center;gap:6px;background:#0D0D0D;color:#fff;border:none;border-radius:12px;padding:12px 18px;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;text-decoration:none}
+  .mob-btn-secondary{display:flex;align-items:center;justify-content:center;gap:6px;background:rgba(255,255,255,.15);color:#fff;border:1.5px solid rgba(255,255,255,.3);border-radius:12px;padding:11px 18px;font-size:13px;font-weight:600;font-family:inherit;cursor:pointer;text-decoration:none;backdrop-filter:blur(8px)}
+
+  /* Ava speech bubble on hero */
+  .mob-bubble{position:absolute;z-index:3;bottom:16px;right:12px;background:#fff;border-radius:14px 14px 4px 14px;padding:11px 14px;max-width:160px;box-shadow:0 4px 16px rgba(0,0,0,.15)}
+  .mob-bubble-text{font-size:12px;font-weight:600;color:#0D0D0D;line-height:1.45}
+
+  /* ── MOBILE STATS ── */
+  .mob-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:12px 16px 0}
+  .mob-stats-row2{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:8px 16px 0}
+  .mob-stat{background:#fff;border:1px solid #EEEDE9;border-radius:14px;padding:14px 14px 12px;display:flex;align-items:flex-start;gap:10px}
+  .mob-stat-icon{width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .mob-stat-icon svg{width:15px;height:15px;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+  .mob-stat-num{font-size:20px;font-weight:900;color:#0D0D0D;line-height:1}
+  .mob-stat-lbl{font-size:10px;color:#9CA3AF;margin-top:1px;line-height:1.3}
+
+  /* ── MOBILE APPROVALS ── */
+  .mob-section{padding:20px 16px 0}
+  .mob-section-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+  .mob-section-title{font-size:17px;font-weight:800;color:#0D0D0D;letter-spacing:-.02em}
+  .mob-section-badge{font-size:12px;font-weight:700;background:#6366f1;color:#fff;border-radius:99px;padding:2px 9px;margin-left:6px}
+  .mob-section-link{font-size:13px;font-weight:600;color:#6366f1;text-decoration:none}
+  .mob-ap-item{background:#fff;border:1px solid #EEEDE9;border-radius:14px;padding:14px;margin-bottom:10px}
+  .mob-ap-top{display:flex;align-items:center;gap:12px;margin-bottom:6px}
+  .mob-ap-av{width:40px;height:40px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:#fff}
+  .mob-ap-av img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+  .mob-ap-name{font-size:14px;font-weight:700;color:#0D0D0D}
+  .mob-ap-company{font-size:12px;color:#6B7280;margin-top:1px}
+  .mob-ap-badge{font-size:10px;font-weight:700;color:#6366f1;background:#EEF2FF;border-radius:99px;padding:3px 8px;white-space:nowrap;margin-left:auto;flex-shrink:0}
+  .mob-ap-plan{font-size:12.5px;color:#374151;margin-bottom:10px;line-height:1.4}
+  .mob-ap-value{font-weight:700;color:#0D0D0D}
+  .mob-ap-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .mob-btn-approve{padding:11px;border-radius:10px;background:#0D0D0D;color:#fff;border:none;font-size:13.5px;font-weight:700;cursor:pointer;font-family:inherit}
+  .mob-btn-edit{padding:11px;border-radius:10px;background:#fff;color:#374151;border:1.5px solid #E5E7EB;font-size:13.5px;font-weight:700;cursor:pointer;font-family:inherit;text-decoration:none;display:flex;align-items:center;justify-content:center}
+
+  /* ── MOBILE AVA NOTE ── */
+  .mob-note-card{margin:20px 16px 32px;background:#F4F3F1;border-radius:16px;padding:18px 20px}
+  .mob-note-eyebrow{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+  .mob-note-icon{width:28px;height:28px;border-radius:8px;background:#0D0D0D;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .mob-note-label{font-size:9.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#9CA3AF}
+  .mob-note-text{font-size:14px;color:#374151;line-height:1.7;font-style:italic;margin-bottom:12px}
+  .mob-note-sig{display:flex;align-items:center;justify-content:space-between}
+  .mob-note-sig-name{font-size:13px;font-weight:700;color:#0D0D0D}
+  .mob-note-heart svg{width:18px;height:18px;fill:#FDA4AF}
+
+  /* Hide desktop elements on mobile */
+  .ob-hero,.ob-profile,.ob-bubble{display:none}
+  /* Show mobile-only elements */
+  .mob-only{display:block}
+}
+
+/* Hide mobile elements on desktop */
+@media(min-width:769px){
+  .mob-only{display:none !important}
+  .mob-nav{display:none}
+}
 </style>
 </head>
 <body>
@@ -209,6 +297,152 @@ $activityMap = [
 ];
 $apColors = ['#6366f1','#f59e0b','#22c55e','#f97316','#8b5cf6','#ec4899'];
 @endphp
+
+{{-- ══════════════════════════════════════════════
+     MOBILE LAYOUT (hidden on desktop via CSS)
+══════════════════════════════════════════════ --}}
+<div class="mob-only">
+
+  {{-- Top Nav --}}
+  <nav class="mob-nav">
+    <span class="mob-nav-logo">UNIT</span>
+    <div class="mob-avatars">
+      @foreach($allDeployments->take(4) as $wd)
+      @php $wReg2=$registryRows->get($wd->worker_slug);$wImg2=$wReg2?->profile_image?asset('storage/'.$wReg2->profile_image):null; @endphp
+      <div class="mob-av">@if($wImg2)<img src="{{ $wImg2 }}" alt="">@else{{ strtoupper(substr($wd->worker_slug,0,1)) }}@endif</div>
+      @endforeach
+      @if($allDeployments->count()>4)<div class="mob-av-count">{{ $allDeployments->count()-4 }}</div>@endif
+    </div>
+  </nav>
+
+  {{-- Hero card --}}
+  <div class="mob-hero-card">
+    @if($coverImg)<img src="{{ $coverImg }}" alt="AVA" class="mob-hero-img">@endif
+    <div class="mob-hero-fade"></div>
+    <div class="mob-hero-content">
+      <div class="mob-onshift">
+        <span class="mob-onshift-dot"></span>
+        <span class="mob-onshift-text">On Shift</span>
+      </div>
+      <h1 class="mob-hero-title">Ava is on shift.</h1>
+      <p class="mob-hero-desc">She's monitoring your inbox and will alert you when action is needed.</p>
+      <div class="mob-hero-btns">
+        <a href="{{ route('transactions') }}" class="mob-btn-primary">Go to Desk &rarr;</a>
+        <a href="#" class="mob-btn-secondary">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8" fill="currentColor" stroke="none"/></svg>
+          Watch Ava in action
+        </a>
+      </div>
+    </div>
+    <div class="mob-bubble">
+      <p class="mob-bubble-text">I've got it from here, {{ $firstName }}. I'll keep you posted!</p>
+    </div>
+  </div>
+
+  {{-- Stats row 1: 3 cols --}}
+  <div class="mob-stats">
+    @foreach([
+      ['M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z','#6366f1',$incomingCount,'Incoming','New emails'],
+      ['M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15','#f59e0b',$inProgressCount,'In Progress','Working on it'],
+      ['M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z','#8b5cf6',$waitingCount,'Waiting','Approval'],
+    ] as [$ico,$clr,$val,$t,$s])
+    <div class="mob-stat" style="flex-direction:column;gap:8px">
+      <div class="mob-stat-icon" style="background:{{ $clr }}18"><svg viewBox="0 0 24 24" style="stroke:{{ $clr }}"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $ico }}"/></svg></div>
+      <div>
+        <div class="mob-stat-num">{{ $val }}</div>
+        <div class="mob-stat-lbl">{{ $t }}<br>{{ $s }}</div>
+      </div>
+    </div>
+    @endforeach
+  </div>
+
+  {{-- Stats row 2: 2 cols --}}
+  <div class="mob-stats-row2">
+    <div class="mob-stat" style="flex-direction:column;gap:8px">
+      <div class="mob-stat-icon" style="background:#22c55e18"><svg viewBox="0 0 24 24" style="stroke:#22c55e"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div>
+      <div>
+        <div class="mob-stat-num">{{ $completedCount }}</div>
+        <div class="mob-stat-lbl">Completed<br>Today</div>
+      </div>
+    </div>
+    <div class="mob-stat" style="flex-direction:column;gap:8px">
+      <div class="mob-stat-icon" style="background:#22c55e18">
+        <span style="width:7px;height:7px;border-radius:50%;background:#22c55e;display:block;animation:pdot 1.4s ease infinite"></span>
+      </div>
+      <div>
+        <div class="mob-stat-num" style="font-size:16px;color:#22c55e">Active</div>
+        <div class="mob-stat-lbl">Monitoring<br>inbox 24/7</div>
+      </div>
+    </div>
+  </div>
+
+  {{-- Approvals --}}
+  <div class="mob-section">
+    <div class="mob-section-hd">
+      <div style="display:flex;align-items:center">
+        <span class="mob-section-title">Approvals</span>
+        @if($waitingCount>0)<span class="mob-section-badge">{{ $waitingCount }}</span>@endif
+      </div>
+      <a href="{{ route('transactions',['filter'=>'draft_ready']) }}" class="mob-section-link">View all</a>
+    </div>
+
+    @forelse($approvals as $tx)
+    @php
+      $cl2=json_decode($tx->classify_output??'{}',true);
+      $apN2=$cl2['client']??$cl2['sender_name']??'Unknown';
+      $apC2=$cl2['company']??$cl2['organization']??'';
+      $apP2=$cl2['plan']??$cl2['product']??'Renewal';
+      $apV2=$cl2['contract_value']??$cl2['renewal_value']??'';
+      $apClr2=$apColors[abs(crc32($apN2))%count($apColors)];
+    @endphp
+    <div class="mob-ap-item">
+      <div class="mob-ap-top">
+        <div class="mob-ap-av" style="background:{{ $apClr2 }}">{{ strtoupper(substr($apN2,0,1)) }}</div>
+        <div>
+          <div class="mob-ap-name">{{ $apN2 }}</div>
+          <div class="mob-ap-company">{{ $apC2 ?: 'Client' }}</div>
+        </div>
+        <span class="mob-ap-badge">Draft ready</span>
+      </div>
+      <div class="mob-ap-plan">{{ $apP2 }}{{ $apV2?' — <span class="mob-ap-value">'.$apV2.'</span>':'' }}</div>
+      <div class="mob-ap-btns">
+        <form method="POST" action="{{ route('transactions.decide',$tx->id) }}">
+          @csrf<input type="hidden" name="decision" value="approve">
+          <button type="submit" class="mob-btn-approve">Approve</button>
+        </form>
+        <a href="{{ route('transactions.show',$tx->id) }}" class="mob-btn-edit">Edit</a>
+      </div>
+    </div>
+    @empty
+    <p style="font-size:13px;color:#9CA3AF;padding:12px 0">Nothing awaiting approval right now.</p>
+    @endforelse
+  </div>
+
+  {{-- AVA's Note --}}
+  @php
+    $txTotal2=\Illuminate\Support\Facades\DB::table('transactions')->where('deployment_id',$depId)->count();
+    $avaNote2=$txTotal2===0
+      ?"Ready and standing by, {$firstName}. Give me something to work on."
+      :($waitingCount>0
+        ?"I found {$waitingCount} renewal ".($waitingCount===1?'opportunity':'opportunities')." ready for your approval. Tomorrow I'll protect even more."
+        :"All caught up. I'll flag anything that needs your attention.");
+  @endphp
+  <div class="mob-note-card">
+    <div class="mob-note-eyebrow">
+      <div class="mob-note-icon">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22"/></svg>
+      </div>
+      <span class="mob-note-label">AVA's Note</span>
+    </div>
+    <p class="mob-note-text">{{ $avaNote2 }}</p>
+    <div class="mob-note-sig">
+      <span class="mob-note-sig-name">— Ava</span>
+      <div class="mob-note-heart"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg></div>
+    </div>
+  </div>
+
+</div>
+{{-- ══ END MOBILE ══ --}}
 
 <div class="ob-page">
 
