@@ -14,21 +14,24 @@
 html,body{height:100%;overflow:hidden}
 body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-font-smoothing:antialiased}
 
-/* ── PAGE: sidebar + card area, full height ── */
-.ob-page{display:grid;grid-template-columns:260px 1fr;height:100vh;overflow:hidden}
+/* ── OUTER SHELL ── */
+.ob-shell{display:flex;flex-direction:column;height:100vh;overflow:hidden}
+
+/* ── TOP BAR ── */
+.ob-topbar{background:#F4F3F1;display:flex;align-items:center;justify-content:space-between;padding:0 24px 0 20px;height:44px;flex-shrink:0;border-bottom:1px solid #E5E7EB}
+.ob-topbar-left{display:flex;align-items:center;gap:14px}
+.ob-topbar-name{font-size:12.5px;font-weight:700;color:#0D0D0D}
+.ob-topbar-email{font-size:11px;color:#9CA3AF}
+.ob-topbar-right{display:flex;align-items:center;gap:10px}
+.ob-token-badge{font-size:10px;font-weight:600;color:#6B7280;background:#ECEAE6;border-radius:5px;padding:2px 7px;white-space:nowrap}
+.ob-topbar-link{font-size:11px;font-weight:600;color:#9CA3AF;text-decoration:none}
+.ob-topbar-link:hover{color:#0D0D0D}
+
+/* ── PAGE: sidebar + card area ── */
+.ob-page{display:grid;grid-template-columns:260px 1fr;flex:1;overflow:hidden}
 
 /* ── SIDEBAR ── */
 .ob-sidebar{background:#F4F3F1;display:flex;flex-direction:column;overflow-y:auto}
-
-/* User bar at top of sidebar */
-.ob-userbar{padding:18px 24px 14px;border-bottom:1px solid #E5E7EB;flex-shrink:0}
-.ob-userbar-name{font-size:13px;font-weight:700;color:#0D0D0D;line-height:1.2}
-.ob-userbar-email{font-size:11px;color:#9CA3AF;margin-top:1px;margin-bottom:8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.ob-userbar-meta{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
-.ob-token-badge{font-size:10px;font-weight:600;color:#6B7280;background:#ECEAE6;border-radius:5px;padding:2px 7px;white-space:nowrap}
-.ob-userbar-links{display:flex;gap:10px;margin-top:6px}
-.ob-userbar-link{font-size:11px;font-weight:600;color:#9CA3AF;text-decoration:none}
-.ob-userbar-link:hover{color:#0D0D0D}
 
 /* Logo */
 .ob-logo{font-size:21px;font-weight:900;letter-spacing:-.04em;color:#0D0D0D;padding:20px 24px 8px;flex-shrink:0}
@@ -74,7 +77,7 @@ body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-fon
 .ob-card-area{display:flex;align-items:center;justify-content:center;padding:20px 24px 20px 12px;overflow:hidden}
 .ob-card{
   display:grid;grid-template-columns:1fr 320px;
-  width:100%;height:100%;max-height:calc(100vh - 40px);
+  width:100%;height:100%;max-height:calc(100vh - 84px);
   border-radius:20px;overflow:hidden;
   box-shadow:0 2px 12px rgba(0,0,0,.06),0 1px 3px rgba(0,0,0,.03);
   border:1px solid rgba(0,0,0,.07);
@@ -187,24 +190,25 @@ $tokenFmt = $tokenTotal >= 1000000
   : number_format($tokenTotal);
 @endphp
 
+<div class="ob-shell">
+
+{{-- ══ TOP BAR ══ --}}
+<div class="ob-topbar">
+  <div class="ob-topbar-left">
+    <span class="ob-topbar-name">{{ auth()->user()->name }}</span>
+    <span class="ob-topbar-email">{{ auth()->user()->email }}</span>
+  </div>
+  <div class="ob-topbar-right">
+    <span class="ob-token-badge">{{ $tokenFmt }} tokens</span>
+    <a href="{{ route('settings.api-keys') }}" class="ob-topbar-link">Settings</a>
+    <form method="POST" action="{{ route('logout') }}" style="display:inline">@csrf<button type="submit" style="background:none;border:none;padding:0;font-size:11px;font-weight:600;color:#9CA3AF;cursor:pointer;font-family:inherit">Logout</button></form>
+  </div>
+</div>
+
 <div class="ob-page">
 
   {{-- ══ SIDEBAR ══ --}}
   <aside class="ob-sidebar">
-
-    {{-- User info bar at the very top --}}
-    <div class="ob-userbar">
-      <div class="ob-userbar-name">{{ auth()->user()->name }}</div>
-      <div class="ob-userbar-email">{{ auth()->user()->email }}</div>
-      <div class="ob-userbar-meta">
-        <span class="ob-token-badge">{{ $tokenFmt }} tokens</span>
-        <span class="ob-token-badge" style="background:#F5C518;color:#0D0D0D">{{ now()->format('n/j') }}</span>
-      </div>
-      <div class="ob-userbar-links">
-        <a href="{{ route('settings.api-keys') }}" class="ob-userbar-link">Settings</a>
-        <form method="POST" action="{{ route('logout') }}" style="display:inline">@csrf<button type="submit" style="background:none;border:none;padding:0;font-size:11px;font-weight:600;color:#9CA3AF;cursor:pointer;font-family:inherit">Logout</button></form>
-      </div>
-    </div>
 
     <div class="ob-logo">UNIT</div>
 
@@ -427,6 +431,7 @@ $tokenFmt = $tokenTotal >= 1000000
     </div>
   </div>
 
-</div>
+</div>{{-- ob-page --}}
+</div>{{-- ob-shell --}}
 </body>
 </html>

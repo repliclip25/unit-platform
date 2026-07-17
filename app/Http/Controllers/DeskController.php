@@ -60,7 +60,7 @@ class DeskController extends Controller
         $assetCount      = rescue(fn() => DB::table('assets')->where('user_id', $userId)->count(), 0, false);
         $ruleCount       = rescue(fn() => DB::table('ava_rules')->where('deployment_id', $depId)->count(), 0, false);
         $templateCount   = rescue(fn() => DB::table('email_templates')->where('user_id', $userId)->where('worker_slug', 'ava')->count(), 0, false);
-        $credentialCount = rescue(fn() => DB::table('deployment_credentials')->where('deployment_id', $depId)->count(), 0, false);
+        $credentialCount = rescue(fn() => DB::table('user_gmail_credentials')->where('user_id', $userId)->where('is_active', true)->count(), 0, false);
 
         // All deployments for worker switcher sidebar
         $allDeployments = DB::table('worker_deployments')
