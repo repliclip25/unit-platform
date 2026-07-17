@@ -100,7 +100,7 @@ body{font-family:'Inter',sans-serif;background:var(--db-bg);color:var(--db-text)
 .ob-security p{font-size:10.5px;color:var(--db-text-muted);line-height:1.55}
 
 /* ── CARD AREA ── */
-.ob-card-area{display:flex;align-items:center;justify-content:center;padding:20px 24px 20px 12px;overflow:hidden}
+.ob-card-area{display:flex;align-items:center;justify-content:center;padding:8px 24px 20px 12px;overflow:hidden}
 .ob-card{
   display:grid;grid-template-columns:1fr 320px;
   width:100%;height:100%;max-height:calc(100vh - 84px);
@@ -167,13 +167,16 @@ body{font-family:'Inter',sans-serif;background:var(--db-bg);color:var(--db-text)
 @media(max-width:1024px){
   html,body{overflow-x:hidden;overflow-y:auto;height:auto;width:100%}
   .ob-shell{height:auto;overflow:visible;width:100%}
-  .ob-hero-content,.ob-card,.ob-page,.ob-stat-grid{min-width:0}
+  /* Any nested flex/grid child can refuse to shrink below its content's min-content width
+     and blow out the layout horizontally — force min-width:0 through the whole card subtree */
+  .ob-card,.ob-card *{min-width:0}
+  .ob-page{min-width:0}
   .ob-topbar{height:auto;padding:12px 16px;flex-wrap:wrap;gap:6px}
   .ob-topbar-logo{font-size:18px}
   .ob-topbar-email{display:none}
   .ob-page{grid-template-columns:1fr;height:auto;overflow:visible}
   /* Workers become a horizontal strip in the header — swipe to navigate */
-  .ob-sidebar{flex-direction:column;padding:0;overflow:visible;border-bottom:1px solid var(--db-border)}
+  .ob-sidebar{flex-direction:column;padding:0;overflow:visible;border-bottom:none}
   .ob-steps{display:flex;flex-direction:row;align-items:center;gap:8px;padding:10px 16px;overflow-x:auto;flex:none;-webkit-overflow-scrolling:touch}
   .ob-workers-hd{margin-bottom:0;flex-shrink:0;gap:8px}
   .ob-step{flex-shrink:0;align-items:center;gap:8px;background:var(--db-card);border:1.5px solid var(--db-border);border-radius:99px;padding:5px 12px 5px 6px}
@@ -263,7 +266,6 @@ $tokenFmt = $tokenTotal >= 1000000
     <div class="ob-steps">
       <div class="ob-workers-hd">
         <a href="{{ route('profile.show') }}" style="color:inherit;text-decoration:none">{{ strtoupper($firstName) }}'S WORKERS</a>
-        <a href="{{ route('workers.page') }}" class="ob-hire-btn">+ Hire</a>
       </div>
 
       @foreach($workerCatalog as $wc)
@@ -296,6 +298,11 @@ $tokenFmt = $tokenTotal >= 1000000
         </div>
       </a>
       @endforeach
+
+      <a href="{{ route('workers.page') }}" class="ob-step pending" style="text-decoration:none;margin-top:4px">
+        <div class="ob-step-rail"><div class="ob-step-num" style="background:var(--db-chip);border:1.5px dashed var(--db-border);color:var(--db-text-muted);font-size:16px;font-weight:400">+</div></div>
+        <div class="ob-step-body"><div class="ob-step-label">Hire a worker</div></div>
+      </a>
     </div>
 
     {{-- Links below workers --}}
