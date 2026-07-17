@@ -17,12 +17,12 @@ body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-fon
 /* ── OUTER SHELL ── */
 .ob-shell{display:flex;flex-direction:column;height:100vh;overflow:hidden}
 
-/* ── TOP BAR ── */
-.ob-topbar{background:#F4F3F1;display:flex;align-items:center;justify-content:space-between;padding:0 24px 0 20px;height:44px;flex-shrink:0;border-bottom:1px solid #E5E7EB}
-.ob-topbar-left{display:flex;align-items:center;gap:14px}
+/* ── TOP BAR: logo left, auth details right ── */
+.ob-topbar{background:#F4F3F1;display:flex;align-items:center;justify-content:space-between;padding:0 24px;height:52px;flex-shrink:0}
+.ob-topbar-logo{font-size:21px;font-weight:900;letter-spacing:-.04em;color:#0D0D0D}
 .ob-topbar-name{font-size:12.5px;font-weight:700;color:#0D0D0D}
 .ob-topbar-email{font-size:11px;color:#9CA3AF}
-.ob-topbar-right{display:flex;align-items:center;gap:10px}
+.ob-topbar-right{display:flex;align-items:center;gap:12px}
 .ob-token-badge{font-size:10px;font-weight:600;color:#6B7280;background:#ECEAE6;border-radius:5px;padding:2px 7px;white-space:nowrap}
 .ob-topbar-link{font-size:11px;font-weight:600;color:#9CA3AF;text-decoration:none}
 .ob-topbar-link:hover{color:#0D0D0D}
@@ -33,11 +33,8 @@ body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-fon
 /* ── SIDEBAR ── */
 .ob-sidebar{background:#F4F3F1;display:flex;flex-direction:column;overflow-y:auto}
 
-/* Logo */
-.ob-logo{font-size:21px;font-weight:900;letter-spacing:-.04em;color:#0D0D0D;padding:20px 24px 8px;flex-shrink:0}
-
 /* Worker steps */
-.ob-steps{display:flex;flex-direction:column;padding:0 24px;flex:1}
+.ob-steps{display:flex;flex-direction:column;padding:18px 24px 0;flex:1}
 .ob-workers-hd{font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#9CA3AF;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between}
 .ob-hire-btn{font-size:10px;font-weight:700;color:#0D0D0D;background:#fff;border:1px solid #E5E7EB;border-radius:6px;padding:3px 8px;text-decoration:none}
 .ob-hire-btn:hover{background:#ECEAE6}
@@ -140,11 +137,23 @@ body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-fon
 /* ══ MOBILE ══ */
 @media(max-width:1024px){
   html,body{overflow:auto;height:auto}
+  .ob-shell{height:auto;overflow:visible}
+  .ob-topbar{height:auto;padding:12px 16px;flex-wrap:wrap;gap:6px}
+  .ob-topbar-logo{font-size:18px}
+  .ob-topbar-email{display:none}
   .ob-page{grid-template-columns:1fr;height:auto;overflow:visible}
-  .ob-sidebar{flex-direction:row;align-items:center;justify-content:space-between;padding:0;overflow:visible}
-  .ob-userbar{display:none}
-  .ob-logo{padding:14px 20px 14px;font-size:18px;margin-bottom:0;border-bottom:none}
-  .ob-steps{display:none}
+  /* Workers become a horizontal strip in the header — swipe to navigate */
+  .ob-sidebar{flex-direction:column;padding:0;overflow:visible;border-bottom:1px solid #E5E7EB}
+  .ob-steps{display:flex;flex-direction:row;align-items:center;gap:8px;padding:10px 16px;overflow-x:auto;flex:none;-webkit-overflow-scrolling:touch}
+  .ob-workers-hd{margin-bottom:0;flex-shrink:0;gap:8px}
+  .ob-step{flex-shrink:0;align-items:center;gap:8px;background:#fff;border:1.5px solid #E5E7EB;border-radius:99px;padding:5px 12px 5px 6px}
+  .ob-step.active{border-color:#0D0D0D}
+  .ob-step-rail{padding-bottom:0}
+  .ob-step-rail::after{display:none !important}
+  .ob-step-num{width:24px;height:24px}
+  .ob-step-body{padding:0 !important;background:none !important;border:none !important;margin:0 !important}
+  .ob-step-label{font-size:11.5px}
+  .ob-step-desc{display:none}
   .ob-links-section{display:none}
   .ob-security{display:none}
   .ob-card-area{padding:16px;overflow:visible;height:auto;align-items:flex-start}
@@ -192,13 +201,12 @@ $tokenFmt = $tokenTotal >= 1000000
 
 <div class="ob-shell">
 
-{{-- ══ TOP BAR ══ --}}
+{{-- ══ TOP BAR: logo left · auth details right ══ --}}
 <div class="ob-topbar">
-  <div class="ob-topbar-left">
+  <div class="ob-topbar-logo">UNIT</div>
+  <div class="ob-topbar-right">
     <span class="ob-topbar-name">{{ auth()->user()->name }}</span>
     <span class="ob-topbar-email">{{ auth()->user()->email }}</span>
-  </div>
-  <div class="ob-topbar-right">
     <span class="ob-token-badge">{{ $tokenFmt }} tokens</span>
     <a href="{{ route('settings.api-keys') }}" class="ob-topbar-link">Settings</a>
     <form method="POST" action="{{ route('logout') }}" style="display:inline">@csrf<button type="submit" style="background:none;border:none;padding:0;font-size:11px;font-weight:600;color:#9CA3AF;cursor:pointer;font-family:inherit">Logout</button></form>
@@ -209,8 +217,6 @@ $tokenFmt = $tokenTotal >= 1000000
 
   {{-- ══ SIDEBAR ══ --}}
   <aside class="ob-sidebar">
-
-    <div class="ob-logo">UNIT</div>
 
     {{-- MY WORKERS --}}
     <div class="ob-steps">
