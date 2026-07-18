@@ -45,7 +45,28 @@ class TransactionController extends Controller
         $terminal = ['draft_ready', 'approved', 'sent', 'failed', 'rejected', 'blocked', 'dismissed'];
         $isDone   = in_array($tx->status, $terminal);
         $isFailed = in_array($tx->status, ['failed', 'blocked']);
-        return response()->json(['status' => $tx->status, 'done' => $isDone, 'failed' => $isFailed, 'blocked' => $tx->status === 'blocked']);
+
+        $classify = json_decode($tx->classify_output ?? '{}', true) ?: [];
+        $memory   = json_decode($tx->memory_output   ?? '{}', true) ?: [];
+        $draft    = json_decode($tx->draft_output    ?? '{}', true) ?: [];
+
+        return response()->json([
+            'status'   => $tx->status,
+            'done'     => $isDone,
+            'failed'   => $isFailed,
+            'blocked'  => $tx->status === 'blocked',
+            // Additive summary fields — used by Fast Track's completion card.
+            // Existing consumers of this endpoint ignore unknown keys.
+            'category'         => $tx->category ?? $classify['category'] ?? null,
+            'priority'         => $tx->priority ?? $classify['priority'] ?? null,
+            'matched_client'   => $memory['matched_client'] ?? null,
+            'asset'            => $memory['asset'] ?? null,
+            'confidence'       => $memory['confidence'] ?? null,
+            'ava_rule'         => $memory['ava_rule'] ?? null,
+            'subject'          => $draft['subject'] ?? null,
+            'low_confidence'   => $draft['low_confidence'] ?? false,
+            'gmail_draft_id'   => $tx->gmail_draft_id,
+        ]);
     }
 
     public function refire(string $txId)

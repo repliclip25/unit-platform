@@ -116,6 +116,17 @@ body{font-family:'Inter',sans-serif;background:var(--db-bg);color:var(--db-text)
 .ft-arrow{flex-shrink:0;width:18px;padding-top:16px;opacity:.35}
 .ft-status-line{margin-top:14px;font-size:12.5px;font-family:monospace;color:var(--db-text-muted);text-align:center;display:none}
 
+/* Completion summary card */
+.ft-result{margin-top:18px;border-radius:14px;border:1px solid rgba(34,197,94,.3);background:rgba(34,197,94,.06);padding:18px;display:none}
+.ft-result-head{display:flex;align-items:center;gap:8px;margin-bottom:14px}
+.ft-result-head svg{width:18px;height:18px;color:#22c55e;flex-shrink:0}
+.ft-result-title{font-size:14px;font-weight:700;color:var(--db-text)}
+.ft-result-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px 20px;margin-bottom:14px}
+.ft-result-row{font-size:12.5px}
+.ft-result-row .lbl{color:var(--db-text-muted);display:block;font-size:11px;margin-bottom:2px}
+.ft-result-row .val{color:var(--db-text);font-weight:600}
+.ft-result-actions{display:flex;gap:10px;flex-wrap:wrap}
+
 .ft-inbox-select{width:100%;border-radius:9px;padding:9px 12px;font-size:13px;background:transparent;border:1px solid var(--db-border);color:var(--db-text);font-family:inherit;margin-bottom:12px}
 .ft-run-row{display:flex;gap:10px}
 .ft-run-btn{flex:1;padding:11px 16px;border-radius:11px;border:none;font-size:13.5px;font-weight:700;cursor:pointer;font-family:inherit;background:var(--db-invert-bg);color:var(--db-invert-text);display:flex;align-items:center;justify-content:center;gap:8px}
@@ -319,6 +330,26 @@ $ftCanRun = $isMultiCredential || $connectedInboxes->isNotEmpty();
         </div>
         <div class="ft-status-line" id="ft-status-line"></div>
 
+        <div class="ft-result" id="ft-result">
+          <div class="ft-result-head">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+            <div class="ft-result-title">Run complete — here's what {{ $dep->name }} decided</div>
+          </div>
+          <div class="ft-result-grid">
+            <div class="ft-result-row"><span class="lbl">Category</span><span class="val" id="ft-r-category">—</span></div>
+            <div class="ft-result-row"><span class="lbl">Priority</span><span class="val" id="ft-r-priority">—</span></div>
+            <div class="ft-result-row"><span class="lbl">Client matched</span><span class="val" id="ft-r-client">—</span></div>
+            <div class="ft-result-row"><span class="lbl">Asset</span><span class="val" id="ft-r-asset">—</span></div>
+            <div class="ft-result-row"><span class="lbl">Rule applied</span><span class="val" id="ft-r-rule">—</span></div>
+            <div class="ft-result-row"><span class="lbl">Confidence</span><span class="val" id="ft-r-confidence">—</span></div>
+            <div class="ft-result-row" style="grid-column:1/-1"><span class="lbl">Draft subject</span><span class="val" id="ft-r-subject">—</span></div>
+          </div>
+          <div class="ft-result-actions">
+            <button type="button" class="mem-btn" onclick="var u=new URL(location.href);u.searchParams.delete('watch');location.href=u.toString();">Run again</button>
+            <a href="#" id="ft-r-gmail-link" class="mem-btn-secondary" style="display:none" target="_blank" rel="noopener">Open draft in Gmail →</a>
+          </div>
+        </div>
+
         <div style="margin-top:18px">
           @if($ftLeft > 0 || $ftSubscribed)
             @if($ftCanRun)
@@ -467,6 +498,24 @@ function setStage(key, state) {
   }
 }
 
+function showResult(data) {
+  document.getElementById('ft-r-category').textContent   = data.category || '—';
+  document.getElementById('ft-r-priority').textContent   = data.priority || '—';
+  document.getElementById('ft-r-client').textContent     = data.matched_client || '—';
+  document.getElementById('ft-r-asset').textContent      = data.asset || '—';
+  document.getElementById('ft-r-rule').textContent       = data.ava_rule || '—';
+  document.getElementById('ft-r-confidence').textContent = data.confidence != null ? (data.confidence + '%' + (data.low_confidence ? ' (low — flagged for review)' : '')) : '—';
+  document.getElementById('ft-r-subject').textContent    = data.subject || '—';
+
+  var gmailLink = document.getElementById('ft-r-gmail-link');
+  if (data.gmail_draft_id) {
+    gmailLink.href = 'https://mail.google.com/mail/u/0/#drafts';
+    gmailLink.style.display = 'inline-block';
+  }
+
+  document.getElementById('ft-result').style.display = 'block';
+}
+
 var FT_FAIL_STREAK = 0;
 
 function pollFastTrack() {
@@ -493,11 +542,7 @@ function pollFastTrack() {
       if (data.done && !data.failed) {
         line.textContent = '✓ Complete — draft ready in Gmail';
         line.style.color = '#22c55e';
-        setTimeout(function () {
-          var url = new URL(window.location.href);
-          url.searchParams.delete('watch');
-          window.location.href = url.toString();
-        }, 3000);
+        showResult(data);
       } else if (data.failed) {
         line.textContent = '✕ Pipeline failed — check the Activity Log for details';
         line.style.color = '#ef4444';
