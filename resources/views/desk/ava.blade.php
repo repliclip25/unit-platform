@@ -164,19 +164,25 @@ body{font-family:'Inter',sans-serif;background:var(--db-bg);color:var(--db-text)
 .tx-data-val{font-size:12.5px;color:#202124;line-height:1.6;white-space:pre-wrap}
 
 /* Expanded canvas overlay */
+/* .ob-profile has position:relative, which would trap an absolutely-positioned
+   descendant before it ever reaches .ob-card — drop it to static while expanded
+   so .tx-canvas-wrap's inset:0 resolves against the full card, not just the 320px column */
+.ob-card.tx-expanded .ob-profile{position:static;overflow:visible}
 .ob-card.tx-expanded .tx-canvas-wrap{position:absolute;inset:0;margin:0;z-index:30;border-radius:20px}
-.ob-card.tx-expanded .ob-profile{overflow:visible}
 
 /* Activity */
 .ob-act-hd{font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--db-text-muted);margin-bottom:10px;display:flex;align-items:center;justify-content:space-between}
 .ob-sc-onshift{display:flex;align-items:center;gap:5px;font-size:9px;font-weight:700;color:#15803D;letter-spacing:.08em;text-transform:uppercase;background:#DCFCE7;border-radius:99px;padding:3px 8px}
 .ob-sc-onshift-dot{width:5px;height:5px;border-radius:50%;background:#22c55e;animation:pdot 1.4s ease infinite}
-.ob-sc-feed{display:flex;flex-direction:column;gap:7px;margin-bottom:8px}
-.ob-sc-feed-item{display:flex;gap:9px;align-items:flex-start}
-.ob-sc-feed-time{font-size:10px;color:var(--db-text-muted);font-weight:600;white-space:nowrap;padding-top:3px;min-width:44px}
-.ob-sc-feed-dot{width:20px;height:20px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;color:#fff}
-.ob-sc-feed-text{font-size:12px;color:var(--db-text);font-weight:600;line-height:1.35}
-.ob-sc-feed-sub{font-size:10.5px;color:var(--db-text-muted);margin-top:1px}
+.ob-sc-feed{display:flex;flex-direction:column;gap:2px;margin-bottom:4px;max-height:112px;overflow:hidden;transition:max-height .2s ease}
+.ob-sc-feed.expanded{max-height:600px}
+.ob-sc-feed-item{display:flex;gap:7px;align-items:center;padding:4px 4px}
+.ob-sc-feed-time{font-size:9px;color:var(--db-text-muted);font-weight:600;white-space:nowrap;min-width:38px;flex-shrink:0}
+.ob-sc-feed-dot{width:14px;height:14px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:7px;font-weight:800;color:#fff}
+.ob-sc-feed-text{font-size:11px;color:var(--db-text);font-weight:500;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;min-width:0}
+.ob-sc-feed-sub{display:none}
+.ob-sc-feed-toggle{font-size:10px;color:var(--db-text-muted);font-weight:600;background:none;border:none;padding:0;cursor:pointer;font-family:inherit;text-align:left;margin-bottom:6px}
+.ob-sc-feed-toggle:hover{color:var(--db-text)}
 .ob-sc-view-link{font-size:11px;color:var(--db-text-muted);font-weight:600;text-decoration:none;display:block;margin-bottom:2px}
 .ob-sc-view-link:hover{color:var(--db-text)}
 
@@ -440,6 +446,7 @@ $tokenFmt = $tokenTotal >= 1000000
         <div class="ob-sc-feed" id="tx-timeline">
           <p style="font-size:12px;color:var(--db-text-muted)">Loading…</p>
         </div>
+        <button type="button" class="ob-sc-feed-toggle" id="tx-timeline-toggle" style="display:none">Show all →</button>
 
         {{-- Badge row — quick-jump into the canvas below --}}
         <div class="tx-badge-row" id="tx-badge-row"></div>
@@ -506,6 +513,7 @@ $tokenFmt = $tokenTotal >= 1000000
   var approveBtn    = document.getElementById('tx-approve-btn');
   var reviewLink    = document.getElementById('tx-review-link');
   var expandBtn     = document.getElementById('tx-canvas-expand-btn');
+  var timelineToggle = document.getElementById('tx-timeline-toggle');
 
   var current = null; // last loaded tx-detail payload
 
@@ -559,18 +567,21 @@ $tokenFmt = $tokenTotal >= 1000000
   }
 
   function renderTimeline(stages) {
+    timelineEl.classList.remove('expanded');
     if (!stages.length) {
       timelineEl.innerHTML = '<p style="font-size:12px;color:var(--db-text-muted)">No activity recorded yet.</p>';
+      timelineToggle.style.display = 'none';
       return;
     }
     timelineEl.innerHTML = stages.map(function (s, i) {
-      return '<div class="ob-sc-feed-item" data-stage="' + s.stage_key + '">'
+      return '<div class="ob-sc-feed-item" data-stage="' + s.stage_key + '" title="' + esc(s.summary) + '">'
         + '<span class="ob-sc-feed-time">' + esc(s.timestamp) + '</span>'
         + '<span class="ob-sc-feed-dot" style="background:' + s.color + '">' + (i + 1) + '</span>'
-        + '<div><div class="ob-sc-feed-text">' + esc(s.summary) + '</div>'
-        + '<div class="ob-sc-feed-sub">' + esc(s.label) + '</div></div>'
+        + '<span class="ob-sc-feed-text">' + esc(s.summary) + '</span>'
         + '</div>';
     }).join('');
+    timelineToggle.style.display = stages.length > 4 ? 'block' : 'none';
+    timelineToggle.textContent = 'Show all →';
     Array.prototype.forEach.call(timelineEl.querySelectorAll('.ob-sc-feed-item'), function (el) {
       el.addEventListener('click', function () { selectStage(el.dataset.stage); });
     });
@@ -633,6 +644,11 @@ $tokenFmt = $tokenTotal >= 1000000
 
   expandBtn.addEventListener('click', function () {
     tab.closest('.ob-card').classList.toggle('tx-expanded');
+  });
+
+  timelineToggle.addEventListener('click', function () {
+    var isExpanded = timelineEl.classList.toggle('expanded');
+    timelineToggle.textContent = isExpanded ? 'Show less ←' : 'Show all →';
   });
 
   approveBtn.addEventListener('click', function () {
