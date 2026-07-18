@@ -61,8 +61,15 @@ class PushToGmailJob implements ShouldQueue
                 'to' => $to, 'gmail_draft_id' => $draftId,
             ]);
         } else {
-            $template        = $input->stage('template');
-            $approvalRequired = (bool) ($template['approval_required'] ?? true);
+            $template = $input->stage('template');
+
+            // Hard gate: approval is required if ANY of these say so — the template,
+            // the specific rule MemoryLookupJob matched (its real DB value, not the AI's
+            // own claim), or a low-confidence memory match. Any one of them is enough to
+            // force human review; none of them can be overridden by the others.
+            $approvalRequired = (bool) ($template['approval_required'] ?? true)
+                || (bool) ($memory['rule_requires_approval'] ?? false)
+                || (bool) ($draft['low_confidence'] ?? false);
 
             $draftId = $gmail->createDraft(
                 to:      $to,

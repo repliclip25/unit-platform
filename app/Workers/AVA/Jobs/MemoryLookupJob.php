@@ -70,9 +70,13 @@ Return JSON:
   "related_project_or_service": "",
   "client_preference": "",
   "ava_rule": "",
+  "matched_rule_id": "",
   "confidence": 0,
   "missing_information": []
 }
+
+matched_rule_id must be the exact rule_id (e.g. "AVA-006") of the single rule you selected — used
+for programmatic enforcement downstream, separate from ava_rule which is the human-readable summary.
 
 EXTRACTED EMAIL CONTEXT:
 {$this->jsonPretty($readOutput)}
@@ -95,6 +99,21 @@ PROMPT;
 
             $output['low_confidence_warning'] = "AVA confidence is {$confidence}%. "
                 . "Client/asset match is uncertain. Please verify before sending.";
+        }
+
+        // ── Hard gate: resolve the matched rule's real approval_required from the DB-backed
+        // rule list (never trust the AI's own transcription of it) and force human review
+        // downstream in PushToGmailJob regardless of what the template says.
+        $matchedRule = collect($input->memory['rules'] ?? [])
+            ->first(fn($r) => $this->ruleField($r, 'rule_id', null) === ($output['matched_rule_id'] ?? null));
+        $output['rule_requires_approval'] = $matchedRule
+            ? (bool) $this->ruleField($matchedRule, 'approval_required', true)
+            : false;
+
+        if ($output['rule_requires_approval']) {
+            UnitPlatform::log('ava', $this->txId, 'rule_forces_approval', [
+                'rule_id' => $output['matched_rule_id'] ?? null,
+            ]);
         }
 
         UnitPlatform::commitOutput($this->txId, new WorkerOutput(

@@ -893,9 +893,9 @@ class AvaWorker implements WorkerContract
                 'uses_ai'       => true,
                 'model'         => null,
                 'system'        => 'You are Ava, UNIT\'s Subscription & Renewal Coordinator. Return valid JSON only. No extra text.',
-                'user'          => "Using the extracted email information and the memory tables below, find who owns this asset and how it should be handled.\n\nReturn JSON:\n{\n  \"asset\": \"\",\n  \"matched_client\": \"\",\n  \"primary_contact_name\": \"\",\n  \"primary_contact_email\": \"\",\n  \"related_project_or_service\": \"\",\n  \"client_preference\": \"\",\n  \"ava_rule\": \"\",\n  \"confidence\": 0,\n  \"missing_information\": []\n}\n\nEXTRACTED EMAIL CONTEXT:\n{READ_OUTPUT}\n\nMEMORY TABLES:\n{MEMORY_TABLES}",
+                'user'          => "Using the extracted email information and the memory tables below, find who owns this asset and how it should be handled.\n\nReturn JSON:\n{\n  \"asset\": \"\",\n  \"matched_client\": \"\",\n  \"primary_contact_name\": \"\",\n  \"primary_contact_email\": \"\",\n  \"related_project_or_service\": \"\",\n  \"client_preference\": \"\",\n  \"ava_rule\": \"\",\n  \"matched_rule_id\": \"\",\n  \"confidence\": 0,\n  \"missing_information\": []\n}\n\nEXTRACTED EMAIL CONTEXT:\n{READ_OUTPUT}\n\nMEMORY TABLES:\n{MEMORY_TABLES}",
                 'output_format' => 'json',
-                'output_shape'  => ['asset', 'matched_client', 'primary_contact_name', 'primary_contact_email', 'related_project_or_service', 'client_preference', 'ava_rule', 'confidence', 'missing_information'],
+                'output_shape'  => ['asset', 'matched_client', 'primary_contact_name', 'primary_contact_email', 'related_project_or_service', 'client_preference', 'ava_rule', 'matched_rule_id', 'confidence', 'missing_information'],
                 'max_tokens'    => 768,
             ],
             [
