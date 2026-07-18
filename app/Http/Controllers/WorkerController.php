@@ -239,9 +239,11 @@ class WorkerController extends Controller
             ->orderByDesc('id')
             ->firstOrFail();
 
-        $id          = $dep->id;
-        $contract    = \App\Platform\Services\WorkerRegistry::resolve($dep->worker_slug);
-        $registryRow = DB::table('worker_registry')->where('slug', $dep->worker_slug)->first();
+        $id       = $dep->id;
+        $contract = \App\Platform\Services\WorkerRegistry::resolve($dep->worker_slug);
+
+        $shell = \App\Platform\Services\WorkerShellService::build(auth()->id(), $dep->worker_slug);
+        extract($shell); // workerCatalog, registryRows, registryRow, profileImg, coverImg, tokenTotal
 
         $connectedInboxes = DB::table('deployment_credentials')
             ->join('user_gmail_credentials', 'user_gmail_credentials.id', '=', 'deployment_credentials.credential_id')
@@ -292,11 +294,10 @@ class WorkerController extends Controller
             ];
         }
 
-        $profileImg = $registryRow?->profile_image ? asset('storage/' . $registryRow->profile_image) : null;
-        $coverImg   = $registryRow?->cover_image   ? asset('storage/' . $registryRow->cover_image)   : null;
+        $firstName = explode(' ', trim(auth()->user()->name))[0];
 
         return view('dashboard.worker-overview', compact(
-            'dep', 'contract', 'registryRow', 'profileImg', 'coverImg',
+            'dep', 'contract', 'workerCatalog', 'registryRows', 'registryRow', 'profileImg', 'coverImg', 'tokenTotal', 'firstName',
             'connectedInboxes', 'txCount', 'pendingReview', 'stuckCount',
             'policyViolations', 'isTrialExhausted', 'otherViolations', 'billing', 'trialReason',
             'pricingTiers', 'productionReadiness'
