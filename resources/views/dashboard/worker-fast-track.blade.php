@@ -428,6 +428,7 @@ function toggleScenario() {
 var WATCH_TX = {{ $watchTxId ? "'".$watchTxId."'" : 'null' }};
 var STAGE_KEYS = @json(collect($pipelineStages)->pluck('key'));
 var STATUS_TO_STAGE = {
+  received:        'webhook',
   ingesting:       'webhook',
   reading:         'read_email',
   classifying:     'classify',
@@ -466,13 +467,20 @@ function setStage(key, state) {
   }
 }
 
+var FT_FAIL_STREAK = 0;
+
 function pollFastTrack() {
+  var line = document.getElementById('ft-status-line');
   fetch('{{ url("/transactions") }}/' + WATCH_TX + '/status', { headers: { Accept: 'application/json' } })
-    .then(function (r) { return r.json(); })
+    .then(function (r) {
+      if (!r.ok) throw new Error('status ' + r.status);
+      return r.json();
+    })
     .then(function (data) {
-      var line = document.getElementById('ft-status-line');
-      var currentKey = STATUS_TO_STAGE[data.status] || null;
-      var currentIdx = currentKey ? STAGE_KEYS.indexOf(currentKey) : -1;
+      FT_FAIL_STREAK = 0;
+      var currentKey  = STATUS_TO_STAGE[data.status] || 'webhook';
+      var currentIdx  = STAGE_KEYS.indexOf(currentKey);
+      if (currentIdx < 0) currentIdx = 0;
 
       STAGE_KEYS.forEach(function (key, idx) {
         if (data.failed && idx === currentIdx) setStage(key, 'failed');
@@ -480,7 +488,6 @@ function pollFastTrack() {
         else if (idx === currentIdx) setStage(key, data.failed ? 'failed' : 'active');
       });
 
-      line.style.display = 'block';
       var btn = document.getElementById('ft-run-btn');
 
       if (data.done && !data.failed) {
@@ -496,17 +503,32 @@ function pollFastTrack() {
         line.style.color = '#ef4444';
         if (btn) { btn.disabled = false; }
       } else {
-        line.textContent = STATUS_LABELS[data.status] || 'Processing…';
+        line.textContent = STATUS_LABELS[data.status] || ('Working — ' + data.status + '…');
         line.style.color = 'var(--db-text-muted)';
         setTimeout(pollFastTrack, 2000);
       }
     })
-    .catch(function () { setTimeout(pollFastTrack, 3000); });
+    .catch(function () {
+      FT_FAIL_STREAK++;
+      if (FT_FAIL_STREAK >= 5) {
+        line.textContent = 'Lost connection checking status — refresh the page to check manually.';
+        line.style.color = '#ef4444';
+        var btn = document.getElementById('ft-run-btn');
+        if (btn) btn.disabled = false;
+        return;
+      }
+      line.textContent = 'Checking status…';
+      line.style.color = 'var(--db-text-muted)';
+      setTimeout(pollFastTrack, 3000);
+    });
 }
 
 if (WATCH_TX) {
   var runBtn = document.getElementById('ft-run-btn');
   if (runBtn) runBtn.disabled = true;
+  var line0 = document.getElementById('ft-status-line');
+  if (line0) { line0.style.display = 'block'; line0.textContent = 'Starting…'; }
+  setStage(STAGE_KEYS[0], 'active');
   pollFastTrack();
 }
 
