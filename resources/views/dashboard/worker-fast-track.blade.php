@@ -354,6 +354,39 @@ $ftCanRun = $isMultiCredential || $connectedInboxes->isNotEmpty();
         </div>
       </div>
 
+      @if($watchTxId)
+      <div class="ft-card">
+        <div class="ft-card-head">
+          <div>
+            <div class="ft-card-title">Diagnostics — {{ $watchTxId }}</div>
+            <div class="ft-card-sub">Server-side snapshot, refresh the page to update</div>
+          </div>
+        </div>
+        @if(!$watchTx)
+        <div class="ft-empty">No transaction found for this ID.</div>
+        @else
+        <div style="font-size:12.5px;font-family:monospace;color:var(--db-text);line-height:1.9">
+          <div><span style="color:var(--db-text-muted)">status:</span> {{ $watchTx->status }}</div>
+          <div><span style="color:var(--db-text-muted)">current_stage:</span> {{ $watchTx->current_stage ?? '—' }}</div>
+          <div><span style="color:var(--db-text-muted)">updated_at:</span> {{ $watchTx->updated_at }} ({{ \Illuminate\Support\Carbon::parse($watchTx->updated_at)->diffForHumans() }})</div>
+        </div>
+        <div style="margin-top:14px;border-top:1px solid var(--db-border);padding-top:14px">
+          <div class="mem-field-label" style="margin-bottom:8px">Recent events (newest first)</div>
+          @forelse($watchLogs as $log)
+          <div style="font-size:11.5px;font-family:monospace;padding:6px 0;border-bottom:1px solid var(--db-border);color:{{ $log->level === 'error' ? '#ef4444' : (str_contains($log->event,'fail') ? '#ef4444' : 'var(--db-text)') }}">
+            [{{ $log->created_at }}] <strong>{{ $log->event }}</strong>
+            @if($log->payload)
+              <div style="color:var(--db-text-muted);margin-top:2px;word-break:break-word">{{ Str::limit($log->payload, 300) }}</div>
+            @endif
+          </div>
+          @empty
+          <div class="ft-empty">No events logged yet for this transaction.</div>
+          @endforelse
+        </div>
+        @endif
+      </div>
+      @endif
+
       {{-- Scenario editor --}}
       <div class="ft-card">
         <button type="button" class="ft-scenario-toggle" onclick="toggleScenario()">

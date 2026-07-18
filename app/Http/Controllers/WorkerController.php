@@ -1296,10 +1296,20 @@ class WorkerController extends Controller
         $pipelineStages = $contract ? $contract->pipelineStages() : [];
         $watchTxId = request('watch');
 
+        // Server-rendered diagnostics — always visible on page load, doesn't
+        // depend on client-side polling working. Shows exactly what stage the
+        // run is on and the last events logged for it (including failures).
+        $watchTx   = null;
+        $watchLogs = collect();
+        if ($watchTxId) {
+            $watchTx   = DB::table('transactions')->where('tx_id', $watchTxId)->where('user_id', auth()->id())->first();
+            $watchLogs = DB::table('platform_events')->where('tx_id', $watchTxId)->orderByDesc('id')->limit(20)->get();
+        }
+
         return view('dashboard.worker-fast-track', compact(
             'dep', 'contract', 'connectedInboxes', 'isMultiCredential',
             'ftUses', 'ftMax', 'ftLeft', 'ftSubscribed', 'scenario',
-            'pipelineStages', 'watchTxId',
+            'pipelineStages', 'watchTxId', 'watchTx', 'watchLogs',
             'workerCatalog', 'registryRows', 'registryRow', 'profileImg', 'coverImg', 'tokenTotal', 'firstName'
         ));
     }
