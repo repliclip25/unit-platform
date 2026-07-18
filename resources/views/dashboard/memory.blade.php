@@ -49,7 +49,8 @@ body{font-family:'Inter',sans-serif;background:var(--db-bg);color:var(--db-text)
 .ob-menu-item{display:block;width:100%;text-align:left;padding:8px 10px;border-radius:8px;font-size:13.5px;font-weight:600;color:var(--db-text);text-decoration:none;background:none;border:none;cursor:pointer;font-family:inherit}
 .ob-menu-item:hover{background:var(--db-chip)}
 
-.ob-page{display:grid;grid-template-columns:260px 1fr 320px;flex:1;overflow:hidden}
+.ob-page{display:grid;grid-template-columns:260px 1fr;flex:1;overflow:hidden}
+.mem-card-area{display:grid;grid-template-columns:1fr 320px;margin:12px 12px 12px 0;background:var(--db-card);border:1px solid var(--db-border);border-radius:20px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.06)}
 .mem-right{background:var(--db-card);border-left:1px solid var(--db-border);overflow-y:auto}
 .ob-sidebar{background:var(--db-bg);display:flex;flex-direction:column;overflow-y:auto}
 .ob-steps{display:flex;flex-direction:column;padding:18px 24px 0;flex:1}
@@ -83,7 +84,7 @@ body{font-family:'Inter',sans-serif;background:var(--db-bg);color:var(--db-text)
 .ob-security p{font-size:11.5px;color:var(--db-text-muted);line-height:1.55}
 
 /* ── CONTENT ── */
-.mem-main{overflow-y:auto;padding:28px 32px 60px;margin:12px 12px 12px 0;background:var(--db-card);border:1px solid var(--db-border);border-radius:20px;box-shadow:0 2px 12px rgba(0,0,0,.06)}
+.mem-main{overflow-y:auto;padding:28px 32px 60px}
 .mem-wrap{max-width:920px;margin:0 auto}
 
 .mem-status{border-radius:12px;padding:10px 14px;font-size:13.5px;margin-bottom:16px}
@@ -199,7 +200,8 @@ body{font-family:'Inter',sans-serif;background:var(--db-bg);color:var(--db-text)
   .ob-page{display:block;height:auto;overflow:visible;width:100%}
   .ob-sidebar{width:100%;flex-direction:column;padding:0;overflow:hidden;border-bottom:none}
   .ob-steps,.ob-links-section,.ob-security{display:none}
-  .mem-main{padding:16px;margin:0;border-radius:0;border-left:none;border-right:none;box-shadow:none}
+  .mem-main{padding:16px}
+  .mem-card-area{display:block;margin:0;border-radius:0;border:none;box-shadow:none;background:transparent}
   .mem-right{display:none}
   .mem-grid,.mem-stats,.mem-field-row{grid-template-columns:1fr}
 }
@@ -313,6 +315,7 @@ $expiredAssets = $assets->filter(fn($a) => $a->renewal_date && now()->diffInDays
   </aside>
 
   {{-- ══ CONTENT ══ --}}
+  <div class="mem-card-area">
   <main class="mem-main">
     <div class="mem-wrap">
 
@@ -866,6 +869,7 @@ $expiredAssets = $assets->filter(fn($a) => $a->renewal_date && now()->diffInDays
 
   {{-- ══ RIGHT PANEL — reserved for the immutable 3-column layout, empty on this page ══ --}}
   <aside class="mem-right"></aside>
+  </div>
 
 </div>{{-- ob-page --}}
 </div>{{-- ob-shell --}}

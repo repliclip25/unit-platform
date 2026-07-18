@@ -57,7 +57,8 @@ body{font-family:'Inter',sans-serif;background:var(--db-bg);color:var(--db-text)
 .ob-menu-item:hover{background:var(--db-chip)}
 
 /* ── PAGE: sidebar + content area ── */
-.ob-page{display:grid;grid-template-columns:260px 1fr 320px;flex:1;overflow:hidden}
+.ob-page{display:grid;grid-template-columns:260px 1fr;flex:1;overflow:hidden}
+.wo-card-area{display:grid;grid-template-columns:1fr 320px;margin:12px 12px 12px 0;background:var(--db-card);border:1px solid var(--db-border);border-radius:20px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.06)}
 
 /* ── SIDEBAR — identical to /desk/{slug} ── */
 .ob-sidebar{background:var(--db-bg);display:flex;flex-direction:column;overflow-y:auto}
@@ -95,7 +96,7 @@ body{font-family:'Inter',sans-serif;background:var(--db-bg);color:var(--db-text)
 @keyframes pdot{0%,100%{opacity:1}50%{opacity:.3}}
 
 /* ── CONTENT AREA — this page's own single-column body ── */
-.wo-main{overflow-y:auto;padding:28px 32px 60px;margin:12px 12px 12px 0;background:var(--db-card);border:1px solid var(--db-border);border-radius:20px;box-shadow:0 2px 12px rgba(0,0,0,.06)}
+.wo-main{overflow-y:auto;padding:28px 32px 60px}
 .wo-wrap{max-width:640px;margin:0 auto}
 
 .wo-identity{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px;padding-left:2px}
@@ -234,7 +235,8 @@ body{font-family:'Inter',sans-serif;background:var(--db-bg);color:var(--db-text)
   .ob-step-desc{display:none}
   .ob-links-section{display:none}
   .ob-security{display:none}
-  .wo-main{padding:16px;margin:0;border-radius:0;border-left:none;border-right:none;box-shadow:none}
+  .wo-main{padding:16px}
+  .wo-card-area{display:block;margin:0;border-radius:0;border:none;box-shadow:none;background:transparent}
   .wo-plans,.wo-stats,.wo-links,.wo-ii-stats{grid-template-columns:1fr}
   .wo-right{border-left:none;border-top:1px solid var(--db-border);width:100%}
 }
@@ -356,6 +358,7 @@ $unitLabel = $contract ? ($contract->billing()['unit_label_plural'] ?? 'transact
   </aside>
 
   {{-- ══ CONTENT ══ --}}
+  <div class="wo-card-area">
   <main class="wo-main">
     <div class="wo-wrap">
 
@@ -608,6 +611,7 @@ $unitLabel = $contract ? ($contract->billing()['unit_label_plural'] ?? 'transact
     <div class="wo-spend-total"><span>Total this period</span><span>${{ number_format($stageSpend->sum('cost'), 4) }}</span></div>
     @endif
   </aside>
+  </div>
 
 </div>{{-- ob-page --}}
 </div>{{-- ob-shell --}}
