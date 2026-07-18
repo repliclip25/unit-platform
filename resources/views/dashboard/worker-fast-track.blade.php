@@ -458,7 +458,7 @@ function toggleScenario() {
 }
 
 // ── Live pipeline polling ────────────────────────────────────────────────
-var WATCH_TX = {{ $watchTxId ? "'".$watchTxId."'" : 'null' }};
+var WATCH_TX = @json($watchTxId);
 var STAGE_KEYS = @json(collect($pipelineStages)->pluck('key'));
 var STATUS_TO_STAGE = {
   received:        'webhook',

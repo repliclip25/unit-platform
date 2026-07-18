@@ -1237,12 +1237,16 @@ class WorkerController extends Controller
             'fast_track_from'    => "{$scenario->sender_name} <{$scenario->sender_email}>",
             'fast_track_subject' => "{$scenario->asset_type} Renewal Notice — {$scenario->asset_name} expires in {$scenario->days_until_expiry} days",
             'fast_track_body'    => $sampleEmail,
+            // Routes every stage of this run onto Horizon's dedicated always-on
+            // fast-track queue (see UnitPlatform::getInput) instead of the general
+            // per-worker queue, so test runs stay fast regardless of production load.
+            '_queue'             => 'fast-track',
         ]);
 
         // Dispatch the worker's fast track job via contract — worker owns the fast track entry point
         $contract         = WorkerRegistry::resolveActive($dep->worker_slug);
         $fastTrackJob     = $contract->fastTrackJobClass() ?: $contract->ingestJobClass();
-        $fastTrackJob::dispatch($tx->tx_id)->onQueue($txService->queueForTx($tx));
+        $fastTrackJob::dispatch($tx->tx_id)->onQueue('fast-track');
 
         // Only count against the trial meter for non-subscribed tenants
         if (!$isSubscribed) {
