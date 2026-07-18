@@ -48,6 +48,7 @@ body{font-family:'Inter',sans-serif;background:var(--db-bg);color:var(--db-text)
 .ob-menu-token{padding:0 10px 8px}
 .ob-menu-item{display:block;width:100%;text-align:left;padding:8px 10px;border-radius:8px;font-size:13.5px;font-weight:600;color:var(--db-text);text-decoration:none;background:none;border:none;cursor:pointer;font-family:inherit}
 .ob-menu-item:hover{background:var(--db-chip)}
+.ob-menu-mobile-links{display:none}
 
 .ob-page{display:grid;grid-template-columns:260px 1fr;flex:1;overflow:hidden}
 .mem-card-area{display:grid;grid-template-columns:1fr 320px;margin:12px 12px 12px 0;background:var(--db-card);border:1px solid var(--db-border);border-radius:20px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.06)}
@@ -200,6 +201,7 @@ body{font-family:'Inter',sans-serif;background:var(--db-bg);color:var(--db-text)
   .ob-page{display:block;height:auto;overflow:visible;width:100%}
   .ob-sidebar{width:100%;flex-direction:column;padding:0;overflow:hidden;border-bottom:none}
   .ob-steps,.ob-links-section,.ob-security{display:none}
+  .ob-menu-mobile-links{display:block}
   .mem-main{padding:16px}
   .mem-card-area{display:block;margin:0;border-radius:0;border:none;box-shadow:none;background:transparent}
   .mem-right{display:none}
@@ -219,6 +221,15 @@ body{font-family:'Inter',sans-serif;background:var(--db-bg);color:var(--db-text)
 $tokenFmt = $tokenTotal >= 1000000 ? number_format($tokenTotal/1000000,1).'M' : number_format($tokenTotal);
 $urgentAssets = $assets->filter(fn($a) => $a->renewal_date && now()->diffInDays($a->renewal_date, false) <= 30 && now()->diffInDays($a->renewal_date, false) >= 0)->count();
 $expiredAssets = $assets->filter(fn($a) => $a->renewal_date && now()->diffInDays($a->renewal_date, false) < 0)->count();
+$sidebarLinks = [
+  ['Memory',       'M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18', route('memory'), true],
+  ['Templates',    'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z', route('workers.templates',['slug'=>'ava']), false],
+  ['Rules',        'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4', route('workers.rules','ava'), false],
+  ['Fast Track',   'M13 10V3L4 14h7v7l9-11h-7z', route('workers.fast-track.page','ava'), false],
+  ['Integrations', 'M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1', route('workers.connect','ava'), false],
+  ['Billing',      'M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z', route('billing'), false],
+  ['Activity Log', 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2', route('transactions'), false],
+];
 @endphp
 
 <div class="ob-shell">
@@ -239,6 +250,12 @@ $expiredAssets = $assets->filter(fn($a) => $a->renewal_date && now()->diffInDays
           <div class="ob-topbar-email">{{ auth()->user()->email }}</div>
         </div>
         <div class="ob-menu-token"><span class="ob-token-badge">{{ $tokenFmt }} tokens</span></div>
+        <div class="ob-menu-mobile-links">
+          @foreach($sidebarLinks as [$lbl,,$href,])
+          <a href="{{ $href }}" class="ob-menu-item">{{ $lbl }}</a>
+          @endforeach
+          <div style="border-top:1px solid var(--db-border);margin:6px 0"></div>
+        </div>
         <a href="{{ route('settings.api-keys') }}" class="ob-menu-item">Settings</a>
         <form method="POST" action="{{ route('logout') }}">@csrf<button type="submit" class="ob-menu-item">Logout</button></form>
       </div>
@@ -290,14 +307,7 @@ $expiredAssets = $assets->filter(fn($a) => $a->renewal_date && now()->diffInDays
 
     <div class="ob-links-section">
       <div class="ob-links-hd">LINKS</div>
-      @foreach([
-        ['Memory',       'M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18', route('memory'), true],
-        ['Templates',    'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z', route('workers.templates',['slug'=>'ava']), false],
-        ['Rules',        'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4', route('workers.rules','ava'), false],
-        ['Integrations', 'M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1', route('workers.connect','ava'), false],
-        ['Billing',      'M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z', route('billing'), false],
-        ['Activity Log', 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2', route('transactions'), false],
-      ] as [$lbl,$ico,$href,$isActive])
+      @foreach($sidebarLinks as [$lbl,$ico,$href,$isActive])
       <a href="{{ $href }}" class="ob-link {{ $isActive ? 'active' : '' }}">
         <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $ico }}"/></svg>
         {{ $lbl }}
