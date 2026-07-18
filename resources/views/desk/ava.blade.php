@@ -133,6 +133,40 @@ body{font-family:'Inter',sans-serif;background:var(--db-bg);color:var(--db-text)
 .emp-role{font-size:12px;color:var(--db-text-muted);margin-top:3px;margin-bottom:12px}
 .emp-divider{border:none;border-top:1px solid var(--db-border);margin:0 0 12px}
 
+/* TX switcher */
+.tx-switcher-wrap{position:relative;flex-shrink:0}
+.tx-switcher-btn{display:flex;align-items:center;gap:5px;font-size:10.5px;font-weight:700;font-family:'Inter',monospace;color:var(--db-text);background:var(--db-chip);border:1px solid var(--db-border);border-radius:7px;padding:5px 9px;cursor:pointer}
+.tx-switcher-btn svg{stroke:var(--db-text-muted);stroke-width:2;fill:none}
+.tx-switcher-dropdown{display:none;position:absolute;top:calc(100% + 6px);right:0;width:230px;max-height:260px;overflow-y:auto;background:var(--db-card);border:1px solid var(--db-border);border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.18);padding:6px;z-index:40}
+.tx-switcher-dropdown.open{display:block}
+.tx-switcher-item{display:block;width:100%;text-align:left;padding:7px 9px;border-radius:7px;background:none;border:none;cursor:pointer;font-family:inherit}
+.tx-switcher-item:hover{background:var(--db-chip)}
+.tx-switcher-item-label{font-size:11.5px;font-weight:700;color:var(--db-text)}
+.tx-switcher-item-meta{font-size:10px;color:var(--db-text-muted);margin-top:1px}
+
+/* Stage timeline */
+.ob-sc-feed-item{cursor:pointer;border-radius:8px;padding:3px 4px;margin:0 -4px}
+.ob-sc-feed-item:hover{background:var(--db-chip)}
+
+/* Badge row */
+.tx-badge-row{display:flex;flex-wrap:wrap;gap:6px 10px;margin:10px 0 4px}
+.tx-badge{font-size:11px;font-weight:700;background:none;border:none;padding:0;cursor:pointer;font-family:inherit}
+.tx-badge.active{text-decoration:underline;text-underline-offset:3px}
+
+/* Canvas */
+.tx-canvas-wrap{flex:1;display:flex;flex-direction:column;overflow:hidden;border-top:1px solid var(--db-border);margin:10px -20px 0;background:#fff}
+.tx-canvas-expand-bar{display:flex;justify-content:flex-end;padding:6px 10px;flex-shrink:0}
+.tx-canvas-expand-btn{width:22px;height:22px;border-radius:6px;border:1px solid #E0E0E0;background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.tx-canvas-expand-btn svg{stroke:#5F6368;stroke-width:2;fill:none}
+#tx-canvas-body{flex:1;overflow-y:auto;padding:0 16px 11px}
+.tx-data-row{display:flex;flex-direction:column;gap:2px;padding:8px 0;border-bottom:1px solid #F1F3F4}
+.tx-data-key{font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#9CA3AF}
+.tx-data-val{font-size:12.5px;color:#202124;line-height:1.6;white-space:pre-wrap}
+
+/* Expanded canvas overlay */
+.ob-card.tx-expanded .tx-canvas-wrap{position:absolute;inset:0;margin:0;z-index:30;border-radius:20px}
+.ob-card.tx-expanded .ob-profile{overflow:visible}
+
 /* Activity */
 .ob-act-hd{font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--db-text-muted);margin-bottom:10px;display:flex;align-items:center;justify-content:space-between}
 .ob-sc-onshift{display:flex;align-items:center;gap:5px;font-size:9px;font-weight:700;color:#15803D;letter-spacing:.08em;text-transform:uppercase;background:#DCFCE7;border-radius:99px;padding:3px 8px}
@@ -205,28 +239,7 @@ body{font-family:'Inter',sans-serif;background:var(--db-bg);color:var(--db-text)
 <body>
 
 @php
-// Pipeline stage descriptions matching AVA's ReadEmailJob → ClassifyEmailJob → MemoryLookupJob → SelectTemplateJob → DraftEmailJob → PushToGmailJob
-$activityMap = [
-  'ingesting'   => ['label'=>'Renewal request detected',        'sub'=>'Email received from inbox',                       'color'=>'#6366f1'],
-  'reading'     => ['label'=>'Reading incoming email',          'sub'=>'Parsing subject, body, sender',                   'color'=>'#6366f1'],
-  'classifying' => ['label'=>'Classifying email',               'sub'=>'Identifying renewal type & urgency',              'color'=>'#f59e0b'],
-  'memory'      => ['label'=>'Looking up client memory',        'sub'=>'Matching sender to known clients & assets',       'color'=>'#8b5cf6'],
-  'template'    => ['label'=>'Selecting best template',         'sub'=>'Matching tone and renewal type',                  'color'=>'#f97316'],
-  'drafting'    => ['label'=>'Drafting personalized reply',     'sub'=>'Writing renewal email with client context',        'color'=>'#8b5cf6'],
-  'pushing'     => ['label'=>'Pushing draft to Gmail',          'sub'=>'Saving draft to your connected inbox',            'color'=>'#06b6d4'],
-  'draft_ready' => ['label'=>'Reply ready for your review',     'sub'=>'Draft saved — awaiting your approval',            'color'=>'#22c55e'],
-  'approved'    => ['label'=>'Reply approved & sent',           'sub'=>'Renewal email delivered to customer',             'color'=>'#22c55e'],
-  'sent'        => ['label'=>'Renewal email delivered',         'sub'=>'Sent successfully via Gmail',                     'color'=>'#22c55e'],
-  'failed'      => ['label'=>'Pipeline error',                  'sub'=>'Something went wrong — needs your attention',     'color'=>'#ef4444'],
-  'rejected'    => ['label'=>'Draft rejected',                  'sub'=>'You declined this draft',                         'color'=>'#9CA3AF'],
-  'dismissed'   => ['label'=>'Email dismissed',                 'sub'=>'Marked as not a renewal',                         'color'=>'#9CA3AF'],
-];
-$dotColors = ['#6366f1','#f59e0b','#8b5cf6','#22c55e','#f97316','#06b6d4'];
-$apColors  = ['#6366f1','#f59e0b','#22c55e','#f97316','#8b5cf6','#ec4899'];
-
-$previewTx    = $approvals->first();
-$previewCl    = $previewTx ? json_decode($previewTx->classify_output??'{}',true) : null;
-$previewDraft = $previewTx ? json_decode($previewTx->draft_output??'{}',true)    : null;
+$previewTx = $approvals->first();
 
 $tokenFmt = $tokenTotal >= 1000000
   ? number_format($tokenTotal/1000000,1).'M'
@@ -400,84 +413,50 @@ $tokenFmt = $tokenTotal >= 1000000
         </div>
       </div>
 
-      {{-- ── RIGHT PANEL ── --}}
-      <div class="ob-profile">
-        <div class="emp-eyebrow">On Shift</div>
-        <div class="emp-name">AVA</div>
-        <div class="emp-role">Renewal Specialist</div>
+      {{-- ── RIGHT PANEL: Transaction Tab ── --}}
+      <div class="ob-profile" id="tx-tab" data-initial-tx="{{ $previewTx->tx_id ?? $currentTask->tx_id ?? '' }}">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px">
+          <div>
+            <div class="emp-eyebrow">On Shift</div>
+            <div class="emp-name">AVA</div>
+            <div class="emp-role">Renewal Specialist</div>
+          </div>
+          <div class="tx-switcher-wrap">
+            <button type="button" class="tx-switcher-btn" id="tx-switcher-btn">
+              <span id="tx-switcher-label">—</span>
+              <svg viewBox="0 0 24 24" width="10" height="10"><path stroke-linecap="round" stroke-linejoin="round" d="M6 9l6 6 6-6"/></svg>
+            </button>
+            <div class="tx-switcher-dropdown" id="tx-switcher-dropdown"></div>
+          </div>
+        </div>
 
         <hr class="emp-divider">
 
-        {{-- Live Activity --}}
+        {{-- Stage timeline for the selected transaction --}}
         <div class="ob-act-hd">
           Live Activity
-          <span class="ob-sc-onshift"><span class="ob-sc-onshift-dot"></span> On Shift</span>
+          <a href="{{ route('transactions') }}" class="ob-sc-view-link" style="margin:0">View Live Feed →</a>
         </div>
-        <div class="ob-sc-feed">
-          @forelse($activity->take(5) as $i => $tx)
-          @php
-            $am = $activityMap[$tx->status] ?? ['label'=>ucfirst(str_replace('_',' ',$tx->status)),'sub'=>'','color'=>'#9CA3AF'];
-            $cl = json_decode($tx->classify_output??'{}',true);
-            $txc = $cl['client']??$cl['sender_name']??'';
-          @endphp
-          <div class="ob-sc-feed-item">
-            <span class="ob-sc-feed-time">{{ \Carbon\Carbon::parse($tx->created_at)->format('g:i A') }}</span>
-            <span class="ob-sc-feed-dot" style="background:{{ $dotColors[$i % count($dotColors)] }}">{{ $i+1 }}</span>
-            <div>
-              <div class="ob-sc-feed-text">{{ $am['label'] }}</div>
-              <div class="ob-sc-feed-sub">{{ $txc ?: $am['sub'] }}</div>
-            </div>
-          </div>
-          @empty
-          <p style="font-size:12px;color:#9CA3AF">No activity yet — Ava is standing by.</p>
-          @endforelse
+        <div class="ob-sc-feed" id="tx-timeline">
+          <p style="font-size:12px;color:var(--db-text-muted)">Loading…</p>
         </div>
-        <a href="{{ route('transactions') }}" class="ob-sc-view-link">View Live Feed →</a>
 
-        {{-- Gmail draft preview --}}
-        @if($previewTx)
-        <div class="sc-draft-wrap">
-          <div class="sc-draft-chrome">
-            <span style="width:10px;height:10px;border-radius:50%;background:#FF5F57;display:inline-block;flex-shrink:0"></span>
-            <span style="width:10px;height:10px;border-radius:50%;background:#FEBC2E;display:inline-block;flex-shrink:0"></span>
-            <span style="width:10px;height:10px;border-radius:50%;background:#28C840;display:inline-block;flex-shrink:0"></span>
-            <div style="flex:1;background:#fff;border:1px solid #DADCE0;border-radius:99px;padding:3px 10px;display:flex;align-items:center;gap:6px;margin:0 6px;min-width:0">
-              <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#5F6368" stroke-width="2" style="flex-shrink:0"><rect x="3" y="11" width="18" height="11" rx="2"/><path stroke-linecap="round" d="M7 11V7a5 5 0 0110 0v4"/></svg>
-              <span style="font-size:9px;color:#5F6368;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">mail.google.com/mail/u/0/#drafts</span>
-            </div>
-            <svg width="38" height="13" viewBox="0 0 55 18" fill="none" style="flex-shrink:0">
-              <path d="M3.9 14.4V8.1L0 5.1V13.2C0 13.85 0.54 14.4 1.2 14.4H3.9Z" fill="#4285F4"/>
-              <path d="M19.5 14.4H22.2C22.86 14.4 23.4 13.86 23.4 13.2V5.1L19.5 8.1V14.4Z" fill="#34A853"/>
-              <path d="M19.5 2.4L11.7 8.25L3.9 2.4V8.1L11.7 13.95L19.5 8.1V2.4Z" fill="#EA4335"/>
-              <path d="M0 5.1L3.9 8.1V2.4L2.1 1.08C1.29 0.48 0 1.05 0 2.07V5.1Z" fill="#C5221F"/>
-              <path d="M23.4 5.1V2.07C23.4 1.05 22.11 0.48 21.3 1.08L19.5 2.4V8.1L23.4 5.1Z" fill="#FBBC04"/>
-              <text x="27" y="13" font-family="Arial,sans-serif" font-size="11" fill="#5F6368">Gmail</text>
-            </svg>
+        {{-- Badge row — quick-jump into the canvas below --}}
+        <div class="tx-badge-row" id="tx-badge-row"></div>
+
+        {{-- Canvas — renders whichever stage's artifact is selected --}}
+        <div class="tx-canvas-wrap" id="tx-canvas-wrap">
+          <div class="tx-canvas-expand-bar">
+            <button type="button" class="tx-canvas-expand-btn" id="tx-canvas-expand-btn" title="Expand">
+              <svg viewBox="0 0 24 24" width="12" height="12"><path stroke-linecap="round" stroke-linejoin="round" d="M8 3H5a2 2 0 00-2 2v3m18 0V5a2 2 0 00-2-2h-3m0 18h3a2 2 0 002-2v-3M3 16v3a2 2 0 002 2h3"/></svg>
+            </button>
           </div>
-          <div class="sc-draft-body">
-            <div class="sc-draft-header-row">
-              <span class="sc-draft-header-label">To</span>
-              <span class="sc-draft-header-value">{{ $previewCl['recipient_email']??$previewCl['sender_email']??'—' }}</span>
-            </div>
-            <div class="sc-draft-header-row">
-              <span class="sc-draft-header-label">From</span>
-              <span class="sc-draft-header-value">{{ auth()->user()->email }}</span>
-            </div>
-            <div class="sc-draft-subject-row">
-              <div class="sc-draft-subject-text">{{ $previewDraft['subject']??$previewCl['subject']??'—' }}</div>
-            </div>
-            <div class="sc-draft-preview">{{ $previewDraft['body']??$previewDraft['email_body']??'' }}</div>
-          </div>
-          <div class="sc-draft-actions">
-            <form method="POST" action="{{ route('transactions.decide',$previewTx->id) }}" style="flex:1;display:contents">
-              @csrf<input type="hidden" name="decision" value="approve">
-              <button type="submit" class="sc-btn-approve">Approve &amp; send</button>
-            </form>
-            <a href="{{ route('transactions.show',$previewTx->id) }}" class="sc-btn-review">Review in full</a>
+          <div id="tx-canvas-body"><p style="font-size:12px;color:var(--db-text-muted)">Select a transaction to view its artifacts.</p></div>
+          <div class="sc-draft-actions" id="tx-canvas-actions" style="display:none">
+            <button type="button" class="sc-btn-approve" id="tx-approve-btn">Approve &amp; send</button>
+            <a href="#" class="sc-btn-review" id="tx-review-link">Review in full</a>
           </div>
         </div>
-        @endif
-
       </div>
 
     </div>
@@ -508,6 +487,173 @@ $tokenFmt = $tokenTotal >= 1000000
       menuDropdown.classList.remove('open');
     }
   });
+})();
+</script>
+
+<script>
+(function () {
+  var tab = document.getElementById('tx-tab');
+  if (!tab) return;
+
+  var csrf = document.querySelector('meta[name="csrf-token"]').content;
+  var switcherBtn   = document.getElementById('tx-switcher-btn');
+  var switcherLabel = document.getElementById('tx-switcher-label');
+  var switcherDrop  = document.getElementById('tx-switcher-dropdown');
+  var timelineEl    = document.getElementById('tx-timeline');
+  var badgeRowEl    = document.getElementById('tx-badge-row');
+  var canvasBodyEl  = document.getElementById('tx-canvas-body');
+  var canvasActions = document.getElementById('tx-canvas-actions');
+  var approveBtn    = document.getElementById('tx-approve-btn');
+  var reviewLink    = document.getElementById('tx-review-link');
+  var expandBtn     = document.getElementById('tx-canvas-expand-btn');
+
+  var current = null; // last loaded tx-detail payload
+
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+
+  function loadTxList() {
+    fetch('{{ route("desk.ava.tx-list") }}')
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        switcherDrop.innerHTML = '';
+        (data.transactions || []).forEach(function (tx) {
+          var btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'tx-switcher-item';
+          btn.innerHTML = '<div class="tx-switcher-item-label">' + esc(tx.tx_id) + '</div>'
+            + '<div class="tx-switcher-item-meta">' + esc(tx.label) + ' · ' + esc(tx.created_at) + '</div>';
+          btn.addEventListener('click', function () {
+            switcherDrop.classList.remove('open');
+            loadTransaction(tx.tx_id);
+          });
+          switcherDrop.appendChild(btn);
+        });
+        if (!data.transactions || !data.transactions.length) {
+          switcherDrop.innerHTML = '<p style="font-size:11px;color:var(--db-text-muted);padding:8px">No transactions yet.</p>';
+        }
+      });
+  }
+
+  function loadTransaction(txId) {
+    if (!txId) return;
+    switcherLabel.textContent = txId;
+    timelineEl.innerHTML = '<p style="font-size:12px;color:var(--db-text-muted)">Loading…</p>';
+    fetch('/desk/ava/tx/' + encodeURIComponent(txId))
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        if (data.error) {
+          timelineEl.innerHTML = '<p style="font-size:12px;color:var(--db-text-muted)">' + esc(data.error) + '</p>';
+          return;
+        }
+        current = data;
+        renderTimeline(data.stages);
+        renderBadges(data.stages);
+        var defaultStage = data.stages.find(function (s) { return s.stage_key === 'draft'; })
+          || data.stages[data.stages.length - 1];
+        if (defaultStage) selectStage(defaultStage.stage_key);
+      });
+  }
+
+  function renderTimeline(stages) {
+    if (!stages.length) {
+      timelineEl.innerHTML = '<p style="font-size:12px;color:var(--db-text-muted)">No activity recorded yet.</p>';
+      return;
+    }
+    timelineEl.innerHTML = stages.map(function (s, i) {
+      return '<div class="ob-sc-feed-item" data-stage="' + s.stage_key + '">'
+        + '<span class="ob-sc-feed-time">' + esc(s.timestamp) + '</span>'
+        + '<span class="ob-sc-feed-dot" style="background:' + s.color + '">' + (i + 1) + '</span>'
+        + '<div><div class="ob-sc-feed-text">' + esc(s.summary) + '</div>'
+        + '<div class="ob-sc-feed-sub">' + esc(s.label) + '</div></div>'
+        + '</div>';
+    }).join('');
+    Array.prototype.forEach.call(timelineEl.querySelectorAll('.ob-sc-feed-item'), function (el) {
+      el.addEventListener('click', function () { selectStage(el.dataset.stage); });
+    });
+  }
+
+  function renderBadges(stages) {
+    badgeRowEl.innerHTML = stages.map(function (s) {
+      return '<button type="button" class="tx-badge" data-stage="' + s.stage_key + '" style="color:' + s.color + '">' + esc(s.label) + '</button>';
+    }).join('');
+    Array.prototype.forEach.call(badgeRowEl.querySelectorAll('.tx-badge'), function (el) {
+      el.addEventListener('click', function () { selectStage(el.dataset.stage); });
+    });
+  }
+
+  function selectStage(stageKey) {
+    if (!current) return;
+    var stage = current.stages.find(function (s) { return s.stage_key === stageKey; });
+    if (!stage) return;
+
+    Array.prototype.forEach.call(badgeRowEl.querySelectorAll('.tx-badge'), function (el) {
+      el.classList.toggle('active', el.dataset.stage === stageKey);
+    });
+
+    renderCanvas(stage);
+  }
+
+  function renderCanvas(stage) {
+    if (stage.canvas.type === 'email') {
+      var p = stage.canvas.payload;
+      canvasBodyEl.innerHTML =
+        '<div class="sc-draft-header-row"><span class="sc-draft-header-label">To</span><span class="sc-draft-header-value">' + esc(p.to || '—') + '</span></div>'
+        + '<div class="sc-draft-header-row"><span class="sc-draft-header-label">From</span><span class="sc-draft-header-value">' + esc(p.from || '—') + '</span></div>'
+        + '<div class="sc-draft-subject-row"><div class="sc-draft-subject-text">' + esc(p.subject || '—') + '</div></div>'
+        + '<div class="sc-draft-preview">' + esc(p.body || '') + '</div>';
+      canvasActions.style.display = 'flex';
+      approveBtn.dataset.txId = current.tx_id;
+      reviewLink.href = '/transactions/' + encodeURIComponent(current.tx_id);
+    } else {
+      var payload = stage.canvas.payload || {};
+      var rows = Object.keys(payload).map(function (key) {
+        var val = payload[key];
+        if (val && typeof val === 'object') val = JSON.stringify(val, null, 2);
+        var label = key.replace(/_/g, ' ').replace(/\b\w/g, function (c) { return c.toUpperCase(); });
+        return '<div class="tx-data-row"><div class="tx-data-key">' + esc(label) + '</div><div class="tx-data-val">' + esc(val) + '</div></div>';
+      }).join('');
+      canvasBodyEl.innerHTML = rows || '<p style="font-size:12px;color:#9CA3AF;padding-top:12px">No data captured at this stage.</p>';
+      canvasActions.style.display = 'none';
+    }
+  }
+
+  switcherBtn.addEventListener('click', function (e) {
+    e.stopPropagation();
+    switcherDrop.classList.toggle('open');
+  });
+  document.addEventListener('click', function (e) {
+    if (!switcherDrop.contains(e.target) && e.target !== switcherBtn) {
+      switcherDrop.classList.remove('open');
+    }
+  });
+
+  expandBtn.addEventListener('click', function () {
+    tab.closest('.ob-card').classList.toggle('tx-expanded');
+  });
+
+  approveBtn.addEventListener('click', function () {
+    var txId = approveBtn.dataset.txId;
+    if (!txId) return;
+    approveBtn.disabled = true;
+    approveBtn.textContent = 'Sending…';
+    fetch('/transactions/' + encodeURIComponent(txId) + '/decide', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrf, 'Accept': 'application/json' },
+      body: JSON.stringify({ decision: 'approved' }),
+    }).then(function () {
+      window.location.reload();
+    }).catch(function () {
+      approveBtn.disabled = false;
+      approveBtn.textContent = 'Approve & send';
+    });
+  });
+
+  loadTxList();
+  loadTransaction(tab.dataset.initialTx);
 })();
 </script>
 </body>
