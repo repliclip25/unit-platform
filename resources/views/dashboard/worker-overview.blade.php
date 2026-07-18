@@ -115,11 +115,12 @@ body{font-family:'Inter',sans-serif;background:var(--db-bg);color:var(--db-text)
 .wo-paywall-count-label{font-size:10.5px;color:var(--db-text-muted);text-align:right}
 .wo-plans{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .wo-plan{border:1px solid var(--db-border);border-radius:12px;padding:14px;position:relative}
-.wo-plan.recommended{border-color:var(--db-invert-bg);background:var(--db-chip)}
-.wo-plan-badge{position:absolute;top:-10px;left:12px;font-size:9px;font-weight:700;background:var(--db-invert-bg);color:var(--db-invert-text);padding:3px 8px;border-radius:99px}
+.wo-plan.recommended{border-color:#F5C518;border-width:1.5px;background:rgba(245,197,24,.06)}
+.wo-plan-badge{position:absolute;top:-10px;left:12px;font-size:9px;font-weight:700;background:#F5C518;color:#0D0D0D;padding:3px 8px;border-radius:99px}
 .wo-plan-name{font-size:12.5px;font-weight:700;color:var(--db-text)}
 .wo-plan-tagline{font-size:10.5px;color:var(--db-text-muted);margin-top:2px}
 .wo-plan-price{font-size:1.3rem;font-weight:900;color:var(--db-text);margin:8px 0 2px}
+.wo-plan.recommended .wo-plan-price{color:#B8890A}
 .wo-plan-price span{font-size:11px;font-weight:500;color:var(--db-text-muted)}
 .wo-plan-limit{font-size:11px;color:var(--db-text-muted);margin-bottom:10px}
 /* Buttons are always black or white — gold is accent-only (badges/borders), never a button fill */
