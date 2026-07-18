@@ -128,6 +128,8 @@ Route::middleware(['auth', 'verified', 'onboarded', 'not-pending-del'])->group(f
 
     // ── Worker Desks ────────────────────────────────────────────────────────
     Route::get('/desk/ava', [DeskController::class, 'ava'])->name('desk.ava');
+    Route::get('/desk/ava/tx-list', [DeskController::class, 'txList'])->name('desk.ava.tx-list');
+    Route::get('/desk/ava/tx/{txId}', [DeskController::class, 'txDetail'])->name('desk.ava.tx-detail');
     Route::post('/dashboard/desk/save',    [DashboardController::class, 'deskSave'])->name('dashboard.desk.save');
     Route::post('/dashboard/desk/dismiss', [DashboardController::class, 'deskDismiss'])->name('dashboard.desk.dismiss');
     Route::post('/self-learn/dismiss', [DashboardController::class, 'selfLearnDismiss'])->name('self-learn.dismiss');
