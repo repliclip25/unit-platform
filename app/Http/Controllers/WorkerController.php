@@ -296,11 +296,117 @@ class WorkerController extends Controller
 
         $firstName = explode(' ', trim(auth()->user()->name))[0];
 
+        // ── Inbox Intelligence analytics (same queries as the old worker-detail
+        // page's Observe section — reused as-is, this data already exists) ────
+        $observeDays = 7;
+        $observeFrom = now()->subDays($observeDays - 1)->startOfDay();
+
+        $pubsubHits = rescue(fn() => DB::table('platform_events')
+            ->where('type', 'gmail.pubsub.hit')
+            ->where('created_at', '>=', $observeFrom)
+            ->whereRaw("JSON_UNQUOTE(JSON_EXTRACT(payload, '$.gmail_address')) IN (
+                SELECT ugc.gmail_address FROM user_gmail_credentials ugc
+                JOIN deployment_credentials dc ON dc.credential_id = ugc.id
+                WHERE dc.deployment_id = ?
+            )", [$id])
+            ->selectRaw('DATE(created_at) as day, COUNT(*) as hits')
+            ->groupBy('day')->orderBy('day')->get()->keyBy('day'), collect(), false);
+
+        $observeFunnel = DB::table('transactions')
+            ->where('deployment_id', $id)
+            ->where('created_at', '>=', $observeFrom)
+            ->selectRaw("COUNT(*) as total, SUM(status='filtered_out') as filtered_out,
+                SUM(status='dismissed') as dismissed,
+                SUM(status IN ('draft_ready','approved','sent')) as completed,
+                SUM(status='failed') as failed")
+            ->first();
+
+        $txPerDay = DB::table('transactions')
+            ->where('deployment_id', $id)
+            ->where('created_at', '>=', $observeFrom)
+            ->selectRaw('DATE(created_at) as day, COUNT(*) as total,
+                SUM(status = "filtered_out") as filtered,
+                SUM(status IN ("draft_ready","approved","sent")) as completed')
+            ->groupBy('day')->orderBy('day')->get()->keyBy('day');
+
+        $stageSpend = DB::table('usage_events')
+            ->where('deployment_id', $id)
+            ->where('created_at', '>=', $observeFrom)
+            ->whereNotNull('stage')
+            ->groupBy('stage')
+            ->selectRaw('stage, COUNT(*) as calls, SUM(cost_usd) as cost, SUM(tokens_input+tokens_output) as tokens')
+            ->orderByRaw('SUM(cost_usd) DESC')
+            ->get();
+
+        $avgDuration = DB::table('transactions')
+            ->where('deployment_id', $id)
+            ->where('created_at', '>=', $observeFrom)
+            ->whereIn('status', ['draft_ready', 'approved', 'sent', 'failed'])
+            ->selectRaw('AVG(TIMESTAMPDIFF(SECOND, created_at, updated_at)) as avg_seconds')
+            ->value('avg_seconds');
+
+        $ingestedCount = DB::table('transactions')->where('deployment_id', $id)->where('created_at', '>=', $observeFrom)->count();
+
+        $chartDays = collect();
+        for ($i = $observeDays - 1; $i >= 0; $i--) {
+            $day = now()->subDays($i)->format('Y-m-d');
+            $chartDays->push([
+                'day'       => $day,
+                'label'     => now()->subDays($i)->format('M d'),
+                'hits'      => $pubsubHits->get($day)?->hits ?? 0,
+                'total'     => $txPerDay->get($day)?->total ?? 0,
+                'filtered'  => $txPerDay->get($day)?->filtered ?? 0,
+                'completed' => $txPerDay->get($day)?->completed ?? 0,
+            ]);
+        }
+        $chartMax = max(1, $chartDays->max(fn($d) => $d['hits'] + $d['total']));
+
+        // ── TX switcher + selected transaction detail (no canvas — plain data columns) ──
+        $txList = DB::table('transactions')
+            ->where('deployment_id', $id)
+            ->orderByDesc('created_at')
+            ->limit(20)
+            ->get(['tx_id', 'category', 'status', 'created_at']);
+
+        $selectedTxId = request()->query('tx');
+        $selectedTx   = null;
+        $txStages     = [];
+
+        if ($selectedTxId) {
+            $tx = DB::table('transactions')->where('tx_id', $selectedTxId)->where('deployment_id', $id)->first();
+            if ($tx) {
+                $selectedTx = $tx;
+                $completedStages = DB::table('transaction_stage_log')
+                    ->where('tx_id', $tx->tx_id)
+                    ->where('event', 'completed')
+                    ->whereIn('stage_key', array_keys(\App\Platform\Services\WorkerShellService::STAGE_META))
+                    ->orderBy('created_at')
+                    ->get()
+                    ->keyBy('stage_key');
+
+                foreach (\App\Platform\Services\WorkerShellService::STAGE_META as $stageKey => $meta) {
+                    $log = $completedStages->get($stageKey);
+                    if (!$log) continue;
+                    $payload = $meta['col']
+                        ? (json_decode($tx->{$meta['col']} ?? 'null', true) ?? [])
+                        : ['gmail_draft_id' => $tx->gmail_draft_id];
+                    $txStages[] = [
+                        'label'     => $meta['label'],
+                        'color'     => $meta['color'],
+                        'timestamp' => \Carbon\Carbon::parse($log->created_at)->format('M j, g:i A'),
+                        'payload'   => $payload,
+                    ];
+                }
+            }
+        }
+
         return view('dashboard.worker-overview', compact(
             'dep', 'contract', 'workerCatalog', 'registryRows', 'registryRow', 'profileImg', 'coverImg', 'tokenTotal', 'firstName',
             'connectedInboxes', 'txCount', 'pendingReview', 'stuckCount',
             'policyViolations', 'isTrialExhausted', 'otherViolations', 'billing', 'trialReason',
-            'pricingTiers', 'productionReadiness'
+            'pricingTiers', 'productionReadiness',
+            'pubsubHits', 'observeFunnel', 'stageSpend', 'avgDuration', 'chartDays', 'chartMax', 'ingestedCount',
+            'txList', 'selectedTxId', 'selectedTx', 'txStages'
         ));
     }
 

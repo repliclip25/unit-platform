@@ -55,7 +55,7 @@ body{font-family:'Inter',sans-serif;background:var(--db-bg);color:var(--db-text)
 .ob-menu-item:hover{background:var(--db-chip)}
 
 /* ── PAGE: sidebar + content area ── */
-.ob-page{display:grid;grid-template-columns:260px 1fr;flex:1;overflow:hidden}
+.ob-page{display:grid;grid-template-columns:260px 1fr 320px;flex:1;overflow:hidden}
 
 /* ── SIDEBAR — identical to /desk/{slug} ── */
 .ob-sidebar{background:var(--db-bg);display:flex;flex-direction:column;overflow-y:auto}
@@ -155,6 +155,65 @@ body{font-family:'Inter',sans-serif;background:var(--db-bg);color:var(--db-text)
 .wo-manage-btn:hover{background:var(--db-chip)}
 .wo-manage-btn.danger{color:#ef4444;border-color:rgba(239,68,68,.3)}
 
+/* Per-transaction data columns (no canvas, just labeled rows) */
+.wo-tx-back{font-size:12px;font-weight:600;color:var(--db-text-muted);text-decoration:none;display:inline-block;margin-bottom:14px}
+.wo-tx-back:hover{color:var(--db-text)}
+.wo-tx-header-row{display:flex;flex-direction:column;gap:2px;padding:9px 0;border-bottom:1px solid var(--db-border)}
+.wo-tx-header-label{font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--db-text-muted)}
+.wo-tx-header-val{font-size:13px;color:var(--db-text)}
+.wo-tx-stage-title{display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:700;color:var(--db-text);margin:16px 0 8px}
+.wo-tx-stage-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.wo-tx-data-row{padding:6px 0;border-bottom:1px solid var(--db-border)}
+.wo-tx-data-key{font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--db-text-muted)}
+.wo-tx-data-val{font-size:12px;color:var(--db-text);line-height:1.6;white-space:pre-wrap;word-break:break-word}
+
+/* ── RIGHT PANEL ── */
+.wo-right{background:var(--db-card);border-left:1px solid var(--db-border);padding:20px;overflow-y:auto}
+.wo-right-eyebrow{font-size:9px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--db-text-muted);margin-bottom:6px}
+.wo-right-head{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:16px}
+.wo-right-name{font-size:1.4rem;font-weight:900;letter-spacing:-.04em;color:var(--db-text);line-height:1}
+.wo-right-role{font-size:12px;color:var(--db-text-muted);margin-top:3px}
+
+.tx-switcher-wrap{position:relative;flex-shrink:0}
+.tx-switcher-btn{display:flex;align-items:center;gap:5px;font-size:10.5px;font-weight:700;font-family:monospace;color:var(--db-text);background:var(--db-chip);border:1px solid var(--db-border);border-radius:7px;padding:5px 9px;cursor:pointer;text-decoration:none}
+.tx-switcher-btn svg{stroke:var(--db-text-muted);stroke-width:2;fill:none}
+.tx-switcher-dropdown{display:none;position:absolute;top:calc(100% + 6px);right:0;width:230px;max-height:260px;overflow-y:auto;background:var(--db-card);border:1px solid var(--db-border);border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.18);padding:6px;z-index:40}
+.tx-switcher-dropdown.open{display:block}
+.tx-switcher-item{display:block;width:100%;text-align:left;padding:7px 9px;border-radius:7px;text-decoration:none}
+.tx-switcher-item:hover{background:var(--db-chip)}
+.tx-switcher-item-label{font-size:11.5px;font-weight:700;color:var(--db-text)}
+.tx-switcher-item-meta{font-size:10px;color:var(--db-text-muted);margin-top:1px}
+
+.wo-ii-badge{display:inline-block;font-size:9px;font-weight:700;background:var(--db-chip);color:var(--db-text-muted);border-radius:5px;padding:2px 7px;margin-left:6px;vertical-align:middle}
+.wo-ii-stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.wo-ii-stat{border:1px solid var(--db-border);border-radius:10px;padding:10px}
+.wo-ii-stat-num{font-size:1.3rem;font-weight:900;color:var(--db-text)}
+.wo-ii-stat-label{font-size:10px;color:var(--db-text-muted);margin-top:2px}
+
+.wo-timeline{display:flex;align-items:flex-end;gap:4px;height:70px;margin-bottom:8px}
+.wo-timeline-col{flex:1;display:flex;flex-direction:column-reverse;height:100%;border-radius:3px 3px 0 0;overflow:hidden;background:var(--db-bg)}
+.wo-timeline-seg{width:100%}
+.wo-timeline-labels{display:flex;gap:4px;margin-bottom:14px}
+.wo-timeline-labels span{flex:1;font-size:9px;color:var(--db-text-muted);text-align:center}
+.wo-timeline-legend{display:flex;gap:12px;font-size:10.5px;color:var(--db-text-muted);margin-bottom:18px}
+.wo-timeline-legend span{display:inline-flex;align-items:center;gap:4px}
+.wo-timeline-legend i{width:8px;height:8px;border-radius:2px;display:inline-block}
+
+.wo-funnel-row{margin-bottom:10px}
+.wo-funnel-label-row{display:flex;justify-content:space-between;font-size:11.5px;color:var(--db-text);margin-bottom:3px}
+.wo-funnel-track{height:6px;border-radius:99px;background:var(--db-bg);overflow:hidden}
+.wo-funnel-fill{height:100%;border-radius:99px}
+.wo-funnel-totals{display:flex;justify-content:space-around;text-align:center;margin:12px 0 18px;padding-top:10px;border-top:1px solid var(--db-border)}
+.wo-funnel-total-num{font-size:13px;font-weight:800;color:var(--db-text)}
+.wo-funnel-total-label{font-size:9.5px;color:var(--db-text-muted)}
+
+.wo-spend-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.wo-spend-label{font-size:11.5px;color:var(--db-text);text-transform:capitalize}
+.wo-spend-track{flex:1;height:5px;border-radius:99px;background:var(--db-bg);margin:0 8px;overflow:hidden}
+.wo-spend-fill{height:100%;border-radius:99px;background:var(--db-invert-bg)}
+.wo-spend-val{font-size:11px;color:var(--db-text-muted);white-space:nowrap;flex-shrink:0}
+.wo-spend-total{display:flex;justify-content:space-between;padding-top:10px;margin-top:6px;border-top:1px solid var(--db-border);font-size:12px;font-weight:700;color:var(--db-text)}
+
 /* ══ MOBILE ══ */
 @media(max-width:1024px){
   html,body{overflow-x:hidden;overflow-y:auto;height:auto;width:100%}
@@ -179,7 +238,8 @@ body{font-family:'Inter',sans-serif;background:var(--db-bg);color:var(--db-text)
   .ob-links-section{display:none}
   .ob-security{display:none}
   .wo-main{padding:16px}
-  .wo-plans,.wo-stats,.wo-links{grid-template-columns:1fr}
+  .wo-plans,.wo-stats,.wo-links,.wo-ii-stats{grid-template-columns:1fr}
+  .wo-right{border-left:none;border-top:1px solid var(--db-border);width:100%}
 }
 </style>
 <script>
@@ -301,6 +361,30 @@ $unitLabel = $contract ? ($contract->billing()['unit_label_plural'] ?? 'transact
   <main class="wo-main">
     <div class="wo-wrap">
 
+    @if($selectedTx)
+      {{-- ── Per-transaction data (no canvas — plain labeled columns) ── --}}
+      <a href="{{ route('workers.overview', $dep->worker_slug) }}" class="wo-tx-back">← Back to Overview</a>
+
+      <div class="wo-card">
+        <div class="wo-card-title">{{ $selectedTx->tx_id }}</div>
+        <div class="wo-tx-header-row"><div class="wo-tx-header-label">Category</div><div class="wo-tx-header-val">{{ $selectedTx->category ?? '—' }}</div></div>
+        <div class="wo-tx-header-row"><div class="wo-tx-header-label">Status</div><div class="wo-tx-header-val">{{ ucfirst(str_replace('_',' ',$selectedTx->status)) }}</div></div>
+        <div class="wo-tx-header-row" style="border-bottom:none"><div class="wo-tx-header-label">Received</div><div class="wo-tx-header-val">{{ \Carbon\Carbon::parse($selectedTx->created_at)->format('M j, Y g:i A') }}</div></div>
+
+        @forelse($txStages as $stage)
+        <div class="wo-tx-stage-title"><span class="wo-tx-stage-dot" style="background:{{ $stage['color'] }}"></span>{{ $stage['label'] }} <span style="font-weight:400;color:var(--db-text-muted);font-size:11px">· {{ $stage['timestamp'] }}</span></div>
+        @foreach($stage['payload'] as $key => $val)
+        @if(is_array($val)) @php $val = json_encode($val, JSON_PRETTY_PRINT); @endphp @endif
+        <div class="wo-tx-data-row">
+          <div class="wo-tx-data-key">{{ str_replace('_',' ',$key) }}</div>
+          <div class="wo-tx-data-val">{{ $val }}</div>
+        </div>
+        @endforeach
+        @empty
+        <p style="font-size:12px;color:var(--db-text-muted);margin-top:12px">No stage data recorded for this transaction yet.</p>
+        @endforelse
+      </div>
+    @else
       <div class="wo-hero">
         @if($coverImg)<img src="{{ $coverImg }}" class="wo-hero-img" alt="">@endif
         <div class="wo-hero-fade"></div>
@@ -440,9 +524,100 @@ $unitLabel = $contract ? ($contract->billing()['unit_label_plural'] ?? 'transact
           </form>
         </div>
       </div>
+    @endif
 
     </div>
   </main>
+
+  {{-- ══ RIGHT PANEL — Inbox Intelligence + TX switcher ══ --}}
+  <aside class="wo-right">
+    <div class="wo-right-head">
+      <div>
+        <div class="wo-right-eyebrow">On Shift</div>
+        <div class="wo-right-name">{{ strtoupper($dep->worker_slug) }}</div>
+        <div class="wo-right-role">{{ $registryRow->description ?? ucfirst($dep->worker_slug).' Specialist' }}</div>
+      </div>
+      <div class="tx-switcher-wrap">
+        <button type="button" class="tx-switcher-btn" id="tx-switcher-btn">
+          <span>{{ $selectedTxId ?? 'Select TX' }}</span>
+          <svg viewBox="0 0 24 24" width="10" height="10"><path stroke-linecap="round" stroke-linejoin="round" d="M6 9l6 6 6-6"/></svg>
+        </button>
+        <div class="tx-switcher-dropdown" id="tx-switcher-dropdown">
+          @forelse($txList as $tx)
+          <a href="{{ route('workers.overview', ['slug' => $dep->worker_slug, 'tx' => $tx->tx_id]) }}" class="tx-switcher-item">
+            <div class="tx-switcher-item-label">{{ $tx->tx_id }}</div>
+            <div class="tx-switcher-item-meta">{{ $tx->category ?: ucfirst(str_replace('_',' ',$tx->status)) }} · {{ \Carbon\Carbon::parse($tx->created_at)->format('M j') }}</div>
+          </a>
+          @empty
+          <p style="font-size:11px;color:var(--db-text-muted);padding:8px">No transactions yet.</p>
+          @endforelse
+        </div>
+      </div>
+    </div>
+
+    <div style="font-size:13px;font-weight:700;color:var(--db-text);margin-bottom:16px">
+      Inbox Intelligence <span class="wo-ii-badge">7d</span>
+    </div>
+
+    <div class="wo-ii-stats">
+      <div class="wo-ii-stat"><div class="wo-ii-stat-num">{{ $pubsubHits->sum('hits') }}</div><div class="wo-ii-stat-label">Pub/Sub hits</div></div>
+      <div class="wo-ii-stat"><div class="wo-ii-stat-num">{{ $ingestedCount }}</div><div class="wo-ii-stat-label">Ingested</div></div>
+      <div class="wo-ii-stat"><div class="wo-ii-stat-num">{{ $observeFunnel->completed ?? 0 }}</div><div class="wo-ii-stat-label">Drafted</div></div>
+      <div class="wo-ii-stat"><div class="wo-ii-stat-num">{{ $avgDuration ? round($avgDuration).'s' : '—' }}</div><div class="wo-ii-stat-label">Avg duration</div></div>
+    </div>
+
+    <div style="font-size:12px;font-weight:700;color:var(--db-text);margin-bottom:10px">Activity Timeline</div>
+    <div class="wo-timeline">
+      @foreach($chartDays as $day)
+      <div class="wo-timeline-col" title="{{ $day['label'] }}">
+        @if($day['hits'] > 0)<div class="wo-timeline-seg" style="height:{{ ($day['hits']/$chartMax)*100 }}%;background:#8b8fd8"></div>@endif
+        @if($day['completed'] > 0)<div class="wo-timeline-seg" style="height:{{ ($day['completed']/$chartMax)*100 }}%;background:#22c55e"></div>@endif
+      </div>
+      @endforeach
+    </div>
+    <div class="wo-timeline-labels">
+      @foreach($chartDays as $day)<span>{{ \Carbon\Carbon::parse($day['day'])->format('j') }}</span>@endforeach
+    </div>
+    <div class="wo-timeline-legend">
+      <span><i style="background:#8b8fd8"></i>Hits</span>
+      <span><i style="background:#22c55e"></i>Drafted</span>
+    </div>
+
+    <div style="font-size:12px;font-weight:700;color:var(--db-text);margin-bottom:10px">Pipeline Funnel</div>
+    @php
+      $funnelSteps = [
+        ['label' => 'Ingested',      'value' => $observeFunnel->total ?? 0,     'color' => '#142C74'],
+        ['label' => 'Passed Filter', 'value' => ($observeFunnel->total ?? 0) - ($observeFunnel->filtered_out ?? 0), 'color' => '#818cf8'],
+        ['label' => 'Classified',    'value' => ($observeFunnel->total ?? 0) - ($observeFunnel->filtered_out ?? 0), 'color' => '#38bdf8'],
+        ['label' => 'Drafted',       'value' => $observeFunnel->completed ?? 0, 'color' => '#22c55e'],
+      ];
+      $funnelMax = max(1, $observeFunnel->total ?? 1);
+    @endphp
+    @foreach($funnelSteps as $step)
+    <div class="wo-funnel-row">
+      <div class="wo-funnel-label-row"><span>{{ $step['label'] }}</span><span>{{ $step['value'] }}</span></div>
+      <div class="wo-funnel-track"><div class="wo-funnel-fill" style="width:{{ ($step['value']/$funnelMax)*100 }}%;background:{{ $step['color'] }}"></div></div>
+    </div>
+    @endforeach
+    <div class="wo-funnel-totals">
+      <div><div class="wo-funnel-total-num">{{ $observeFunnel->filtered_out ?? 0 }}</div><div class="wo-funnel-total-label">filtered</div></div>
+      <div><div class="wo-funnel-total-num">{{ $observeFunnel->dismissed ?? 0 }}</div><div class="wo-funnel-total-label">dismissed</div></div>
+      <div><div class="wo-funnel-total-num" style="color:{{ ($observeFunnel->failed ?? 0) > 0 ? '#ef4444' : 'var(--db-text)' }}">{{ $observeFunnel->failed ?? 0 }}</div><div class="wo-funnel-total-label">failed</div></div>
+    </div>
+
+    @if($stageSpend->isNotEmpty())
+    <div style="font-size:12px;font-weight:700;color:var(--db-text);margin-bottom:10px">AI Spend by Stage</div>
+    @php $spendMax = max(0.0001, $stageSpend->max('cost')); @endphp
+    @foreach($stageSpend as $s)
+    <div class="wo-spend-row">
+      <div class="wo-spend-label" style="flex-shrink:0;width:56px">{{ $s->stage }}</div>
+      <div class="wo-spend-track"><div class="wo-spend-fill" style="width:{{ ($s->cost/$spendMax)*100 }}%"></div></div>
+      <div class="wo-spend-val">{{ $s->calls }}x ${{ number_format($s->cost, 4) }}</div>
+    </div>
+    @endforeach
+    <div class="wo-spend-total"><span>Total this period</span><span>${{ number_format($stageSpend->sum('cost'), 4) }}</span></div>
+    @endif
+  </aside>
 
 </div>{{-- ob-page --}}
 </div>{{-- ob-shell --}}
@@ -466,6 +641,20 @@ $unitLabel = $contract ? ($contract->billing()['unit_label_plural'] ?? 'transact
       menuDropdown.classList.remove('open');
     }
   });
+
+  var txBtn = document.getElementById('tx-switcher-btn');
+  var txDrop = document.getElementById('tx-switcher-dropdown');
+  if (txBtn && txDrop) {
+    txBtn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      txDrop.classList.toggle('open');
+    });
+    document.addEventListener('click', function (e) {
+      if (!txDrop.contains(e.target) && e.target !== txBtn) {
+        txDrop.classList.remove('open');
+      }
+    });
+  }
 })();
 </script>
 </body>

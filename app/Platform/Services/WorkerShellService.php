@@ -11,6 +11,16 @@ use Illuminate\Support\Facades\DB;
  */
 class WorkerShellService
 {
+    // stage_key => [output column, business-facing label, color] — shared across
+    // any page that renders per-transaction pipeline data (desk, worker overview)
+    public const STAGE_META = [
+        'read'     => ['col' => 'read_output',     'label' => 'Reviewed',  'color' => '#6366f1'],
+        'classify' => ['col' => 'classify_output', 'label' => 'Assessed',  'color' => '#f59e0b'],
+        'memory'   => ['col' => 'memory_output',   'label' => 'Verified',  'color' => '#8b5cf6'],
+        'draft'    => ['col' => 'draft_output',    'label' => 'Prepared',  'color' => '#f97316'],
+        'push'     => ['col' => null,              'label' => 'Delivered','color' => '#06b6d4'],
+    ];
+
     // Full UNIT worker catalog — keep in sync with the real roster
     private const CATALOG_META = [
         'ava' => ['name' => 'AVA', 'role' => 'Renewal Specialist'],
