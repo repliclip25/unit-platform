@@ -71,9 +71,14 @@ class BillingController extends Controller
             $emailsProcessed = collect();
         }
 
+        $shell = \App\Platform\Services\WorkerShellService::build($user->id, '');
+        extract($shell); // workerCatalog, registryRows, registryRow, profileImg, coverImg, tokenTotal
+        $firstName = explode(' ', trim($user->name))[0];
+
         return view('dashboard.billing', compact(
             'deployments', 'billingRecords', 'pricingTiers', 'promotions',
-            'invoices', 'policyViolations', 'emailsProcessed'
+            'invoices', 'policyViolations', 'emailsProcessed',
+            'workerCatalog', 'registryRows', 'registryRow', 'profileImg', 'coverImg', 'tokenTotal', 'firstName'
         ));
     }
 
