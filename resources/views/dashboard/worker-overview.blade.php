@@ -107,16 +107,16 @@ body{font-family:'Inter',sans-serif;background:var(--db-bg);color:var(--db-text)
 .wo-card{background:var(--db-card);border:1px solid var(--db-border);border-radius:16px;padding:20px;margin-bottom:16px}
 .wo-card-title{font-size:13.5px;font-weight:700;color:var(--db-text);margin-bottom:14px}
 
-.wo-paywall{border-color:rgba(245,197,24,.35)}
+.wo-paywall{border-color:var(--db-border)}
 .wo-paywall-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:16px}
-.wo-paywall-title{font-size:13.5px;font-weight:700;color:#F5C518}
+.wo-paywall-title{font-size:13.5px;font-weight:700;color:var(--db-text)}
 .wo-paywall-body{font-size:12px;color:var(--db-text-muted);margin-top:3px}
-.wo-paywall-count{font-size:1.4rem;font-weight:900;color:#F5C518;text-align:right}
+.wo-paywall-count{font-size:1.4rem;font-weight:900;color:var(--db-text);text-align:right}
 .wo-paywall-count-label{font-size:10.5px;color:var(--db-text-muted);text-align:right}
 .wo-plans{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .wo-plan{border:1px solid var(--db-border);border-radius:12px;padding:14px;position:relative}
-.wo-plan.recommended{border-color:#F5C518;background:rgba(245,197,24,.05)}
-.wo-plan-badge{position:absolute;top:-10px;left:12px;font-size:9px;font-weight:700;background:#F5C518;color:#0D0D0D;padding:3px 8px;border-radius:99px}
+.wo-plan.recommended{border-color:var(--db-invert-bg);background:var(--db-chip)}
+.wo-plan-badge{position:absolute;top:-10px;left:12px;font-size:9px;font-weight:700;background:var(--db-invert-bg);color:var(--db-invert-text);padding:3px 8px;border-radius:99px}
 .wo-plan-name{font-size:12.5px;font-weight:700;color:var(--db-text)}
 .wo-plan-tagline{font-size:10.5px;color:var(--db-text-muted);margin-top:2px}
 .wo-plan-price{font-size:1.3rem;font-weight:900;color:var(--db-text);margin:8px 0 2px}
@@ -455,7 +455,7 @@ $unitLabel = $contract ? ($contract->billing()['unit_label_plural'] ?? 'transact
         <div class="wo-card-title">Activity</div>
         <div class="wo-stats">
           <div class="wo-stat"><div class="wo-stat-num">{{ $txCount }}</div><div class="wo-stat-label">Total processed</div></div>
-          <div class="wo-stat"><div class="wo-stat-num" style="color:#f59e0b">{{ $pendingReview }}</div><div class="wo-stat-label">Awaiting review</div></div>
+          <div class="wo-stat"><div class="wo-stat-num">{{ $pendingReview }}</div><div class="wo-stat-label">Awaiting review</div></div>
           <div class="wo-stat"><div class="wo-stat-num" style="color:{{ $stuckCount > 0 ? '#ef4444' : 'var(--db-text)' }}">{{ $stuckCount }}</div><div class="wo-stat-label">Stuck / delayed</div></div>
         </div>
       </div>
