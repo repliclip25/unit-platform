@@ -96,12 +96,6 @@ body{font-family:'Inter',sans-serif;background:var(--db-bg);color:var(--db-text)
 .wo-main{overflow-y:auto;padding:24px 24px 60px}
 .wo-wrap{max-width:640px;margin:0 auto}
 
-.wo-hero{position:relative;height:160px;border-radius:20px;overflow:hidden;margin-bottom:48px;background:var(--db-chip)}
-.wo-hero-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-.wo-hero-fade{position:absolute;inset:0;background:linear-gradient(to top, var(--db-bg) 0%, transparent 60%)}
-.wo-hero-avatar{position:absolute;bottom:-36px;left:24px;width:76px;height:76px;border-radius:50%;border:4px solid var(--db-bg);overflow:hidden;background:var(--db-card)}
-.wo-hero-avatar img{width:100%;height:100%;object-fit:cover}
-
 .wo-identity{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px;padding-left:2px}
 .wo-name{font-size:1.4rem;font-weight:900;letter-spacing:-.04em;color:var(--db-text)}
 .wo-role{font-size:13px;color:var(--db-text-muted);margin-top:2px}
@@ -128,8 +122,8 @@ body{font-family:'Inter',sans-serif;background:var(--db-bg);color:var(--db-text)
 .wo-plan-price{font-size:1.3rem;font-weight:900;color:var(--db-text);margin:8px 0 2px}
 .wo-plan-price span{font-size:11px;font-weight:500;color:var(--db-text-muted)}
 .wo-plan-limit{font-size:11px;color:var(--db-text-muted);margin-bottom:10px}
+/* Buttons are always black or white — gold is accent-only (badges/borders), never a button fill */
 .wo-plan-btn{width:100%;padding:9px;border-radius:8px;border:none;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;background:var(--db-invert-bg);color:var(--db-invert-text)}
-.wo-plan.recommended .wo-plan-btn{background:#F5C518;color:#0D0D0D}
 
 .wo-banner{display:flex;align-items:flex-start;gap:12px;border-radius:12px;padding:14px 16px;margin-bottom:12px}
 .wo-banner.warn{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25)}
@@ -385,15 +379,7 @@ $unitLabel = $contract ? ($contract->billing()['unit_label_plural'] ?? 'transact
         @endforelse
       </div>
     @else
-      <div class="wo-hero">
-        @if($coverImg)<img src="{{ $coverImg }}" class="wo-hero-img" alt="">@endif
-        <div class="wo-hero-fade"></div>
-        <div class="wo-hero-avatar">
-          @if($profileImg)<img src="{{ $profileImg }}" alt="">@endif
-        </div>
-      </div>
-
-      <div class="wo-identity">
+      <div class="wo-identity" style="margin-top:4px">
         <div>
           <div class="wo-name">{{ $dep->name }}</div>
           <div class="wo-role">{{ $registryRow->description ?? ucfirst($dep->worker_slug).' Specialist' }}</div>
