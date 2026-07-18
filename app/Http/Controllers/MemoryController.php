@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use App\Platform\Services\MemoryImportService;
 use App\Platform\Services\WorkerRegistry;
+use App\Platform\Services\WorkerShellService;
 
 class MemoryController extends Controller
 {
@@ -48,6 +49,13 @@ class MemoryController extends Controller
         $memoryCopy = array_merge(self::DEFAULT_MEMORY_COPY, $personaDef['memory_copy'] ?? []);
         $personaOptions   = $allPersonas;
         $avaDeploymentId  = $avaDeployment?->id;
+
+        // ── Shared app shell (top bar + worker sidebar) — same data source as
+        // /desk/{slug} and /workers/{slug}/overview. Memory isn't tied to one
+        // worker, so nothing in the sidebar is marked "active" here.
+        $shell = WorkerShellService::build($userId, '');
+        extract($shell); // workerCatalog, registryRows, registryRow, profileImg, coverImg, tokenTotal
+        $firstName = explode(' ', trim(auth()->user()->name))[0];
 
         // ── Groups across all my deployments ─────────────────────────────────
         $myDeployments = DB::table('worker_deployments')
@@ -122,7 +130,8 @@ class MemoryController extends Controller
             'clients', 'contacts', 'assets', 'rules',
             'myDeployments', 'myGroups',
             'incoming', 'outgoing', 'myProfileCode',
-            'assetTypes', 'memoryCopy', 'personaKey', 'personaOptions', 'avaDeploymentId'
+            'assetTypes', 'memoryCopy', 'personaKey', 'personaOptions', 'avaDeploymentId',
+            'workerCatalog', 'registryRows', 'registryRow', 'profileImg', 'coverImg', 'tokenTotal', 'firstName'
         ));
     }
 

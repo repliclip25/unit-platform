@@ -1,795 +1,859 @@
-<x-app-layout title="Memory">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="csrf-token" content="{{ csrf_token() }}">
+<title>Memory — UNIT</title>
+<link rel="icon" type="image/png" href="/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
 
-@if(session('success'))
-    <div class="mb-4 rounded-xl px-5 py-3 text-sm" style="background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.25);color:#4ade80">{{ session('success') }}</div>
-@endif
-@if(session('error'))
-    <div class="mb-4 rounded-xl px-5 py-3 text-sm" style="background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.25);color:#f87171">{{ session('error') }}</div>
-@endif
+:root,[data-theme="dark"]{
+  --db-bg:#0D0D0D; --db-card:#1A1A1A; --db-text:#F5F5F5; --db-text-muted:#9CA3AF;
+  --db-border:rgba(255,255,255,.14); --db-chip:#262626;
+  --db-invert-bg:#F5F5F5; --db-invert-text:#0D0D0D;
+}
+[data-theme="light"]{
+  --db-bg:#F4F3F1; --db-card:#ffffff; --db-text:#0D0D0D; --db-text-muted:#9CA3AF;
+  --db-border:#E5E7EB; --db-chip:#ECEAE6;
+  --db-invert-bg:#0D0D0D; --db-invert-text:#ffffff;
+}
 
-{{-- ── Set persona prompt — unlocks tailored asset types + copy below ────────── --}}
-@if(!$personaKey && $avaDeploymentId && !empty($personaOptions))
-<div class="mb-6 rounded-xl px-5 py-4 flex flex-col sm:flex-row sm:items-center gap-3" style="background:var(--bg-card);border:1px solid var(--border)">
-    <div class="flex-1">
-        <p class="text-sm font-medium" style="color:var(--text-primary)">Tell us what AVA is renewing for you</p>
-        <p class="text-xs mt-0.5" style="color:var(--text-muted)">Pick your use case to get the right asset types and terminology below — takes one click.</p>
+body{font-family:'Inter',sans-serif;background:var(--db-bg);color:var(--db-text);-webkit-font-smoothing:antialiased}
+
+/* ── SHELL (identical to /desk/{slug} and /workers/{slug}/overview) ── */
+.ob-shell{display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.ob-topbar{background:var(--db-bg);display:flex;align-items:center;justify-content:space-between;padding:0 24px;height:52px;flex-shrink:0}
+.ob-topbar-logo{font-size:21px;font-weight:900;letter-spacing:-.04em;color:var(--db-text)}
+.ob-topbar-name{font-size:12.5px;font-weight:700;color:var(--db-text)}
+.ob-topbar-email{font-size:11px;color:var(--db-text-muted)}
+.ob-topbar-right{display:flex;align-items:center;gap:12px}
+.ob-token-badge{font-size:10px;font-weight:600;color:var(--db-text-muted);background:var(--db-chip);border-radius:5px;padding:2px 7px;white-space:nowrap}
+.ob-theme-toggle{width:36px;height:20px;border-radius:10px;border:none;cursor:pointer;position:relative;background:var(--db-chip)}
+.ob-theme-toggle::after{content:'';position:absolute;top:3px;left:3px;width:14px;height:14px;border-radius:50%;background:var(--db-invert-bg);transition:transform .2s ease}
+[data-theme="dark"] .ob-theme-toggle::after{transform:translateX(16px)}
+.ob-menu-wrap{position:relative}
+.ob-hamburger{width:32px;height:32px;border-radius:8px;border:1px solid var(--db-border);background:var(--db-card);display:flex;align-items:center;justify-content:center;cursor:pointer}
+.ob-hamburger svg{width:15px;height:15px;stroke:var(--db-text);stroke-width:2;fill:none}
+.ob-menu-dropdown{position:absolute;top:calc(100% + 8px);right:0;min-width:220px;background:var(--db-card);border:1px solid var(--db-border);border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.18);padding:8px;z-index:50;display:none}
+.ob-menu-dropdown.open{display:block}
+.ob-menu-user{padding:8px 10px 10px;border-bottom:1px solid var(--db-border);margin-bottom:6px}
+.ob-menu-token{padding:0 10px 8px}
+.ob-menu-item{display:block;width:100%;text-align:left;padding:8px 10px;border-radius:8px;font-size:12.5px;font-weight:600;color:var(--db-text);text-decoration:none;background:none;border:none;cursor:pointer;font-family:inherit}
+.ob-menu-item:hover{background:var(--db-chip)}
+
+.ob-page{display:grid;grid-template-columns:260px 1fr;flex:1;overflow:hidden}
+.ob-sidebar{background:var(--db-bg);display:flex;flex-direction:column;overflow-y:auto}
+.ob-steps{display:flex;flex-direction:column;padding:18px 24px 0;flex:1}
+.ob-workers-hd{font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--db-text-muted);margin-bottom:10px}
+.ob-step{display:flex;align-items:flex-start;gap:14px;position:relative;text-decoration:none;color:inherit}
+.ob-step:not(:last-child) .ob-step-rail::after{content:'';position:absolute;left:13px;top:30px;width:2px;height:calc(100% - 6px);background:var(--db-border);border-radius:2px}
+.ob-step.done:not(:last-child) .ob-step-rail::after{background:var(--db-invert-bg)}
+.ob-step-rail{position:relative;flex-shrink:0;display:flex;flex-direction:column;align-items:center;padding-bottom:20px}
+.ob-step:last-child .ob-step-rail{padding-bottom:0}
+.ob-step-num{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;position:relative;z-index:1;flex-shrink:0;overflow:hidden}
+.ob-step.pending .ob-step-num{background:var(--db-chip);color:var(--db-text-muted);border:1.5px solid var(--db-border)}
+.ob-step.done .ob-step-num{background:var(--db-invert-bg);color:var(--db-invert-text)}
+.ob-step-body{padding-top:4px;padding-bottom:20px}
+.ob-step:last-child .ob-step-body{padding-bottom:0}
+.ob-step-label{font-size:13px;font-weight:700;color:var(--db-text);line-height:1.2}
+.ob-step.pending .ob-step-label{color:var(--db-text-muted)}
+.ob-step-desc{font-size:11px;color:var(--db-text-muted);margin-top:2px;line-height:1.4;display:flex;align-items:center;gap:5px}
+@keyframes pdot{0%,100%{opacity:1}50%{opacity:.3}}
+
+.ob-links-section{padding:16px 24px 8px;border-top:1px solid var(--db-border);flex-shrink:0}
+.ob-links-hd{font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--db-text-muted);margin-bottom:8px}
+.ob-link{display:flex;align-items:center;gap:9px;padding:6px 10px;border-radius:8px;text-decoration:none;font-size:12px;font-weight:500;color:var(--db-text-muted);transition:all .12s}
+.ob-link:hover{background:var(--db-card);color:var(--db-text)}
+.ob-link svg{width:13px;height:13px;stroke:currentColor;stroke-width:1.8;fill:none;flex-shrink:0}
+.ob-link.active{background:var(--db-card);color:var(--db-text)}
+
+.ob-security{margin:8px 24px 16px;padding:13px 15px;border-radius:12px;background:var(--db-chip);border:1px solid var(--db-border);flex-shrink:0}
+.ob-security-row{display:flex;align-items:center;gap:7px;margin-bottom:4px}
+.ob-security-row svg{width:12px;height:12px;stroke:var(--db-text-muted);flex-shrink:0;fill:none}
+.ob-security-title{font-size:11.5px;font-weight:700;color:var(--db-text)}
+.ob-security p{font-size:10.5px;color:var(--db-text-muted);line-height:1.55}
+
+/* ── CONTENT ── */
+.mem-main{overflow-y:auto;padding:24px 28px 60px}
+.mem-wrap{max-width:920px;margin:0 auto}
+
+.mem-status{border-radius:12px;padding:10px 14px;font-size:12.5px;margin-bottom:16px}
+.mem-status.success{background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.25);color:#22c55e}
+.mem-status.error{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.25);color:#ef4444}
+
+.mem-h1{font-size:1.55rem;font-weight:900;letter-spacing:-.04em;color:var(--db-text)}
+.mem-sub{font-size:12.5px;color:var(--db-text-muted);margin-top:3px;max-width:520px}
+.mem-header-row{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:20px}
+.mem-code-label{font-size:10.5px;color:var(--db-text-muted);text-align:right}
+.mem-code{display:flex;align-items:center;gap:8px}
+.mem-code-val{font-family:monospace;font-size:13px;font-weight:700;letter-spacing:.05em;padding:6px 12px;border-radius:8px;background:var(--db-card);border:1px solid var(--db-border);color:var(--db-text)}
+.mem-code-copy{font-size:11.5px;color:var(--db-text-muted);background:none;border:none;cursor:pointer;font-family:inherit}
+.mem-code-copy:hover{color:var(--db-text)}
+
+.wo-card{background:var(--db-card);border:1px solid var(--db-border);border-radius:16px;padding:20px;margin-bottom:16px}
+.wo-card-title{font-size:13.5px;font-weight:700;color:var(--db-text);margin-bottom:14px}
+
+.mem-persona-prompt{display:flex;flex-wrap:wrap;align-items:center;gap:12px}
+.mem-persona-prompt-text{flex:1;min-width:220px}
+.mem-persona-prompt-title{font-size:13px;font-weight:700;color:var(--db-text)}
+.mem-persona-prompt-sub{font-size:11.5px;color:var(--db-text-muted);margin-top:2px}
+.mem-persona-form{display:flex;gap:8px;flex-shrink:0}
+
+.mem-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px}
+.mem-stat{background:var(--db-card);border:1px solid var(--db-border);border-radius:12px;padding:14px}
+.mem-stat-num{font-size:1.4rem;font-weight:900;color:var(--db-text)}
+.mem-stat-label{font-size:10.5px;color:var(--db-text-muted);margin-top:2px}
+.mem-stat-sub{font-size:10px;color:#f59e0b;margin-top:2px}
+
+.mem-tabs{display:flex;gap:4px;border-bottom:1px solid var(--db-border);margin-bottom:20px;overflow-x:auto}
+.mem-tab{padding:9px 4px;margin-right:18px;font-size:12.5px;font-weight:600;color:var(--db-text-muted);background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;font-family:inherit;white-space:nowrap}
+.mem-tab.active{color:var(--db-text);border-color:var(--db-invert-bg)}
+.mem-tab-badge{font-size:10px;background:var(--db-chip);color:var(--db-text-muted);border-radius:99px;padding:1px 6px;margin-left:4px}
+
+.mem-import-row{display:flex;flex-wrap:wrap;align-items:center;gap:12px}
+.mem-import-text{flex:1;min-width:200px}
+.mem-import-title{font-size:13px;font-weight:600;color:var(--db-text)}
+.mem-import-sub{font-size:11.5px;color:var(--db-text-muted);margin-top:2px}
+.mem-import-form{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.mem-select,.mem-input,.mem-textarea{width:100%;border-radius:9px;padding:9px 12px;font-size:12.5px;background:var(--db-bg);border:1px solid var(--db-border);color:var(--db-text);font-family:inherit}
+.mem-select:focus,.mem-input:focus,.mem-textarea:focus{outline:none;border-color:var(--db-invert-bg)}
+.mem-file-label{display:inline-block;padding:9px 14px;border-radius:9px;border:1px solid var(--db-border);background:var(--db-bg);color:var(--db-text-muted);font-size:12.5px;cursor:pointer}
+.mem-btn{padding:9px 16px;border-radius:9px;border:none;font-size:12.5px;font-weight:700;cursor:pointer;font-family:inherit;background:var(--db-invert-bg);color:var(--db-invert-text)}
+.mem-btn:hover{opacity:.9}
+.mem-btn-secondary{padding:8px 14px;border-radius:9px;border:1px solid var(--db-border);background:var(--db-bg);color:var(--db-text-muted);font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;text-decoration:none;display:inline-block}
+.mem-btn-secondary:hover{background:var(--db-chip);color:var(--db-text)}
+.mem-tpl-link{font-size:11.5px;color:var(--db-text-muted);margin-top:8px;display:block}
+.mem-tpl-link a{color:var(--db-text)}
+
+.mem-grid{display:grid;grid-template-columns:1.6fr 1fr;gap:16px;align-items:flex-start}
+@media(max-width:900px){.mem-grid{grid-template-columns:1fr}}
+.mem-list{background:var(--db-card);border:1px solid var(--db-border);border-radius:16px;overflow:hidden}
+.mem-row{padding:14px 18px;border-bottom:1px solid var(--db-border);display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.mem-row:last-child{border-bottom:none}
+.mem-row-name{font-size:13px;font-weight:600;color:var(--db-text)}
+.mem-row-sub{font-size:11.5px;color:var(--db-text-muted);margin-top:2px}
+.mem-row-sub2{font-size:11px;color:var(--db-text-muted);margin-top:1px}
+.mem-row-empty{padding:36px 18px;text-align:center;font-size:12.5px;color:var(--db-text-muted)}
+.mem-row-action{font-size:11.5px;font-weight:600;color:var(--db-text-muted);background:none;border:none;cursor:pointer;font-family:inherit;text-decoration:none}
+.mem-row-action:hover{color:var(--db-text)}
+.mem-badge{font-size:9.5px;font-weight:700;padding:2px 7px;border-radius:99px;margin-left:6px}
+
+.mem-form-card{background:var(--db-card);border:1px solid var(--db-border);border-radius:16px;overflow:hidden}
+.mem-form-head{padding:14px 18px;border-bottom:1px solid var(--db-border);font-size:13px;font-weight:700;color:var(--db-text)}
+.mem-form-body{padding:16px 18px;display:flex;flex-direction:column;gap:12px}
+.mem-field-label{font-size:11px;font-weight:600;color:var(--db-text-muted);margin-bottom:5px;display:block}
+.mem-field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.mem-toggle-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;border:1px solid var(--db-border);border-radius:9px;background:var(--db-bg)}
+.mem-toggle-title{font-size:12px;font-weight:600;color:var(--db-text)}
+.mem-toggle-sub{font-size:10.5px;color:var(--db-text-muted);margin-top:1px}
+.mem-toggle{position:relative;width:36px;height:20px;flex-shrink:0}
+.mem-toggle input{position:absolute;opacity:0;width:0;height:0}
+.mem-toggle-track{position:absolute;inset:0;border-radius:99px;background:var(--db-chip);transition:.15s}
+.mem-toggle-thumb{position:absolute;top:3px;left:3px;width:14px;height:14px;border-radius:50%;background:var(--db-invert-bg);transition:.15s}
+.mem-toggle input:checked ~ .mem-toggle-track{background:var(--db-invert-bg)}
+.mem-toggle input:checked ~ .mem-toggle-track .mem-toggle-thumb{transform:translateX(16px);background:var(--db-invert-text)}
+
+.mem-edit-panel{background:var(--db-bg);border-top:1px solid var(--db-border);padding:14px 18px}
+
+.mem-empty-card{background:var(--db-card);border:1px solid var(--db-border);border-radius:16px;padding:40px 20px;text-align:center}
+.mem-empty-title{font-size:13px;font-weight:700;color:var(--db-text);margin-bottom:4px}
+.mem-empty-sub{font-size:12px;color:var(--db-text-muted)}
+
+.mem-group-dep{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.mem-group-dep-name{font-size:10.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--db-text-muted)}
+.mem-group-dep-slug{font-size:10px;font-family:monospace;color:var(--db-text-muted);background:var(--db-chip);padding:1px 6px;border-radius:5px;margin-left:6px}
+.mem-group-card{background:var(--db-card);border:1px solid var(--db-border);border-radius:14px;margin-bottom:10px;overflow:hidden}
+.mem-group-head{padding:12px 16px;display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.mem-group-items{padding:0 16px 12px;display:flex;flex-wrap:wrap;gap:6px}
+.mem-group-chip{font-size:11px;padding:4px 9px;border-radius:8px;background:var(--db-bg);color:var(--db-text-muted);display:flex;align-items:center;gap:5px}
+
+.mem-shared-card{background:var(--db-card);border:1px solid var(--db-border);border-radius:14px;margin-bottom:12px;overflow:hidden}
+.mem-shared-head{padding:16px 18px;border-bottom:1px solid var(--db-border);display:flex;flex-wrap:wrap;align-items:flex-start;gap:14px}
+.mem-shared-stats{display:flex;gap:16px}
+.mem-shared-stat{text-align:center}
+.mem-shared-stat-num{font-size:15px;font-weight:800;color:var(--db-text)}
+.mem-shared-stat-label{font-size:10px;color:var(--db-text-muted)}
+.mem-shared-meta{padding:8px 18px;display:flex;flex-wrap:wrap;gap:14px;font-size:11px;color:var(--db-text-muted)}
+
+.mem-access-audit-btn{width:100%;text-align:left;padding:10px 18px;font-size:11.5px;color:var(--db-text-muted);background:none;border:none;border-top:1px solid var(--db-border);cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:6px}
+.mem-access-audit-row{padding:9px 18px;border-top:1px solid var(--db-border);display:flex;align-items:center;gap:10px;font-size:11.5px}
+
+/* ══ MOBILE ══ */
+@media(max-width:1024px){
+  html,body{overflow-x:hidden;overflow-y:auto;height:auto;width:100%}
+  .ob-shell{height:auto;overflow:visible;width:100%}
+  .ob-shell,.ob-shell *{min-width:0}
+  .ob-topbar{height:auto;padding:12px 16px;flex-wrap:wrap;gap:6px}
+  .ob-topbar-logo{font-size:18px}
+  .ob-topbar-email{display:none}
+  .ob-page{display:block;height:auto;overflow:visible;width:100%}
+  .ob-sidebar{width:100%;flex-direction:column;padding:0;overflow:hidden;border-bottom:none}
+  .ob-steps,.ob-links-section,.ob-security{display:none}
+  .mem-main{padding:16px}
+  .mem-grid,.mem-stats,.mem-field-row{grid-template-columns:1fr}
+}
+</style>
+<script>
+(function () {
+  var saved = localStorage.getItem('unit-theme-v2') || 'light';
+  document.documentElement.setAttribute('data-theme', saved);
+})();
+</script>
+</head>
+<body>
+
+@php
+$tokenFmt = $tokenTotal >= 1000000 ? number_format($tokenTotal/1000000,1).'M' : number_format($tokenTotal);
+$urgentAssets = $assets->filter(fn($a) => $a->renewal_date && now()->diffInDays($a->renewal_date, false) <= 30 && now()->diffInDays($a->renewal_date, false) >= 0)->count();
+$expiredAssets = $assets->filter(fn($a) => $a->renewal_date && now()->diffInDays($a->renewal_date, false) < 0)->count();
+@endphp
+
+<div class="ob-shell">
+
+{{-- ══ TOP BAR ══ --}}
+<div class="ob-topbar">
+  <div class="ob-topbar-logo">UNIT</div>
+  <div class="ob-topbar-right">
+    <a href="{{ route('profile.show') }}" class="ob-topbar-name" style="text-decoration:none">{{ auth()->user()->name }}</a>
+    <button class="ob-theme-toggle" id="theme-toggle" type="button" title="Toggle dark/light mode" aria-label="Toggle theme"></button>
+    <div class="ob-menu-wrap">
+      <button class="ob-hamburger" id="menu-toggle" type="button" aria-label="Menu">
+        <svg viewBox="0 0 24 24"><path stroke-linecap="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
+      <div class="ob-menu-dropdown" id="menu-dropdown">
+        <div class="ob-menu-user">
+          <div class="ob-topbar-name">{{ auth()->user()->name }}</div>
+          <div class="ob-topbar-email">{{ auth()->user()->email }}</div>
+        </div>
+        <div class="ob-menu-token"><span class="ob-token-badge">{{ $tokenFmt }} tokens</span></div>
+        <a href="{{ route('settings.api-keys') }}" class="ob-menu-item">Settings</a>
+        <form method="POST" action="{{ route('logout') }}">@csrf<button type="submit" class="ob-menu-item">Logout</button></form>
+      </div>
     </div>
-    <form method="POST" action="{{ route('workers.persona', $avaDeploymentId) }}" class="flex items-center gap-2 shrink-0">
-        @csrf @method('PATCH')
-        <select name="persona" required class="text-sm rounded-lg px-3 py-2 border focus:outline-none" style="background:var(--bg-raised);color:var(--text-primary);border-color:var(--border)">
+  </div>
+</div>
+
+<div class="ob-page">
+
+  {{-- ══ SIDEBAR ══ --}}
+  <aside class="ob-sidebar">
+    <div class="ob-steps">
+      <div class="ob-workers-hd">
+        <a href="{{ route('profile.show') }}" style="color:inherit;text-decoration:none">{{ strtoupper($firstName) }}'S WORKERS</a>
+      </div>
+      @foreach($workerCatalog as $wc)
+      @php
+        $wDot  = $wc->status==='active' ? '#22c55e' : '#f59e0b';
+        $wHref = !$wc->active ? route('workers.page') : ($wc->slug==='ava' ? route('desk.ava') : route('workers.overview',$wc->slug));
+      @endphp
+      <a href="{{ $wHref }}" class="ob-step {{ $wc->active ? 'done' : 'pending' }}" style="text-decoration:none{{ !$wc->active ? ';opacity:.5' : '' }}">
+        <div class="ob-step-rail">
+          <div class="ob-step-num" style="padding:0">
+            @if($wc->image)
+              <img src="{{ $wc->image }}" style="width:100%;height:100%;object-fit:cover;display:block{{ !$wc->active ? ';filter:grayscale(1)' : '' }}" alt="" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+              <span style="display:none;font-size:11px;font-weight:800;color:#6B7280;width:100%;height:100%;align-items:center;justify-content:center">{{ substr($wc->name,0,1) }}</span>
+            @else
+              <span style="font-size:11px;font-weight:800;color:#6B7280">{{ substr($wc->name,0,1) }}</span>
+            @endif
+          </div>
+        </div>
+        <div class="ob-step-body">
+          <div class="ob-step-label">{{ $wc->name }}</div>
+          <div class="ob-step-desc">
+            @if($wc->active)
+              <span style="width:5px;height:5px;border-radius:50%;background:{{ $wDot }};flex-shrink:0;display:inline-block"></span>{{ $wc->role }}
+            @else
+              Not hired — {{ $wc->role }}
+            @endif
+          </div>
+        </div>
+      </a>
+      @endforeach
+      <a href="{{ route('workers.page') }}" class="ob-step pending" style="text-decoration:none;margin-top:4px">
+        <div class="ob-step-rail"><div class="ob-step-num" style="background:var(--db-chip);border:1.5px dashed var(--db-border);color:var(--db-text-muted);font-size:16px;font-weight:400">+</div></div>
+        <div class="ob-step-body"><div class="ob-step-label">Hire a worker</div></div>
+      </a>
+    </div>
+
+    <div class="ob-links-section">
+      <div class="ob-links-hd">LINKS</div>
+      @foreach([
+        ['Memory',       'M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18', route('memory'), true],
+        ['Templates',    'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z', route('workers.templates',['slug'=>'ava']), false],
+        ['Rules',        'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4', route('workers.rules','ava'), false],
+        ['Integrations', 'M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1', '#', false],
+        ['Billing',      'M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z', route('billing'), false],
+        ['Activity Log', 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2', route('transactions'), false],
+      ] as [$lbl,$ico,$href,$isActive])
+      <a href="{{ $href }}" class="ob-link {{ $isActive ? 'active' : '' }}">
+        <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $ico }}"/></svg>
+        {{ $lbl }}
+      </a>
+      @endforeach
+    </div>
+
+    <div class="ob-security">
+      <div class="ob-security-row">
+        <svg viewBox="0 0 24 24" stroke-width="1.8"><rect x="3" y="11" width="18" height="11" rx="2"/><path stroke-linecap="round" d="M7 11V7a5 5 0 0110 0v4"/></svg>
+        <span class="ob-security-title">Secure. Private. Yours.</span>
+      </div>
+      <p>Your memory powers every worker you deploy.</p>
+    </div>
+  </aside>
+
+  {{-- ══ CONTENT ══ --}}
+  <main class="mem-main">
+    <div class="mem-wrap">
+
+      @if(session('success'))<div class="mem-status success">{{ session('success') }}</div>@endif
+      @if(session('error'))<div class="mem-status error">{{ session('error') }}</div>@endif
+
+      @if(!$personaKey && $avaDeploymentId && !empty($personaOptions))
+      <div class="wo-card mem-persona-prompt">
+        <div class="mem-persona-prompt-text">
+          <div class="mem-persona-prompt-title">Tell us what AVA is renewing for you</div>
+          <div class="mem-persona-prompt-sub">Pick your use case to get the right asset types and terminology below — one click.</div>
+        </div>
+        <form method="POST" action="{{ route('workers.persona', $avaDeploymentId) }}" class="mem-persona-form">
+          @csrf @method('PATCH')
+          <select name="persona" required class="mem-select" style="width:auto">
             <option value="">Choose a use case…</option>
             @foreach($personaOptions as $key => $p)
             <option value="{{ $key }}">{{ $p['label'] }}</option>
             @endforeach
-        </select>
-        <button type="submit" class="text-sm rounded-lg px-4 py-2 font-semibold transition hover:opacity-90" class="ac-on">Save</button>
-    </form>
-</div>
-@endif
+          </select>
+          <button type="submit" class="mem-btn">Save</button>
+        </form>
+      </div>
+      @endif
 
-{{-- ── Hub header ──────────────────────────────────────────────────────────── --}}
-<div class="mb-6 flex flex-wrap items-start justify-between gap-4">
-    <div>
-        <h1 class="text-xl font-bold" style="color:var(--text-primary)">Memory</h1>
-        <p class="text-xs mt-0.5 max-w-xl" style="color:var(--text-muted)">
-            Your memory is your AI's training data. Every client, contact, asset, and group you build here powers every worker you deploy — now and in the future.
-        </p>
-    </div>
-    {{-- Profile code ──────────────────────────────────────────────────── --}}
-    <div class="text-right shrink-0">
-        <p class="text-xs mb-0.5" style="color:var(--text-faint)">Your profile code</p>
-        <div class="flex items-center gap-2">
-            <span class="font-mono text-sm font-bold tracking-widest px-3 py-1.5 rounded-lg"
-                  style="background:var(--bg-card);border:1px solid var(--border);color:var(--text-primary)">{{ $myProfileCode ?? '—' }}</span>
-            <button onclick="navigator.clipboard.writeText('{{ $myProfileCode }}');this.textContent='Copied!';setTimeout(()=>this.textContent='Copy',1500)"
-                    class="text-xs transition hover:opacity-80" style="color:var(--text-muted)">Copy</button>
+      <div class="mem-header-row">
+        <div>
+          <div class="mem-h1">Memory</div>
+          <div class="mem-sub">Your memory is your AI's training data. Every {{ $memoryCopy['client_noun'] }}, contact, and {{ $memoryCopy['asset_noun'] }} you build here powers every worker you deploy.</div>
         </div>
-    </div>
-</div>
+        <div>
+          <div class="mem-code-label">Your profile code</div>
+          <div class="mem-code">
+            <span class="mem-code-val">{{ $myProfileCode ?? '—' }}</span>
+            <button type="button" class="mem-code-copy" onclick="navigator.clipboard.writeText('{{ $myProfileCode }}');this.textContent='Copied!';setTimeout(()=>this.textContent='Copy',1500)">Copy</button>
+          </div>
+        </div>
+      </div>
 
-{{-- ── Stats strip ─────────────────────────────────────────────────────────── --}}
-@php
-    $urgentAssets = $assets->filter(fn($a) => $a->renewal_date && now()->diffInDays($a->renewal_date, false) <= 30 && now()->diffInDays($a->renewal_date, false) >= 0)->count();
-    $expiredAssets = $assets->filter(fn($a) => $a->renewal_date && now()->diffInDays($a->renewal_date, false) < 0)->count();
-@endphp
-<div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
-    @foreach([
-        ['label'=>'Clients',  'value'=>$clients->count(),  'sub'=>''],
-        ['label'=>'Contacts', 'value'=>$contacts->count(), 'sub'=>''],
-        ['label'=>'Assets',   'value'=>$assets->count(),   'sub'=> $urgentAssets ? $urgentAssets.' expiring soon' : ($expiredAssets ? $expiredAssets.' expired' : '')],
-        ['label'=>'Groups',   'value'=>$myGroups->count(), 'sub'=>$myDeployments->count().' worker'.($myDeployments->count()!==1?'s':'')],
-    ] as $stat)
-    <div class="rounded-xl px-4 py-3" style="background:var(--bg-card);border:1px solid var(--border)">
-        <p class="text-2xl font-bold" style="color:var(--text-primary)">{{ $stat['value'] }}</p>
-        <p class="text-xs font-medium mt-0.5" style="color:var(--text-muted)">{{ $stat['label'] }}</p>
-        @if($stat['sub'])
-        <p class="text-xs mt-0.5" style="color:{{ str_contains($stat['sub'],'expir') ? '#fbbf24' : 'var(--text-faint)' }}">{{ $stat['sub'] }}</p>
-        @endif
-    </div>
-    @endforeach
-</div>
+      <div class="mem-stats">
+        <div class="mem-stat"><div class="mem-stat-num">{{ $clients->count() }}</div><div class="mem-stat-label">{{ ucfirst($memoryCopy['client_noun_plural']) }}</div></div>
+        <div class="mem-stat"><div class="mem-stat-num">{{ $contacts->count() }}</div><div class="mem-stat-label">Contacts</div></div>
+        <div class="mem-stat"><div class="mem-stat-num">{{ $assets->count() }}</div><div class="mem-stat-label">Assets</div>
+          @if($urgentAssets)<div class="mem-stat-sub">{{ $urgentAssets }} expiring soon</div>@elseif($expiredAssets)<div class="mem-stat-sub">{{ $expiredAssets }} expired</div>@endif
+        </div>
+        <div class="mem-stat"><div class="mem-stat-num">{{ $myGroups->count() }}</div><div class="mem-stat-label">Groups</div><div class="mem-stat-sub" style="color:var(--db-text-muted)">{{ $myDeployments->count() }} worker{{ $myDeployments->count()!==1?'s':'' }}</div></div>
+      </div>
 
-{{-- ── Tab bar ──────────────────────────────────────────────────────────────── --}}
-<div class="overflow-x-auto mb-6" style="border-bottom:1px solid var(--border)">
-    <div class="flex gap-1 min-w-max">
-        <button onclick="showTab('mine')" id="tab-mine"
-                class="hub-tab px-4 py-2 text-sm font-medium whitespace-nowrap border-b-2"
-                style="color:var(--text-primary);border-color:var(--accent)">My Memory</button>
-        <button onclick="showTab('shared')" id="tab-shared"
-                class="hub-tab px-4 py-2 text-sm font-medium whitespace-nowrap border-b-2 border-transparent transition hover:opacity-80"
-                style="color:var(--text-muted)">
-            Shared With Me
-            @if($incoming->count())
-            <span class="ml-1.5 text-xs rounded-full px-1.5 py-0.5" style="background:var(--bg-raised);color:var(--text-muted)">{{ $incoming->count() }}</span>
-            @endif
-        </button>
-        <button onclick="showTab('access')" id="tab-access"
-                class="hub-tab px-4 py-2 text-sm font-medium whitespace-nowrap border-b-2 border-transparent transition hover:opacity-80"
-                style="color:var(--text-muted)">
-            Access
-            @if($outgoing->count())
-            <span class="ml-1.5 text-xs rounded-full px-1.5 py-0.5" style="background:var(--bg-raised);color:var(--text-muted)">{{ $outgoing->count() }}</span>
-            @endif
-        </button>
-    </div>
-</div>
+      <div class="mem-tabs">
+        <button onclick="showTab('mine')" id="tab-mine" class="mem-tab active">My Memory</button>
+        <button onclick="showTab('shared')" id="tab-shared" class="mem-tab">Shared With Me @if($incoming->count())<span class="mem-tab-badge">{{ $incoming->count() }}</span>@endif</button>
+        <button onclick="showTab('access')" id="tab-access" class="mem-tab">Access @if($outgoing->count())<span class="mem-tab-badge">{{ $outgoing->count() }}</span>@endif</button>
+      </div>
 
-{{-- ════════════════════════════════════════════════════════════════════════════
-     TAB: MY MEMORY
-     ════════════════════════════════════════════════════════════════════════════ --}}
-<div id="pane-mine" class="hub-pane">
+      {{-- ════════ TAB: MY MEMORY ════════ --}}
+      <div id="pane-mine" class="hub-pane">
 
-    {{-- Bulk import bar --}}
-    <div class="rounded-xl px-5 py-4 mb-5" style="background:var(--bg-card);border:1px solid var(--border)">
-        <div class="flex flex-col sm:flex-row sm:items-center gap-4">
-            <div class="flex-1 min-w-0">
-                <p class="text-sm font-medium" style="color:var(--text-primary)">Bulk Import</p>
-                <p class="text-xs mt-0.5" style="color:var(--text-muted)">Upload a CSV or Excel file to populate clients, contacts, or assets.</p>
+        <div class="wo-card">
+          <div class="mem-import-row">
+            <div class="mem-import-text">
+              <div class="mem-import-title">Bulk Import</div>
+              <div class="mem-import-sub">Upload a CSV or Excel file to populate {{ $memoryCopy['client_noun_plural'] }}, contacts, or assets.</div>
             </div>
-            <form method="POST" action="{{ route('memory.import.preview') }}" enctype="multipart/form-data"
-                  class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2" id="import-form">
-                @csrf
-                <select name="type" id="import-type" onchange="updateTemplateLink(this.value)"
-                        class="text-sm rounded-lg px-3 py-2 border focus:outline-none"
-                        style="background:var(--bg-raised);color:var(--text-primary);border-color:var(--border)">
-                    <option value="clients">Clients</option>
-                    <option value="contacts">Contacts</option>
-                    <option value="assets">Assets</option>
-                </select>
-                <label class="cursor-pointer">
-                    <span class="block text-center text-sm rounded-lg px-3 py-2 border transition hover:opacity-80"
-                          id="file-label" style="background:var(--bg-raised);color:var(--text-secondary);border-color:var(--border)">Choose file…</span>
-                    <input type="file" name="file" accept=".csv,.xlsx,.xls" required class="hidden"
-                           onchange="document.getElementById('file-label').textContent = this.files[0]?.name ?? 'Choose file…'">
-                </label>
-                <button type="submit" class="text-sm rounded-lg px-4 py-2 font-semibold transition hover:opacity-90"
-                        class="ac-on">Preview Import</button>
+            <form method="POST" action="{{ route('memory.import.preview') }}" enctype="multipart/form-data" class="mem-import-form" id="import-form">
+              @csrf
+              <select name="type" id="import-type" onchange="updateTemplateLink(this.value)" class="mem-select" style="width:auto">
+                <option value="clients">{{ ucfirst($memoryCopy['client_noun_plural']) }}</option>
+                <option value="contacts">Contacts</option>
+                <option value="assets">Assets</option>
+              </select>
+              <label class="mem-file-label">
+                <span id="file-label">Choose file…</span>
+                <input type="file" name="file" accept=".csv,.xlsx,.xls" required class="hidden" style="display:none" onchange="document.getElementById('file-label').textContent = this.files[0]?.name ?? 'Choose file…'">
+              </label>
+              <button type="submit" class="mem-btn">Preview Import</button>
             </form>
+          </div>
+          <div class="mem-tpl-link">Download template: <a id="tpl-link" href="{{ route('memory.import.template', 'clients') }}">clients_import_template.csv</a></div>
         </div>
-        <div class="mt-2 flex items-center gap-1 text-xs" style="color:var(--text-faint)">
-            <svg class="w-3 h-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-            Download template:
-            <a id="tpl-link" href="{{ route('memory.import.template', 'clients') }}"
-               class="transition hover:opacity-80" class="ac-text">clients_import_template.csv</a>
-        </div>
-    </div>
 
-    {{-- Sub-tab nav --}}
-    <div class="overflow-x-auto mb-6" style="border-bottom:1px solid var(--border)">
-        <div class="flex gap-1 min-w-max">
-            <button onclick="showSubTab('clients')" id="subtab-clients"
-                    class="sub-tab px-4 py-2 text-sm font-medium whitespace-nowrap border-b-2"
-                    style="color:var(--text-primary);border-color:var(--accent)">
-                Clients <span class="ml-1 text-xs opacity-60">{{ $clients->count() }}</span>
-            </button>
-            <button onclick="showSubTab('contacts')" id="subtab-contacts"
-                    class="sub-tab px-4 py-2 text-sm font-medium whitespace-nowrap border-b-2 border-transparent transition hover:opacity-80"
-                    style="color:var(--text-muted)">
-                Contacts <span class="ml-1 text-xs opacity-60">{{ $contacts->count() }}</span>
-            </button>
-            <button onclick="showSubTab('assets')" id="subtab-assets"
-                    class="sub-tab px-4 py-2 text-sm font-medium whitespace-nowrap border-b-2 border-transparent transition hover:opacity-80"
-                    style="color:var(--text-muted)">
-                Assets <span class="ml-1 text-xs opacity-60">{{ $assets->count() }}</span>
-            </button>
-            <button onclick="showSubTab('groups')" id="subtab-groups"
-                    class="sub-tab px-4 py-2 text-sm font-medium whitespace-nowrap border-b-2 border-transparent transition hover:opacity-80"
-                    style="color:var(--text-muted)">
-                Groups <span class="ml-1 text-xs opacity-60">{{ $myGroups->count() }}</span>
-            </button>
-            <button onclick="showSubTab('rules')" id="subtab-rules"
-                    class="sub-tab px-4 py-2 text-sm font-medium whitespace-nowrap border-b-2 border-transparent transition hover:opacity-80"
-                    style="color:var(--text-muted)">
-                AVA Rules <span class="ml-1 text-xs opacity-60">{{ $rules->count() }}</span>
-            </button>
+        <div class="mem-tabs" style="margin-bottom:16px">
+          <button onclick="showSubTab('clients')" id="subtab-clients" class="mem-tab active">{{ ucfirst($memoryCopy['client_noun_plural']) }} <span class="mem-tab-badge">{{ $clients->count() }}</span></button>
+          <button onclick="showSubTab('contacts')" id="subtab-contacts" class="mem-tab">Contacts <span class="mem-tab-badge">{{ $contacts->count() }}</span></button>
+          <button onclick="showSubTab('assets')" id="subtab-assets" class="mem-tab">Assets <span class="mem-tab-badge">{{ $assets->count() }}</span></button>
+          <button onclick="showSubTab('groups')" id="subtab-groups" class="mem-tab">Groups <span class="mem-tab-badge">{{ $myGroups->count() }}</span></button>
+          <button onclick="showSubTab('rules')" id="subtab-rules" class="mem-tab">AVA Rules <span class="mem-tab-badge">{{ $rules->count() }}</span></button>
         </div>
-    </div>
 
-    {{-- ── CLIENTS ─────────────────────────────────────────────────────────── --}}
-    <div id="sub-clients" class="sub-pane">
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div class="lg:col-span-2 rounded-xl overflow-hidden" style="background:var(--bg-card);border:1px solid var(--border)">
-                <div class="divide-y" style="border-color:var(--border-subtle)">
-                    @forelse($clients as $client)
-                    <div class="px-5 py-4 flex items-start justify-between gap-4">
-                        <div class="min-w-0">
-                            <div class="flex items-center gap-2 flex-wrap">
-                                <p class="text-sm font-medium" style="color:var(--text-primary)">{{ $client->name }}</p>
-                                @if(!empty($client->status) && $client->status !== 'active')
-                                <span class="text-xs px-1.5 py-0.5 rounded font-medium
-                                    {{ $client->status === 'prospect' ? 'bg-blue-900/40 text-blue-400' : ($client->status === 'inactive' ? 'bg-gray-800 text-gray-500' : 'bg-red-900/40 text-red-400') }}">
-                                    {{ ucfirst($client->status) }}
-                                </span>
-                                @endif
-                            </div>
-                            <p class="text-xs mt-0.5" style="color:var(--text-muted)">{{ $client->preferred_style }}{{ $client->industry ? ' · ' . $client->industry : '' }}</p>
-                            @if(!empty($client->address))<p class="text-xs mt-0.5" style="color:var(--text-faint)">{{ $client->address }}</p>@endif
-                            @if($client->notes)<p class="text-xs mt-1 line-clamp-2" style="color:var(--text-faint)">{{ $client->notes }}</p>@endif
-                        </div>
-                        <form method="POST" action="{{ route('memory.clients.destroy', $client->id) }}" class="shrink-0">
-                            @csrf @method('DELETE')
-                            <button class="text-xs transition hover:opacity-80" style="color:var(--text-faint)"
-                                    onclick="return confirm('Remove {{ addslashes($client->name) }}?')">Remove</button>
-                        </form>
-                    </div>
-                    @empty
-                    <div class="px-5 py-10 text-center text-sm" style="color:var(--text-faint)">No clients yet.</div>
-                    @endforelse
-                </div>
-            </div>
-            <div class="rounded-xl h-fit" style="background:var(--bg-card);border:1px solid var(--border)">
-                <div class="px-5 py-4" style="border-bottom:1px solid var(--border-subtle)">
-                    <h3 class="text-sm font-semibold" style="color:var(--text-primary)">Add {{ ucfirst($memoryCopy['client_noun']) }}</h3>
-                </div>
-                <form method="POST" action="{{ route('memory.clients.store') }}" class="px-5 py-4 space-y-3">
-                    @csrf
-                    <div><label class="text-xs block mb-1" style="color:var(--text-muted)">{{ ucfirst($memoryCopy['client_noun']) }} name</label>
-                    <input type="text" name="name" required placeholder="e.g. {{ $memoryCopy['example_client'] }}" class="w-full text-sm rounded-lg px-3 py-2 border focus:outline-none" style="background:var(--bg-raised);color:var(--text-primary);border-color:var(--border)"></div>
-                    <div class="grid grid-cols-2 gap-2">
-                        <div><label class="text-xs block mb-1" style="color:var(--text-muted)">Industry</label>
-                        <input type="text" name="industry" class="w-full text-sm rounded-lg px-3 py-2 border focus:outline-none" style="background:var(--bg-raised);color:var(--text-primary);border-color:var(--border)"></div>
-                        <div><label class="text-xs block mb-1" style="color:var(--text-muted)">Status</label>
-                        <select name="status" class="w-full text-sm rounded-lg px-3 py-2 border focus:outline-none" style="background:var(--bg-raised);color:var(--text-primary);border-color:var(--border)">
-                            <option value="active">Active</option><option value="prospect">Prospect</option>
-                            <option value="inactive">Inactive</option><option value="churned">Churned</option>
-                        </select></div>
-                    </div>
-                    <div><label class="text-xs block mb-1" style="color:var(--text-muted)">Preferred Style</label>
-                    <select name="preferred_style" class="w-full text-sm rounded-lg px-3 py-2 border focus:outline-none" style="background:var(--bg-raised);color:var(--text-primary);border-color:var(--border)">
-                        <option>Professional</option><option>Friendly</option><option>Formal</option><option>Concise</option>
-                    </select></div>
-                    <div><label class="text-xs block mb-1" style="color:var(--text-muted)">Address</label>
-                    <input type="text" name="address" placeholder="Street, City, State…" class="w-full text-sm rounded-lg px-3 py-2 border focus:outline-none" style="background:var(--bg-raised);color:var(--text-primary);border-color:var(--border)"></div>
-                    <div><label class="text-xs block mb-1" style="color:var(--text-muted)">Notes</label>
-                    <textarea name="notes" rows="2" class="w-full text-sm rounded-lg px-3 py-2 border focus:outline-none resize-none" style="background:var(--bg-raised);color:var(--text-primary);border-color:var(--border)"></textarea></div>
-                    <button type="submit" class="w-full text-sm rounded-lg py-2 font-semibold transition hover:opacity-90" class="ac-on">Add Client</button>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    {{-- ── CONTACTS ─────────────────────────────────────────────────────────── --}}
-    <div id="sub-contacts" class="sub-pane hidden">
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div class="lg:col-span-2 rounded-xl overflow-hidden" style="background:var(--bg-card);border:1px solid var(--border)">
-                <div class="divide-y" style="border-color:var(--border-subtle)">
-                    @forelse($contacts as $contact)
-                    @php $cn = $clients->firstWhere('id', $contact->client_id); @endphp
-                    <div class="px-5 py-4 flex items-start justify-between gap-4">
-                        <div class="min-w-0">
-                            <div class="flex items-center gap-2 flex-wrap">
-                                <p class="text-sm font-medium" style="color:var(--text-primary)">{{ $contact->name }}</p>
-                                @if(!empty($contact->is_decision_maker))
-                                <span class="text-xs px-1.5 py-0.5 rounded font-medium bg-yellow-900/40 text-yellow-400">Decision Maker</span>
-                                @endif
-                            </div>
-                            <p class="text-xs mt-0.5 truncate" class="ac-text">{{ $contact->email }}</p>
-                            <p class="text-xs" style="color:var(--text-muted)">{{ implode(' · ', array_filter([$contact->phone, $contact->role, $contact->department])) }}</p>
-                            @if($cn)<p class="text-xs mt-0.5" style="color:var(--text-faint)">{{ $cn->name }}</p>@endif
-                        </div>
-                        <form method="POST" action="{{ route('memory.contacts.destroy', $contact->id) }}" class="shrink-0">
-                            @csrf @method('DELETE')
-                            <button class="text-xs transition hover:opacity-80" style="color:var(--text-faint)"
-                                    onclick="return confirm('Remove {{ addslashes($contact->name) }}?')">Remove</button>
-                        </form>
-                    </div>
-                    @empty
-                    <div class="px-5 py-10 text-center text-sm" style="color:var(--text-faint)">No contacts yet.</div>
-                    @endforelse
-                </div>
-            </div>
-            <div class="rounded-xl h-fit" style="background:var(--bg-card);border:1px solid var(--border)">
-                <div class="px-5 py-4" style="border-bottom:1px solid var(--border-subtle)">
-                    <h3 class="text-sm font-semibold" style="color:var(--text-primary)">Add Contact</h3>
-                </div>
-                <form method="POST" action="{{ route('memory.contacts.store') }}" class="px-5 py-4 space-y-3">
-                    @csrf
-                    <div><label class="text-xs block mb-1" style="color:var(--text-muted)">Full Name</label>
-                    <input type="text" name="name" required class="w-full text-sm rounded-lg px-3 py-2 border focus:outline-none" style="background:var(--bg-raised);color:var(--text-primary);border-color:var(--border)"></div>
-                    <div><label class="text-xs block mb-1" style="color:var(--text-muted)">Email</label>
-                    <input type="email" name="email" required class="w-full text-sm rounded-lg px-3 py-2 border focus:outline-none" style="background:var(--bg-raised);color:var(--text-primary);border-color:var(--border)"></div>
-                    <div class="grid grid-cols-2 gap-2">
-                        <div><label class="text-xs block mb-1" style="color:var(--text-muted)">Phone</label>
-                        <input type="text" name="phone" class="w-full text-sm rounded-lg px-3 py-2 border focus:outline-none" style="background:var(--bg-raised);color:var(--text-primary);border-color:var(--border)"></div>
-                        <div><label class="text-xs block mb-1" style="color:var(--text-muted)">Role</label>
-                        <input type="text" name="role" class="w-full text-sm rounded-lg px-3 py-2 border focus:outline-none" style="background:var(--bg-raised);color:var(--text-primary);border-color:var(--border)"></div>
-                    </div>
-                    <div><label class="text-xs block mb-1" style="color:var(--text-muted)">Department</label>
-                    <input type="text" name="department" placeholder="e.g. Procurement, IT, Finance" class="w-full text-sm rounded-lg px-3 py-2 border focus:outline-none" style="background:var(--bg-raised);color:var(--text-primary);border-color:var(--border)"></div>
-                    <div><label class="text-xs block mb-1" style="color:var(--text-muted)">Client</label>
-                    <select name="client_id" class="w-full text-sm rounded-lg px-3 py-2 border focus:outline-none" style="background:var(--bg-raised);color:var(--text-primary);border-color:var(--border)">
-                        <option value="">— none —</option>
-                        @foreach($clients as $c)<option value="{{ $c->id }}">{{ $c->name }}</option>@endforeach
-                    </select></div>
-                    <label class="flex items-center justify-between gap-3 px-3 py-2.5 rounded-lg border cursor-pointer" style="border-color:var(--border);background:var(--bg-raised)">
-                        <div><p class="text-xs font-semibold" style="color:var(--text-primary)">Decision Maker</p>
-                        <p class="text-xs mt-0.5" style="color:var(--text-muted)">Key decision authority for this client</p></div>
-                        <div class="relative shrink-0">
-                            <input type="checkbox" name="is_decision_maker" value="1" class="sr-only peer">
-                            <div class="w-9 h-5 rounded-full transition peer-checked:bg-yellow-400 bg-gray-700 after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:w-4 after:h-4 after:rounded-full after:bg-white after:transition-all peer-checked:after:translate-x-4"></div>
-                        </div>
-                    </label>
-                    <button type="submit" class="w-full text-sm rounded-lg py-2 font-semibold transition hover:opacity-90" class="ac-on">Add Contact</button>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    {{-- ── ASSETS ───────────────────────────────────────────────────────────── --}}
-    <div id="sub-assets" class="sub-pane hidden">
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div class="lg:col-span-2 rounded-xl overflow-hidden" style="background:var(--bg-card);border:1px solid var(--border)">
-                <div class="divide-y" style="border-color:var(--border-subtle)">
-                    @forelse($assets as $asset)
-                    @php
-                        $days     = $asset->renewal_date ? now()->diffInDays($asset->renewal_date, false) : null;
-                        $urgColor = $days === null ? 'var(--text-faint)' : ($days <= 0 ? '#f87171' : ($days <= 15 ? '#fbbf24' : ($days <= 30 ? '#facc15' : 'var(--text-muted)')));
-                        $cn       = $clients->firstWhere('id', $asset->client_id);
-                    @endphp
-                    <div class="px-5 py-4 flex items-start justify-between gap-4">
-                        <div class="min-w-0 flex-1">
-                            <div class="flex items-center gap-2 flex-wrap">
-                                <p class="text-sm font-medium" style="color:var(--text-primary)">{{ $asset->name }}</p>
-                                @if(!empty($asset->status) && $asset->status !== 'active')
-                                <span class="text-xs px-1.5 py-0.5 rounded font-medium
-                                    {{ $asset->status === 'expiring' ? 'bg-amber-900/40 text-amber-400' : ($asset->status === 'expired' ? 'bg-red-900/40 text-red-400' : 'bg-gray-800 text-gray-500') }}">
-                                    {{ ucfirst($asset->status) }}
-                                </span>
-                                @endif
-                            </div>
-                            <p class="text-xs mt-0.5" style="color:var(--text-muted)">{{ $asset->type }}{{ $asset->vendor ? ' · ' . $asset->vendor : '' }}</p>
-                            @if($cn)<p class="text-xs mt-0.5" style="color:var(--text-faint)">{{ $cn->name }}</p>@endif
-                            @if($asset->renewal_date)
-                            <p class="text-xs mt-1 font-medium" style="color:{{ $urgColor }}">
-                                {{ $asset->renewal_date }}
-                                <span class="font-normal" style="color:var(--text-faint)"> — {{ $days <= 0 ? 'expired' : $days . ' days' }}</span>
-                            </p>
-                            @endif
-                        </div>
-                        <div class="flex items-center gap-3 shrink-0">
-                            <button onclick="toggleAssetEdit({{ $asset->id }})" class="text-xs font-medium transition hover:opacity-80" class="ac-text">Edit</button>
-                            <form method="POST" action="{{ route('memory.assets.destroy', $asset->id) }}">
-                                @csrf @method('DELETE')
-                                <button class="text-xs transition hover:opacity-80" style="color:var(--text-faint)"
-                                        onclick="return confirm('Remove {{ addslashes($asset->name) }}?')">Remove</button>
-                            </form>
-                        </div>
-                    </div>
-                    <div id="asset-edit-{{ $asset->id }}" class="hidden px-5 pb-4" style="background:var(--bg-raised);border-top:1px solid var(--border-subtle)">
-                        <form method="POST" action="{{ route('memory.assets.update', $asset->id) }}" class="pt-4 space-y-3">
-                            @csrf @method('PATCH')
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                                <div class="sm:col-span-2"><label class="text-xs block mb-1" style="color:var(--text-muted)">Asset Name</label>
-                                <input type="text" name="name" value="{{ $asset->name }}" required class="w-full text-sm rounded-lg px-3 py-2 border focus:outline-none" style="background:var(--bg-card);color:var(--text-primary);border-color:var(--border)"></div>
-                                <div><label class="text-xs block mb-1" style="color:var(--text-muted)">Type</label>
-                                <select name="type" class="w-full text-sm rounded-lg px-3 py-2 border focus:outline-none" style="background:var(--bg-card);color:var(--text-primary);border-color:var(--border)">
-                                    @foreach($assetTypes as $t)
-                                    <option @if($asset->type === $t) selected @endif>{{ $t }}</option>
-                                    @endforeach
-                                </select></div>
-                                <div><label class="text-xs block mb-1" style="color:var(--text-muted)">Vendor</label>
-                                <input type="text" name="vendor" value="{{ $asset->vendor }}" class="w-full text-sm rounded-lg px-3 py-2 border focus:outline-none" style="background:var(--bg-card);color:var(--text-primary);border-color:var(--border)"></div>
-                                <div><label class="text-xs block mb-1" style="color:var(--text-muted)">Renewal Date</label>
-                                <input type="date" name="renewal_date" value="{{ $asset->renewal_date }}" class="w-full text-sm rounded-lg px-3 py-2 border focus:outline-none" style="background:var(--bg-card);color:var(--text-primary);border-color:var(--border)"></div>
-                                <div><label class="text-xs block mb-1" style="color:var(--text-muted)">Status</label>
-                                <select name="status" class="w-full text-sm rounded-lg px-3 py-2 border focus:outline-none" style="background:var(--bg-card);color:var(--text-primary);border-color:var(--border)">
-                                    @foreach(['active','expiring','expired','cancelled'] as $s)
-                                    <option @if(($asset->status ?? 'active') === $s) selected @endif>{{ $s }}</option>
-                                    @endforeach
-                                </select></div>
-                                <div><label class="text-xs block mb-1" style="color:var(--text-muted)">Cost / Year ($)</label>
-                                <input type="number" name="cost_per_year" step="0.01" value="{{ $asset->cost_per_year }}" class="w-full text-sm rounded-lg px-3 py-2 border focus:outline-none" style="background:var(--bg-card);color:var(--text-primary);border-color:var(--border)"></div>
-                                <div class="sm:col-span-2"><label class="text-xs block mb-1" style="color:var(--text-muted)">Client</label>
-                                <select name="client_id" class="w-full text-sm rounded-lg px-3 py-2 border focus:outline-none" style="background:var(--bg-card);color:var(--text-primary);border-color:var(--border)">
-                                    <option value="">— none —</option>
-                                    @foreach($clients as $cl)<option value="{{ $cl->id }}" @if($asset->client_id == $cl->id) selected @endif>{{ $cl->name }}</option>@endforeach
-                                </select></div>
-                            </div>
-                            <div class="flex gap-2 pt-1">
-                                <button type="submit" class="text-sm px-4 py-2 rounded-lg font-semibold transition hover:opacity-90" class="ac-on">Save</button>
-                                <button type="button" onclick="toggleAssetEdit({{ $asset->id }})" class="text-sm px-4 py-2 rounded-lg transition hover:opacity-80" style="background:var(--bg-card);color:var(--text-muted);border:1px solid var(--border)">Cancel</button>
-                            </div>
-                        </form>
-                    </div>
-                    @empty
-                    <div class="px-5 py-10 text-center text-sm" style="color:var(--text-faint)">No assets yet.</div>
-                    @endforelse
-                </div>
-            </div>
-            <div class="rounded-xl h-fit" style="background:var(--bg-card);border:1px solid var(--border)">
-                <div class="px-5 py-4" style="border-bottom:1px solid var(--border-subtle)">
-                    <h3 class="text-sm font-semibold" style="color:var(--text-primary)">Add Asset</h3>
-                </div>
-                <form method="POST" action="{{ route('memory.assets.store') }}" class="px-5 py-4 space-y-3">
-                    @csrf
-                    <div><label class="text-xs block mb-1" style="color:var(--text-muted)">{{ ucfirst($memoryCopy['asset_noun']) }} name</label>
-                    <input type="text" name="name" required placeholder="e.g. {{ $memoryCopy['example_asset'] }}" class="w-full text-sm rounded-lg px-3 py-2 border focus:outline-none" style="background:var(--bg-raised);color:var(--text-primary);border-color:var(--border)"></div>
-                    <div class="grid grid-cols-2 gap-2">
-                        <div><label class="text-xs block mb-1" style="color:var(--text-muted)">Type</label>
-                        <select name="type" class="w-full text-sm rounded-lg px-3 py-2 border focus:outline-none" style="background:var(--bg-raised);color:var(--text-primary);border-color:var(--border)">
-                            @foreach($assetTypes as $t)<option>{{ $t }}</option>@endforeach
-                        </select></div>
-                        <div><label class="text-xs block mb-1" style="color:var(--text-muted)">Vendor</label>
-                        <input type="text" name="vendor" class="w-full text-sm rounded-lg px-3 py-2 border focus:outline-none" style="background:var(--bg-raised);color:var(--text-primary);border-color:var(--border)"></div>
-                    </div>
-                    <div class="grid grid-cols-2 gap-2">
-                        <div><label class="text-xs block mb-1" style="color:var(--text-muted)">Renewal Date</label>
-                        <input type="date" name="renewal_date" required class="w-full text-sm rounded-lg px-3 py-2 border focus:outline-none" style="background:var(--bg-raised);color:var(--text-primary);border-color:var(--border)"></div>
-                        <div><label class="text-xs block mb-1" style="color:var(--text-muted)">Status</label>
-                        <select name="status" class="w-full text-sm rounded-lg px-3 py-2 border focus:outline-none" style="background:var(--bg-raised);color:var(--text-primary);border-color:var(--border)">
-                            <option value="active">Active</option><option value="expiring">Expiring</option><option value="expired">Expired</option><option value="cancelled">Cancelled</option>
-                        </select></div>
-                    </div>
-                    <div><label class="text-xs block mb-1" style="color:var(--text-muted)">Cost / Year ($)</label>
-                    <input type="number" name="cost_per_year" step="0.01" class="w-full text-sm rounded-lg px-3 py-2 border focus:outline-none" style="background:var(--bg-raised);color:var(--text-primary);border-color:var(--border)"></div>
-                    <div><label class="text-xs block mb-1" style="color:var(--text-muted)">Client</label>
-                    <select name="client_id" class="w-full text-sm rounded-lg px-3 py-2 border focus:outline-none" style="background:var(--bg-raised);color:var(--text-primary);border-color:var(--border)">
-                        <option value="">— none —</option>
-                        @foreach($clients as $c)<option value="{{ $c->id }}">{{ $c->name }}</option>@endforeach
-                    </select></div>
-                    <button type="submit" class="w-full text-sm rounded-lg py-2 font-semibold transition hover:opacity-90" class="ac-on">Add Asset</button>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    {{-- ── GROUPS ───────────────────────────────────────────────────────────── --}}
-    <div id="sub-groups" class="sub-pane hidden">
-        @if($myDeployments->isEmpty())
-        <div class="rounded-xl px-5 py-12 text-center" style="background:var(--bg-card);border:1px solid var(--border)">
-            <p class="text-sm" style="color:var(--text-muted)">No workers deployed yet. Deploy a worker to start creating asset groups.</p>
-        </div>
-        @elseif($myGroups->isEmpty())
-        <div class="rounded-xl px-5 py-12 text-center" style="background:var(--bg-card);border:1px solid var(--border)">
-            <p class="text-sm font-medium mb-1" style="color:var(--text-primary)">No groups yet</p>
-            <p class="text-xs mb-4" style="color:var(--text-muted)">Groups are created from within each worker's memory page. Go to a worker's Memory tab to create your first group.</p>
-            @foreach($myDeployments as $dep)
-            <a href="{{ route('workers.memory.groups', $dep->id) }}" class="inline-block mr-2 mb-2 text-xs px-4 py-2 rounded-lg border transition hover:opacity-80" style="border-color:var(--border);color:var(--text-muted)">
-                {{ $dep->name }} →
-            </a>
-            @endforeach
-        </div>
-        @else
-        @php $groupsByDep = $myGroups->groupBy('deployment_id'); @endphp
-        @foreach($groupsByDep as $depId => $depGroups)
-        @php $depName = $depGroups->first()->deployment_name; $workerSlug = $depGroups->first()->worker_slug; @endphp
-        <div class="mb-6">
-            <div class="flex items-center justify-between mb-3">
-                <div class="flex items-center gap-2">
-                    <span class="text-xs font-bold uppercase tracking-widest" style="color:var(--text-faint)">{{ $depName }}</span>
-                    <span class="text-xs px-2 py-0.5 rounded font-mono" style="background:var(--bg-raised);color:var(--text-faint)">{{ $workerSlug }}</span>
-                </div>
-                <a href="{{ route('workers.memory.groups', $depId) }}" class="text-xs transition hover:opacity-80" class="ac-text">Manage →</a>
-            </div>
-            <div class="space-y-3">
-                @foreach($depGroups as $group)
-                @php
-                    $nearestExpiry = $group->items->whereNotNull('renewal_date')->sortBy('renewal_date')->first();
-                    $gDays = $nearestExpiry ? (int) now()->diffInDays($nearestExpiry->renewal_date, false) : null;
-                @endphp
-                <div class="rounded-xl" style="background:var(--bg-card);border:1px solid var(--border)">
-                    <div class="px-5 py-3.5 flex flex-wrap items-center gap-3">
-                        <div class="flex-1 min-w-0">
-                            <div class="flex items-center gap-2 flex-wrap">
-                                <p class="text-sm font-semibold" style="color:var(--text-primary)">{{ $group->name }}</p>
-                                @if($group->type)
-                                <span class="text-xs px-2 py-0.5 rounded-full" style="background:var(--bg-raised);color:var(--accent-text);border:1px solid var(--border)">{{ $group->type }}</span>
-                                @endif
-                                @if($gDays !== null)
-                                <span class="text-xs {{ $gDays <= 0 ? 'text-red-400' : ($gDays <= 15 ? 'text-amber-400' : ($gDays <= 30 ? 'text-yellow-400' : 'text-gray-500')) }}">
-                                    {{ $gDays <= 0 ? 'Expired' : 'Next ' . $gDays . 'd' }}
-                                </span>
-                                @endif
-                            </div>
-                            <p class="text-xs mt-0.5" style="color:var(--text-muted)">
-                                {{ $group->items->count() }} asset{{ $group->items->count() !== 1 ? 's' : '' }}
-                                @if($group->client_name) · {{ $group->client_name }} @endif
-                            </p>
-                        </div>
-                        <a href="{{ route('workers.memory.groups', $depId) }}" class="text-xs px-3 py-1.5 rounded-lg border transition hover:opacity-80 shrink-0" style="border-color:var(--border);color:var(--text-muted)">Edit</a>
-                    </div>
-                    @if($group->items->isNotEmpty())
-                    <div class="px-5 pb-3 flex flex-wrap gap-2">
-                        @foreach($group->items as $item)
-                        @php $iDays = $item->renewal_date ? (int) now()->diffInDays($item->renewal_date, false) : null; @endphp
-                        <span class="text-xs px-2 py-1 rounded-lg flex items-center gap-1.5" style="background:var(--bg-raised);color:var(--text-muted)">
-                            <span class="w-1.5 h-1.5 rounded-full shrink-0 {{ $iDays !== null && $iDays <= 0 ? 'bg-red-400' : ($iDays !== null && $iDays <= 30 ? 'bg-amber-400' : 'bg-gray-600') }}"></span>
-                            {{ $item->name }}
-                        </span>
-                        @endforeach
-                    </div>
+        {{-- ── CLIENTS ── --}}
+        <div id="sub-clients" class="sub-pane">
+          <div class="mem-grid">
+            <div class="mem-list">
+              @forelse($clients as $client)
+              <div class="mem-row">
+                <div class="min-w-0">
+                  <div class="mem-row-name">{{ $client->name }}
+                    @if(!empty($client->status) && $client->status !== 'active')
+                    <span class="mem-badge" style="background:var(--db-chip);color:var(--db-text-muted)">{{ ucfirst($client->status) }}</span>
                     @endif
+                  </div>
+                  <div class="mem-row-sub">{{ $client->preferred_style }}{{ $client->industry ? ' · ' . $client->industry : '' }}</div>
+                  @if(!empty($client->address))<div class="mem-row-sub2">{{ $client->address }}</div>@endif
                 </div>
-                @endforeach
-            </div>
-        </div>
-        @endforeach
-        @endif
-    </div>
-
-    {{-- ── AVA RULES ────────────────────────────────────────────────────────── --}}
-    <div id="sub-rules" class="sub-pane hidden">
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div class="lg:col-span-2 rounded-xl overflow-hidden" style="background:var(--bg-card);border:1px solid var(--border)">
-                <div class="divide-y" style="border-color:var(--border-subtle)">
-                    @forelse($rules as $rule)
-                    <div class="px-5 py-4 flex items-start justify-between gap-4">
-                        <div class="flex-1 min-w-0">
-                            <div class="flex items-center gap-2 flex-wrap mb-1">
-                                <span class="text-xs font-mono font-bold" class="ac-text">{{ $rule->rule_id }}</span>
-                                @php $pc = match($rule->priority) { 'Critical'=>'#f87171','High'=>'#fbbf24','Medium'=>'var(--text-muted)',default=>'var(--text-faint)' }; @endphp
-                                <span class="text-xs font-medium" style="color:{{ $pc }}">{{ $rule->priority }}</span>
-                                @if(!$rule->active)<span class="text-xs px-1.5 py-0.5 rounded" style="background:var(--bg-raised);color:var(--text-faint)">Inactive</span>@endif
-                            </div>
-                            <p class="text-xs leading-relaxed" style="color:var(--text-secondary)">{{ $rule->condition }}</p>
-                            <p class="text-xs mt-1 leading-relaxed" style="color:var(--text-muted)">→ {{ $rule->action }}</p>
-                        </div>
-                        <form method="POST" action="{{ route('memory.rules.destroy', $rule->id) }}" class="shrink-0">
-                            @csrf @method('DELETE')
-                            <button class="text-xs transition hover:opacity-80" style="color:var(--text-faint)"
-                                    onclick="return confirm('Remove rule {{ addslashes($rule->rule_id) }}?')">Remove</button>
-                        </form>
-                    </div>
-                    @empty
-                    <div class="px-5 py-10 text-center text-sm" style="color:var(--text-faint)">No rules yet.</div>
-                    @endforelse
-                </div>
-            </div>
-            <div class="rounded-xl h-fit" style="background:var(--bg-card);border:1px solid var(--border)">
-                <div class="px-5 py-4" style="border-bottom:1px solid var(--border-subtle)">
-                    <h3 class="text-sm font-semibold" style="color:var(--text-primary)">Add Rule</h3>
-                </div>
-                <form method="POST" action="{{ route('memory.rules.store') }}" class="px-5 py-4 space-y-3">
-                    @csrf
-                    <div class="grid grid-cols-2 gap-2">
-                        <div><label class="text-xs block mb-1" style="color:var(--text-muted)">Rule ID</label>
-                        <input type="text" name="rule_id" placeholder="AVA-007" class="w-full text-sm rounded-lg px-3 py-2 border focus:outline-none font-mono" style="background:var(--bg-raised);color:var(--text-primary);border-color:var(--border)"></div>
-                        <div><label class="text-xs block mb-1" style="color:var(--text-muted)">Priority</label>
-                        <select name="priority" class="w-full text-sm rounded-lg px-3 py-2 border focus:outline-none" style="background:var(--bg-raised);color:var(--text-primary);border-color:var(--border)">
-                            <option>Critical</option><option>High</option><option>Medium</option><option>Low</option>
-                        </select></div>
-                    </div>
-                    <div><label class="text-xs block mb-1" style="color:var(--text-muted)">Condition (when…)</label>
-                    <textarea name="condition" rows="3" required class="w-full text-sm rounded-lg px-3 py-2 border focus:outline-none resize-none" style="background:var(--bg-raised);color:var(--text-primary);border-color:var(--border)"></textarea></div>
-                    <div><label class="text-xs block mb-1" style="color:var(--text-muted)">Action (then…)</label>
-                    <textarea name="action" rows="3" required class="w-full text-sm rounded-lg px-3 py-2 border focus:outline-none resize-none" style="background:var(--bg-raised);color:var(--text-primary);border-color:var(--border)"></textarea></div>
-                    <button type="submit" class="w-full text-sm rounded-lg py-2 font-semibold transition hover:opacity-90" class="ac-on">Add Rule</button>
+                <form method="POST" action="{{ route('memory.clients.destroy', $client->id) }}">
+                  @csrf @method('DELETE')
+                  <button class="mem-row-action" onclick="return confirm('Remove {{ addslashes($client->name) }}?')">Remove</button>
                 </form>
+              </div>
+              @empty
+              <div class="mem-row-empty">No {{ $memoryCopy['client_noun_plural'] }} yet.</div>
+              @endforelse
             </div>
+            <div class="mem-form-card">
+              <div class="mem-form-head">Add {{ ucfirst($memoryCopy['client_noun']) }}</div>
+              <form method="POST" action="{{ route('memory.clients.store') }}" class="mem-form-body">
+                @csrf
+                <div><label class="mem-field-label">{{ ucfirst($memoryCopy['client_noun']) }} name</label><input type="text" name="name" required placeholder="e.g. {{ $memoryCopy['example_client'] }}" class="mem-input"></div>
+                <div class="mem-field-row">
+                  <div><label class="mem-field-label">Industry</label><input type="text" name="industry" class="mem-input"></div>
+                  <div><label class="mem-field-label">Status</label>
+                    <select name="status" class="mem-select"><option value="active">Active</option><option value="prospect">Prospect</option><option value="inactive">Inactive</option><option value="churned">Churned</option></select>
+                  </div>
+                </div>
+                <div><label class="mem-field-label">Preferred Style</label>
+                  <select name="preferred_style" class="mem-select"><option>Professional</option><option>Friendly</option><option>Formal</option><option>Concise</option></select>
+                </div>
+                <div><label class="mem-field-label">Address</label><input type="text" name="address" placeholder="Street, City, State…" class="mem-input"></div>
+                <div><label class="mem-field-label">Notes</label><textarea name="notes" rows="2" class="mem-textarea"></textarea></div>
+                <button type="submit" class="mem-btn">Add {{ ucfirst($memoryCopy['client_noun']) }}</button>
+              </form>
+            </div>
+          </div>
         </div>
-    </div>
 
-</div>{{-- /pane-mine --}}
-
-{{-- ════════════════════════════════════════════════════════════════════════════
-     TAB: SHARED WITH ME
-     ════════════════════════════════════════════════════════════════════════════ --}}
-<div id="pane-shared" class="hub-pane hidden">
-    @forelse($incoming as $grant)
-    @php $perms = json_decode($grant->permissions, true); @endphp
-    <div class="mb-4 rounded-xl" style="background:var(--bg-card);border:1px solid var(--border)">
-        <div class="px-5 py-4 flex flex-wrap items-start gap-4" style="border-bottom:1px solid var(--border-subtle)">
-            <div class="flex-1 min-w-0">
-                <p class="text-sm font-bold" style="color:var(--text-primary)">{{ $grant->owner_name }}'s Memory</p>
-                <p class="text-xs mt-0.5" style="color:var(--text-muted)">{{ $grant->deployment_name }} · {{ $grant->worker_slug }}</p>
-                <div class="flex flex-wrap gap-1.5 mt-2">
-                    @foreach($perms as $p)
-                    <span class="text-xs px-2 py-0.5 rounded-md font-medium" style="background:var(--bg-raised);color:var(--text-muted)">{{ $p }}</span>
-                    @endforeach
+        {{-- ── CONTACTS ── --}}
+        <div id="sub-contacts" class="sub-pane" style="display:none">
+          <div class="mem-grid">
+            <div class="mem-list">
+              @forelse($contacts as $contact)
+              @php $cn = $clients->firstWhere('id', $contact->client_id); @endphp
+              <div class="mem-row">
+                <div class="min-w-0">
+                  <div class="mem-row-name">{{ $contact->name }}
+                    @if(!empty($contact->is_decision_maker))<span class="mem-badge" style="background:var(--db-chip);color:var(--db-text)">Decision Maker</span>@endif
+                  </div>
+                  <div class="mem-row-sub">{{ $contact->email }}</div>
+                  <div class="mem-row-sub2">{{ implode(' · ', array_filter([$contact->phone, $contact->role, $contact->department])) }}{{ $cn ? ' · '.$cn->name : '' }}</div>
                 </div>
-            </div>
-            {{-- Memory stats preview --}}
-            <div class="flex gap-4 text-center shrink-0">
-                @foreach([['Clients',$grant->client_count],['Contacts',$grant->contact_count],['Assets',$grant->asset_count],['Groups',$grant->group_count]] as [$label,$count])
-                <div>
-                    <p class="text-base font-bold" style="color:var(--text-primary)">{{ $count }}</p>
-                    <p class="text-xs" style="color:var(--text-faint)">{{ $label }}</p>
-                </div>
-                @endforeach
-            </div>
-            <a href="{{ route('memory.shared', $grant->id) }}"
-               class="text-sm px-4 py-2 rounded-lg font-semibold transition hover:opacity-90 shrink-0 self-center"
-               class="ac-on">Open Memory →</a>
-        </div>
-        {{-- Grant meta --}}
-        <div class="px-5 py-2.5 flex flex-wrap gap-x-5 gap-y-1">
-            <span class="text-xs" style="color:var(--text-faint)">Accepted {{ \Carbon\Carbon::parse($grant->accepted_at)->diffForHumans() }}</span>
-            <span class="text-xs" style="color:var(--text-faint)">{{ $grant->owner_email }}</span>
-        </div>
-    </div>
-    @empty
-    <div class="rounded-xl px-5 py-16 text-center" style="background:var(--bg-card);border:1px solid var(--border)">
-        <p class="text-sm font-medium mb-1" style="color:var(--text-primary)">No shared memories yet</p>
-        <p class="text-xs" style="color:var(--text-muted)">When a team member grants you access to their memory, it will appear here.</p>
-    </div>
-    @endforelse
-</div>
-
-{{-- ════════════════════════════════════════════════════════════════════════════
-     TAB: ACCESS MANAGEMENT
-     ════════════════════════════════════════════════════════════════════════════ --}}
-<div id="pane-access" class="hub-pane hidden">
-
-    {{-- Outgoing grants --}}
-    <h2 class="text-sm font-bold mb-3" style="color:var(--text-primary)">Who has access to your memory</h2>
-    @forelse($outgoing as $grant)
-    @php $perms = json_decode($grant->permissions, true); @endphp
-    <div class="mb-3 rounded-xl overflow-hidden" style="background:var(--bg-card);border:1px solid var(--border)">
-        <div class="px-5 py-4 flex flex-wrap items-center gap-3">
-            <div class="flex-1 min-w-0">
-                <div class="flex items-center gap-2 flex-wrap">
-                    <p class="text-sm font-semibold" style="color:var(--text-primary)">{{ $grant->grantee_name }}</p>
-                    <span class="font-mono text-xs" style="color:var(--text-faint)">{{ $grant->grantee_code }}</span>
-                    <span class="text-xs px-2 py-0.5 rounded-full font-bold
-                        {{ $grant->status === 'accepted' ? 'bg-green-900/40 text-green-400' : 'bg-yellow-900/40 text-yellow-400' }}">
-                        {{ ucfirst($grant->status) }}
-                    </span>
-                </div>
-                <p class="text-xs mt-0.5" style="color:var(--text-muted)">{{ $grant->deployment_name }} · {{ $grant->worker_slug }}</p>
-                <div class="flex gap-1.5 flex-wrap mt-1.5">
-                    @foreach($perms as $p)
-                    <span class="text-xs px-2 py-0.5 rounded-md" style="background:var(--bg-raised);color:var(--text-muted)">{{ $p }}</span>
-                    @endforeach
-                </div>
-            </div>
-            <div class="text-right shrink-0">
-                <p class="text-xs" style="color:var(--text-faint)">{{ $grant->event_count }} actions</p>
-                @if($grant->last_action)
-                <p class="text-xs" style="color:var(--text-faint)">Last: {{ \Carbon\Carbon::parse($grant->last_action)->diffForHumans() }}</p>
-                @endif
-                <form method="POST" action="{{ route('memory.access.revoke', $grant->id) }}" class="mt-2"
-                      onsubmit="return confirm('Revoke access for {{ $grant->grantee_name }}?')">
-                    @csrf
-                    <button class="text-xs px-3 py-1.5 rounded-lg border transition hover:border-red-800 hover:text-red-400" style="border-color:var(--border);color:var(--text-faint)">Revoke</button>
+                <form method="POST" action="{{ route('memory.contacts.destroy', $contact->id) }}">
+                  @csrf @method('DELETE')
+                  <button class="mem-row-action" onclick="return confirm('Remove {{ addslashes($contact->name) }}?')">Remove</button>
                 </form>
+              </div>
+              @empty
+              <div class="mem-row-empty">No contacts yet.</div>
+              @endforelse
             </div>
-        </div>
-        {{-- Audit trail --}}
-        @if($grant->event_count > 0)
-        <div style="border-top:1px solid var(--border-subtle)">
-            <button onclick="toggleAudit({{ $grant->id }})"
-                    class="w-full px-5 py-2.5 text-left text-xs flex items-center gap-2 transition hover:opacity-80"
-                    style="color:var(--text-faint)">
-                <span id="audit-chevron-{{ $grant->id }}">▶</span> Activity trail
-            </button>
-            <div id="audit-{{ $grant->id }}" class="hidden" style="border-top:1px solid var(--border-subtle)">
-                @php
-                    $events = DB::table('memory_access_events as e')
-                        ->join('users as u', 'u.id', '=', 'e.actor_user_id')
-                        ->where('e.grant_id', $grant->id)
-                        ->select('e.*', 'u.name as actor_name')
-                        ->orderByDesc('e.created_at')->limit(20)->get();
-                @endphp
-                <div class="divide-y" style="border-color:var(--border-subtle)">
-                    @foreach($events as $ev)
-                    <div class="px-5 py-2.5 flex items-center gap-3">
-                        <span class="w-1.5 h-1.5 rounded-full shrink-0
-                            {{ $ev->action==='modified'?'bg-yellow-400':($ev->action==='uploaded'?'bg-blue-400':($ev->action==='copied'?'bg-purple-400':'bg-gray-600')) }}"></span>
-                        <div class="flex-1 min-w-0 text-xs">
-                            <span class="font-medium" style="color:var(--text-primary)">{{ $ev->actor_name }}</span>
-                            <span style="color:var(--text-muted)"> {{ $ev->action }} </span>
-                            <span class="font-mono" style="color:var(--text-secondary)">{{ $ev->table_name }}#{{ $ev->record_id }}</span>
-                        </div>
-                        <span class="text-xs shrink-0" style="color:var(--text-faint)">{{ \Carbon\Carbon::parse($ev->created_at)->diffForHumans() }}</span>
-                    </div>
-                    @endforeach
+            <div class="mem-form-card">
+              <div class="mem-form-head">Add Contact</div>
+              <form method="POST" action="{{ route('memory.contacts.store') }}" class="mem-form-body">
+                @csrf
+                <div><label class="mem-field-label">Full Name</label><input type="text" name="name" required class="mem-input"></div>
+                <div><label class="mem-field-label">Email</label><input type="email" name="email" required class="mem-input"></div>
+                <div class="mem-field-row">
+                  <div><label class="mem-field-label">Phone</label><input type="text" name="phone" class="mem-input"></div>
+                  <div><label class="mem-field-label">Role</label><input type="text" name="role" class="mem-input"></div>
                 </div>
+                <div><label class="mem-field-label">Department</label><input type="text" name="department" placeholder="e.g. Procurement, IT, Finance" class="mem-input"></div>
+                <div><label class="mem-field-label">{{ ucfirst($memoryCopy['client_noun']) }}</label>
+                  <select name="client_id" class="mem-select"><option value="">— none —</option>@foreach($clients as $c)<option value="{{ $c->id }}">{{ $c->name }}</option>@endforeach</select>
+                </div>
+                <label class="mem-toggle-row">
+                  <div><div class="mem-toggle-title">Decision Maker</div><div class="mem-toggle-sub">Key decision authority for this {{ $memoryCopy['client_noun'] }}</div></div>
+                  <div class="mem-toggle"><input type="checkbox" name="is_decision_maker" value="1"><div class="mem-toggle-track"><div class="mem-toggle-thumb"></div></div></div>
+                </label>
+                <button type="submit" class="mem-btn">Add Contact</button>
+              </form>
             </div>
+          </div>
         </div>
-        @endif
-    </div>
-    @empty
-    <div class="rounded-xl px-5 py-10 text-center mb-6" style="background:var(--bg-card);border:1px solid var(--border)">
-        <p class="text-sm" style="color:var(--text-muted)">You haven't shared your memory with anyone yet.</p>
-    </div>
-    @endforelse
 
-    {{-- Invite form --}}
-    <div class="mt-6 rounded-xl" style="background:var(--bg-card);border:1px solid var(--border)">
-        <div class="px-5 py-4 rounded-t-xl" style="border-bottom:1px solid var(--border-subtle)">
-            <p class="text-sm font-semibold" style="color:var(--text-primary)">Invite a team member</p>
-            <p class="text-xs mt-0.5" style="color:var(--text-muted)">They must already have a UNIT account. Enter their profile code (UNIT-XXXXX) or email.</p>
+        {{-- ── ASSETS ── --}}
+        <div id="sub-assets" class="sub-pane" style="display:none">
+          <div class="mem-grid">
+            <div class="mem-list">
+              @forelse($assets as $asset)
+              @php
+                $days     = $asset->renewal_date ? now()->diffInDays($asset->renewal_date, false) : null;
+                $urgColor = $days === null ? 'var(--db-text-muted)' : ($days <= 0 ? '#ef4444' : ($days <= 30 ? '#f59e0b' : 'var(--db-text-muted)'));
+                $cn       = $clients->firstWhere('id', $asset->client_id);
+              @endphp
+              <div class="mem-row">
+                <div class="min-w-0">
+                  <div class="mem-row-name">{{ $asset->name }}
+                    @if(!empty($asset->status) && $asset->status !== 'active')<span class="mem-badge" style="background:var(--db-chip);color:var(--db-text-muted)">{{ ucfirst($asset->status) }}</span>@endif
+                  </div>
+                  <div class="mem-row-sub">{{ $asset->type }}{{ $asset->vendor ? ' · '.$asset->vendor : '' }}{{ $cn ? ' · '.$cn->name : '' }}</div>
+                  @if($asset->renewal_date)<div class="mem-row-sub2" style="color:{{ $urgColor }}">{{ $asset->renewal_date }} — {{ $days <= 0 ? 'expired' : $days.' days' }}</div>@endif
+                </div>
+                <div style="display:flex;gap:10px;flex-shrink:0">
+                  <button type="button" class="mem-row-action" onclick="toggleAssetEdit({{ $asset->id }})">Edit</button>
+                  <form method="POST" action="{{ route('memory.assets.destroy', $asset->id) }}">
+                    @csrf @method('DELETE')
+                    <button class="mem-row-action" onclick="return confirm('Remove {{ addslashes($asset->name) }}?')">Remove</button>
+                  </form>
+                </div>
+              </div>
+              <div id="asset-edit-{{ $asset->id }}" class="mem-edit-panel" style="display:none">
+                <form method="POST" action="{{ route('memory.assets.update', $asset->id) }}" style="display:flex;flex-direction:column;gap:10px">
+                  @csrf @method('PATCH')
+                  <div><label class="mem-field-label">{{ ucfirst($memoryCopy['asset_noun']) }} name</label><input type="text" name="name" value="{{ $asset->name }}" required class="mem-input"></div>
+                  <div class="mem-field-row">
+                    <div><label class="mem-field-label">Type</label>
+                      <select name="type" class="mem-select">@foreach($assetTypes as $t)<option @if($asset->type === $t) selected @endif>{{ $t }}</option>@endforeach</select>
+                    </div>
+                    <div><label class="mem-field-label">Vendor</label><input type="text" name="vendor" value="{{ $asset->vendor }}" class="mem-input"></div>
+                  </div>
+                  <div class="mem-field-row">
+                    <div><label class="mem-field-label">Renewal Date</label><input type="date" name="renewal_date" value="{{ $asset->renewal_date }}" class="mem-input"></div>
+                    <div><label class="mem-field-label">Status</label>
+                      <select name="status" class="mem-select">@foreach(['active','expiring','expired','cancelled'] as $s)<option @if(($asset->status ?? 'active') === $s) selected @endif>{{ $s }}</option>@endforeach</select>
+                    </div>
+                  </div>
+                  <div class="mem-field-row">
+                    <div><label class="mem-field-label">Cost / Year ($)</label><input type="number" name="cost_per_year" step="0.01" value="{{ $asset->cost_per_year }}" class="mem-input"></div>
+                    <div><label class="mem-field-label">{{ ucfirst($memoryCopy['client_noun']) }}</label>
+                      <select name="client_id" class="mem-select"><option value="">— none —</option>@foreach($clients as $cl)<option value="{{ $cl->id }}" @if($asset->client_id == $cl->id) selected @endif>{{ $cl->name }}</option>@endforeach</select>
+                    </div>
+                  </div>
+                  <div style="display:flex;gap:8px">
+                    <button type="submit" class="mem-btn">Save</button>
+                    <button type="button" class="mem-btn-secondary" onclick="toggleAssetEdit({{ $asset->id }})">Cancel</button>
+                  </div>
+                </form>
+              </div>
+              @empty
+              <div class="mem-row-empty">No assets yet.</div>
+              @endforelse
+            </div>
+            <div class="mem-form-card">
+              <div class="mem-form-head">Add {{ ucfirst($memoryCopy['asset_noun']) }}</div>
+              <form method="POST" action="{{ route('memory.assets.store') }}" class="mem-form-body">
+                @csrf
+                <div><label class="mem-field-label">{{ ucfirst($memoryCopy['asset_noun']) }} name</label><input type="text" name="name" required placeholder="e.g. {{ $memoryCopy['example_asset'] }}" class="mem-input"></div>
+                <div class="mem-field-row">
+                  <div><label class="mem-field-label">Type</label>
+                    <select name="type" class="mem-select">@foreach($assetTypes as $t)<option>{{ $t }}</option>@endforeach</select>
+                  </div>
+                  <div><label class="mem-field-label">Vendor</label><input type="text" name="vendor" class="mem-input"></div>
+                </div>
+                <div class="mem-field-row">
+                  <div><label class="mem-field-label">Renewal Date</label><input type="date" name="renewal_date" required class="mem-input"></div>
+                  <div><label class="mem-field-label">Status</label>
+                    <select name="status" class="mem-select"><option value="active">Active</option><option value="expiring">Expiring</option><option value="expired">Expired</option><option value="cancelled">Cancelled</option></select>
+                  </div>
+                </div>
+                <div><label class="mem-field-label">Cost / Year ($)</label><input type="number" name="cost_per_year" step="0.01" class="mem-input"></div>
+                <div><label class="mem-field-label">{{ ucfirst($memoryCopy['client_noun']) }}</label>
+                  <select name="client_id" class="mem-select"><option value="">— none —</option>@foreach($clients as $c)<option value="{{ $c->id }}">{{ $c->name }}</option>@endforeach</select>
+                </div>
+                <button type="submit" class="mem-btn">Add {{ ucfirst($memoryCopy['asset_noun']) }}</button>
+              </form>
+            </div>
+          </div>
         </div>
-        <form method="POST" action="{{ route('memory.access.invite') }}" class="px-5 py-5 space-y-5">
+
+        {{-- ── GROUPS ── --}}
+        <div id="sub-groups" class="sub-pane" style="display:none">
+          @if($myDeployments->isEmpty())
+          <div class="mem-empty-card"><div class="mem-empty-sub">No workers deployed yet. Deploy a worker to start creating asset groups.</div></div>
+          @elseif($myGroups->isEmpty())
+          <div class="mem-empty-card">
+            <div class="mem-empty-title">No groups yet</div>
+            <div class="mem-empty-sub" style="margin-bottom:14px">Groups are created from within each worker's memory page.</div>
+            @foreach($myDeployments as $dep)
+            <a href="{{ route('workers.memory.groups', $dep->id) }}" class="mem-btn-secondary" style="margin:0 6px">{{ $dep->name }} →</a>
+            @endforeach
+          </div>
+          @else
+          @php $groupsByDep = $myGroups->groupBy('deployment_id'); @endphp
+          @foreach($groupsByDep as $depId => $depGroups)
+          @php $depName = $depGroups->first()->deployment_name; $workerSlug = $depGroups->first()->worker_slug; @endphp
+          <div style="margin-bottom:18px">
+            <div class="mem-group-dep">
+              <div><span class="mem-group-dep-name">{{ $depName }}</span><span class="mem-group-dep-slug">{{ $workerSlug }}</span></div>
+              <a href="{{ route('workers.memory.groups', $depId) }}" class="mem-row-action">Manage →</a>
+            </div>
+            @foreach($depGroups as $group)
+            @php
+              $nearestExpiry = $group->items->whereNotNull('renewal_date')->sortBy('renewal_date')->first();
+              $gDays = $nearestExpiry ? (int) now()->diffInDays($nearestExpiry->renewal_date, false) : null;
+            @endphp
+            <div class="mem-group-card">
+              <div class="mem-group-head">
+                <div style="flex:1;min-width:0">
+                  <span class="mem-row-name">{{ $group->name }}</span>
+                  @if($group->type)<span class="mem-badge" style="background:var(--db-chip);color:var(--db-text-muted)">{{ $group->type }}</span>@endif
+                  @if($gDays !== null)<span class="mem-badge" style="background:{{ $gDays<=0?'rgba(239,68,68,.15)':($gDays<=30?'rgba(245,158,11,.15)':'var(--db-chip)') }};color:{{ $gDays<=0?'#ef4444':($gDays<=30?'#f59e0b':'var(--db-text-muted)') }}">{{ $gDays <= 0 ? 'Expired' : 'Next '.$gDays.'d' }}</span>@endif
+                  <div class="mem-row-sub">{{ $group->items->count() }} asset{{ $group->items->count() !== 1 ? 's' : '' }}{{ $group->client_name ? ' · '.$group->client_name : '' }}</div>
+                </div>
+                <a href="{{ route('workers.memory.groups', $depId) }}" class="mem-btn-secondary">Edit</a>
+              </div>
+              @if($group->items->isNotEmpty())
+              <div class="mem-group-items">
+                @foreach($group->items as $item)
+                @php $iDays = $item->renewal_date ? (int) now()->diffInDays($item->renewal_date, false) : null; @endphp
+                <span class="mem-group-chip"><span style="width:6px;height:6px;border-radius:50%;background:{{ $iDays!==null && $iDays<=0 ? '#ef4444' : ($iDays!==null && $iDays<=30 ? '#f59e0b' : 'var(--db-border)') }}"></span>{{ $item->name }}</span>
+                @endforeach
+              </div>
+              @endif
+            </div>
+            @endforeach
+          </div>
+          @endforeach
+          @endif
+        </div>
+
+        {{-- ── AVA RULES ── --}}
+        <div id="sub-rules" class="sub-pane" style="display:none">
+          <div class="mem-grid">
+            <div class="mem-list">
+              @forelse($rules as $rule)
+              @php $pc = match($rule->priority) { 'Critical'=>'#ef4444','High'=>'#f59e0b','Medium'=>'var(--db-text-muted)',default=>'var(--db-text-muted)' }; @endphp
+              <div class="mem-row">
+                <div class="min-w-0">
+                  <div class="mem-row-name" style="font-family:monospace">{{ $rule->rule_id }} <span style="font-family:'Inter',sans-serif;color:{{ $pc }};font-size:11px;font-weight:600">{{ $rule->priority }}</span>
+                    @if(!$rule->active)<span class="mem-badge" style="background:var(--db-chip);color:var(--db-text-muted)">Inactive</span>@endif
+                  </div>
+                  <div class="mem-row-sub">{{ $rule->condition }}</div>
+                  <div class="mem-row-sub2">→ {{ $rule->action }}</div>
+                </div>
+                <form method="POST" action="{{ route('memory.rules.destroy', $rule->id) }}">
+                  @csrf @method('DELETE')
+                  <button class="mem-row-action" onclick="return confirm('Remove rule {{ addslashes($rule->rule_id) }}?')">Remove</button>
+                </form>
+              </div>
+              @empty
+              <div class="mem-row-empty">No rules yet.</div>
+              @endforelse
+            </div>
+            <div class="mem-form-card">
+              <div class="mem-form-head">Add Rule</div>
+              <form method="POST" action="{{ route('memory.rules.store') }}" class="mem-form-body">
+                @csrf
+                <div class="mem-field-row">
+                  <div><label class="mem-field-label">Rule ID</label><input type="text" name="rule_id" placeholder="AVA-007" class="mem-input" style="font-family:monospace"></div>
+                  <div><label class="mem-field-label">Priority</label>
+                    <select name="priority" class="mem-select"><option>Critical</option><option>High</option><option>Medium</option><option>Low</option></select>
+                  </div>
+                </div>
+                <div><label class="mem-field-label">Condition (when…)</label><textarea name="condition" rows="3" required class="mem-textarea"></textarea></div>
+                <div><label class="mem-field-label">Action (then…)</label><textarea name="action" rows="3" required class="mem-textarea"></textarea></div>
+                <button type="submit" class="mem-btn">Add Rule</button>
+              </form>
+            </div>
+          </div>
+        </div>
+
+      </div>{{-- /pane-mine --}}
+
+      {{-- ════════ TAB: SHARED WITH ME ════════ --}}
+      <div id="pane-shared" class="hub-pane" style="display:none">
+        @forelse($incoming as $grant)
+        @php $perms = json_decode($grant->permissions, true); @endphp
+        <div class="mem-shared-card">
+          <div class="mem-shared-head">
+            <div style="flex:1;min-width:0">
+              <div class="mem-row-name">{{ $grant->owner_name }}'s Memory</div>
+              <div class="mem-row-sub">{{ $grant->deployment_name }} · {{ $grant->worker_slug }}</div>
+              <div style="margin-top:6px;display:flex;flex-wrap:wrap;gap:5px">
+                @foreach($perms as $p)<span class="mem-badge" style="background:var(--db-chip);color:var(--db-text-muted)">{{ $p }}</span>@endforeach
+              </div>
+            </div>
+            <div class="mem-shared-stats">
+              @foreach([['Clients',$grant->client_count],['Contacts',$grant->contact_count],['Assets',$grant->asset_count],['Groups',$grant->group_count]] as [$label,$count])
+              <div class="mem-shared-stat"><div class="mem-shared-stat-num">{{ $count }}</div><div class="mem-shared-stat-label">{{ $label }}</div></div>
+              @endforeach
+            </div>
+            <a href="{{ route('memory.shared', $grant->id) }}" class="mem-btn" style="align-self:center">Open Memory →</a>
+          </div>
+          <div class="mem-shared-meta">
+            <span>Accepted {{ \Carbon\Carbon::parse($grant->accepted_at)->diffForHumans() }}</span>
+            <span>{{ $grant->owner_email }}</span>
+          </div>
+        </div>
+        @empty
+        <div class="mem-empty-card"><div class="mem-empty-title">No shared memories yet</div><div class="mem-empty-sub">When a team member grants you access to their memory, it will appear here.</div></div>
+        @endforelse
+      </div>
+
+      {{-- ════════ TAB: ACCESS MANAGEMENT ════════ --}}
+      <div id="pane-access" class="hub-pane" style="display:none">
+        <div class="wo-card-title" style="margin-bottom:10px">Who has access to your memory</div>
+        @forelse($outgoing as $grant)
+        @php $perms = json_decode($grant->permissions, true); @endphp
+        <div class="mem-shared-card">
+          <div class="mem-shared-head" style="border-bottom:none">
+            <div style="flex:1;min-width:0">
+              <div class="mem-row-name">{{ $grant->grantee_name }} <span style="font-family:monospace;color:var(--db-text-muted);font-weight:400;font-size:11px">{{ $grant->grantee_code }}</span>
+                <span class="mem-badge" style="background:{{ $grant->status==='accepted' ? 'rgba(34,197,94,.15)' : 'rgba(245,158,11,.15)' }};color:{{ $grant->status==='accepted' ? '#22c55e' : '#f59e0b' }}">{{ ucfirst($grant->status) }}</span>
+              </div>
+              <div class="mem-row-sub">{{ $grant->deployment_name }} · {{ $grant->worker_slug }}</div>
+              <div style="margin-top:6px;display:flex;flex-wrap:wrap;gap:5px">
+                @foreach($perms as $p)<span class="mem-badge" style="background:var(--db-chip);color:var(--db-text-muted)">{{ $p }}</span>@endforeach
+              </div>
+            </div>
+            <div style="text-align:right;flex-shrink:0">
+              <div class="mem-row-sub">{{ $grant->event_count }} actions</div>
+              @if($grant->last_action)<div class="mem-row-sub2">Last: {{ \Carbon\Carbon::parse($grant->last_action)->diffForHumans() }}</div>@endif
+              <form method="POST" action="{{ route('memory.access.revoke', $grant->id) }}" style="margin-top:8px" onsubmit="return confirm('Revoke access for {{ $grant->grantee_name }}?')">
+                @csrf
+                <button class="mem-btn-secondary" style="color:#ef4444;border-color:rgba(239,68,68,.3)">Revoke</button>
+              </form>
+            </div>
+          </div>
+          @if($grant->event_count > 0)
+          <button type="button" class="mem-access-audit-btn" onclick="toggleAudit({{ $grant->id }})"><span id="audit-chevron-{{ $grant->id }}">▶</span> Activity trail</button>
+          <div id="audit-{{ $grant->id }}" style="display:none">
+            @php
+              $events = DB::table('memory_access_events as e')->join('users as u', 'u.id', '=', 'e.actor_user_id')->where('e.grant_id', $grant->id)->select('e.*', 'u.name as actor_name')->orderByDesc('e.created_at')->limit(20)->get();
+            @endphp
+            @foreach($events as $ev)
+            <div class="mem-access-audit-row">
+              <span style="width:6px;height:6px;border-radius:50%;background:{{ $ev->action==='modified'?'#f59e0b':($ev->action==='uploaded'?'#3b82f6':($ev->action==='copied'?'#8b5cf6':'var(--db-border)')) }}"></span>
+              <span style="flex:1"><strong style="color:var(--db-text)">{{ $ev->actor_name }}</strong> <span style="color:var(--db-text-muted)">{{ $ev->action }}</span> <span style="font-family:monospace;color:var(--db-text-muted)">{{ $ev->table_name }}#{{ $ev->record_id }}</span></span>
+              <span style="color:var(--db-text-muted)">{{ \Carbon\Carbon::parse($ev->created_at)->diffForHumans() }}</span>
+            </div>
+            @endforeach
+          </div>
+          @endif
+        </div>
+        @empty
+        <div class="mem-empty-card" style="margin-bottom:20px"><div class="mem-empty-sub">You haven't shared your memory with anyone yet.</div></div>
+        @endforelse
+
+        <div class="mem-form-card" style="margin-top:20px">
+          <div class="mem-form-head">
+            Invite a team member
+            <div style="font-size:11px;font-weight:400;color:var(--db-text-muted);margin-top:3px">They must already have a UNIT account. Enter their profile code (UNIT-XXXXX) or email.</div>
+          </div>
+          <form method="POST" action="{{ route('memory.access.invite') }}" class="mem-form-body">
             @csrf
-            @if($errors->any())
-            <div class="rounded-lg px-4 py-3 text-sm" style="background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);color:#f87171">{{ $errors->first() }}</div>
-            @endif
-            <div>
-                <label class="block text-xs mb-1.5 font-medium" style="color:var(--text-muted)">Profile code or email</label>
-                <input type="text" name="lookup" value="{{ old('lookup') }}" placeholder="UNIT-AB3XY or name@company.com"
-                       class="w-full text-sm rounded-lg px-3 py-2.5 border focus:outline-none font-mono"
-                       style="background:var(--bg-raised);color:var(--text-primary);border-color:var(--border)">
-            </div>
-            <div>
-                <label class="block text-xs mb-1.5 font-medium" style="color:var(--text-muted)">Which deployment's memory</label>
-                <select name="deployment_id" class="w-full text-sm rounded-lg px-3 py-2.5 border focus:outline-none"
-                        style="background:var(--bg-raised);color:var(--text-primary);border-color:var(--border)">
-                    <option value="">Select a deployment…</option>
-                    @foreach($myDeployments as $dep)
-                    <option value="{{ $dep->id }}" {{ old('deployment_id') == $dep->id ? 'selected' : '' }}>{{ $dep->name }} ({{ $dep->worker_slug }})</option>
-                    @endforeach
-                </select>
+            @if($errors->any())<div class="mem-status error">{{ $errors->first() }}</div>@endif
+            <div><label class="mem-field-label">Profile code or email</label><input type="text" name="lookup" value="{{ old('lookup') }}" placeholder="UNIT-AB3XY or name@company.com" class="mem-input" style="font-family:monospace"></div>
+            <div><label class="mem-field-label">Which deployment's memory</label>
+              <select name="deployment_id" class="mem-select">
+                <option value="">Select a deployment…</option>
+                @foreach($myDeployments as $dep)<option value="{{ $dep->id }}" {{ old('deployment_id') == $dep->id ? 'selected' : '' }}>{{ $dep->name }} ({{ $dep->worker_slug }})</option>@endforeach
+              </select>
             </div>
             @php
-                $permOptions = [
-                    ['view',   'View',   'Read memory records — clients, contacts, assets'],
-                    ['copy',   'Copy',   'Duplicate records into their own workspace'],
-                    ['upload', 'Upload', 'Add new records to your memory'],
-                    ['modify', 'Modify', 'Edit existing records in your memory'],
-                ];
+              $permOptions = [['view','View','Read memory records — clients, contacts, assets'],['copy','Copy','Duplicate records into their own workspace'],['upload','Upload','Add new records to your memory'],['modify','Modify','Edit existing records in your memory']];
             @endphp
             <div>
-                <label class="block text-xs mb-2 font-medium" style="color:var(--text-muted)">Permissions</label>
-                <div class="space-y-2">
-                    @foreach($permOptions as [$val, $label, $desc])
-                    @php $checked = in_array($val, old('permissions', ['view'])); @endphp
-                    <label class="flex items-center justify-between gap-4 p-3 rounded-lg border cursor-pointer transition hover:border-gray-600"
-                           style="border-color:var(--border)">
-                        <div>
-                            <p class="text-xs font-semibold" style="color:var(--text-primary)">{{ $label }}</p>
-                            <p class="text-xs mt-0.5" style="color:var(--text-muted)">{{ $desc }}</p>
-                        </div>
-                        <div class="relative shrink-0">
-                            <input type="checkbox" name="permissions[]" value="{{ $val }}" {{ $checked ? 'checked' : '' }} class="sr-only peer">
-                            <div class="w-9 h-5 rounded-full transition peer-checked:bg-yellow-400 bg-gray-700 after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:w-4 after:h-4 after:rounded-full after:bg-white after:transition-all peer-checked:after:translate-x-4"></div>
-                        </div>
-                    </label>
-                    @endforeach
-                    <div class="flex items-center justify-between gap-4 p-3 rounded-lg border opacity-40" style="border-color:var(--border)">
-                        <div><p class="text-xs font-semibold" style="color:var(--text-primary)">Delete</p>
-                        <p class="text-xs mt-0.5" style="color:var(--text-muted)">Never available to collaborators</p></div>
-                        <div class="w-9 h-5 rounded-full relative shrink-0" style="background:var(--bg-raised)">
-                            <div class="absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-gray-600"></div>
-                        </div>
-                    </div>
+              <label class="mem-field-label">Permissions</label>
+              <div style="display:flex;flex-direction:column;gap:8px">
+                @foreach($permOptions as [$val, $label, $desc])
+                @php $checked = in_array($val, old('permissions', ['view'])); @endphp
+                <label class="mem-toggle-row">
+                  <div><div class="mem-toggle-title">{{ $label }}</div><div class="mem-toggle-sub">{{ $desc }}</div></div>
+                  <div class="mem-toggle"><input type="checkbox" name="permissions[]" value="{{ $val }}" {{ $checked ? 'checked' : '' }}><div class="mem-toggle-track"><div class="mem-toggle-thumb"></div></div></div>
+                </label>
+                @endforeach
+                <div class="mem-toggle-row" style="opacity:.4">
+                  <div><div class="mem-toggle-title">Delete</div><div class="mem-toggle-sub">Never available to collaborators</div></div>
+                  <div class="mem-toggle"><div class="mem-toggle-track"><div class="mem-toggle-thumb"></div></div></div>
                 </div>
+              </div>
             </div>
-            <button type="submit" class="w-full sm:w-auto text-sm px-6 py-2.5 rounded-lg font-semibold transition hover:opacity-90" class="ac-on">Send Invitation</button>
-        </form>
-    </div>
-</div>
+            <button type="submit" class="mem-btn" style="align-self:flex-start;padding:10px 22px">Send Invitation</button>
+          </form>
+        </div>
+      </div>
 
-<x-self-learn
-    page-key="memory"
-    title="Your Memory Hub"
-    body="Memory is the foundation of everything on UNIT. Every client, contact, asset, group, and rule you build here trains your AI workers. The more you add, the smarter every worker becomes. Share your memory with team members to collaborate — they can view, copy, or contribute, but they can never delete your original records." />
+    </div>
+  </main>
+
+</div>{{-- ob-page --}}
+</div>{{-- ob-shell --}}
 
 <script>
-const templateRouteBase = "{{ url('/memory/import/template') }}";
-function updateTemplateLink(type) {
-    const link = document.getElementById('tpl-link');
-    link.href = templateRouteBase + '/' + type;
-    link.textContent = type + '_import_template.csv';
-}
+(function () {
+  document.getElementById('theme-toggle').addEventListener('click', function () {
+    var next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    localStorage.setItem('unit-theme-v2', next);
+  });
+
+  var menuToggle = document.getElementById('menu-toggle');
+  var menuDropdown = document.getElementById('menu-dropdown');
+  menuToggle.addEventListener('click', function (e) {
+    e.stopPropagation();
+    menuDropdown.classList.toggle('open');
+  });
+  document.addEventListener('click', function (e) {
+    if (!menuDropdown.contains(e.target) && e.target !== menuToggle) {
+      menuDropdown.classList.remove('open');
+    }
+  });
+})();
 
 function showTab(name) {
-    document.querySelectorAll('.hub-pane').forEach(p => p.classList.add('hidden'));
-    document.querySelectorAll('.hub-tab').forEach(b => {
-        b.style.color       = 'var(--text-muted)';
-        b.style.borderColor = 'transparent';
-    });
-    document.getElementById('pane-' + name).classList.remove('hidden');
-    const btn = document.getElementById('tab-' + name);
-    btn.style.color       = 'var(--text-primary)';
-    btn.style.borderColor = 'var(--accent)';
+  document.querySelectorAll('.hub-pane').forEach(function (p) { p.style.display = 'none'; });
+  document.querySelectorAll('.mem-tab').forEach(function (b) { b.classList.remove('active'); });
+  document.getElementById('pane-' + name).style.display = 'block';
+  var btn = document.getElementById('tab-' + name);
+  if (btn) btn.classList.add('active');
 }
 
 function showSubTab(name) {
-    document.querySelectorAll('.sub-pane').forEach(p => p.classList.add('hidden'));
-    document.querySelectorAll('.sub-tab').forEach(b => {
-        b.style.color       = 'var(--text-muted)';
-        b.style.borderColor = 'transparent';
-    });
-    document.getElementById('sub-' + name).classList.remove('hidden');
-    const btn = document.getElementById('subtab-' + name);
-    btn.style.color       = 'var(--text-primary)';
-    btn.style.borderColor = 'var(--accent)';
+  document.querySelectorAll('.sub-pane').forEach(function (p) { p.style.display = 'none'; });
+  document.querySelectorAll('#pane-mine > .mem-tabs .mem-tab').forEach(function (b) { b.classList.remove('active'); });
+  document.getElementById('sub-' + name).style.display = 'block';
+  var btn = document.getElementById('subtab-' + name);
+  if (btn) btn.classList.add('active');
 }
 
 function toggleAssetEdit(id) {
-    document.getElementById('asset-edit-' + id).classList.toggle('hidden');
+  var el = document.getElementById('asset-edit-' + id);
+  el.style.display = el.style.display === 'none' ? 'block' : 'none';
 }
 
 function toggleAudit(id) {
-    const panel   = document.getElementById('audit-' + id);
-    const chevron = document.getElementById('audit-chevron-' + id);
-    const hidden  = panel.classList.toggle('hidden');
-    chevron.textContent = hidden ? '▶' : '▼';
+  var panel = document.getElementById('audit-' + id);
+  var chevron = document.getElementById('audit-chevron-' + id);
+  var hidden = panel.style.display === 'none' || !panel.style.display;
+  panel.style.display = hidden ? 'block' : 'none';
+  chevron.textContent = hidden ? '▼' : '▶';
 }
 
-// Handle #hash navigation (e.g. redirect from /memory/access)
-const hash = window.location.hash.replace('#', '');
+function updateTemplateLink(type) {
+  var link = document.getElementById('tpl-link');
+  link.href = link.href.replace(/\/import\/template\/\w+/, '/import/template/' + type);
+  link.textContent = type + '_import_template.csv';
+}
+
+var hash = window.location.hash.replace('#', '');
 if (['mine','shared','access'].includes(hash)) {
-    showTab(hash);
+  showTab(hash);
 } else if (['clients','contacts','assets','groups','rules'].includes(hash)) {
-    showSubTab(hash);
+  showSubTab(hash);
 }
 
-// If errors on invite form, open access tab
 @if($errors->any())
-    document.addEventListener('DOMContentLoaded', () => showTab('access'));
+  document.addEventListener('DOMContentLoaded', function () { showTab('access'); });
 @endif
 </script>
-
-</x-app-layout>
+</body>
+</html>
