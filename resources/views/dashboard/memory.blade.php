@@ -49,7 +49,8 @@ body{font-family:'Inter',sans-serif;background:var(--db-bg);color:var(--db-text)
 .ob-menu-item{display:block;width:100%;text-align:left;padding:8px 10px;border-radius:8px;font-size:13.5px;font-weight:600;color:var(--db-text);text-decoration:none;background:none;border:none;cursor:pointer;font-family:inherit}
 .ob-menu-item:hover{background:var(--db-chip)}
 
-.ob-page{display:grid;grid-template-columns:260px 1fr;flex:1;overflow:hidden}
+.ob-page{display:grid;grid-template-columns:260px 1fr 320px;flex:1;overflow:hidden}
+.mem-right{background:var(--db-card);border-left:1px solid var(--db-border);overflow-y:auto}
 .ob-sidebar{background:var(--db-bg);display:flex;flex-direction:column;overflow-y:auto}
 .ob-steps{display:flex;flex-direction:column;padding:18px 24px 0;flex:1}
 .ob-workers-hd{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--db-text-muted);margin-bottom:10px}
@@ -94,11 +95,11 @@ body{font-family:'Inter',sans-serif;background:var(--db-bg);color:var(--db-text)
 .mem-header-row{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:20px}
 .mem-code-label{font-size:11.5px;color:var(--db-text-muted);text-align:right}
 .mem-code{display:flex;align-items:center;gap:8px}
-.mem-code-val{font-family:monospace;font-size:13px;font-weight:700;letter-spacing:.05em;padding:6px 12px;border-radius:8px;background:var(--db-bg);border:1px solid var(--db-border);color:var(--db-text)}
+.mem-code-val{font-family:monospace;font-size:13px;font-weight:700;letter-spacing:.05em;padding:6px 12px;border-radius:8px;background:transparent;border:1px solid var(--db-border);color:var(--db-text)}
 .mem-code-copy{font-size:12.5px;color:var(--db-text-muted);background:none;border:none;cursor:pointer;font-family:inherit}
 .mem-code-copy:hover{color:var(--db-text)}
 
-.wo-card{background:var(--db-bg);border:1px solid var(--db-border);border-radius:16px;padding:20px;margin-bottom:16px}
+.wo-card{background:transparent;border:1px solid var(--db-border);border-radius:16px;padding:20px;margin-bottom:16px}
 .wo-card-title{font-size:13.5px;font-weight:700;color:var(--db-text);margin-bottom:14px}
 
 .mem-persona-prompt{display:flex;flex-wrap:wrap;align-items:center;gap:12px}
@@ -108,7 +109,7 @@ body{font-family:'Inter',sans-serif;background:var(--db-bg);color:var(--db-text)
 .mem-persona-form{display:flex;gap:8px;flex-shrink:0}
 
 .mem-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px}
-.mem-stat{background:var(--db-bg);border:1px solid var(--db-border);border-radius:12px;padding:14px}
+.mem-stat{background:transparent;border:1px solid var(--db-border);border-radius:12px;padding:14px}
 .mem-stat-num{font-size:1.4rem;font-weight:900;color:var(--db-text)}
 .mem-stat-label{font-size:11.5px;color:var(--db-text-muted);margin-top:2px}
 .mem-stat-sub{font-size:11px;color:#f59e0b;margin-top:2px}
@@ -124,19 +125,19 @@ body{font-family:'Inter',sans-serif;background:var(--db-bg);color:var(--db-text)
 .mem-import-title{font-size:13px;font-weight:600;color:var(--db-text)}
 .mem-import-sub{font-size:12.5px;color:var(--db-text-muted);margin-top:2px}
 .mem-import-form{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
-.mem-select,.mem-input,.mem-textarea{width:100%;border-radius:9px;padding:9px 12px;font-size:13.5px;background:var(--db-card);border:1px solid var(--db-border);color:var(--db-text);font-family:inherit}
+.mem-select,.mem-input,.mem-textarea{width:100%;border-radius:9px;padding:9px 12px;font-size:13.5px;background:transparent;border:1px solid var(--db-border);color:var(--db-text);font-family:inherit}
 .mem-select:focus,.mem-input:focus,.mem-textarea:focus{outline:none;border-color:var(--db-invert-bg)}
-.mem-file-label{display:inline-block;padding:9px 14px;border-radius:9px;border:1px solid var(--db-border);background:var(--db-card);color:var(--db-text-muted);font-size:13.5px;cursor:pointer}
+.mem-file-label{display:inline-block;padding:9px 14px;border-radius:9px;border:1px solid var(--db-border);background:transparent;color:var(--db-text-muted);font-size:13.5px;cursor:pointer}
 .mem-btn{padding:9px 16px;border-radius:9px;border:none;font-size:13.5px;font-weight:700;cursor:pointer;font-family:inherit;background:var(--db-invert-bg);color:var(--db-invert-text)}
 .mem-btn:hover{opacity:.9}
-.mem-btn-secondary{padding:8px 14px;border-radius:9px;border:1px solid var(--db-border);background:var(--db-card);color:var(--db-text-muted);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;text-decoration:none;display:inline-block}
+.mem-btn-secondary{padding:8px 14px;border-radius:9px;border:1px solid var(--db-border);background:transparent;color:var(--db-text-muted);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;text-decoration:none;display:inline-block}
 .mem-btn-secondary:hover{background:var(--db-chip);color:var(--db-text)}
 .mem-tpl-link{font-size:12.5px;color:var(--db-text-muted);margin-top:8px;display:block}
 .mem-tpl-link a{color:var(--db-text)}
 
 .mem-grid{display:grid;grid-template-columns:1.6fr 1fr;gap:16px;align-items:flex-start}
 @media(max-width:900px){.mem-grid{grid-template-columns:1fr}}
-.mem-list{background:var(--db-bg);border:1px solid var(--db-border);border-radius:16px;overflow:hidden}
+.mem-list{background:transparent;border:1px solid var(--db-border);border-radius:16px;overflow:hidden}
 .mem-row{padding:14px 18px;border-bottom:1px solid var(--db-border);display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
 .mem-row:last-child{border-bottom:none}
 .mem-row-name{font-size:13px;font-weight:600;color:var(--db-text)}
@@ -147,12 +148,12 @@ body{font-family:'Inter',sans-serif;background:var(--db-bg);color:var(--db-text)
 .mem-row-action:hover{color:var(--db-text)}
 .mem-badge{font-size:10.5px;font-weight:700;padding:2px 7px;border-radius:99px;margin-left:6px}
 
-.mem-form-card{background:var(--db-bg);border:1px solid var(--db-border);border-radius:16px;overflow:hidden}
+.mem-form-card{background:transparent;border:1px solid var(--db-border);border-radius:16px;overflow:hidden}
 .mem-form-head{padding:14px 18px;border-bottom:1px solid var(--db-border);font-size:13px;font-weight:700;color:var(--db-text)}
 .mem-form-body{padding:16px 18px;display:flex;flex-direction:column;gap:12px}
 .mem-field-label{font-size:12px;font-weight:600;color:var(--db-text-muted);margin-bottom:5px;display:block}
 .mem-field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.mem-toggle-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;border:1px solid var(--db-border);border-radius:9px;background:var(--db-card)}
+.mem-toggle-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;border:1px solid var(--db-border);border-radius:9px;background:transparent}
 .mem-toggle-title{font-size:13px;font-weight:600;color:var(--db-text)}
 .mem-toggle-sub{font-size:11.5px;color:var(--db-text-muted);margin-top:1px}
 .mem-toggle{position:relative;width:36px;height:20px;flex-shrink:0}
@@ -162,21 +163,21 @@ body{font-family:'Inter',sans-serif;background:var(--db-bg);color:var(--db-text)
 .mem-toggle input:checked ~ .mem-toggle-track{background:var(--db-invert-bg)}
 .mem-toggle input:checked ~ .mem-toggle-track .mem-toggle-thumb{transform:translateX(16px);background:var(--db-invert-text)}
 
-.mem-edit-panel{background:var(--db-card);border-top:1px solid var(--db-border);padding:14px 18px}
+.mem-edit-panel{background:transparent;border-top:1px solid var(--db-border);padding:14px 18px}
 
-.mem-empty-card{background:var(--db-bg);border:1px solid var(--db-border);border-radius:16px;padding:40px 20px;text-align:center}
+.mem-empty-card{background:transparent;border:1px solid var(--db-border);border-radius:16px;padding:40px 20px;text-align:center}
 .mem-empty-title{font-size:13px;font-weight:700;color:var(--db-text);margin-bottom:4px}
 .mem-empty-sub{font-size:13px;color:var(--db-text-muted)}
 
 .mem-group-dep{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
 .mem-group-dep-name{font-size:11.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--db-text-muted)}
 .mem-group-dep-slug{font-size:11px;font-family:monospace;color:var(--db-text-muted);background:var(--db-chip);padding:1px 6px;border-radius:5px;margin-left:6px}
-.mem-group-card{background:var(--db-bg);border:1px solid var(--db-border);border-radius:14px;margin-bottom:10px;overflow:hidden}
+.mem-group-card{background:transparent;border:1px solid var(--db-border);border-radius:14px;margin-bottom:10px;overflow:hidden}
 .mem-group-head{padding:12px 16px;display:flex;flex-wrap:wrap;align-items:center;gap:8px}
 .mem-group-items{padding:0 16px 12px;display:flex;flex-wrap:wrap;gap:6px}
-.mem-group-chip{font-size:12px;padding:4px 9px;border-radius:8px;background:var(--db-card);color:var(--db-text-muted);display:flex;align-items:center;gap:5px}
+.mem-group-chip{font-size:12px;padding:4px 9px;border-radius:8px;background:transparent;border:1px solid var(--db-border);color:var(--db-text-muted);display:flex;align-items:center;gap:5px}
 
-.mem-shared-card{background:var(--db-bg);border:1px solid var(--db-border);border-radius:14px;margin-bottom:12px;overflow:hidden}
+.mem-shared-card{background:transparent;border:1px solid var(--db-border);border-radius:14px;margin-bottom:12px;overflow:hidden}
 .mem-shared-head{padding:16px 18px;border-bottom:1px solid var(--db-border);display:flex;flex-wrap:wrap;align-items:flex-start;gap:14px}
 .mem-shared-stats{display:flex;gap:16px}
 .mem-shared-stat{text-align:center}
@@ -199,6 +200,7 @@ body{font-family:'Inter',sans-serif;background:var(--db-bg);color:var(--db-text)
   .ob-sidebar{width:100%;flex-direction:column;padding:0;overflow:hidden;border-bottom:none}
   .ob-steps,.ob-links-section,.ob-security{display:none}
   .mem-main{padding:16px;margin:0;border-radius:0;border-left:none;border-right:none;box-shadow:none}
+  .mem-right{display:none}
   .mem-grid,.mem-stats,.mem-field-row{grid-template-columns:1fr}
 }
 </style>
@@ -787,6 +789,9 @@ $expiredAssets = $assets->filter(fn($a) => $a->renewal_date && now()->diffInDays
 
     </div>
   </main>
+
+  {{-- ══ RIGHT PANEL — reserved for the immutable 3-column layout, empty on this page ══ --}}
+  <aside class="mem-right"></aside>
 
 </div>{{-- ob-page --}}
 </div>{{-- ob-shell --}}
