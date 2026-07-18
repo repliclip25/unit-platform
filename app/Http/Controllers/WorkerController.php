@@ -672,7 +672,14 @@ class WorkerController extends Controller
             fn($c) => !$connectedInboxes->contains('id', $c->id)
         )->values();
 
-        return view('dashboard.worker-connect', compact('dep', 'contract', 'connectedInboxes', 'availableCredentials'));
+        $shell = \App\Platform\Services\WorkerShellService::build(auth()->id(), $dep->worker_slug);
+        extract($shell); // workerCatalog, registryRows, registryRow, profileImg, coverImg, tokenTotal
+        $firstName = explode(' ', trim(auth()->user()->name))[0];
+
+        return view('dashboard.worker-connect', compact(
+            'dep', 'contract', 'connectedInboxes', 'availableCredentials',
+            'workerCatalog', 'registryRows', 'registryRow', 'profileImg', 'coverImg', 'tokenTotal', 'firstName'
+        ));
     }
 
     public function connectInbox(int $id, Request $request)
