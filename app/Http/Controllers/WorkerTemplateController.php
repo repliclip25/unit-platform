@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
+use App\Platform\Services\WorkerShellService;
 
 class WorkerTemplateController extends Controller
 {
@@ -24,7 +25,15 @@ class WorkerTemplateController extends Controller
                 $q2->whereNull('user_id')->where('worker_slug', $dep->worker_slug);
             });
         })->orderBy('category')->get();
-        return view('dashboard.worker-templates', compact('dep', 'templates'));
+
+        $shell = WorkerShellService::build($userId, $dep->worker_slug);
+        extract($shell); // workerCatalog, registryRows, registryRow, profileImg, coverImg, tokenTotal
+        $firstName = explode(' ', trim(auth()->user()->name))[0];
+
+        return view('dashboard.worker-templates', compact(
+            'dep', 'templates',
+            'workerCatalog', 'registryRows', 'registryRow', 'profileImg', 'coverImg', 'tokenTotal', 'firstName'
+        ));
     }
 
     public function workerStore(int $id, Request $request)
