@@ -144,20 +144,14 @@ class WorkerTemplateController extends Controller
         $subject = str_replace(array_keys($vars), array_values($vars), $template->subject_template);
         $body    = str_replace(array_keys($vars), array_values($vars), $template->body_template);
 
-        // Try sending via tenant's connected Gmail; fall back to SMTP
-        $credential = $dep->credential_id
-            ? DB::table('user_gmail_credentials')->where('id', $dep->credential_id)->first()
-            : null;
-
+        // Test Send only needs to reach the tenant's own inbox to preview formatting —
+        // it's not representative of a real client send, so it always goes through the
+        // platform's own SMTP (no dependency on the tenant's Gmail OAuth token, which is
+        // only needed for the real PushToGmailJob draft-into-tenant-inbox flow).
         try {
-            if ($credential?->refresh_token) {
-                $gmail = new \App\Platform\Services\Gmail\GmailService($credential);
-                $gmail->sendEmail($user->email, '[TEST] ' . $subject, $body);
-            } else {
-                Mail::raw($body, function ($msg) use ($user, $subject) {
-                    $msg->to($user->email)->subject('[TEST] ' . $subject);
-                });
-            }
+            Mail::raw($body, function ($msg) use ($user, $subject) {
+                $msg->to($user->email)->subject('[TEST] ' . $subject);
+            });
             return back()->with('success', "Test email sent to {$user->email}.");
         } catch (\Throwable $e) {
             return back()->with('error', 'Send failed: ' . $e->getMessage());
