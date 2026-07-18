@@ -166,9 +166,11 @@ body{font-family:'Inter',sans-serif;background:var(--db-bg);color:var(--db-text)
 /* Expanded canvas overlay */
 /* .ob-profile has position:relative, which would trap an absolutely-positioned
    descendant before it ever reaches .ob-card — drop it to static while expanded
-   so .tx-canvas-wrap's inset:0 resolves against the full card, not just the 320px column */
+   so .tx-canvas-wrap's positioning resolves against the full card. It still only
+   covers the desk/hero region (right:320px) — the right panel itself (switcher,
+   timeline, badges, approve/review) stays visible in its own column. */
 .ob-card.tx-expanded .ob-profile{position:static;overflow:visible}
-.ob-card.tx-expanded .tx-canvas-wrap{position:absolute;inset:0;margin:0;z-index:30;border-radius:20px}
+.ob-card.tx-expanded .tx-canvas-wrap{position:absolute;top:0;left:0;right:320px;bottom:0;margin:0;z-index:30;border-radius:20px 0 0 20px;border-right:1px solid var(--db-border)}
 
 /* Activity */
 .ob-act-hd{font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--db-text-muted);margin-bottom:10px;display:flex;align-items:center;justify-content:space-between}
@@ -215,6 +217,8 @@ body{font-family:'Inter',sans-serif;background:var(--db-bg);color:var(--db-text)
   .ob-topbar-email{display:none}
   .ob-topbar-name{max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .ob-page{display:block;height:auto;overflow:visible;width:100%}
+  /* No side-by-side columns on mobile — expand can safely cover full width */
+  .ob-card.tx-expanded .tx-canvas-wrap{right:0;border-radius:0}
   /* Workers become a horizontal strip in the header — swipe to navigate */
   .ob-sidebar{width:100%;flex-direction:column;padding:0;overflow:hidden;border-bottom:none}
   .ob-steps{display:flex;flex-direction:row;align-items:center;gap:8px;padding:10px 16px;overflow-x:auto;width:100%;flex:none;-webkit-overflow-scrolling:touch}
