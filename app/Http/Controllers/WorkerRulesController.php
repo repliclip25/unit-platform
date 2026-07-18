@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Platform\Services\PersonaRuleSeeder;
 use App\Platform\Services\WorkerRegistry;
+use App\Platform\Services\WorkerShellService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -51,10 +52,15 @@ class WorkerRulesController extends Controller
             $totalIssues += count($d['stale']) + count($d['orphaned']) + count($d['missing']);
         }
 
+        $shell = WorkerShellService::build(auth()->id(), $dep->worker_slug);
+        extract($shell); // workerCatalog, registryRows, registryRow, profileImg, coverImg, tokenTotal
+        $firstName = explode(' ', trim(auth()->user()->name))[0];
+
         return view('dashboard.worker-rules', compact(
             'dep', 'personas', 'activePersona',
             'rulesByPersona', 'platformRules',
-            'diffByPersona', 'totalIssues'
+            'diffByPersona', 'totalIssues',
+            'workerCatalog', 'registryRows', 'registryRow', 'profileImg', 'coverImg', 'tokenTotal', 'firstName'
         ));
     }
 
