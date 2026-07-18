@@ -416,9 +416,33 @@ $expiredAssets = $assets->filter(fn($a) => $a->renewal_date && now()->diffInDays
                   <div class="mem-row-sub">{{ $client->preferred_style }}{{ $client->industry ? ' · ' . $client->industry : '' }}</div>
                   @if(!empty($client->address))<div class="mem-row-sub2">{{ $client->address }}</div>@endif
                 </div>
-                <form method="POST" action="{{ route('memory.clients.destroy', $client->id) }}">
-                  @csrf @method('DELETE')
-                  <button class="mem-row-action" onclick="return confirm('Remove {{ addslashes($client->name) }}?')">Remove</button>
+                <div style="display:flex;gap:10px;flex-shrink:0">
+                  <button type="button" class="mem-row-action" onclick="toggleEdit('client-{{ $client->id }}')">Edit</button>
+                  <form method="POST" action="{{ route('memory.clients.destroy', $client->id) }}">
+                    @csrf @method('DELETE')
+                    <button class="mem-row-action" onclick="return confirm('Remove {{ addslashes($client->name) }}?')">Remove</button>
+                  </form>
+                </div>
+              </div>
+              <div id="edit-client-{{ $client->id }}" class="mem-edit-panel" style="display:none">
+                <form method="POST" action="{{ route('memory.clients.update', $client->id) }}" style="display:flex;flex-direction:column;gap:10px">
+                  @csrf @method('PATCH')
+                  <div><label class="mem-field-label">{{ ucfirst($memoryCopy['client_noun']) }} name</label><input type="text" name="name" value="{{ $client->name }}" required class="mem-input"></div>
+                  <div class="mem-field-row">
+                    <div><label class="mem-field-label">Industry</label><input type="text" name="industry" value="{{ $client->industry }}" class="mem-input"></div>
+                    <div><label class="mem-field-label">Status</label>
+                      <select name="status" class="mem-select">@foreach(['active','prospect','inactive','churned'] as $s)<option value="{{ $s }}" @if(($client->status ?? 'active') === $s) selected @endif>{{ ucfirst($s) }}</option>@endforeach</select>
+                    </div>
+                  </div>
+                  <div><label class="mem-field-label">Preferred Style</label>
+                    <select name="preferred_style" class="mem-select">@foreach(['Professional','Friendly','Formal','Concise'] as $st)<option @if($client->preferred_style === $st) selected @endif>{{ $st }}</option>@endforeach</select>
+                  </div>
+                  <div><label class="mem-field-label">Address</label><input type="text" name="address" value="{{ $client->address }}" class="mem-input"></div>
+                  <div><label class="mem-field-label">Notes</label><textarea name="notes" rows="2" class="mem-textarea">{{ $client->notes }}</textarea></div>
+                  <div style="display:flex;gap:8px">
+                    <button type="submit" class="mem-btn">Save</button>
+                    <button type="button" class="mem-btn-secondary" onclick="toggleEdit('client-{{ $client->id }}')">Cancel</button>
+                  </div>
                 </form>
               </div>
               @empty
@@ -461,9 +485,35 @@ $expiredAssets = $assets->filter(fn($a) => $a->renewal_date && now()->diffInDays
                   <div class="mem-row-sub">{{ $contact->email }}</div>
                   <div class="mem-row-sub2">{{ implode(' · ', array_filter([$contact->phone, $contact->role, $contact->department])) }}{{ $cn ? ' · '.$cn->name : '' }}</div>
                 </div>
-                <form method="POST" action="{{ route('memory.contacts.destroy', $contact->id) }}">
-                  @csrf @method('DELETE')
-                  <button class="mem-row-action" onclick="return confirm('Remove {{ addslashes($contact->name) }}?')">Remove</button>
+                <div style="display:flex;gap:10px;flex-shrink:0">
+                  <button type="button" class="mem-row-action" onclick="toggleEdit('contact-{{ $contact->id }}')">Edit</button>
+                  <form method="POST" action="{{ route('memory.contacts.destroy', $contact->id) }}">
+                    @csrf @method('DELETE')
+                    <button class="mem-row-action" onclick="return confirm('Remove {{ addslashes($contact->name) }}?')">Remove</button>
+                  </form>
+                </div>
+              </div>
+              <div id="edit-contact-{{ $contact->id }}" class="mem-edit-panel" style="display:none">
+                <form method="POST" action="{{ route('memory.contacts.update', $contact->id) }}" style="display:flex;flex-direction:column;gap:10px">
+                  @csrf @method('PATCH')
+                  <div><label class="mem-field-label">Full Name</label><input type="text" name="name" value="{{ $contact->name }}" required class="mem-input"></div>
+                  <div><label class="mem-field-label">Email</label><input type="email" name="email" value="{{ $contact->email }}" required class="mem-input"></div>
+                  <div class="mem-field-row">
+                    <div><label class="mem-field-label">Phone</label><input type="text" name="phone" value="{{ $contact->phone }}" class="mem-input"></div>
+                    <div><label class="mem-field-label">Role</label><input type="text" name="role" value="{{ $contact->role }}" class="mem-input"></div>
+                  </div>
+                  <div><label class="mem-field-label">Department</label><input type="text" name="department" value="{{ $contact->department }}" class="mem-input"></div>
+                  <div><label class="mem-field-label">{{ ucfirst($memoryCopy['client_noun']) }}</label>
+                    <select name="client_id" class="mem-select"><option value="">— none —</option>@foreach($clients as $c)<option value="{{ $c->id }}" @if($contact->client_id == $c->id) selected @endif>{{ $c->name }}</option>@endforeach</select>
+                  </div>
+                  <label class="mem-toggle-row">
+                    <div><div class="mem-toggle-title">Decision Maker</div></div>
+                    <div class="mem-toggle"><input type="checkbox" name="is_decision_maker" value="1" @if($contact->is_decision_maker) checked @endif><div class="mem-toggle-track"><div class="mem-toggle-thumb"></div></div></div>
+                  </label>
+                  <div style="display:flex;gap:8px">
+                    <button type="submit" class="mem-btn">Save</button>
+                    <button type="button" class="mem-btn-secondary" onclick="toggleEdit('contact-{{ $contact->id }}')">Cancel</button>
+                  </div>
                 </form>
               </div>
               @empty
@@ -644,9 +694,33 @@ $expiredAssets = $assets->filter(fn($a) => $a->renewal_date && now()->diffInDays
                   <div class="mem-row-sub">{{ $rule->condition }}</div>
                   <div class="mem-row-sub2">→ {{ $rule->action }}</div>
                 </div>
-                <form method="POST" action="{{ route('memory.rules.destroy', $rule->id) }}">
-                  @csrf @method('DELETE')
-                  <button class="mem-row-action" onclick="return confirm('Remove rule {{ addslashes($rule->rule_id) }}?')">Remove</button>
+                <div style="display:flex;gap:10px;flex-shrink:0">
+                  <button type="button" class="mem-row-action" onclick="toggleEdit('rule-{{ $rule->id }}')">Edit</button>
+                  <form method="POST" action="{{ route('memory.rules.destroy', $rule->id) }}">
+                    @csrf @method('DELETE')
+                    <button class="mem-row-action" onclick="return confirm('Remove rule {{ addslashes($rule->rule_id) }}?')">Remove</button>
+                  </form>
+                </div>
+              </div>
+              <div id="edit-rule-{{ $rule->id }}" class="mem-edit-panel" style="display:none">
+                <form method="POST" action="{{ route('memory.rules.update', $rule->id) }}" style="display:flex;flex-direction:column;gap:10px">
+                  @csrf @method('PATCH')
+                  <div class="mem-field-row">
+                    <div><label class="mem-field-label">Rule ID</label><input type="text" name="rule_id" value="{{ $rule->rule_id }}" class="mem-input" style="font-family:monospace"></div>
+                    <div><label class="mem-field-label">Priority</label>
+                      <select name="priority" class="mem-select">@foreach(['Critical','High','Medium','Low'] as $p)<option @if($rule->priority === $p) selected @endif>{{ $p }}</option>@endforeach</select>
+                    </div>
+                  </div>
+                  <div><label class="mem-field-label">Condition (when…)</label><textarea name="condition" rows="3" required class="mem-textarea">{{ $rule->condition }}</textarea></div>
+                  <div><label class="mem-field-label">Action (then…)</label><textarea name="action" rows="3" required class="mem-textarea">{{ $rule->action }}</textarea></div>
+                  <label class="mem-toggle-row">
+                    <div><div class="mem-toggle-title">Active</div></div>
+                    <div class="mem-toggle"><input type="checkbox" name="active" value="1" @if($rule->active) checked @endif><div class="mem-toggle-track"><div class="mem-toggle-thumb"></div></div></div>
+                  </label>
+                  <div style="display:flex;gap:8px">
+                    <button type="submit" class="mem-btn">Save</button>
+                    <button type="button" class="mem-btn-secondary" onclick="toggleEdit('rule-{{ $rule->id }}')">Cancel</button>
+                  </div>
                 </form>
               </div>
               @empty
@@ -835,6 +909,11 @@ function showSubTab(name) {
 
 function toggleAssetEdit(id) {
   var el = document.getElementById('asset-edit-' + id);
+  el.style.display = el.style.display === 'none' ? 'block' : 'none';
+}
+
+function toggleEdit(key) {
+  var el = document.getElementById('edit-' + key);
   el.style.display = el.style.display === 'none' ? 'block' : 'none';
 }
 

@@ -142,6 +142,21 @@ class MemoryController extends Controller
         return back()->with('success', 'Client added.');
     }
 
+    public function updateClient(Request $request, int $id)
+    {
+        $request->validate(['name' => 'required']);
+        DB::table('clients')->where('id', $id)->where('user_id', auth()->id())->update([
+            'name'            => $request->name,
+            'industry'        => $request->industry,
+            'preferred_style' => $request->preferred_style,
+            'status'          => $request->status ?: 'active',
+            'address'         => $request->address,
+            'notes'           => $request->notes,
+            'updated_at'      => now(),
+        ]);
+        return back()->with('success', 'Client updated.');
+    }
+
     public function destroyClient(int $id)
     {
         DB::table('clients')->where('id', $id)->where('user_id', auth()->id())->update(['deleted_at' => now()]);
@@ -153,6 +168,22 @@ class MemoryController extends Controller
         $request->validate(['name' => 'required', 'email' => 'required|email']);
         DB::table('contacts')->insert(['user_id' => auth()->id(), 'client_id' => $request->client_id ?: null, 'name' => $request->name, 'email' => $request->email, 'phone' => $request->phone, 'role' => $request->role, 'department' => $request->department, 'is_decision_maker' => $request->boolean('is_decision_maker'), 'is_primary' => $request->boolean('is_primary'), 'created_at' => now(), 'updated_at' => now()]);
         return back()->with('success', 'Contact added.');
+    }
+
+    public function updateContact(Request $request, int $id)
+    {
+        $request->validate(['name' => 'required', 'email' => 'required|email']);
+        DB::table('contacts')->where('id', $id)->where('user_id', auth()->id())->update([
+            'name'              => $request->name,
+            'email'             => $request->email,
+            'phone'             => $request->phone,
+            'role'              => $request->role,
+            'department'        => $request->department,
+            'is_decision_maker' => $request->boolean('is_decision_maker'),
+            'client_id'         => $request->client_id ?: null,
+            'updated_at'        => now(),
+        ]);
+        return back()->with('success', 'Contact updated.');
     }
 
     public function destroyContact(int $id)
@@ -206,6 +237,22 @@ class MemoryController extends Controller
         }
         DB::table('ava_rules')->insert(['user_id' => auth()->id(), 'rule_id' => $ruleId, 'condition' => $request->condition, 'priority' => $request->priority, 'action' => $request->action, 'approval_required' => $request->boolean('approval_required'), 'notes' => $request->notes, 'active' => true, 'created_at' => now(), 'updated_at' => now()]);
         return back()->with('success', 'Rule added.');
+    }
+
+    public function updateRule(Request $request, int $id)
+    {
+        $request->validate(['condition' => 'required', 'action' => 'required', 'priority' => 'required']);
+        DB::table('ava_rules')->where('id', $id)->where('user_id', auth()->id())->update([
+            'rule_id'           => $request->rule_id,
+            'condition'         => $request->condition,
+            'priority'          => $request->priority,
+            'action'            => $request->action,
+            'approval_required' => $request->boolean('approval_required'),
+            'notes'             => $request->notes,
+            'active'            => $request->boolean('active', true),
+            'updated_at'        => now(),
+        ]);
+        return back()->with('success', 'Rule updated.');
     }
 
     public function destroyRule(int $id)

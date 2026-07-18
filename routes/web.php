@@ -148,13 +148,16 @@ Route::middleware(['auth', 'verified', 'onboarded', 'not-pending-del'])->group(f
     // ── Memory Management ───────────────────────────────────────────────────
     Route::get('/memory',                         [MemoryController::class, 'index'])->name('memory');
     Route::post('/memory/clients',                [MemoryController::class, 'storeClient'])->name('memory.clients.store');
+    Route::patch('/memory/clients/{id}',          [MemoryController::class, 'updateClient'])->name('memory.clients.update');
     Route::delete('/memory/clients/{id}',         [MemoryController::class, 'destroyClient'])->name('memory.clients.destroy');
     Route::post('/memory/contacts',               [MemoryController::class, 'storeContact'])->name('memory.contacts.store');
+    Route::patch('/memory/contacts/{id}',         [MemoryController::class, 'updateContact'])->name('memory.contacts.update');
     Route::delete('/memory/contacts/{id}',        [MemoryController::class, 'destroyContact'])->name('memory.contacts.destroy');
     Route::post('/memory/assets',                 [MemoryController::class, 'storeAsset'])->name('memory.assets.store');
     Route::patch('/memory/assets/{id}',           [MemoryController::class, 'updateAsset'])->name('memory.assets.update');
     Route::delete('/memory/assets/{id}',          [MemoryController::class, 'destroyAsset'])->name('memory.assets.destroy');
     Route::post('/memory/rules',                  [MemoryController::class, 'storeRule'])->name('memory.rules.store');
+    Route::patch('/memory/rules/{id}',            [MemoryController::class, 'updateRule'])->name('memory.rules.update');
     Route::delete('/memory/rules/{id}',           [MemoryController::class, 'destroyRule'])->name('memory.rules.destroy');
 
     // ── Memory access (collaboration) ─────────────────────────────────────────
