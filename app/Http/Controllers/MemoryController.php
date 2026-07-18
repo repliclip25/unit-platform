@@ -6,9 +6,27 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use App\Platform\Services\MemoryImportService;
+use App\Platform\Services\WorkerRegistry;
 
 class MemoryController extends Controller
 {
+    // Generic fallback when no persona is set yet — matches the options that
+    // were previously hardcoded in the view
+    private const DEFAULT_ASSET_TYPES = [
+        'ssl'     => 'SSL Certificate',
+        'domain'  => 'Domain',
+        'hosting' => 'Hosting',
+        'saas'    => 'SaaS Subscription',
+        'other'   => 'Other',
+    ];
+    private const DEFAULT_MEMORY_COPY = [
+        'client_noun'        => 'client',
+        'client_noun_plural' => 'clients',
+        'asset_noun'         => 'asset',
+        'example_client'     => 'Acme Corp',
+        'example_asset'      => 'acmecorp.com',
+    ];
+
     public function index()
     {
         $userId = auth()->id();
@@ -18,6 +36,18 @@ class MemoryController extends Controller
         $contacts = DB::table('contacts')->where('user_id', $userId)->whereNull('deleted_at')->get();
         $assets   = DB::table('assets')->where('user_id', $userId)->whereNull('deleted_at')->where('type', '!=', 'discovered')->orderBy('renewal_date')->get();
         $rules    = DB::table('ava_rules')->where('user_id', $userId)->orderBy('rule_id')->get();
+
+        // ── Persona-driven asset types + copy (falls back to generic if unset) ──
+        $avaDeployment  = DB::table('worker_deployments')->where('user_id', $userId)->where('worker_slug', 'ava')->whereIn('status', ['active', 'paused'])->first();
+        $avaContract    = WorkerRegistry::resolve('ava');
+        $personaKey     = $avaDeployment?->persona ?? DB::table('users')->where('id', $userId)->value('persona');
+        $allPersonas    = $avaContract?->personas() ?? [];
+        $personaDef     = ($personaKey && isset($allPersonas[$personaKey])) ? $allPersonas[$personaKey] : null;
+
+        $assetTypes = $personaDef['asset_types'] ?? self::DEFAULT_ASSET_TYPES;
+        $memoryCopy = array_merge(self::DEFAULT_MEMORY_COPY, $personaDef['memory_copy'] ?? []);
+        $personaOptions   = $allPersonas;
+        $avaDeploymentId  = $avaDeployment?->id;
 
         // ── Groups across all my deployments ─────────────────────────────────
         $myDeployments = DB::table('worker_deployments')
@@ -91,7 +121,8 @@ class MemoryController extends Controller
         return view('dashboard.memory', compact(
             'clients', 'contacts', 'assets', 'rules',
             'myDeployments', 'myGroups',
-            'incoming', 'outgoing', 'myProfileCode'
+            'incoming', 'outgoing', 'myProfileCode',
+            'assetTypes', 'memoryCopy', 'personaKey', 'personaOptions', 'avaDeploymentId'
         ));
     }
 

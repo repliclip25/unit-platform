@@ -7,6 +7,26 @@
     <div class="mb-4 rounded-xl px-5 py-3 text-sm" style="background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.25);color:#f87171">{{ session('error') }}</div>
 @endif
 
+{{-- ── Set persona prompt — unlocks tailored asset types + copy below ────────── --}}
+@if(!$personaKey && $avaDeploymentId && !empty($personaOptions))
+<div class="mb-6 rounded-xl px-5 py-4 flex flex-col sm:flex-row sm:items-center gap-3" style="background:var(--bg-card);border:1px solid var(--border)">
+    <div class="flex-1">
+        <p class="text-sm font-medium" style="color:var(--text-primary)">Tell us what AVA is renewing for you</p>
+        <p class="text-xs mt-0.5" style="color:var(--text-muted)">Pick your use case to get the right asset types and terminology below — takes one click.</p>
+    </div>
+    <form method="POST" action="{{ route('workers.persona', $avaDeploymentId) }}" class="flex items-center gap-2 shrink-0">
+        @csrf @method('PATCH')
+        <select name="persona" required class="text-sm rounded-lg px-3 py-2 border focus:outline-none" style="background:var(--bg-raised);color:var(--text-primary);border-color:var(--border)">
+            <option value="">Choose a use case…</option>
+            @foreach($personaOptions as $key => $p)
+            <option value="{{ $key }}">{{ $p['label'] }}</option>
+            @endforeach
+        </select>
+        <button type="submit" class="text-sm rounded-lg px-4 py-2 font-semibold transition hover:opacity-90" class="ac-on">Save</button>
+    </form>
+</div>
+@endif
+
 {{-- ── Hub header ──────────────────────────────────────────────────────────── --}}
 <div class="mb-6 flex flex-wrap items-start justify-between gap-4">
     <div>
@@ -179,12 +199,12 @@
             </div>
             <div class="rounded-xl h-fit" style="background:var(--bg-card);border:1px solid var(--border)">
                 <div class="px-5 py-4" style="border-bottom:1px solid var(--border-subtle)">
-                    <h3 class="text-sm font-semibold" style="color:var(--text-primary)">Add Client</h3>
+                    <h3 class="text-sm font-semibold" style="color:var(--text-primary)">Add {{ ucfirst($memoryCopy['client_noun']) }}</h3>
                 </div>
                 <form method="POST" action="{{ route('memory.clients.store') }}" class="px-5 py-4 space-y-3">
                     @csrf
-                    <div><label class="text-xs block mb-1" style="color:var(--text-muted)">Client Name</label>
-                    <input type="text" name="name" required class="w-full text-sm rounded-lg px-3 py-2 border focus:outline-none" style="background:var(--bg-raised);color:var(--text-primary);border-color:var(--border)"></div>
+                    <div><label class="text-xs block mb-1" style="color:var(--text-muted)">{{ ucfirst($memoryCopy['client_noun']) }} name</label>
+                    <input type="text" name="name" required placeholder="e.g. {{ $memoryCopy['example_client'] }}" class="w-full text-sm rounded-lg px-3 py-2 border focus:outline-none" style="background:var(--bg-raised);color:var(--text-primary);border-color:var(--border)"></div>
                     <div class="grid grid-cols-2 gap-2">
                         <div><label class="text-xs block mb-1" style="color:var(--text-muted)">Industry</label>
                         <input type="text" name="industry" class="w-full text-sm rounded-lg px-3 py-2 border focus:outline-none" style="background:var(--bg-raised);color:var(--text-primary);border-color:var(--border)"></div>
@@ -323,7 +343,7 @@
                                 <input type="text" name="name" value="{{ $asset->name }}" required class="w-full text-sm rounded-lg px-3 py-2 border focus:outline-none" style="background:var(--bg-card);color:var(--text-primary);border-color:var(--border)"></div>
                                 <div><label class="text-xs block mb-1" style="color:var(--text-muted)">Type</label>
                                 <select name="type" class="w-full text-sm rounded-lg px-3 py-2 border focus:outline-none" style="background:var(--bg-card);color:var(--text-primary);border-color:var(--border)">
-                                    @foreach(['SSL Certificate','Domain','Hosting','SaaS Subscription','Other'] as $t)
+                                    @foreach($assetTypes as $t)
                                     <option @if($asset->type === $t) selected @endif>{{ $t }}</option>
                                     @endforeach
                                 </select></div>
@@ -362,12 +382,12 @@
                 </div>
                 <form method="POST" action="{{ route('memory.assets.store') }}" class="px-5 py-4 space-y-3">
                     @csrf
-                    <div><label class="text-xs block mb-1" style="color:var(--text-muted)">Asset Name</label>
-                    <input type="text" name="name" required class="w-full text-sm rounded-lg px-3 py-2 border focus:outline-none" style="background:var(--bg-raised);color:var(--text-primary);border-color:var(--border)"></div>
+                    <div><label class="text-xs block mb-1" style="color:var(--text-muted)">{{ ucfirst($memoryCopy['asset_noun']) }} name</label>
+                    <input type="text" name="name" required placeholder="e.g. {{ $memoryCopy['example_asset'] }}" class="w-full text-sm rounded-lg px-3 py-2 border focus:outline-none" style="background:var(--bg-raised);color:var(--text-primary);border-color:var(--border)"></div>
                     <div class="grid grid-cols-2 gap-2">
                         <div><label class="text-xs block mb-1" style="color:var(--text-muted)">Type</label>
                         <select name="type" class="w-full text-sm rounded-lg px-3 py-2 border focus:outline-none" style="background:var(--bg-raised);color:var(--text-primary);border-color:var(--border)">
-                            <option>SSL Certificate</option><option>Domain</option><option>Hosting</option><option>SaaS Subscription</option><option>Other</option>
+                            @foreach($assetTypes as $t)<option>{{ $t }}</option>@endforeach
                         </select></div>
                         <div><label class="text-xs block mb-1" style="color:var(--text-muted)">Vendor</label>
                         <input type="text" name="vendor" class="w-full text-sm rounded-lg px-3 py-2 border focus:outline-none" style="background:var(--bg-raised);color:var(--text-primary);border-color:var(--border)"></div>
