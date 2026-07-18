@@ -1162,9 +1162,18 @@ body{
             <div class="wk-bullet"><div class="wk-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>Reduces churn</div>
             <div class="wk-bullet"><div class="wk-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>Protects revenue</div>
           </div>
+          @php
+            $avaHasDesk = auth()->check() && DB::table('worker_deployments')
+              ->where('user_id', auth()->id())->where('worker_slug', 'ava')
+              ->whereIn('status', ['active', 'paused'])->exists();
+          @endphp
           <div class="wk-btns">
             <a href="{{ route('workers.public.show2', 'ava') }}" class="btn-wk-outline">Watch Ava's Day <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
-            <a href="{{ route('hire.ava.welcome') }}" class="btn-wk">Hire AVA <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+            @if($avaHasDesk)
+              <a href="{{ route('desk.ava') }}" class="btn-wk">AVA's Desk <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+            @else
+              <a href="{{ route('hire.ava.welcome') }}" class="btn-wk">Hire AVA <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+            @endif
           </div>
         </div>
       </div>

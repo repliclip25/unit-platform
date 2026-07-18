@@ -1140,11 +1140,23 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
     </div>
 
     {{-- CTAs --}}
+    @php
+      $avaHasDesk = auth()->check() && DB::table('worker_deployments')
+        ->where('user_id', auth()->id())->where('worker_slug', 'ava')
+        ->whereIn('status', ['active', 'paused'])->exists();
+    @endphp
     <div class="pipe-cta">
-      <a href="{{ route('hire.ava.welcome') }}" class="btn-pipe-hire">
-        Hire AVA
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-      </a>
+      @if($avaHasDesk)
+        <a href="{{ route('desk.ava') }}" class="btn-pipe-hire">
+          AVA's Desk
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+      @else
+        <a href="{{ route('hire.ava.welcome') }}" class="btn-pipe-hire">
+          Hire AVA
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+      @endif
       <a href="{{ route('hire.ava.welcome') }}" class="btn-pipe-test">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
         Run a Live Test
