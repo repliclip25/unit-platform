@@ -324,6 +324,7 @@ $ftCanRun = $isMultiCredential || $connectedInboxes->isNotEmpty();
             @if($ftCanRun)
             <form method="POST" action="{{ route('workers.fast-track', $dep->id) }}" id="ft-form">
               @csrf
+              <input type="hidden" name="return" value="page">
               @if($isMultiCredential)
               @elseif($connectedInboxes->count() > 1)
                 <select name="credential_id" class="ft-inbox-select">
