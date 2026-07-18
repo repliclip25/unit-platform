@@ -176,6 +176,7 @@ Route::middleware(['auth', 'verified', 'onboarded', 'not-pending-del'])->group(f
     Route::get('/workers',                                           [WorkerController::class, 'index'])->name('workers.deploy');
     Route::post('/workers',                                          [WorkerController::class, 'store'])->name('workers.store');
     Route::get('/workers/{slug}',                                    [WorkerController::class, 'show'])->name('workers.show');
+    Route::get('/workers/{slug}/overview',                           [WorkerController::class, 'overview'])->name('workers.overview');
     Route::delete('/workers/{id}',                                   [WorkerController::class, 'destroy'])->name('workers.destroy');
     Route::patch('/workers/{id}/status',                             [WorkerController::class, 'updateStatus'])->name('workers.status');
     Route::get('/workers/{slug}/connect',                            [WorkerController::class, 'connect'])->name('workers.connect');

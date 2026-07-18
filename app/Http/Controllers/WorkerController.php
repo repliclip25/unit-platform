@@ -225,6 +225,84 @@ class WorkerController extends Controller
         ));
     }
 
+    // Simplified, user-facing worker overview (new UX2 design). The full
+    // dashboard.worker-detail page (route: workers.show) stays as the
+    // deep/power-user view — this shows only what a regular tenant needs:
+    // identity, billing/policy warnings, production readiness, connection
+    // status, and a lightweight activity summary.
+    public function overview(string $slug)
+    {
+        $dep = DB::table('worker_deployments')
+            ->where('user_id', auth()->id())
+            ->where('worker_slug', $slug)
+            ->whereIn('status', ['active', 'paused'])
+            ->orderByDesc('id')
+            ->firstOrFail();
+
+        $id          = $dep->id;
+        $contract    = \App\Platform\Services\WorkerRegistry::resolve($dep->worker_slug);
+        $registryRow = DB::table('worker_registry')->where('slug', $dep->worker_slug)->first();
+
+        $connectedInboxes = DB::table('deployment_credentials')
+            ->join('user_gmail_credentials', 'user_gmail_credentials.id', '=', 'deployment_credentials.credential_id')
+            ->where('deployment_credentials.deployment_id', $id)
+            ->select('user_gmail_credentials.*')
+            ->get();
+
+        $txCount       = DB::table('transactions')->where('deployment_id', $id)->count();
+        $pendingReview = DB::table('transactions')->where('deployment_id', $id)->where('status', 'draft_ready')->whereNull('human_decision')->count();
+        $stuckCount    = DB::table('transactions')->where('deployment_id', $id)
+            ->whereNotIn('status', ['draft_ready', 'approved', 'sent', 'failed'])
+            ->where('updated_at', '<', now()->subMinutes(5))
+            ->count();
+
+        $policyViolations = \App\Platform\Services\PolicyEngine::evaluate(auth()->id(), $id);
+        $isTrialExhausted = collect($policyViolations)->contains('code', 'TRIAL_EXHAUSTED');
+        $otherViolations  = collect($policyViolations)->filter(fn($v) => $v['code'] !== 'TRIAL_EXHAUSTED')->values()->all();
+        $trialReason      = collect($policyViolations)->firstWhere('code', 'TRIAL_EXHAUSTED')['context']['reason'] ?? 'transactions';
+        $billing          = DB::table('deployment_billing')->where('deployment_id', $id)->first();
+
+        $pricingTiers = DB::table('worker_pricing')
+            ->where('worker_slug', $dep->worker_slug)
+            ->where('active', true)
+            ->where('is_trial_plan', false)
+            ->orderBy('sort_order')
+            ->get();
+
+        $credDef           = $contract ? $contract->credential() : [];
+        $isMultiCredential = isset($credDef[0]);
+
+        if ($isMultiCredential) {
+            $connectedOauthPlatforms = DB::table('nux_oauth_tokens')
+                ->where('user_id', auth()->id())->where('deployment_id', $id)->where('active', true)
+                ->pluck('platform')->toArray();
+            $sourceSlots = collect($credDef)->filter(fn($s) => ($s['key'] ?? '') !== 'inbox');
+            $productionReadiness = [
+                'ready'         => $sourceSlots->contains(fn($s) => in_array($s['key'], $connectedOauthPlatforms)),
+                'title'         => 'Not production ready — no social accounts connected',
+                'body'          => 'Connect at least one source account before this worker can monitor your feed.',
+                'connect_label' => 'Connect Account',
+            ];
+        } else {
+            $productionReadiness = [
+                'ready'         => $connectedInboxes->isNotEmpty(),
+                'title'         => 'Not production ready — no inbox connected',
+                'body'          => 'This worker has no Gmail inbox connected. Real emails will not be processed until you connect one.',
+                'connect_label' => 'Connect Inbox',
+            ];
+        }
+
+        $profileImg = $registryRow?->profile_image ? asset('storage/' . $registryRow->profile_image) : null;
+        $coverImg   = $registryRow?->cover_image   ? asset('storage/' . $registryRow->cover_image)   : null;
+
+        return view('dashboard.worker-overview', compact(
+            'dep', 'contract', 'registryRow', 'profileImg', 'coverImg',
+            'connectedInboxes', 'txCount', 'pendingReview', 'stuckCount',
+            'policyViolations', 'isTrialExhausted', 'otherViolations', 'billing', 'trialReason',
+            'pricingTiers', 'productionReadiness'
+        ));
+    }
+
     public function store(Request $request)
     {
         if (auth()->user()->blocked_at) {
