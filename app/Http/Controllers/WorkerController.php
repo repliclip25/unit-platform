@@ -1256,6 +1256,87 @@ class WorkerController extends Controller
         return redirect()->route('workers.show', ['slug' => $dep->worker_slug, 'watch' => $tx->tx_id]);
     }
 
+    public function fastTrackPage(string $slug)
+    {
+        $dep = DB::table('worker_deployments')
+            ->where('user_id', auth()->id())
+            ->where('worker_slug', $slug)
+            ->whereIn('status', ['active', 'paused'])
+            ->orderByDesc('id')
+            ->firstOrFail();
+
+        $id       = $dep->id;
+        $contract = WorkerRegistry::resolve($dep->worker_slug);
+
+        $shell = \App\Platform\Services\WorkerShellService::build(auth()->id(), $dep->worker_slug);
+        extract($shell); // workerCatalog, registryRows, registryRow, profileImg, coverImg, tokenTotal
+        $firstName = explode(' ', trim(auth()->user()->name))[0];
+
+        $connectedInboxes = DB::table('deployment_credentials')
+            ->join('user_gmail_credentials', 'user_gmail_credentials.id', '=', 'deployment_credentials.credential_id')
+            ->where('deployment_credentials.deployment_id', $id)
+            ->select('user_gmail_credentials.*')
+            ->get();
+
+        $credDef           = $contract ? $contract->credential() : [];
+        $isMultiCredential = isset($credDef[0]);
+
+        $config    = json_decode($dep->config ?? '{}', true) ?: [];
+        $ftUses    = (int) ($config['fast_track_uses'] ?? 0);
+        $ftBilling = DB::table('deployment_billing')->where('deployment_id', $id)->first();
+        $ftPricing = DB::table('worker_pricing')->where('worker_slug', $dep->worker_slug)->orderByDesc('id')->first();
+        $ftMax     = (int) (($ftBilling?->trial_transactions_limit ?: 0) ?: ($ftPricing?->free_transactions ?: 25));
+        $ftLeft    = max(0, $ftMax - $ftUses);
+        $ftSubscribed = $ftBilling && $ftBilling->status === 'active';
+
+        $scenario = DB::table('fast_track_scenarios')->where('deployment_id', $id)->first();
+
+        $pipelineStages = $contract ? $contract->pipelineStages() : [];
+        $watchTxId = request('watch');
+
+        return view('dashboard.worker-fast-track', compact(
+            'dep', 'contract', 'connectedInboxes', 'isMultiCredential',
+            'ftUses', 'ftMax', 'ftLeft', 'ftSubscribed', 'scenario',
+            'pipelineStages', 'watchTxId',
+            'workerCatalog', 'registryRows', 'registryRow', 'profileImg', 'coverImg', 'tokenTotal', 'firstName'
+        ));
+    }
+
+    public function updateFastTrackScenario(int $id, Request $request)
+    {
+        DB::table('worker_deployments')->where('id', $id)->where('user_id', auth()->id())->firstOrFail();
+
+        $request->validate([
+            'scenario_title'     => 'required|string|max:255',
+            'sender_name'        => 'required|string|max:255',
+            'sender_email'       => 'required|email|max:255',
+            'asset_name'         => 'required|string|max:255',
+            'asset_type'         => 'required|string|max:255',
+            'contact_name'       => 'required|string|max:255',
+            'renewal_price'      => 'required|string|max:255',
+            'days_until_expiry'  => 'required|integer|min:1|max:365',
+            'custom_note'        => 'nullable|string|max:1000',
+        ]);
+
+        $data = array_merge($request->only([
+            'scenario_title', 'sender_name', 'sender_email',
+            'asset_name', 'asset_type', 'contact_name',
+            'renewal_price', 'days_until_expiry', 'custom_note',
+        ]), ['updated_at' => now()]);
+
+        if (DB::table('fast_track_scenarios')->where('deployment_id', $id)->exists()) {
+            DB::table('fast_track_scenarios')->where('deployment_id', $id)->update($data);
+        } else {
+            DB::table('fast_track_scenarios')->insert(array_merge($data, [
+                'deployment_id' => $id,
+                'user_id'       => auth()->id(),
+                'created_at'    => now(),
+            ]));
+        }
+
+        return back()->with('success', 'Fast Track scenario saved.');
+    }
+
     public function fastTrackStatus(string $txId)
     {
         $tx = DB::table('transactions')->where('tx_id', $txId)->where('user_id', auth()->id())->first();

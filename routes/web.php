@@ -197,6 +197,8 @@ Route::middleware(['auth', 'verified', 'onboarded', 'not-pending-del'])->group(f
     Route::get('/workers/{slug}/schema',                             [WorkerController::class, 'schema'])->name('workers.schema');
     Route::get('/workers/{slug}/billing',                            [WorkerController::class, 'billing'])->name('workers.billing');
     Route::post('/workers/{id}/fast-track',                          [WorkerController::class, 'fastTrack'])->name('workers.fast-track');
+    Route::get('/workers/{slug}/fast-track',                          [WorkerController::class, 'fastTrackPage'])->name('workers.fast-track.page');
+    Route::patch('/workers/{id}/fast-track/scenario',                 [WorkerController::class, 'updateFastTrackScenario'])->name('workers.fast-track.scenario');
     // moved to auth-only group below — needs to work before onboarding complete
 
     // ── Worker: Memory ──────────────────────────────────────────────────────
