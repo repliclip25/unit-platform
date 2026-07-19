@@ -424,6 +424,35 @@ $sidebarLinks = [
           </div>
           @endif
 
+          {{-- Coming Up — AVA's actual job is renewal assurance via the
+               assets already in Memory, not just reacting to whatever lands
+               in the inbox. This is asset-driven (not transaction-derived),
+               so it's the primary signal on this page — shown in full,
+               ahead of every email-pipeline stat below, and always visible
+               (including an explicit all-clear state) instead of silently
+               disappearing when there's nothing due, so it always reads as
+               "AVA is watching," not just "nothing to show right now." --}}
+          @php $__horizon = $panelMap->get('horizon')['data'] ?? null; @endphp
+          <div style="background:rgba(255,255,255,.92);border:1px solid rgba(0,0,0,.08);border-radius:12px;padding:14px 15px;backdrop-filter:blur(4px);flex-shrink:0;margin-bottom:16px">
+            <div style="font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#9CA3AF;margin-bottom:10px">Coming Up — Renewals AVA Is Watching</div>
+            @if($__horizon && $__horizon['total'] > 0)
+              @foreach($__horizon['buckets'] as $bucket)
+              @if(!empty($bucket['items']))
+              <div style="font-size:10px;font-weight:700;color:{{ !empty($bucket['overdue']) ? '#ef4444' : '#6B7280' }};margin:10px 0 5px">{{ $bucket['label'] }}</div>
+              @foreach($bucket['items'] as $item)
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:5px">
+                <span style="font-size:12.5px;font-weight:600;color:#0D0D0D;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ $item['name'] }}{{ $item['client'] ? ' · '.$item['client'] : '' }}</span>
+                <span style="font-size:11px;font-weight:700;color:{{ $item['days_left'] <= 7 ? '#ef4444' : '#f59e0b' }};flex-shrink:0">{{ $item['days_left'] < 0 ? abs($item['days_left']).'d overdue' : $item['days_left'].'d' }}</span>
+              </div>
+              @endforeach
+              @endif
+              @endforeach
+            @else
+              <p style="font-size:12.5px;color:#22c55e;font-weight:600">✓ All clear — nothing expiring in the next 90 days.</p>
+            @endif
+            <a href="{{ route('workers.memory','ava') }}" style="display:block;margin-top:10px;font-size:11px;font-weight:700;color:#0D0D0D;text-decoration:underline">Check Memory →</a>
+          </div>
+
           {{-- Alert feed — stale drafts, stuck pipeline, high failure rate.
                Same compact-banner + modal pattern as the violations banner
                above, kept separate since these are operational issues (not
@@ -508,24 +537,38 @@ $sidebarLinks = [
           </div>
 
           {{-- What I Did — human-readable recent activity, contract-declared
-               priority 5 (last). Distinct from "Live Activity" in the right
-               panel, which is the stage-by-stage timeline for whichever
-               transaction is currently selected — this is a narrative log
-               across the whole deployment, for transparency/trust rather
-               than debugging one transaction. --}}
+               priority 5 (last, lowest): this is a transactional/email-pipeline
+               log, secondary to AVA's actual job of renewal assurance via
+               Memory's assets. Compact by design — one line + modal, same
+               pattern as the violations/alert banners, so it doesn't compete
+               for space with the Coming Up card above. Distinct from "Live
+               Activity" in the right panel, which is the stage-by-stage
+               timeline for whichever transaction is currently selected. --}}
           @php $__activityItems = $panelMap->get('activity_feed')['data']['items'] ?? []; @endphp
           @if(!empty($__activityItems))
-          <div style="background:rgba(255,255,255,.92);border:1px solid rgba(0,0,0,.08);border-radius:12px;padding:14px 15px;backdrop-filter:blur(4px);flex-shrink:0;margin-bottom:16px">
-            <div style="font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#9CA3AF;margin-bottom:10px">What I Did</div>
-            @foreach($__activityItems as $item)
-            <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:8px">
-              <span style="width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:5px;background:{{ in_array($item['status'], ['approved','sent']) ? '#22c55e' : ($item['status'] === 'failed' ? '#ef4444' : '#6366f1') }}"></span>
-              <span style="flex:1;min-width:0">
-                <span style="display:block;font-size:11.5px;color:#374151;line-height:1.4">{{ $item['sentence'] }}</span>
-                <span style="font-size:10px;color:#9CA3AF">{{ \Carbon\Carbon::parse($item['created_at'])->diffForHumans(null, true) }} ago</span>
-              </span>
+          <button type="button" onclick="document.getElementById('activity-modal').style.display='flex'"
+                  style="display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:rgba(255,255,255,.92);border:1px solid rgba(0,0,0,.08);border-radius:10px;padding:10px 13px;margin-bottom:16px;flex-shrink:0;cursor:pointer;font-family:inherit;backdrop-filter:blur(4px)">
+            <span style="font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#9CA3AF;flex-shrink:0">What I Did</span>
+            <span style="flex:1;min-width:0;font-size:12px;color:#374151;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ $__activityItems[0]['sentence'] }}</span>
+            <span style="font-size:11px;font-weight:600;color:#6B7280;flex-shrink:0">{{ count($__activityItems) }} recent →</span>
+          </button>
+
+          <div id="activity-modal" style="display:none;position:fixed;inset:0;z-index:100;align-items:center;justify-content:center;background:rgba(0,0,0,.5);padding:20px" onclick="if(event.target===this)this.style.display='none'">
+            <div style="background:#fff;border-radius:16px;max-width:480px;width:100%;max-height:85vh;overflow-y:auto;padding:20px">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+                <span style="font-size:13px;font-weight:700;color:#0D0D0D">What I Did</span>
+                <button type="button" onclick="document.getElementById('activity-modal').style.display='none'" style="background:none;border:none;cursor:pointer;font-size:14px;color:#6B7280">✕ Close</button>
+              </div>
+              @foreach($__activityItems as $item)
+              <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:10px">
+                <span style="width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:5px;background:{{ in_array($item['status'], ['approved','sent']) ? '#22c55e' : ($item['status'] === 'failed' ? '#ef4444' : '#6366f1') }}"></span>
+                <span style="flex:1;min-width:0">
+                  <span style="display:block;font-size:12.5px;color:#374151;line-height:1.4">{{ $item['sentence'] }}</span>
+                  <span style="font-size:10.5px;color:#9CA3AF">{{ \Carbon\Carbon::parse($item['created_at'])->diffForHumans(null, true) }} ago</span>
+                </span>
+              </div>
+              @endforeach
             </div>
-            @endforeach
           </div>
           @endif
 
@@ -572,31 +615,6 @@ $sidebarLinks = [
 
         <hr class="emp-divider">
 
-        {{-- Coming Up — real horizon panel from DashboardService (same one
-             powering the old admin page), not the earlier ad-hoc name-matching
-             heuristic. Includes a genuine Overdue bucket now that the
-             underlying "renewal_date >= today" bug is fixed. Lives here (not
-             the hero) because the right panel has real room for persistent
-             items, and uses the panel's own solid background
-             (var(--db-card), theme-aware) instead of a faded glass card. --}}
-        @php $__horizon = $panelMap->get('horizon')['data'] ?? null; @endphp
-        @if($__horizon && $__horizon['total'] > 0)
-        <div style="border:1px solid var(--db-border);border-radius:10px;padding:12px 13px;margin-bottom:14px">
-          <div style="font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--db-text-muted);margin-bottom:8px">Coming Up</div>
-          @foreach($__horizon['buckets'] as $bucket)
-          @if(!empty($bucket['items']))
-          <div style="font-size:9.5px;font-weight:700;color:{{ !empty($bucket['overdue']) ? '#ef4444' : 'var(--db-text-muted)' }};margin:8px 0 4px">{{ $bucket['label'] }}</div>
-          @foreach($bucket['items'] as $item)
-          <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:4px">
-            <span style="font-size:11.5px;font-weight:600;color:var(--db-text);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ $item['name'] }}{{ $item['client'] ? ' · '.$item['client'] : '' }}</span>
-            <span style="font-size:10.5px;font-weight:700;color:{{ $item['days_left'] <= 7 ? '#ef4444' : '#f59e0b' }};flex-shrink:0">{{ $item['days_left'] < 0 ? abs($item['days_left']).'d overdue' : $item['days_left'].'d' }}</span>
-          </div>
-          @endforeach
-          @endif
-          @endforeach
-          <a href="{{ route('workers.memory','ava') }}" style="display:block;margin-top:8px;font-size:11px;font-weight:700;color:var(--db-text);text-decoration:underline">Check Memory →</a>
-        </div>
-        @endif
 
         {{-- Stage timeline for the selected transaction --}}
         <div class="ob-act-hd">
