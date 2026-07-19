@@ -1,6 +1,11 @@
 {{--
     @include('partials.policy-violations', ['violations' => $violations, 'context' => 'billing|worker'])
     $violations = PolicyEngine::evaluate($userId, $deploymentId)
+
+    Styled with inline styles only (no Tailwind utility classes) — this partial is
+    included both from x-app-layout pages (Tailwind loaded) and standalone UX2
+    pages (no Tailwind at all, e.g. billing.blade.php). Inline styles render
+    identically in both contexts.
 --}}
 
 @if(!empty($violations))
@@ -17,66 +22,62 @@
     ];
 @endphp
 
-<div class="space-y-3">
+<div>
 @foreach($violations as $v)
     @php
         $c = $colorMap[$v['color']] ?? $colorMap['gray'];
         $deploymentId = $v['context']['deployment_id'] ?? null;
     @endphp
-    <div class="rounded-2xl border p-5" style="background:{{ $c['bg'] }};border-color:{{ $c['border'] }}">
-        <div class="flex items-start gap-4">
+    <div style="border-radius:16px;border:1px solid {{ $c['border'] }};padding:20px;background:{{ $c['bg'] }};{{ $loop->last ? '' : 'margin-bottom:12px' }}">
+        <div style="display:flex;align-items:flex-start;gap:16px">
 
             {{-- Icon --}}
-            <div class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
-                 style="background:{{ $c['icon_bg'] }}">
-                <svg class="w-5 h-5" fill="none" stroke="{{ $c['icon'] }}" viewBox="0 0 24 24">
+            <div style="width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:{{ $c['icon_bg'] }}">
+                <svg style="width:20px;height:20px" fill="none" stroke="{{ $c['icon'] }}" viewBox="0 0 24 24">
                     {!! $severityIcon[$v['severity']] !!}
                 </svg>
             </div>
 
             {{-- Content --}}
-            <div class="flex-1 min-w-0">
-                <div class="flex items-center gap-2 flex-wrap mb-0.5">
-                    <p class="text-sm font-bold" style="color:{{ $c['title'] }}">{{ $v['title'] }}</p>
-                    <span class="text-xs px-1.5 py-0.5 rounded font-mono"
-                          style="background:{{ $c['icon_bg'] }};color:{{ $c['icon'] }}">
+            <div style="flex:1;min-width:0">
+                <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:4px">
+                    <p style="font-size:14px;font-weight:700;color:{{ $c['title'] }}">{{ $v['title'] }}</p>
+                    <span style="font-size:11px;padding:2px 6px;border-radius:6px;font-family:monospace;background:{{ $c['icon_bg'] }};color:{{ $c['icon'] }}">
                         {{ $v['code'] }}
                     </span>
-                    <span class="text-xs px-1.5 py-0.5 rounded"
-                          style="background:rgba(0,0,0,0.2);color:{{ $c['text'] }}">
+                    <span style="font-size:11px;padding:2px 6px;border-radius:6px;background:rgba(0,0,0,0.2);color:{{ $c['text'] }}">
                         {{ $v['level'] === 'platform' ? 'Platform-wide' : 'This worker' }}
                         · {{ $v['severity'] === 'hard' ? 'Hard block' : 'Soft block' }}
                     </span>
                 </div>
 
-                <p class="text-xs mb-3" style="color:{{ $c['text'] }}">{{ $v['description'] }}</p>
+                <p style="font-size:12px;margin-bottom:12px;color:{{ $c['text'] }}">{{ $v['description'] }}</p>
 
                 {{-- Context details --}}
                 @if(!empty($v['context']['reason']))
-                    <p class="text-xs mb-3 px-3 py-2 rounded-lg" style="background:rgba(0,0,0,0.2);color:{{ $c['text'] }}">
+                    <p style="font-size:12px;margin-bottom:12px;padding:8px 12px;border-radius:10px;background:rgba(0,0,0,0.2);color:{{ $c['text'] }}">
                         <strong>Admin note:</strong> {{ $v['context']['reason'] }}
                     </p>
                 @endif
                 @if(!empty($v['context']['spent']) && !empty($v['context']['cap']))
-                    <p class="text-xs mb-3 font-mono" style="color:{{ $c['text'] }}">
+                    <p style="font-size:12px;margin-bottom:12px;font-family:monospace;color:{{ $c['text'] }}">
                         ${{ number_format($v['context']['spent'], 4) }} spent of ${{ number_format($v['context']['cap'], 2) }} cap
                         @if(!empty($v['context']['resets_on']))— resets {{ $v['context']['resets_on'] }}@endif
                     </p>
                 @endif
                 @if(!empty($v['context']['used']) && isset($v['context']['limit']))
-                    <p class="text-xs mb-3 font-mono" style="color:{{ $c['text'] }}">
+                    <p style="font-size:12px;margin-bottom:12px;font-family:monospace;color:{{ $c['text'] }}">
                         {{ $v['context']['used'] }} / {{ $v['context']['limit'] }} trial transactions used
                     </p>
                 @endif
 
                 {{-- Resolution steps --}}
-                <div class="mb-4">
-                    <p class="text-xs font-semibold mb-2" style="color:{{ $c['title'] }}">How to resolve:</p>
-                    <ol class="space-y-1">
+                <div style="margin-bottom:16px">
+                    <p style="font-size:12px;font-weight:600;margin-bottom:8px;color:{{ $c['title'] }}">How to resolve:</p>
+                    <ol>
                         @foreach($v['resolution'] as $i => $step)
-                        <li class="flex items-start gap-2 text-xs" style="color:{{ $c['text'] }}">
-                            <span class="w-4 h-4 rounded-full flex items-center justify-center text-xs font-bold shrink-0 mt-0.5"
-                                  style="background:{{ $c['step'] }};color:{{ $c['icon'] }}">{{ $i + 1 }}</span>
+                        <li style="display:flex;align-items:flex-start;gap:8px;font-size:12px;margin-top:4px;color:{{ $c['text'] }}">
+                            <span style="width:16px;height:16px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;margin-top:2px;background:{{ $c['step'] }};color:{{ $c['icon'] }}">{{ $i + 1 }}</span>
                             {{ $step }}
                         </li>
                         @endforeach
@@ -100,15 +101,13 @@
                                 : '#');
                     @endphp
                     <a href="{{ $href }}"
-                       class="inline-flex items-center gap-1.5 text-xs font-bold px-4 py-2 rounded-lg transition"
-                       style="background:{{ $c['icon_bg'] }};color:{{ $c['title'] }};border:1px solid {{ $c['border'] }}"
+                       style="display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;padding:8px 16px;border-radius:10px;text-decoration:none;background:{{ $c['icon_bg'] }};color:{{ $c['title'] }};border:1px solid {{ $c['border'] }}"
                        {{ str_starts_with($href, 'mailto:') ? 'target="_blank"' : '' }}>
                         {{ $v['cta_label'] }} →
                     </a>
                 @else
                     <a href="mailto:support@unit.app"
-                       class="inline-flex items-center gap-1.5 text-xs font-bold px-4 py-2 rounded-lg transition"
-                       style="background:{{ $c['icon_bg'] }};color:{{ $c['title'] }};border:1px solid {{ $c['border'] }}"
+                       style="display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;padding:8px 16px;border-radius:10px;text-decoration:none;background:{{ $c['icon_bg'] }};color:{{ $c['title'] }};border:1px solid {{ $c['border'] }}"
                        target="_blank">
                         {{ $v['cta_label'] }} →
                     </a>
