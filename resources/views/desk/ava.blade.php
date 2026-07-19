@@ -507,6 +507,28 @@ $sidebarLinks = [
             @endforeach
           </div>
 
+          {{-- What I Did — human-readable recent activity, contract-declared
+               priority 5 (last). Distinct from "Live Activity" in the right
+               panel, which is the stage-by-stage timeline for whichever
+               transaction is currently selected — this is a narrative log
+               across the whole deployment, for transparency/trust rather
+               than debugging one transaction. --}}
+          @php $__activityItems = $panelMap->get('activity_feed')['data']['items'] ?? []; @endphp
+          @if(!empty($__activityItems))
+          <div style="background:rgba(255,255,255,.92);border:1px solid rgba(0,0,0,.08);border-radius:12px;padding:14px 15px;backdrop-filter:blur(4px);flex-shrink:0;margin-bottom:16px">
+            <div style="font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#9CA3AF;margin-bottom:10px">What I Did</div>
+            @foreach($__activityItems as $item)
+            <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:8px">
+              <span style="width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:5px;background:{{ in_array($item['status'], ['approved','sent']) ? '#22c55e' : ($item['status'] === 'failed' ? '#ef4444' : '#6366f1') }}"></span>
+              <span style="flex:1;min-width:0">
+                <span style="display:block;font-size:11.5px;color:#374151;line-height:1.4">{{ $item['sentence'] }}</span>
+                <span style="font-size:10px;color:#9CA3AF">{{ \Carbon\Carbon::parse($item['created_at'])->diffForHumans(null, true) }} ago</span>
+              </span>
+            </div>
+            @endforeach
+          </div>
+          @endif
+
           {{-- Memory — all types --}}
           <div style="background:rgba(255,255,255,.92);border:1px solid rgba(0,0,0,.08);border-radius:12px;padding:14px 15px;backdrop-filter:blur(4px);flex-shrink:0">
             <div style="font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#9CA3AF;margin-bottom:10px">AVA's Memory</div>
