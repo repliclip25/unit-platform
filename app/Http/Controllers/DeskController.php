@@ -78,10 +78,16 @@ class DeskController extends Controller
         $workStatus = $dep->status === 'active' ? 'Working' : 'Paused';
         $firstName  = explode(' ', trim(auth()->user()->name))[0];
 
+        // Silent-failure detection — billing blocked, trial exhausted, Gmail
+        // watch expired, etc. Surfaced first, above the stat cards: a tenant
+        // who doesn't know AVA stopped working just quietly stops getting
+        // value and churns without ever knowing why.
+        $policyViolations = \App\Platform\Services\PolicyEngine::evaluate($userId, $depId);
+
         return view('desk.ava', compact(
             'dep', 'depId', 'incomingCount', 'inProgressCount', 'waitingCount', 'completedCount',
             'approvals', 'activity', 'currentTask', 'clientCount', 'contactCount',
-            'assetCount', 'ruleCount', 'templateCount', 'credentialCount',
+            'assetCount', 'ruleCount', 'templateCount', 'credentialCount', 'policyViolations',
             'workerCatalog', 'registryRows', 'registryRow', 'profileImg', 'coverImg',
             'workStatus', 'firstName', 'tokenTotal'
         ));

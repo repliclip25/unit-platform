@@ -396,6 +396,16 @@ $sidebarLinks = [
           <h1 class="ob-h1">AVA's Desk.</h1>
           <p class="ob-sub">Renewal Specialist · Monitoring your inbox and protecting your renewals.</p>
 
+          {{-- Silent-failure banner — billing/trial/connection issues that would
+               otherwise go unnoticed. The hero card is always light regardless
+               of the page's dark/light toggle, so the shared partial's theme
+               variables are pinned to light-mode values here, scoped to this div. --}}
+          @if(!empty($policyViolations))
+          <div style="--db-text:#0D0D0D;--db-text-muted:#6B7280;--db-chip:#ECEAE6;--db-border:#E5E7EB;margin-bottom:16px;flex-shrink:0">
+            @include('partials.policy-violations', ['violations' => $policyViolations])
+          </div>
+          @endif
+
           {{-- Today's numbers --}}
           <div class="ob-stat-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px;flex-shrink:0;min-width:0">
             @foreach([
