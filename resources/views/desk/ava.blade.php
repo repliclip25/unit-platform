@@ -421,6 +421,24 @@ $sidebarLinks = [
             @endforeach
           </div>
 
+          {{-- Coverage gaps — assets expiring soon with no draft found yet ── --}}
+          @if($coverageGaps->isNotEmpty())
+          <div style="background:rgba(255,255,255,.92);border:1px solid rgba(245,158,11,.35);border-radius:12px;padding:14px 15px;backdrop-filter:blur(4px);flex-shrink:0;margin-bottom:16px">
+            <div style="font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#b45309;margin-bottom:10px">Needs Attention — no draft found yet</div>
+            @foreach($coverageGaps->take(3) as $gap)
+            @php $gapDays = (int) now()->diffInDays($gap->renewal_date, false); @endphp
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px">
+              <span style="font-size:11.5px;font-weight:600;color:#0D0D0D;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ $gap->name }}</span>
+              <span style="font-size:10.5px;font-weight:700;color:{{ $gapDays <= 7 ? '#ef4444' : '#b45309' }};flex-shrink:0">{{ $gapDays <= 0 ? 'expired' : $gapDays.'d left' }}</span>
+            </div>
+            @endforeach
+            @if($coverageGaps->count() > 3)
+            <div style="font-size:10.5px;color:#9CA3AF;margin-top:2px">+ {{ $coverageGaps->count() - 3 }} more</div>
+            @endif
+            <a href="{{ route('workers.memory','ava') }}" style="display:block;margin-top:10px;font-size:11px;font-weight:700;color:#0D0D0D;text-decoration:underline">Check Memory →</a>
+          </div>
+          @endif
+
           {{-- Memory — all types --}}
           <div style="background:rgba(255,255,255,.92);border:1px solid rgba(0,0,0,.08);border-radius:12px;padding:14px 15px;backdrop-filter:blur(4px);flex-shrink:0">
             <div style="font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#9CA3AF;margin-bottom:10px">AVA's Memory</div>

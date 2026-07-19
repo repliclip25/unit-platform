@@ -84,10 +84,42 @@ class DeskController extends Controller
         // value and churns without ever knowing why.
         $policyViolations = \App\Platform\Services\PolicyEngine::evaluate($userId, $depId);
 
+        // Coverage gaps — assets expiring soon that AVA has no draft for yet.
+        // Assets aren't linked to transactions by a foreign key (AI extracts
+        // the asset name into memory_output as free text), so match by name
+        // against every transaction with a memory match in the last 90 days.
+        $coverageGaps = rescue(function () use ($userId, $depId) {
+            $upcoming = DB::table('assets')
+                ->where('user_id', $userId)
+                ->whereNull('deleted_at')
+                ->whereNotIn('status', ['cancelled', 'expired'])
+                ->whereNotNull('renewal_date')
+                ->whereBetween('renewal_date', [now()->toDateString(), now()->addDays(30)->toDateString()])
+                ->orderBy('renewal_date')
+                ->get();
+
+            if ($upcoming->isEmpty()) {
+                return collect();
+            }
+
+            $matchedNames = DB::table('transactions')
+                ->where('deployment_id', $depId)
+                ->where('created_at', '>=', now()->subDays(90))
+                ->whereNotNull('memory_output')
+                ->pluck('memory_output')
+                ->map(fn($json) => strtolower(trim(json_decode($json, true)['asset'] ?? '')))
+                ->filter()
+                ->unique();
+
+            return $upcoming
+                ->reject(fn($asset) => $matchedNames->contains(strtolower(trim($asset->name))))
+                ->values();
+        }, collect(), false);
+
         return view('desk.ava', compact(
             'dep', 'depId', 'incomingCount', 'inProgressCount', 'waitingCount', 'completedCount',
             'approvals', 'activity', 'currentTask', 'clientCount', 'contactCount',
-            'assetCount', 'ruleCount', 'templateCount', 'credentialCount', 'policyViolations',
+            'assetCount', 'ruleCount', 'templateCount', 'credentialCount', 'policyViolations', 'coverageGaps',
             'workerCatalog', 'registryRows', 'registryRow', 'profileImg', 'coverImg',
             'workStatus', 'firstName', 'tokenTotal'
         ));
