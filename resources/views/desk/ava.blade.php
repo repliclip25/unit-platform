@@ -428,29 +428,38 @@ $sidebarLinks = [
                assets already in Memory, not just reacting to whatever lands
                in the inbox. This is asset-driven (not transaction-derived),
                so it's the primary signal on this page — shown in full,
-               ahead of every email-pipeline stat below, and always visible
-               (including an explicit all-clear state) instead of silently
-               disappearing when there's nothing due, so it always reads as
-               "AVA is watching," not just "nothing to show right now." --}}
-          @php $__horizon = $panelMap->get('horizon')['data'] ?? null; @endphp
-          <div style="background:rgba(255,255,255,.92);border:1px solid rgba(0,0,0,.08);border-radius:12px;padding:14px 15px;backdrop-filter:blur(4px);flex-shrink:0;margin-bottom:16px">
-            <div style="font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#9CA3AF;margin-bottom:10px">Coming Up — Renewals AVA Is Watching</div>
-            @if($__horizon && $__horizon['total'] > 0)
-              @foreach($__horizon['buckets'] as $bucket)
-              @if(!empty($bucket['items']))
-              <div style="font-size:10px;font-weight:700;color:{{ !empty($bucket['overdue']) ? '#ef4444' : '#6B7280' }};margin:10px 0 5px">{{ $bucket['label'] }}</div>
-              @foreach($bucket['items'] as $item)
-              <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:5px">
-                <span style="font-size:12.5px;font-weight:600;color:#0D0D0D;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ $item['name'] }}{{ $item['client'] ? ' · '.$item['client'] : '' }}</span>
-                <span style="font-size:11px;font-weight:700;color:{{ $item['days_left'] <= 7 ? '#ef4444' : '#f59e0b' }};flex-shrink:0">{{ $item['days_left'] < 0 ? abs($item['days_left']).'d overdue' : $item['days_left'].'d' }}</span>
-              </div>
-              @endforeach
-              @endif
-              @endforeach
+               ahead of every email-pipeline stat below. Plain dashboard
+               data like the value clock (no card boundary), one actionable
+               line per item instead of bucketed sub-headers, and always
+               visible (including an explicit all-clear state) instead of
+               silently disappearing when there's nothing due. --}}
+          @php
+            $__horizonItems = collect($panelMap->get('horizon')['data']['buckets'] ?? [])
+              ->flatMap(fn($b) => $b['items'])
+              ->sortBy('days_left')
+              ->values();
+            $__suggestedAction = fn($days) => match(true) {
+              $days < 0  => 'confirm payment',
+              $days <= 7 => 'send reminder',
+              default    => 'monitor',
+            };
+          @endphp
+          <div style="margin-bottom:16px;flex-shrink:0">
+            <span style="font-size:11px;color:#6B7280">Coming Up — renewals AVA is watching</span>
+            @if($__horizonItems->isEmpty())
+            <p style="font-size:13px;color:#22c55e;font-weight:600;margin-top:4px">✓ All clear — nothing expiring in the next 90 days.</p>
             @else
-              <p style="font-size:12.5px;color:#22c55e;font-weight:600">✓ All clear — nothing expiring in the next 90 days.</p>
+            @foreach($__horizonItems->take(4) as $item)
+            <p style="font-size:13px;margin-top:4px">
+              <span style="font-weight:700;color:#0D0D0D">{{ $item['name'] }}</span>
+              <span style="color:#374151">{{ $item['days_left'] < 0 ? ' expired '.abs($item['days_left']).'d ago' : ' expires in '.$item['days_left'].'d' }}</span>
+              <span style="color:{{ $item['days_left'] <= 7 ? '#ef4444' : '#f59e0b' }}"> ({{ $__suggestedAction($item['days_left']) }})</span>
+            </p>
+            @endforeach
+            @if($__horizonItems->count() > 4)
+            <a href="{{ route('workers.memory','ava') }}" style="display:block;margin-top:4px;font-size:11px;font-weight:700;color:#0D0D0D;text-decoration:underline">+ {{ $__horizonItems->count() - 4 }} more →</a>
             @endif
-            <a href="{{ route('workers.memory','ava') }}" style="display:block;margin-top:10px;font-size:11px;font-weight:700;color:#0D0D0D;text-decoration:underline">Check Memory →</a>
+            @endif
           </div>
 
           {{-- Alert feed — stale drafts, stuck pipeline, high failure rate.
