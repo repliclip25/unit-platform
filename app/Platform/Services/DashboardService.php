@@ -269,7 +269,11 @@ class DashboardService
         $maxDays = max($windows);
 
         $isSqlite    = DB::getDriverName() === 'sqlite';
-        $todayExpr   = $isSqlite ? "date('now')" : 'CURDATE()';
+        // Look back far enough to catch overdue renewals too — capped at 90
+        // days past so genuinely stale/abandoned assets don't pile up here
+        // forever, but a renewal that's a week overdue is exactly the kind
+        // of thing this panel exists to never let silently drop off.
+        $overdueExpr = $isSqlite ? "date('now', '-90 days')" : 'DATE_SUB(CURDATE(), INTERVAL 90 DAY)';
         $futureExpr  = $isSqlite ? "date('now', '+' || ? || ' days')" : 'DATE_ADD(CURDATE(), INTERVAL ? DAY)';
 
         $assets = DB::table('assets')
@@ -277,7 +281,7 @@ class DashboardService
             ->whereNull('deleted_at')
             ->where('type', '!=', 'discovered')
             ->whereNotNull('renewal_date')
-            ->whereRaw("renewal_date >= {$todayExpr}")
+            ->whereRaw("renewal_date >= {$overdueExpr}")
             ->whereRaw("renewal_date <= {$futureExpr}", [$maxDays])
             ->orderBy('renewal_date')
             ->get();
@@ -288,23 +292,42 @@ class DashboardService
             ? DB::table('clients')->whereIn('id', $clientIds)->pluck('name', 'id')
             : collect();
 
-        $bucketed = [];
-        $prev     = 0;
-        foreach ($windows as $win) {
-            $bucket = $assets->filter(function ($a) use ($prev, $win) {
-                $days = (int) now()->diffInDays($a->renewal_date, false);
-                return $days > $prev && $days <= $win;
-            })->map(fn($a) => [
-                'name'         => $a->name,
-                'type'         => $a->type,
-                'vendor'       => $a->vendor,
-                'client'       => $clients[$a->client_id] ?? null,
-                'renewal_date' => $a->renewal_date,
-                'days_left'    => (int) now()->diffInDays($a->renewal_date, false),
-            ])->values()->all();
+        $mapAsset = fn($a) => [
+            'name'         => $a->name,
+            'type'         => $a->type,
+            'vendor'       => $a->vendor,
+            'client'       => $clients[$a->client_id] ?? null,
+            'renewal_date' => $a->renewal_date,
+            'days_left'    => (int) now()->diffInDays($a->renewal_date, false),
+        ];
 
-            $bucketed[] = ['window' => $win, 'prev' => $prev, 'items' => $bucket];
-            $prev = $win;
+        $bucketed = [];
+
+        // Overdue — already past due. Previously excluded entirely by a
+        // "renewal_date >= today" filter, so an expired renewal would just
+        // silently vanish from this panel instead of demanding attention.
+        $overdueItems = $assets
+            ->filter(fn($a) => (int) now()->diffInDays($a->renewal_date, false) < 0)
+            ->map($mapAsset)->values()->all();
+        if (!empty($overdueItems)) {
+            $bucketed[] = ['label' => 'Overdue', 'window' => null, 'prev' => null, 'overdue' => true, 'items' => $overdueItems];
+        }
+
+        // Forward windows — cmpPrev starts at -1 so a renewal due today
+        // (days_left === 0) lands in the first bucket instead of being
+        // excluded by the same off-by-one that dropped overdue items.
+        $dispPrev = 0;
+        $cmpPrev  = -1;
+        foreach ($windows as $win) {
+            $bucket = $assets->filter(function ($a) use ($cmpPrev, $win) {
+                $days = (int) now()->diffInDays($a->renewal_date, false);
+                return $days > $cmpPrev && $days <= $win;
+            })->map($mapAsset)->values()->all();
+
+            $label = $dispPrev === 0 ? "Within {$win} days" : ($dispPrev + 1) . "–{$win} days";
+            $bucketed[] = ['label' => $label, 'window' => $win, 'prev' => $dispPrev, 'overdue' => false, 'items' => $bucket];
+            $dispPrev = $win;
+            $cmpPrev  = $win;
         }
 
         return [

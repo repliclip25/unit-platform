@@ -533,11 +533,11 @@
                 @endif
             </div>
             @if(($data['total'] ?? 0) > 0)
-            <div class="grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x" style="border-color:var(--border-subtle)">
+            <div class="grid grid-cols-1 sm:grid-cols-{{ count($data['buckets']) }} divide-y sm:divide-y-0 sm:divide-x" style="border-color:var(--border-subtle)">
                 @foreach($data['buckets'] as $bucket)
                 <div class="px-5 py-4">
-                    <p class="text-xs font-semibold mb-3" style="color:var(--text-muted)">
-                        {{ $bucket['prev'] === 0 ? 'Within ' . $bucket['window'] . ' days' : ($bucket['prev'] + 1) . '–' . $bucket['window'] . ' days' }}
+                    <p class="text-xs font-semibold mb-3" style="color:{{ !empty($bucket['overdue']) ? '#ef4444' : 'var(--text-muted)' }}">
+                        {{ $bucket['label'] }}
                     </p>
                     @if(empty($bucket['items']))
                         <p class="text-xs" style="color:var(--text-faint)">None</p>
@@ -546,7 +546,7 @@
                         @foreach($bucket['items'] as $asset)
                         <div>
                             <p class="text-xs font-medium leading-snug" style="color:var(--text-primary)">{{ $asset['name'] }}</p>
-                            <p class="text-xs" style="color:var(--text-muted)">{{ $asset['client'] ? $asset['client'] . ' · ' : '' }}{{ $asset['days_left'] }}d</p>
+                            <p class="text-xs" style="color:{{ $asset['days_left'] < 0 ? '#ef4444' : 'var(--text-muted)' }}">{{ $asset['client'] ? $asset['client'] . ' · ' : '' }}{{ $asset['days_left'] < 0 ? abs($asset['days_left']).'d overdue' : $asset['days_left'].'d' }}</p>
                         </div>
                         @endforeach
                         </div>
