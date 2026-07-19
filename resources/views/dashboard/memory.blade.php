@@ -53,6 +53,7 @@ body{font-family:'Inter',sans-serif;background:var(--db-bg);color:var(--db-text)
 .ob-page{display:grid;grid-template-columns:260px 1fr;flex:1;overflow:hidden}
 .mem-card-area{display:grid;grid-template-columns:1fr 320px;margin:12px 12px 12px 0;background:var(--db-card);border:1px solid var(--db-border);border-radius:20px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.06)}
 .mem-right{background:var(--db-card);border-left:1px solid var(--db-border);overflow-y:auto}
+.mem-right-inner{padding:24px 20px}
 .ob-sidebar{background:var(--db-bg);display:flex;flex-direction:column;overflow-y:auto}
 .ob-steps{display:flex;flex-direction:column;padding:18px 24px 0;flex:1}
 .ob-workers-hd{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--db-text-muted);margin-bottom:10px}
@@ -137,8 +138,6 @@ body{font-family:'Inter',sans-serif;background:var(--db-bg);color:var(--db-text)
 .mem-tpl-link{font-size:12.5px;color:var(--db-text-muted);margin-top:8px;display:block}
 .mem-tpl-link a{color:var(--db-text)}
 
-.mem-grid{display:grid;grid-template-columns:1.6fr 1fr;gap:16px;align-items:flex-start}
-@media(max-width:900px){.mem-grid{grid-template-columns:1fr}}
 .mem-list{background:transparent;border:1px solid var(--db-border);border-radius:16px;overflow:hidden}
 .mem-row{padding:14px 18px;border-bottom:1px solid var(--db-border);display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
 .mem-row:last-child{border-bottom:none}
@@ -204,8 +203,9 @@ body{font-family:'Inter',sans-serif;background:var(--db-bg);color:var(--db-text)
   .ob-menu-mobile-links{display:block}
   .mem-main{padding:16px}
   .mem-card-area{display:block;margin:0;border-radius:0;border:none;box-shadow:none;background:var(--db-card)}
-  .mem-right{display:none}
-  .mem-grid,.mem-stats,.mem-field-row{grid-template-columns:1fr}
+  .mem-right{border-left:none;border-top:1px solid var(--db-border);width:100%}
+  .mem-stats,.mem-field-row{grid-template-columns:1fr}
+  .mem-tabs{-webkit-overflow-scrolling:touch}
 }
 </style>
 <script>
@@ -357,13 +357,6 @@ $sidebarLinks = [
           <div class="mem-h1">Memory</div>
           <div class="mem-sub">Your memory is your AI's training data. Every {{ $memoryCopy['client_noun'] }}, contact, and {{ $memoryCopy['asset_noun'] }} you build here powers every worker you deploy.</div>
         </div>
-        <div>
-          <div class="mem-code-label">Your profile code</div>
-          <div class="mem-code">
-            <span class="mem-code-val">{{ $myProfileCode ?? '—' }}</span>
-            <button type="button" class="mem-code-copy" onclick="navigator.clipboard.writeText('{{ $myProfileCode }}');this.textContent='Copied!';setTimeout(()=>this.textContent='Copy',1500)">Copy</button>
-          </div>
-        </div>
       </div>
 
       <div class="mem-stats">
@@ -417,7 +410,6 @@ $sidebarLinks = [
 
         {{-- ── CLIENTS ── --}}
         <div id="sub-clients" class="sub-pane">
-          <div class="mem-grid">
             <div class="mem-list">
               @forelse($clients as $client)
               <div class="mem-row">
@@ -463,31 +455,10 @@ $sidebarLinks = [
               <div class="mem-row-empty">No {{ $memoryCopy['client_noun_plural'] }} yet.</div>
               @endforelse
             </div>
-            <div class="mem-form-card">
-              <div class="mem-form-head">Add {{ ucfirst($memoryCopy['client_noun']) }}</div>
-              <form method="POST" action="{{ route('memory.clients.store') }}" class="mem-form-body">
-                @csrf
-                <div><label class="mem-field-label">{{ ucfirst($memoryCopy['client_noun']) }} name</label><input type="text" name="name" required placeholder="e.g. {{ $memoryCopy['example_client'] }}" class="mem-input"></div>
-                <div class="mem-field-row">
-                  <div><label class="mem-field-label">Industry</label><input type="text" name="industry" class="mem-input"></div>
-                  <div><label class="mem-field-label">Status</label>
-                    <select name="status" class="mem-select"><option value="active">Active</option><option value="prospect">Prospect</option><option value="inactive">Inactive</option><option value="churned">Churned</option></select>
-                  </div>
-                </div>
-                <div><label class="mem-field-label">Preferred Style</label>
-                  <select name="preferred_style" class="mem-select"><option>Professional</option><option>Friendly</option><option>Formal</option><option>Concise</option></select>
-                </div>
-                <div><label class="mem-field-label">Address</label><input type="text" name="address" placeholder="Street, City, State…" class="mem-input"></div>
-                <div><label class="mem-field-label">Notes</label><textarea name="notes" rows="2" class="mem-textarea"></textarea></div>
-                <button type="submit" class="mem-btn">Add {{ ucfirst($memoryCopy['client_noun']) }}</button>
-              </form>
-            </div>
-          </div>
         </div>
 
         {{-- ── CONTACTS ── --}}
         <div id="sub-contacts" class="sub-pane" style="display:none">
-          <div class="mem-grid">
             <div class="mem-list">
               @forelse($contacts as $contact)
               @php $cn = $clients->firstWhere('id', $contact->client_id); @endphp
@@ -534,33 +505,10 @@ $sidebarLinks = [
               <div class="mem-row-empty">No contacts yet.</div>
               @endforelse
             </div>
-            <div class="mem-form-card">
-              <div class="mem-form-head">Add Contact</div>
-              <form method="POST" action="{{ route('memory.contacts.store') }}" class="mem-form-body">
-                @csrf
-                <div><label class="mem-field-label">Full Name</label><input type="text" name="name" required class="mem-input"></div>
-                <div><label class="mem-field-label">Email</label><input type="email" name="email" required class="mem-input"></div>
-                <div class="mem-field-row">
-                  <div><label class="mem-field-label">Phone</label><input type="text" name="phone" class="mem-input"></div>
-                  <div><label class="mem-field-label">Role</label><input type="text" name="role" class="mem-input"></div>
-                </div>
-                <div><label class="mem-field-label">Department</label><input type="text" name="department" placeholder="e.g. Procurement, IT, Finance" class="mem-input"></div>
-                <div><label class="mem-field-label">{{ ucfirst($memoryCopy['client_noun']) }}</label>
-                  <select name="client_id" class="mem-select"><option value="">— none —</option>@foreach($clients as $c)<option value="{{ $c->id }}">{{ $c->name }}</option>@endforeach</select>
-                </div>
-                <label class="mem-toggle-row">
-                  <div><div class="mem-toggle-title">Decision Maker</div><div class="mem-toggle-sub">Key decision authority for this {{ $memoryCopy['client_noun'] }}</div></div>
-                  <div class="mem-toggle"><input type="checkbox" name="is_decision_maker" value="1"><div class="mem-toggle-track"><div class="mem-toggle-thumb"></div></div></div>
-                </label>
-                <button type="submit" class="mem-btn">Add Contact</button>
-              </form>
-            </div>
-          </div>
         </div>
 
         {{-- ── ASSETS ── --}}
         <div id="sub-assets" class="sub-pane" style="display:none">
-          <div class="mem-grid">
             <div class="mem-list">
               @forelse($assets as $asset)
               @php
@@ -616,31 +564,6 @@ $sidebarLinks = [
               <div class="mem-row-empty">No assets yet.</div>
               @endforelse
             </div>
-            <div class="mem-form-card">
-              <div class="mem-form-head">Add {{ ucfirst($memoryCopy['asset_noun']) }}</div>
-              <form method="POST" action="{{ route('memory.assets.store') }}" class="mem-form-body">
-                @csrf
-                <div><label class="mem-field-label">{{ ucfirst($memoryCopy['asset_noun']) }} name</label><input type="text" name="name" required placeholder="e.g. {{ $memoryCopy['example_asset'] }}" class="mem-input"></div>
-                <div class="mem-field-row">
-                  <div><label class="mem-field-label">Type</label>
-                    <select name="type" class="mem-select">@foreach($assetTypes as $t)<option>{{ $t }}</option>@endforeach</select>
-                  </div>
-                  <div><label class="mem-field-label">Vendor</label><input type="text" name="vendor" class="mem-input"></div>
-                </div>
-                <div class="mem-field-row">
-                  <div><label class="mem-field-label">Renewal Date</label><input type="date" name="renewal_date" required class="mem-input"></div>
-                  <div><label class="mem-field-label">Status</label>
-                    <select name="status" class="mem-select"><option value="active">Active</option><option value="expiring">Expiring</option><option value="expired">Expired</option><option value="cancelled">Cancelled</option></select>
-                  </div>
-                </div>
-                <div><label class="mem-field-label">Cost / Year ($)</label><input type="number" name="cost_per_year" step="0.01" class="mem-input"></div>
-                <div><label class="mem-field-label">{{ ucfirst($memoryCopy['client_noun']) }}</label>
-                  <select name="client_id" class="mem-select"><option value="">— none —</option>@foreach($clients as $c)<option value="{{ $c->id }}">{{ $c->name }}</option>@endforeach</select>
-                </div>
-                <button type="submit" class="mem-btn">Add {{ ucfirst($memoryCopy['asset_noun']) }}</button>
-              </form>
-            </div>
-          </div>
         </div>
 
         {{-- ── GROUPS ── --}}
@@ -696,7 +619,6 @@ $sidebarLinks = [
 
         {{-- ── AVA RULES ── --}}
         <div id="sub-rules" class="sub-pane" style="display:none">
-          <div class="mem-grid">
             <div class="mem-list">
               @forelse($rules as $rule)
               @php $pc = match($rule->priority) { 'Critical'=>'#ef4444','High'=>'#f59e0b','Medium'=>'var(--db-text-muted)',default=>'var(--db-text-muted)' }; @endphp
@@ -741,22 +663,6 @@ $sidebarLinks = [
               <div class="mem-row-empty">No rules yet.</div>
               @endforelse
             </div>
-            <div class="mem-form-card">
-              <div class="mem-form-head">Add Rule</div>
-              <form method="POST" action="{{ route('memory.rules.store') }}" class="mem-form-body">
-                @csrf
-                <div class="mem-field-row">
-                  <div><label class="mem-field-label">Rule ID</label><input type="text" name="rule_id" placeholder="AVA-007" class="mem-input" style="font-family:monospace"></div>
-                  <div><label class="mem-field-label">Priority</label>
-                    <select name="priority" class="mem-select"><option>Critical</option><option>High</option><option>Medium</option><option>Low</option></select>
-                  </div>
-                </div>
-                <div><label class="mem-field-label">Condition (when…)</label><textarea name="condition" rows="3" required class="mem-textarea"></textarea></div>
-                <div><label class="mem-field-label">Action (then…)</label><textarea name="action" rows="3" required class="mem-textarea"></textarea></div>
-                <button type="submit" class="mem-btn">Add Rule</button>
-              </form>
-            </div>
-          </div>
         </div>
 
       </div>{{-- /pane-mine --}}
@@ -878,8 +784,112 @@ $sidebarLinks = [
     </div>
   </main>
 
-  {{-- ══ RIGHT PANEL — reserved for the immutable 3-column layout, empty on this page ══ --}}
-  <aside class="mem-right"></aside>
+  {{-- ══ RIGHT PANEL — profile code for memory sharing + the Add form for whichever sub-tab is active ══ --}}
+  <aside class="mem-right">
+    <div class="mem-right-inner">
+      <div class="mem-code-label">Your profile code</div>
+      <div class="mem-code">
+        <span class="mem-code-val">{{ $myProfileCode ?? '—' }}</span>
+        <button type="button" class="mem-code-copy" onclick="navigator.clipboard.writeText('{{ $myProfileCode }}');this.textContent='Copied!';setTimeout(()=>this.textContent='Copy',1500)">Copy</button>
+      </div>
+      <div style="font-size:11px;color:var(--db-text-muted);margin-top:6px;margin-bottom:18px">Share this code so another tenant can request access to your memory.</div>
+
+      <div id="add-panel-clients" class="add-panel">
+        <div class="mem-form-card">
+          <div class="mem-form-head">Add {{ ucfirst($memoryCopy['client_noun']) }}</div>
+          <form method="POST" action="{{ route('memory.clients.store') }}" class="mem-form-body">
+            @csrf
+            <div><label class="mem-field-label">{{ ucfirst($memoryCopy['client_noun']) }} name</label><input type="text" name="name" required placeholder="e.g. {{ $memoryCopy['example_client'] }}" class="mem-input"></div>
+            <div class="mem-field-row">
+              <div><label class="mem-field-label">Industry</label><input type="text" name="industry" class="mem-input"></div>
+              <div><label class="mem-field-label">Status</label>
+                <select name="status" class="mem-select"><option value="active">Active</option><option value="prospect">Prospect</option><option value="inactive">Inactive</option><option value="churned">Churned</option></select>
+              </div>
+            </div>
+            <div><label class="mem-field-label">Preferred Style</label>
+              <select name="preferred_style" class="mem-select"><option>Professional</option><option>Friendly</option><option>Formal</option><option>Concise</option></select>
+            </div>
+            <div><label class="mem-field-label">Address</label><input type="text" name="address" placeholder="Street, City, State…" class="mem-input"></div>
+            <div><label class="mem-field-label">Notes</label><textarea name="notes" rows="2" class="mem-textarea"></textarea></div>
+            <button type="submit" class="mem-btn">Add {{ ucfirst($memoryCopy['client_noun']) }}</button>
+          </form>
+        </div>
+      </div>
+
+      <div id="add-panel-contacts" class="add-panel" style="display:none">
+        <div class="mem-form-card">
+          <div class="mem-form-head">Add Contact</div>
+          <form method="POST" action="{{ route('memory.contacts.store') }}" class="mem-form-body">
+            @csrf
+            <div><label class="mem-field-label">Full Name</label><input type="text" name="name" required class="mem-input"></div>
+            <div><label class="mem-field-label">Email</label><input type="email" name="email" required class="mem-input"></div>
+            <div class="mem-field-row">
+              <div><label class="mem-field-label">Phone</label><input type="text" name="phone" class="mem-input"></div>
+              <div><label class="mem-field-label">Role</label><input type="text" name="role" class="mem-input"></div>
+            </div>
+            <div><label class="mem-field-label">Department</label><input type="text" name="department" placeholder="e.g. Procurement, IT, Finance" class="mem-input"></div>
+            <div><label class="mem-field-label">{{ ucfirst($memoryCopy['client_noun']) }}</label>
+              <select name="client_id" class="mem-select"><option value="">— none —</option>@foreach($clients as $c)<option value="{{ $c->id }}">{{ $c->name }}</option>@endforeach</select>
+            </div>
+            <label class="mem-toggle-row">
+              <div><div class="mem-toggle-title">Decision Maker</div><div class="mem-toggle-sub">Key decision authority for this {{ $memoryCopy['client_noun'] }}</div></div>
+              <div class="mem-toggle"><input type="checkbox" name="is_decision_maker" value="1"><div class="mem-toggle-track"><div class="mem-toggle-thumb"></div></div></div>
+            </label>
+            <button type="submit" class="mem-btn">Add Contact</button>
+          </form>
+        </div>
+      </div>
+
+      <div id="add-panel-assets" class="add-panel" style="display:none">
+        <div class="mem-form-card">
+          <div class="mem-form-head">Add {{ ucfirst($memoryCopy['asset_noun']) }}</div>
+          <form method="POST" action="{{ route('memory.assets.store') }}" class="mem-form-body">
+            @csrf
+            <div><label class="mem-field-label">{{ ucfirst($memoryCopy['asset_noun']) }} name</label><input type="text" name="name" required placeholder="e.g. {{ $memoryCopy['example_asset'] }}" class="mem-input"></div>
+            <div class="mem-field-row">
+              <div><label class="mem-field-label">Type</label>
+                <select name="type" class="mem-select">@foreach($assetTypes as $t)<option>{{ $t }}</option>@endforeach</select>
+              </div>
+              <div><label class="mem-field-label">Vendor</label><input type="text" name="vendor" class="mem-input"></div>
+            </div>
+            <div class="mem-field-row">
+              <div><label class="mem-field-label">Renewal Date</label><input type="date" name="renewal_date" required class="mem-input"></div>
+              <div><label class="mem-field-label">Status</label>
+                <select name="status" class="mem-select"><option value="active">Active</option><option value="expiring">Expiring</option><option value="expired">Expired</option><option value="cancelled">Cancelled</option></select>
+              </div>
+            </div>
+            <div><label class="mem-field-label">Cost / Year ($)</label><input type="number" name="cost_per_year" step="0.01" class="mem-input"></div>
+            <div><label class="mem-field-label">{{ ucfirst($memoryCopy['client_noun']) }}</label>
+              <select name="client_id" class="mem-select"><option value="">— none —</option>@foreach($clients as $c)<option value="{{ $c->id }}">{{ $c->name }}</option>@endforeach</select>
+            </div>
+            <button type="submit" class="mem-btn">Add {{ ucfirst($memoryCopy['asset_noun']) }}</button>
+          </form>
+        </div>
+      </div>
+
+      <div id="add-panel-groups" class="add-panel" style="display:none">
+        <div class="mem-empty-card"><div class="mem-empty-sub">Groups are created from within each worker's memory page — use the "Manage" link on a group.</div></div>
+      </div>
+
+      <div id="add-panel-rules" class="add-panel" style="display:none">
+        <div class="mem-form-card">
+          <div class="mem-form-head">Add Rule</div>
+          <form method="POST" action="{{ route('memory.rules.store') }}" class="mem-form-body">
+            @csrf
+            <div class="mem-field-row">
+              <div><label class="mem-field-label">Rule ID</label><input type="text" name="rule_id" placeholder="AVA-007" class="mem-input" style="font-family:monospace"></div>
+              <div><label class="mem-field-label">Priority</label>
+                <select name="priority" class="mem-select"><option>Critical</option><option>High</option><option>Medium</option><option>Low</option></select>
+              </div>
+            </div>
+            <div><label class="mem-field-label">Condition (when…)</label><textarea name="condition" rows="3" required class="mem-textarea"></textarea></div>
+            <div><label class="mem-field-label">Action (then…)</label><textarea name="action" rows="3" required class="mem-textarea"></textarea></div>
+            <button type="submit" class="mem-btn">Add Rule</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </aside>
   </div>
 
 </div>{{-- ob-page --}}
@@ -920,6 +930,10 @@ function showSubTab(name) {
   document.getElementById('sub-' + name).style.display = 'block';
   var btn = document.getElementById('subtab-' + name);
   if (btn) btn.classList.add('active');
+
+  document.querySelectorAll('.add-panel').forEach(function (p) { p.style.display = 'none'; });
+  var addPanel = document.getElementById('add-panel-' + name);
+  if (addPanel) addPanel.style.display = 'block';
 }
 
 function toggleAssetEdit(id) {
