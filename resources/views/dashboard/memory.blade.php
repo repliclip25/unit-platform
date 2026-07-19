@@ -204,7 +204,8 @@ body{font-family:'Inter',sans-serif;background:var(--db-bg);color:var(--db-text)
   .mem-main{padding:16px}
   .mem-card-area{display:block;margin:0;border-radius:0;border:none;box-shadow:none;background:var(--db-card)}
   .mem-right{border-left:none;border-top:1px solid var(--db-border);width:100%}
-  .mem-stats,.mem-field-row{grid-template-columns:1fr}
+  .mem-stats{grid-template-columns:repeat(2,1fr)}
+  .mem-field-row{grid-template-columns:1fr}
   .mem-tabs{-webkit-overflow-scrolling:touch}
 }
 </style>
@@ -376,29 +377,6 @@ $sidebarLinks = [
 
       {{-- ════════ TAB: MY MEMORY ════════ --}}
       <div id="pane-mine" class="hub-pane">
-
-        <div class="wo-card">
-          <div class="mem-import-row">
-            <div class="mem-import-text">
-              <div class="mem-import-title">Bulk Import</div>
-              <div class="mem-import-sub">Upload a CSV or Excel file to populate {{ $memoryCopy['client_noun_plural'] }}, contacts, or assets.</div>
-            </div>
-            <form method="POST" action="{{ route('memory.import.preview') }}" enctype="multipart/form-data" class="mem-import-form" id="import-form">
-              @csrf
-              <select name="type" id="import-type" onchange="updateTemplateLink(this.value)" class="mem-select" style="width:auto">
-                <option value="clients">{{ ucfirst($memoryCopy['client_noun_plural']) }}</option>
-                <option value="contacts">Contacts</option>
-                <option value="assets">Assets</option>
-              </select>
-              <label class="mem-file-label">
-                <span id="file-label">Choose file…</span>
-                <input type="file" name="file" accept=".csv,.xlsx,.xls" required class="hidden" style="display:none" onchange="document.getElementById('file-label').textContent = this.files[0]?.name ?? 'Choose file…'">
-              </label>
-              <button type="submit" class="mem-btn">Preview Import</button>
-            </form>
-          </div>
-          <div class="mem-tpl-link">Download template: <a id="tpl-link" href="{{ route('memory.import.template', 'clients') }}">clients_import_template.csv</a></div>
-        </div>
 
         <div class="mem-tabs" style="margin-bottom:16px">
           <button onclick="showSubTab('clients')" id="subtab-clients" class="mem-tab active">{{ ucfirst($memoryCopy['client_noun_plural']) }} <span class="mem-tab-badge">{{ $clients->count() }}</span></button>
@@ -784,9 +762,28 @@ $sidebarLinks = [
     </div>
   </main>
 
-  {{-- ══ RIGHT PANEL — profile code for memory sharing + the Add form for whichever sub-tab is active ══ --}}
+  {{-- ══ RIGHT PANEL — bulk import, profile code for memory sharing, and the Add form for whichever sub-tab is active ══ --}}
   <aside class="mem-right">
     <div class="mem-right-inner">
+      <div class="mem-import-title">Bulk Import</div>
+      <div class="mem-import-sub" style="margin-bottom:12px">Upload a CSV or Excel file to populate {{ $memoryCopy['client_noun_plural'] }}, contacts, or assets.</div>
+      <form method="POST" action="{{ route('memory.import.preview') }}" enctype="multipart/form-data" class="mem-import-form" id="import-form" style="flex-direction:column;align-items:stretch">
+        @csrf
+        <select name="type" id="import-type" onchange="updateTemplateLink(this.value)" class="mem-select">
+          <option value="clients">{{ ucfirst($memoryCopy['client_noun_plural']) }}</option>
+          <option value="contacts">Contacts</option>
+          <option value="assets">Assets</option>
+        </select>
+        <label class="mem-file-label">
+          <span id="file-label">Choose file…</span>
+          <input type="file" name="file" accept=".csv,.xlsx,.xls" required class="hidden" style="display:none" onchange="document.getElementById('file-label').textContent = this.files[0]?.name ?? 'Choose file…'">
+        </label>
+        <button type="submit" class="mem-btn">Preview Import</button>
+      </form>
+      <div class="mem-tpl-link" style="margin-bottom:20px">Download template: <a id="tpl-link" href="{{ route('memory.import.template', 'clients') }}">clients_import_template.csv</a></div>
+
+      <hr style="border:none;border-top:1px solid var(--db-border);margin-bottom:20px">
+
       <div class="mem-code-label">Your profile code</div>
       <div class="mem-code">
         <span class="mem-code-val">{{ $myProfileCode ?? '—' }}</span>
