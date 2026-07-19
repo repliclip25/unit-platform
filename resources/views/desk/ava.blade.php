@@ -424,18 +424,86 @@ $sidebarLinks = [
           </div>
           @endif
 
-          {{-- Today's numbers --}}
-          <div class="ob-stat-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px;flex-shrink:0;min-width:0">
-            @foreach([
-              [$incomingCount,'Renewal requests detected','#6366f1'],
-              [$incomingCount,'Replies drafted','#8b5cf6'],
-              [$waitingCount,'Awaiting your review','#f59e0b'],
-              [$completedCount,'Completed today','#22c55e'],
-            ] as [$val,$lbl,$clr])
-            <div style="min-width:0;background:rgba(255,255,255,.92);border:1px solid rgba(0,0,0,.08);border-radius:10px;padding:11px 13px;backdrop-filter:blur(4px)">
-              <div style="font-size:24px;font-weight:900;letter-spacing:-.04em;color:{{ $clr }};line-height:1">{{ $val }}</div>
-              <div style="font-size:10px;color:#9CA3AF;margin-top:3px;line-height:1.35">{{ $lbl }}</div>
+          {{-- Alert feed — stale drafts, stuck pipeline, high failure rate.
+               Same compact-banner + modal pattern as the violations banner
+               above, kept separate since these are operational issues (not
+               billing/account-level) with their own action links. --}}
+          @php $__alerts = $panelMap->get('alert_feed')['data']['alerts'] ?? []; @endphp
+          @if(!empty($__alerts))
+          <button type="button" onclick="document.getElementById('alert-modal').style.display='flex'"
+                  style="display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:rgba(99,102,241,.1);border:1px solid rgba(99,102,241,.3);border-radius:10px;padding:10px 13px;margin-bottom:16px;flex-shrink:0;cursor:pointer;font-family:inherit">
+            <span style="font-size:16px;flex-shrink:0">🔔</span>
+            <span style="flex:1;min-width:0">
+              <span style="display:block;font-size:12.5px;font-weight:700;color:#0D0D0D">{{ $__alerts[0]['message'] }}{{ count($__alerts) > 1 ? ' (+'.(count($__alerts)-1).' more)' : '' }}</span>
+            </span>
+            <span style="font-size:11px;font-weight:600;color:#6B7280;flex-shrink:0">Details →</span>
+          </button>
+
+          <div id="alert-modal" style="display:none;position:fixed;inset:0;z-index:100;align-items:center;justify-content:center;background:rgba(0,0,0,.5);padding:20px" onclick="if(event.target===this)this.style.display='none'">
+            <div style="background:#fff;border-radius:16px;max-width:480px;width:100%;max-height:85vh;overflow-y:auto;padding:20px">
+              <div style="display:flex;justify-content:flex-end;margin-bottom:4px">
+                <button type="button" onclick="document.getElementById('alert-modal').style.display='none'" style="background:none;border:none;cursor:pointer;font-size:14px;color:#6B7280">✕ Close</button>
+              </div>
+              @foreach($__alerts as $alert)
+              {{-- qa.recover-stuck is POST-only and admin-gated — a plain GET
+                   link 403s/405s for the exact tenant audience this alert is
+                   shown to (this bug also exists, unfixed, on the old
+                   worker-detail.blade.php page this panel was ported from).
+                   Non-admins get a safe fallback link into Activity Log
+                   instead of a link that can never work for them. --}}
+              @php
+                $__isRecover = $alert['route'] === 'qa.recover-stuck';
+                $__canAct    = !$__isRecover || auth()->user()->isAdmin();
+              @endphp
+              <div style="border:1px solid {{ $alert['severity']==='error' ? 'rgba(239,68,68,.35)' : 'rgba(245,158,11,.35)' }};background:{{ $alert['severity']==='error' ? 'rgba(239,68,68,.06)' : 'rgba(245,158,11,.06)' }};border-radius:12px;padding:14px;margin-bottom:10px">
+                <p style="font-size:13px;color:#0D0D0D;margin-bottom:10px">{{ $alert['message'] }}</p>
+                @if($__canAct)
+                <a href="{{ route($alert['route'], $alert['params']) }}" style="display:inline-block;font-size:12px;font-weight:700;color:#0D0D0D;text-decoration:underline">{{ $alert['action'] }} →</a>
+                @else
+                <a href="{{ route('transactions') }}" style="display:inline-block;font-size:12px;font-weight:700;color:#0D0D0D;text-decoration:underline">View in Activity Log →</a>
+                @endif
+              </div>
+              @endforeach
             </div>
+          </div>
+          @endif
+
+          {{-- Value clock — cumulative, all-time proof of value. Distinct from
+               the "This Week" snapshot below: this is the retention number. --}}
+          @if(!empty($meta['value_clock']['value']))
+          <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:14px;flex-shrink:0">
+            <span style="font-size:28px;font-weight:900;letter-spacing:-.04em;color:#0D0D0D;line-height:1">{{ $meta['value_clock']['display'] }}</span>
+            <span style="font-size:11px;color:#6B7280">{{ $meta['value_clock']['label'] }}{{ !empty($meta['value_clock']['subtitle']) ? ' · '.$meta['value_clock']['subtitle'] : '' }}</span>
+          </div>
+          @endif
+
+          {{-- This week — real distinct metrics from the contract-declared
+               metric_strip panel, plus the approvals-queue count. Replaces
+               the old stat-grid, which showed the same number twice
+               ("Renewal requests detected" and "Replies drafted" were both
+               $incomingCount). --}}
+          @php
+            $__actionCount = $panelMap->get('action_queue')['data']['count'] ?? 0;
+            $__actionUrgent = $panelMap->get('action_queue')['data']['urgent_count'] ?? 0;
+            $__metrics = collect($panelMap->get('metric_strip')['data']['metrics'] ?? [])->keyBy('key');
+          @endphp
+          <div class="ob-stat-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px;flex-shrink:0;min-width:0">
+            <div style="min-width:0;background:rgba(255,255,255,.92);border:1px solid rgba(0,0,0,.08);border-radius:10px;padding:11px 13px;backdrop-filter:blur(4px)">
+              <div style="font-size:24px;font-weight:900;letter-spacing:-.04em;color:{{ $__actionUrgent > 0 ? '#ef4444' : '#f59e0b' }};line-height:1">{{ $__actionCount }}</div>
+              <div style="font-size:10px;color:#9CA3AF;margin-top:3px;line-height:1.35">Awaiting your review{{ $__actionUrgent > 0 ? " ({$__actionUrgent} urgent)" : '' }}</div>
+            </div>
+            @foreach([
+              ['emails_processed','#6366f1'],
+              ['approved_sent','#22c55e'],
+              ['response_rate','#8b5cf6'],
+            ] as [$key,$clr])
+            @php $m = $__metrics->get($key); @endphp
+            @if($m)
+            <div style="min-width:0;background:rgba(255,255,255,.92);border:1px solid rgba(0,0,0,.08);border-radius:10px;padding:11px 13px;backdrop-filter:blur(4px)">
+              <div style="font-size:24px;font-weight:900;letter-spacing:-.04em;color:{{ $clr }};line-height:1">{{ $m['value'] !== null ? $m['value'].$m['suffix'] : '—' }}</div>
+              <div style="font-size:10px;color:#9CA3AF;margin-top:3px;line-height:1.35">{{ $m['label'] }} this week</div>
+            </div>
+            @endif
             @endforeach
           </div>
 
@@ -482,23 +550,28 @@ $sidebarLinks = [
 
         <hr class="emp-divider">
 
-        {{-- Coverage gaps — assets expiring soon with no draft found yet.
-             Lives here (not the hero) because the right panel has real room
-             for persistent items, and uses the panel's own solid background
+        {{-- Coming Up — real horizon panel from DashboardService (same one
+             powering the old admin page), not the earlier ad-hoc name-matching
+             heuristic. Includes a genuine Overdue bucket now that the
+             underlying "renewal_date >= today" bug is fixed. Lives here (not
+             the hero) because the right panel has real room for persistent
+             items, and uses the panel's own solid background
              (var(--db-card), theme-aware) instead of a faded glass card. --}}
-        @if($coverageGaps->isNotEmpty())
-        <div style="border:1px solid rgba(245,158,11,.35);border-radius:10px;padding:12px 13px;margin-bottom:14px">
-          <div style="font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#f59e0b;margin-bottom:8px">Needs Attention — no draft found yet</div>
-          @foreach($coverageGaps->take(4) as $gap)
-          @php $gapDays = (int) now()->diffInDays($gap->renewal_date, false); @endphp
-          <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:5px">
-            <span style="font-size:11.5px;font-weight:600;color:var(--db-text);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ $gap->name }}</span>
-            <span style="font-size:10.5px;font-weight:700;color:{{ $gapDays <= 7 ? '#ef4444' : '#f59e0b' }};flex-shrink:0">{{ $gapDays <= 0 ? 'expired' : $gapDays.'d left' }}</span>
+        @php $__horizon = $panelMap->get('horizon')['data'] ?? null; @endphp
+        @if($__horizon && $__horizon['total'] > 0)
+        <div style="border:1px solid var(--db-border);border-radius:10px;padding:12px 13px;margin-bottom:14px">
+          <div style="font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--db-text-muted);margin-bottom:8px">Coming Up</div>
+          @foreach($__horizon['buckets'] as $bucket)
+          @if(!empty($bucket['items']))
+          <div style="font-size:9.5px;font-weight:700;color:{{ !empty($bucket['overdue']) ? '#ef4444' : 'var(--db-text-muted)' }};margin:8px 0 4px">{{ $bucket['label'] }}</div>
+          @foreach($bucket['items'] as $item)
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:4px">
+            <span style="font-size:11.5px;font-weight:600;color:var(--db-text);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ $item['name'] }}{{ $item['client'] ? ' · '.$item['client'] : '' }}</span>
+            <span style="font-size:10.5px;font-weight:700;color:{{ $item['days_left'] <= 7 ? '#ef4444' : '#f59e0b' }};flex-shrink:0">{{ $item['days_left'] < 0 ? abs($item['days_left']).'d overdue' : $item['days_left'].'d' }}</span>
           </div>
           @endforeach
-          @if($coverageGaps->count() > 4)
-          <div style="font-size:10.5px;color:var(--db-text-muted);margin-top:2px">+ {{ $coverageGaps->count() - 4 }} more</div>
           @endif
+          @endforeach
           <a href="{{ route('workers.memory','ava') }}" style="display:block;margin-top:8px;font-size:11px;font-weight:700;color:var(--db-text);text-decoration:underline">Check Memory →</a>
         </div>
         @endif

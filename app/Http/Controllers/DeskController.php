@@ -32,14 +32,6 @@ class DeskController extends Controller
 
         $depId = $dep->id;
 
-        // Pipeline counts
-        $incomingCount   = DB::table('transactions')->where('deployment_id', $depId)->whereDate('created_at', today())->count();
-        $inProgressCount = DB::table('transactions')->where('deployment_id', $depId)
-            ->whereNotIn('status', ['draft_ready','approved','sent','failed','dismissed','filtered_out','rejected','blocked'])
-            ->count();
-        $waitingCount    = DB::table('transactions')->where('deployment_id', $depId)->where('status', 'draft_ready')->whereNull('human_decision')->count();
-        $completedCount  = DB::table('transactions')->where('deployment_id', $depId)->whereIn('status', ['approved','sent'])->whereDate('updated_at', today())->count();
-
         // Approvals queue
         $approvals = DB::table('transactions')
             ->where('deployment_id', $depId)
@@ -84,42 +76,23 @@ class DeskController extends Controller
         // value and churns without ever knowing why.
         $policyViolations = \App\Platform\Services\PolicyEngine::evaluate($userId, $depId);
 
-        // Coverage gaps — assets expiring soon that AVA has no draft for yet.
-        // Assets aren't linked to transactions by a foreign key (AI extracts
-        // the asset name into memory_output as free text), so match by name
-        // against every transaction with a memory match in the last 90 days.
-        $coverageGaps = rescue(function () use ($userId, $depId) {
-            $upcoming = DB::table('assets')
-                ->where('user_id', $userId)
-                ->whereNull('deleted_at')
-                ->whereNotIn('status', ['cancelled', 'expired'])
-                ->whereNotNull('renewal_date')
-                ->whereBetween('renewal_date', [now()->toDateString(), now()->addDays(30)->toDateString()])
-                ->orderBy('renewal_date')
-                ->get();
-
-            if ($upcoming->isEmpty()) {
-                return collect();
-            }
-
-            $matchedNames = DB::table('transactions')
-                ->where('deployment_id', $depId)
-                ->where('created_at', '>=', now()->subDays(90))
-                ->whereNotNull('memory_output')
-                ->pluck('memory_output')
-                ->map(fn($json) => strtolower(trim(json_decode($json, true)['asset'] ?? '')))
-                ->filter()
-                ->unique();
-
-            return $upcoming
-                ->reject(fn($asset) => $matchedNames->contains(strtolower(trim($asset->name))))
-                ->values();
-        }, collect(), false);
+        // Contract-driven dashboard panels (action_queue, horizon "Coming Up",
+        // metric_strip "This Week", alert_feed) + value clock — the same
+        // system that powers the old admin worker-detail page, declared once
+        // by AvaWorker::overview() and priority-ordered there. Supersedes the
+        // hand-rolled stat counts and ad-hoc coverage-gap query this page
+        // used before: the horizon panel already does this correctly
+        // (including the Overdue bucket) with no name-matching heuristics.
+        $contract  = \App\Platform\Services\WorkerRegistry::resolve('ava');
+        $dashboard = \App\Platform\Services\DashboardService::resolve($dep, $contract->overview(), $contract);
+        $panelMap  = collect($dashboard['panels'])->keyBy('type');
+        $meta      = $dashboard['meta'];
 
         return view('desk.ava', compact(
-            'dep', 'depId', 'incomingCount', 'inProgressCount', 'waitingCount', 'completedCount',
+            'dep', 'depId',
             'approvals', 'activity', 'currentTask', 'clientCount', 'contactCount',
-            'assetCount', 'ruleCount', 'templateCount', 'credentialCount', 'policyViolations', 'coverageGaps',
+            'assetCount', 'ruleCount', 'templateCount', 'credentialCount', 'policyViolations',
+            'panelMap', 'meta',
             'workerCatalog', 'registryRows', 'registryRow', 'profileImg', 'coverImg',
             'workStatus', 'firstName', 'tokenTotal'
         ));
