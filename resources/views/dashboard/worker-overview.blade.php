@@ -238,7 +238,7 @@ body{font-family:'Inter',sans-serif;background:var(--db-bg);color:var(--db-text)
   .ob-menu-mobile-links{display:block}
   .ob-security{display:none}
   .wo-main{padding:16px}
-  .wo-card-area{display:block;margin:0;border-radius:0;border:none;box-shadow:none;background:transparent}
+  .wo-card-area{display:block;margin:0;border-radius:0;border:none;box-shadow:none;background:var(--db-card)}
   .wo-plans,.wo-stats,.wo-links,.wo-ii-stats{grid-template-columns:1fr}
   .wo-right{border-left:none;border-top:1px solid var(--db-border);width:100%}
 }

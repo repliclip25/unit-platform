@@ -203,7 +203,7 @@ body{font-family:'Inter',sans-serif;background:var(--db-bg);color:var(--db-text)
   .ob-steps,.ob-links-section,.ob-security{display:none}
   .ob-menu-mobile-links{display:block}
   .mem-main{padding:16px}
-  .mem-card-area{display:block;margin:0;border-radius:0;border:none;box-shadow:none;background:transparent}
+  .mem-card-area{display:block;margin:0;border-radius:0;border:none;box-shadow:none;background:var(--db-card)}
   .mem-right{display:none}
   .mem-grid,.mem-stats,.mem-field-row{grid-template-columns:1fr}
 }
