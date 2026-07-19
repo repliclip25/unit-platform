@@ -845,6 +845,12 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
 </head>
 <body>
 
+@php
+  $avaHasDesk = auth()->check() && \Illuminate\Support\Facades\DB::table('worker_deployments')
+    ->where('user_id', auth()->id())->where('worker_slug', 'ava')
+    ->whereIn('status', ['active', 'paused'])->exists();
+@endphp
+
 {{-- NAV --}}
 <nav class="nav">
   <div class="nav-i">
@@ -867,10 +873,17 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
       @else
         <a href="{{ route('login') }}" class="btn-login">Log in</a>
       @endauth
+      @if($avaHasDesk)
+      <a href="{{ route('desk.ava') }}" class="btn-nav-hire">
+        Go to AVA's Desk
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+      @else
       <a href="{{ route('hire.ava.welcome') }}" class="btn-nav-hire">
         Hire Your First Worker
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
       </a>
+      @endif
     </div>
   </div>
 </nav>
@@ -1139,12 +1152,7 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
       </div>
     </div>
 
-    {{-- CTAs --}}
-    @php
-      $avaHasDesk = auth()->check() && DB::table('worker_deployments')
-        ->where('user_id', auth()->id())->where('worker_slug', 'ava')
-        ->whereIn('status', ['active', 'paused'])->exists();
-    @endphp
+    {{-- CTAs — $avaHasDesk computed once near the top of the page --}}
     <div class="pipe-cta">
       @if($avaHasDesk)
         <a href="{{ route('desk.ava') }}" class="btn-pipe-hire">
@@ -1157,7 +1165,7 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
         </a>
       @endif
-      <a href="{{ route('hire.ava.welcome') }}" class="btn-pipe-test">
+      <a href="{{ $avaHasDesk ? route('workers.fast-track.page', 'ava') : route('hire.ava.welcome') }}" class="btn-pipe-test">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
         Run a Live Test
       </a>
@@ -1428,10 +1436,17 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
       <div>
         <div class="sec-eye">Frequently asked questions</div>
         <h2 class="sec-h">Everything you want to know about {{ $worker['name'] }}.</h2>
+        @if($avaHasDesk)
+        <a href="{{ route('desk.ava') }}" class="btn-nav-hire" style="display:inline-flex;margin-top:8px">
+          Go to AVA's Desk
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+        @else
         <a href="{{ route('hire.ava.welcome') }}" class="btn-nav-hire" style="display:inline-flex;margin-top:8px">
           Get started free
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
         </a>
+        @endif
       </div>
       <div class="faq-list">
         @foreach($worker['faq'] as $faq)
@@ -1456,11 +1471,18 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
         <div class="cta-final-eyebrow">Your workday ended.</div>
         <h2 class="cta-final-h">{{ $worker['name'] }}'s <em>didn't.</em></h2>
         <p class="cta-final-sub">Tomorrow {{ $worker['name'] }} will protect someone else's business. Or yours.</p>
+        @if($avaHasDesk)
+        <a href="{{ route('desk.ava') }}" class="btn-cta-final">
+          Go to {{ $worker['name'] }}'s Desk
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+        @else
         <a href="{{ route('hire.ava.welcome') }}" class="btn-cta-final">
           Hire {{ $worker['name'] }} Today
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
         </a>
         <div class="cta-note">No credit card required.</div>
+        @endif
       </div>
       <div class="cta-final-right">
         <img src="/images/ava-stand.png" alt="{{ $worker['name'] }}" style="object-position:center top;max-height:380px;width:auto;margin:0 auto">
@@ -1477,8 +1499,12 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
       <div class="ft-links">
         <a href="{{ route('workers.page') }}">All Workers</a>
         <a href="{{ route('pricing') }}">Pricing</a>
-        <a href="{{ route('hire.ava.welcome') }}">Get Started</a>
-        <a href="{{ route('login') }}">Log In</a>
+        @auth
+          <a href="{{ route('dashboard') }}">Dashboard</a>
+        @else
+          <a href="{{ route('hire.ava.welcome') }}">Get Started</a>
+          <a href="{{ route('login') }}">Log In</a>
+        @endauth
       </div>
       <div class="ft-copy">© {{ date('Y') }} UNIT. All rights reserved.</div>
     </div>

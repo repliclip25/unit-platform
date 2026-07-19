@@ -364,6 +364,15 @@ body{font-family:var(--font-b);color:var(--text);background:var(--bg);-webkit-fo
 </head>
 <body>
 
+@php
+  // Nav CTA should never tell an already-onboarded, logged-in user to
+  // "Hire Your First Worker" or "Log in" — both are wrong once they have
+  // an account and/or a deployed worker.
+  $__navAvaHasDesk = auth()->check() && \Illuminate\Support\Facades\DB::table('worker_deployments')
+    ->where('user_id', auth()->id())->where('worker_slug', 'ava')
+    ->whereIn('status', ['active', 'paused'])->exists();
+@endphp
+
 <!-- NAV -->
 <nav class="nav">
   <div class="w nav-i">
@@ -376,8 +385,16 @@ body{font-family:var(--font-b);color:var(--text);background:var(--bg);-webkit-fo
       <li><a href="{{ route('pricing') }}">Pricing</a></li>
     </ul>
     <div class="nav-acts">
-      <a href="{{ route('login') }}" class="btn-login" style="border-radius:99px">Log in</a>
+      @auth
+        <a href="{{ route('dashboard') }}" class="btn-login" style="border-radius:99px">Dashboard</a>
+      @else
+        <a href="{{ route('login') }}" class="btn-login" style="border-radius:99px">Log in</a>
+      @endauth
+      @if($__navAvaHasDesk)
+      <a href="{{ route('desk.ava') }}" class="btn-cta">Go to AVA's Desk <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+      @else
       <a href="{{ route('hire.ava.welcome') }}" class="btn-cta">Hire Your First Worker <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+      @endif
       <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">
         <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
         <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
@@ -401,8 +418,16 @@ body{font-family:var(--font-b);color:var(--text);background:var(--bg);-webkit-fo
     <a href="{{ route('pricing') }}" onclick="closeMob()">Pricing</a>
   </div>
   <div class="mob-ctas">
-    <a href="{{ route('login') }}" class="btn-login" style="text-align:center;padding:12px;border-radius:99px">Log in</a>
+    @auth
+      <a href="{{ route('dashboard') }}" class="btn-login" style="text-align:center;padding:12px;border-radius:99px">Dashboard</a>
+    @else
+      <a href="{{ route('login') }}" class="btn-login" style="text-align:center;padding:12px;border-radius:99px">Log in</a>
+    @endauth
+    @if($__navAvaHasDesk)
+    <a href="{{ route('desk.ava') }}" class="btn-cta" style="padding:12px;justify-content:center">Go to AVA's Desk →</a>
+    @else
     <a href="{{ route('hire.ava.welcome') }}" class="btn-cta" style="padding:12px;justify-content:center">Hire Your First Worker →</a>
+    @endif
   </div>
 </div>
 
@@ -665,11 +690,18 @@ body{font-family:var(--font-b);color:var(--text);background:var(--bg);-webkit-fo
         <p class="cta-foot-sub">Start with one. Add more as you grow.</p>
       </div>
       <div class="cta-foot-right">
+        @if($__navAvaHasDesk)
+        <a href="{{ route('desk.ava') }}" class="btn-cta-main">
+          Go to AVA's Desk
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+        @else
         <a href="{{ route('hire.ava.welcome') }}" class="btn-cta-main">
           Hire Your First Worker
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
         </a>
         <span class="cta-note">No credit card required.</span>
+        @endif
       </div>
     </div>
   </div>
