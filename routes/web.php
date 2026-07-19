@@ -91,6 +91,12 @@ Route::post('/workers/ava/gmail/webhook', [GmailController::class, 'webhook'])->
 
 // Onboarding: auth only — gate logic handled inside controllers
 Route::middleware(['auth'])->group(function () {
+    // ── Layout templates — reference structures for the 3 page shapes on the
+    //    platform. Fix a layout bug here first, then carry it into real pages.
+    Route::view('/templates/onboarding', 'templates.onboarding')->name('templates.onboarding');
+    Route::view('/templates/desk',       'templates.desk')->name('templates.desk');
+    Route::view('/templates/page',       'templates.page')->name('templates.page');
+
     Route::get('/onboarding',                      [\App\Http\Controllers\OnboardingController::class, 'index'])->name('onboarding');
 
     // Named step routes (GET = show, POST = handle)
