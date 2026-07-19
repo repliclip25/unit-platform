@@ -13,6 +13,7 @@ class TransactionController extends Controller
         $userId = auth()->id();
         $filter = $request->query('filter', 'all');
         $query  = DB::table('transactions')->where('user_id', $userId)->orderByDesc('id');
+        if ($request->filled('deployment')) $query->where('deployment_id', (int) $request->query('deployment'));
         if ($filter === 'draft_ready')   $query->where('status', 'draft_ready');
         elseif ($filter === 'approved')  $query->whereIn('status', ['approved','sent']);
         elseif ($filter === 'failed')    $query->where('status', 'failed');

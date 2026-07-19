@@ -28,32 +28,35 @@ class MemoryController extends Controller
         'example_asset'      => 'acmecorp.com',
     ];
 
-    public function index()
+    public function index(string $slug)
     {
         $userId = auth()->id();
 
-        // ── My Memory ────────────────────────────────────────────────────────
+        $dep = DB::table('worker_deployments')->where('user_id', $userId)
+            ->where(fn($q) => $q->where('worker_slug', $slug)->when(is_numeric($slug), fn($q2) => $q2->orWhere('id', (int)$slug)))
+            ->whereIn('status', ['active', 'paused'])
+            ->firstOrFail();
+
+        // ── My Memory (genuinely shared across every worker this tenant runs —
+        //    clients/contacts/assets have no deployment_id column) ─────────────
         $clients  = DB::table('clients')->where('user_id', $userId)->whereNull('deleted_at')->orderBy('name')->get();
         $contacts = DB::table('contacts')->where('user_id', $userId)->whereNull('deleted_at')->get();
         $assets   = DB::table('assets')->where('user_id', $userId)->whereNull('deleted_at')->where('type', '!=', 'discovered')->orderBy('renewal_date')->get();
         $rules    = DB::table('ava_rules')->where('user_id', $userId)->orderBy('rule_id')->get();
 
         // ── Persona-driven asset types + copy (falls back to generic if unset) ──
-        $avaDeployment  = DB::table('worker_deployments')->where('user_id', $userId)->where('worker_slug', 'ava')->whereIn('status', ['active', 'paused'])->first();
-        $avaContract    = WorkerRegistry::resolve('ava');
-        $personaKey     = $avaDeployment?->persona ?? DB::table('users')->where('id', $userId)->value('persona');
-        $allPersonas    = $avaContract?->personas() ?? [];
+        $contract       = WorkerRegistry::resolve($dep->worker_slug);
+        $personaKey     = $dep->persona ?? DB::table('users')->where('id', $userId)->value('persona');
+        $allPersonas    = $contract?->personas() ?? [];
         $personaDef     = ($personaKey && isset($allPersonas[$personaKey])) ? $allPersonas[$personaKey] : null;
 
         $assetTypes = $personaDef['asset_types'] ?? self::DEFAULT_ASSET_TYPES;
         $memoryCopy = array_merge(self::DEFAULT_MEMORY_COPY, $personaDef['memory_copy'] ?? []);
         $personaOptions   = $allPersonas;
-        $avaDeploymentId  = $avaDeployment?->id;
+        $avaDeploymentId  = $dep->id;
 
-        // ── Shared app shell (top bar + worker sidebar) — same data source as
-        // /desk/{slug} and /workers/{slug}/overview. Memory isn't tied to one
-        // worker, so nothing in the sidebar is marked "active" here.
-        $shell = WorkerShellService::build($userId, '');
+        // ── Shared app shell (top bar + worker sidebar) ──────────────────────
+        $shell = WorkerShellService::build($userId, $dep->worker_slug);
         extract($shell); // workerCatalog, registryRows, registryRow, profileImg, coverImg, tokenTotal
         $firstName = explode(' ', trim(auth()->user()->name))[0];
 
@@ -127,6 +130,7 @@ class MemoryController extends Controller
         $myProfileCode = DB::table('users')->where('id', $userId)->value('profile_code');
 
         return view('dashboard.memory', compact(
+            'dep',
             'clients', 'contacts', 'assets', 'rules',
             'myDeployments', 'myGroups',
             'incoming', 'outgoing', 'myProfileCode',

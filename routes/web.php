@@ -152,7 +152,20 @@ Route::middleware(['auth', 'verified', 'onboarded', 'not-pending-del'])->group(f
     Route::get('/register', [RegisterController::class, 'index'])->name('register');
 
     // ── Memory Management ───────────────────────────────────────────────────
-    Route::get('/memory',                         [MemoryController::class, 'index'])->name('memory');
+    // Memory now lives per-worker at /workers/{slug}/memory (the underlying
+    // data is shared across a tenant's workers, but the page itself belongs
+    // to whichever worker you're viewing). This keeps old bookmarks/links
+    // working by redirecting to the tenant's primary deployment.
+    Route::get('/memory', function () {
+        $slug = \Illuminate\Support\Facades\DB::table('worker_deployments')
+            ->where('user_id', auth()->id())
+            ->whereIn('status', ['active', 'paused'])
+            ->orderBy('created_at')
+            ->value('worker_slug');
+        return $slug
+            ? redirect()->route('workers.memory', $slug)
+            : redirect()->route('workers.page');
+    })->name('memory');
     Route::post('/memory/clients',                [MemoryController::class, 'storeClient'])->name('memory.clients.store');
     Route::patch('/memory/clients/{id}',          [MemoryController::class, 'updateClient'])->name('memory.clients.update');
     Route::delete('/memory/clients/{id}',         [MemoryController::class, 'destroyClient'])->name('memory.clients.destroy');
@@ -208,7 +221,12 @@ Route::middleware(['auth', 'verified', 'onboarded', 'not-pending-del'])->group(f
     // moved to auth-only group below — needs to work before onboarding complete
 
     // ── Worker: Memory ──────────────────────────────────────────────────────
-    Route::get('/workers/{slug}/memory',                             [WorkerMemoryController::class, 'index'])->name('workers.memory');
+    // Real entry point — the full UX2 memory page (persona, groups, sharing,
+    // rules), scoped by worker for branding/persona even though the
+    // underlying clients/contacts/assets are shared across all of a
+    // tenant's workers. WorkerMemoryController::index is retired (unused,
+    // kept only for its other CRUD methods below).
+    Route::get('/workers/{slug}/memory',                             [MemoryController::class, 'index'])->name('workers.memory');
     Route::post('/workers/{id}/memory/import/preview',               [WorkerMemoryController::class, 'importPreview'])->name('workers.memory.import.preview');
     Route::post('/workers/{id}/memory/import/commit',                [WorkerMemoryController::class, 'importCommit'])->name('workers.memory.import.commit');
     Route::post('/workers/{id}/memory/clients',                      [WorkerMemoryController::class, 'storeClient'])->name('workers.memory.clients.store');

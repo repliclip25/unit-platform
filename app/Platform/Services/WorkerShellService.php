@@ -68,12 +68,13 @@ class WorkerShellService
         );
 
         return [
-            'workerCatalog' => $workerCatalog,
-            'registryRows'  => $registryRows,
-            'registryRow'   => $activeRegistryRow,
-            'profileImg'    => $profileImg,
-            'coverImg'      => $coverImg,
-            'tokenTotal'    => $tokenTotal,
+            'workerCatalog'       => $workerCatalog,
+            'registryRows'        => $registryRows,
+            'registryRow'         => $activeRegistryRow,
+            'profileImg'          => $profileImg,
+            'coverImg'            => $coverImg,
+            'tokenTotal'          => $tokenTotal,
+            'activeDeploymentId'  => $deployedBySlug->get($activeSlug)?->id,
         ];
     }
 }
