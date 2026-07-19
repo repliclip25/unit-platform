@@ -101,7 +101,11 @@ class RegisteredUserController extends Controller
             session(['onboarding_intent_worker' => $workerIntent]);
         }
 
-        // If user arrived via a hire flow (e.g. /hire/ava/welcome), send them there
-        return redirect()->intended(route('onboarding'));
+        // If user arrived via a hire flow (e.g. /hire/ava/welcome), intended()
+        // sends them back there. Otherwise (direct /register link, an ad
+        // landing straight on signup, etc.) fall back to the v2 onboarding
+        // flow — not the old onboarding.step dispatcher, which is being
+        // retired in favor of one consolidated flow.
+        return redirect()->intended(route('hire.ava.welcome'));
     }
 }

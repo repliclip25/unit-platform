@@ -26,7 +26,11 @@ class RegistrationTest extends TestCase
         ]);
 
         $this->assertAuthenticated();
-        // New registrations redirect to onboarding, not dashboard
-        $response->assertRedirect(route('onboarding', absolute: false));
+        // New registrations redirect into the v2 onboarding flow (not the
+        // dashboard, and not the old onboarding.step dispatcher, which is
+        // being retired in favor of one consolidated flow) — unless they
+        // arrived via an intended /hire/ava/* URL, which redirect()->intended()
+        // honors instead.
+        $response->assertRedirect(route('hire.ava.welcome', absolute: false));
     }
 }
