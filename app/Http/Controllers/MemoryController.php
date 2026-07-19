@@ -127,7 +127,14 @@ class MemoryController extends Controller
                 return $g;
             });
 
+        // Self-healing: accounts created before profile_code existed (or via any
+        // path that bypassed registration) should still get one on first visit
+        // here, rather than depending on the backfill migration having run.
         $myProfileCode = DB::table('users')->where('id', $userId)->value('profile_code');
+        if (!$myProfileCode) {
+            $myProfileCode = MemoryAccessController::generateProfileCode();
+            DB::table('users')->where('id', $userId)->update(['profile_code' => $myProfileCode]);
+        }
 
         return view('dashboard.memory', compact(
             'dep',
