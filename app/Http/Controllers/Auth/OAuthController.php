@@ -135,7 +135,11 @@ class OAuthController extends Controller
 
         if ($isNewUser) {
             \App\Platform\Services\EmailDispatcher::send('welcome_tenant', $user->email, $user->name, $user->id);
-            return redirect()->route('onboarding');
+            // Same consolidation as RegisteredUserController::store() — new
+            // signups land in the v2 onboarding flow, not the old dispatcher,
+            // unless intended() already has a better URL saved (e.g. they
+            // clicked "Continue with Google" from within /hire/ava/welcome).
+            return redirect()->intended(route('hire.ava.welcome'));
         }
 
         return redirect()->intended(route('dashboard'));

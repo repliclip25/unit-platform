@@ -139,7 +139,7 @@ body{background:var(--db-bg);color:var(--db-text)}
         @error('password_confirmation')<div class="au-error">{{ $message }}</div>@enderror
       </div>
       <button type="submit" class="au-submit">Create workspace</button>
-      <div class="au-terms">By registering you agree to our Terms of Service and Privacy Policy.</div>
+      <div class="au-terms">By registering you agree to our <a href="{{ route('terms') }}" target="_blank" rel="noopener">Terms of Service</a> and <a href="{{ route('privacy') }}" target="_blank" rel="noopener">Privacy Policy</a>.</div>
     </form>
 
     <div class="au-footer">Already have an account? <a href="{{ route('login') }}">Sign in →</a></div>
