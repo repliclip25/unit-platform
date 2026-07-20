@@ -18,12 +18,12 @@ class EnsureOnboardingComplete
 
         // Platform gate: all required verifications must be complete
         if (!PlatformVerificationService::isPlatformReady($user->id)) {
-            return redirect()->route('onboarding');
+            return redirect()->route('hire.ava.welcome');
         }
 
         // Worker onboarding gate: user must have completed or explicitly skipped
         if (!$user->hasCompletedOnboarding()) {
-            return redirect()->route('onboarding');
+            return redirect()->route('hire.ava.welcome');
         }
 
         return $next($request);

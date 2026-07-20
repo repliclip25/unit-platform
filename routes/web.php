@@ -97,23 +97,8 @@ Route::middleware(['auth'])->group(function () {
     Route::view('/templates/desk',       'templates.desk')->name('templates.desk');
     Route::view('/templates/page',       'templates.page')->name('templates.page');
 
-    Route::get('/onboarding',                      [\App\Http\Controllers\OnboardingController::class, 'index'])->name('onboarding');
-
-    // Named step routes (GET = show, POST = handle)
-    Route::get('/onboarding/step/{name}',          [\App\Http\Controllers\OnboardingController::class, 'showStep'])->name('onboarding.step');
-    Route::post('/onboarding/step/{name}',         [\App\Http\Controllers\OnboardingController::class, 'handleStep'])->name('onboarding.step.handle');
-
-    // Special: email verification screen with edit mode (pre-session, outside step flow)
-    Route::get('/onboarding/verify-email',         [\App\Http\Controllers\OnboardingController::class, 'verifyEmailScreen'])->name('onboarding.verify');
-    Route::post('/onboarding/update-email',        [\App\Http\Controllers\OnboardingController::class, 'updateEmail'])->name('onboarding.update-email');
-
-    // Memory seed (called from memory step UI, not a step handler)
+    // Memory seed (used by the v2 onboarding flow's "load sample data" button)
     Route::post('/onboarding/memory/seed',         [\App\Http\Controllers\OnboardingController::class, 'seedMemory'])->name('onboarding.memory.seed');
-    Route::post('/onboarding/memory/quickadd',     [\App\Http\Controllers\OnboardingController::class, 'quickAddMemory'])->name('onboarding.memory.quickadd');
-
-    Route::get('/onboarding/gmail-draft',           [\App\Http\Controllers\OnboardingController::class, 'gmailDraft'])->name('onboarding.gmail-draft');
-    Route::get('/onboarding/complete',             [\App\Http\Controllers\OnboardingController::class, 'complete'])->name('onboarding.complete');
-    Route::get('/onboarding/skip',                 [\App\Http\Controllers\OnboardingController::class, 'skip'])->name('onboarding.skip');
 
     // Pipeline status — accessible to any authenticated user (tenant-scoped inside the controller)
     Route::get('/qa/pipeline/{txId}', [\App\Http\Controllers\QAController::class, 'pipelineStatus'])->name('qa.pipeline-status');

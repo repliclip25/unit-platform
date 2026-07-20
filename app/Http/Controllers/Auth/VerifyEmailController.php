@@ -20,7 +20,7 @@ class VerifyEmailController extends Controller
             // Already verified — go to onboarding if not complete, otherwise dashboard
             return $request->user()->hasCompletedOnboarding()
                 ? redirect()->route('dashboard')
-                : redirect()->route('onboarding');
+                : redirect()->route('hire.ava.welcome');
         }
 
         if ($request->user()->markEmailAsVerified()) {
@@ -34,6 +34,6 @@ class VerifyEmailController extends Controller
         WorkerOnboardingService::advanceStepByName($request->user()->id, 'verify-email');
 
         // Always continue to onboarding after verification
-        return redirect()->route('onboarding');
+        return redirect()->route('hire.ava.welcome');
     }
 }

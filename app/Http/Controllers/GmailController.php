@@ -92,7 +92,7 @@ class GmailController extends Controller
 
         // Only send the Gmail-connected confirmation when onboarding is already done.
         // During onboarding the user is still in the app — the email is noise.
-        if ($user->onboarding_completed_at && !session('onboarding_gmail_return')) {
+        if ($user->onboarding_completed_at) {
             \App\Platform\Services\EmailDispatcher::send('gmail_connected', $user->email, $user->name, $user->id, [
                 '{gmail_address}' => $email,
             ]);
@@ -112,44 +112,6 @@ class GmailController extends Controller
             }
 
             return redirect()->route('hire.ava.orientation')->with('gmail_connected', $email);
-        }
-
-        // Return to onboarding wizard if that's where the OAuth was triggered from
-        if (session('onboarding_gmail_return')) {
-            session()->forget('onboarding_gmail_return');
-
-            // Auto-attach this Gmail credential to the active onboarding deployment
-            // (skips the "select inbox" step that exists in the dashboard flow)
-            $wos = \App\Platform\Services\WorkerOnboardingService::activeSession($user->id);
-            if ($wos && $wos->deployment_id && $credential) {
-                $alreadyLinked = DB::table('deployment_credentials')
-                    ->where('deployment_id', $wos->deployment_id)
-                    ->where('credential_id', $credential->id)
-                    ->exists();
-
-                if (!$alreadyLinked) {
-                    DB::table('deployment_credentials')->insertOrIgnore([
-                        'deployment_id' => $wos->deployment_id,
-                        'credential_id' => $credential->id,
-                        'is_primary'    => true,
-                        'created_at'    => now(),
-                        'updated_at'    => now(),
-                    ]);
-                    DB::table('worker_deployments')
-                        ->where('id', $wos->deployment_id)
-                        ->update(['credential_id' => $credential->id, 'updated_at' => now()]);
-                }
-            }
-
-            \App\Platform\Services\WorkerOnboardingService::advanceStepByName($user->id, 'credential');
-
-            // Stamp milestone — used by abandonment job to calculate time stuck at next step
-            if (!$user->onboarding_gmail_at) {
-                DB::table('users')->where('id', $user->id)
-                    ->update(['onboarding_gmail_at' => now()]);
-            }
-
-            return redirect()->route('onboarding.step', 'memory')->with('success', "Gmail connected: {$email}");
         }
 
         // Auto-connect to deployment when this is the user's first credential
