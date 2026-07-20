@@ -30,7 +30,7 @@
         }
 
         $statusColors = [
-            'draft_ready'  => 'bg-brand/15 text-brand',
+            'draft_ready'  => 'bg-brand/15 text-brand-text',
             'failed'       => 'bg-red-900 text-red-300',
             'dismissed'    => 'bg-gray-800 text-gray-500',
             'human_review' => 'bg-amber-900 text-amber-300',
@@ -79,7 +79,7 @@
             @if($tx->gmail_draft_id)
                 <div class="sm:text-right shrink-0">
                     <p class="text-gray-500 text-xs mb-1">Gmail Draft</p>
-                    <p class="text-brand text-xs font-mono break-all">{{ $tx->gmail_draft_id }}</p>
+                    <p class="text-brand-text text-xs font-mono break-all">{{ $tx->gmail_draft_id }}</p>
                     <p class="text-green-400 text-xs mt-1">✓ Saved in Gmail</p>
                 </div>
             @endif
@@ -199,7 +199,7 @@
             @if($memory)
             <div class="bg-gray-900 border border-gray-800 rounded-xl">
                 <div class="px-5 py-3 border-b border-gray-800 flex items-center gap-2">
-                    <span class="w-5 h-5 bg-brand/10 text-brand rounded text-xs flex items-center justify-center font-bold">2</span>
+                    <span class="w-5 h-5 bg-brand/10 text-brand-text rounded text-xs flex items-center justify-center font-bold">2</span>
                     <h3 class="text-white text-sm font-medium">Memory Lookup</h3>
                     <span class="ml-auto text-xs text-green-400">{{ $memory->confidence }}% confidence</span>
                 </div>
@@ -225,7 +225,7 @@
                     @if(!empty($memory->ava_rule))
                     <div>
                         <p class="text-gray-500 text-xs mb-1">Rule Applied</p>
-                        <p class="text-brand text-xs">{{ $memory->ava_rule }}</p>
+                        <p class="text-brand-text text-xs">{{ $memory->ava_rule }}</p>
                     </div>
                     @endif
                 </div>

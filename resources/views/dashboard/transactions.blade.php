@@ -25,7 +25,7 @@
     <div class="flex items-center gap-2 px-4 py-2 rounded-xl border"
          style="background:rgba(var(--accent-rgb),0.12);border-color:rgba(var(--accent-rgb),0.35)">
         <span class="w-2 h-2 rounded-full animate-pulse" style="background:#a78bfa"></span>
-        <span class="text-sm font-semibold" class="ac-text">{{ $pendingCount }} awaiting your review</span>
+        <span class="text-sm font-semibold" style="color:var(--accent-text)">{{ $pendingCount }} awaiting your review</span>
     </div>
     @endif
 </div>

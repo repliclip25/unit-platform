@@ -37,7 +37,7 @@
         @if($isTrial)
         <div class="bg-brand/10 border border-brand-deep/40 rounded-xl px-5 py-4 flex items-start justify-between gap-4">
             <div>
-                <p class="text-brand font-semibold text-sm mb-0.5">Trial Plan</p>
+                <p class="text-brand-text font-semibold text-sm mb-0.5">Trial Plan</p>
                 <p class="text-gray-400 text-xs leading-relaxed">
                     {{ $trialLeft }} of {{ $trialLimit }} free transactions remaining.
                     @if($trialLeft === 0)
@@ -144,7 +144,7 @@
                 </div>
                 <div class="border-t border-gray-800 pt-2 flex items-center justify-between text-sm font-semibold">
                     <span class="text-gray-300">Estimated total</span>
-                    <span class="text-brand font-mono">${{ number_format($estimatedBill, 2) }}</span>
+                    <span class="text-brand-text font-mono">${{ number_format($estimatedBill, 2) }}</span>
                 </div>
             </div>
             <p class="text-gray-600 text-xs mt-3">Final invoice generated at end of billing period. AI passthrough reflects actual Anthropic/OpenAI cost + 30% platform fee.</p>
@@ -159,7 +159,7 @@
                 @foreach($stageBreakdown as $stage)
                 <div class="px-5 py-3 flex items-center gap-4">
                     <div class="w-20 shrink-0">
-                        <span class="text-xs font-mono text-brand bg-brand/12 border border-brand/30 px-2 py-0.5 rounded">{{ $stage->stage }}</span>
+                        <span class="text-xs font-mono text-brand-text bg-brand/12 border border-brand/30 px-2 py-0.5 rounded">{{ $stage->stage }}</span>
                     </div>
                     <div class="flex-1">
                         <div class="flex items-center gap-3">
@@ -258,7 +258,7 @@
                 </div>
                 @if($isActive)
                 <div>
-                    <p class="text-brand font-semibold">${{ number_format($allTimeCost * $markup, 4) }}</p>
+                    <p class="text-brand-text font-semibold">${{ number_format($allTimeCost * $markup, 4) }}</p>
                     <p class="text-gray-600 text-xs">AI billed (+ 30%)</p>
                 </div>
                 @endif
