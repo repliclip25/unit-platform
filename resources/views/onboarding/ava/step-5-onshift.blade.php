@@ -975,15 +975,13 @@ function poll(){
   _pollCount++;
   fetch(STATUS_URL + txId, { credentials: 'same-origin', headers: { 'X-CSRF-TOKEN': CSRF, 'Accept': 'application/json' } })
     .then(r => {
-      document.getElementById('avaSub').textContent = 'Poll #' + _pollCount + ' → HTTP ' + r.status;
       if(r.status === 401){ showError('failed'); clearInterval(pollTimer); return null; }
-      if(r.status === 404){ document.getElementById('avaSub').textContent = 'TX not found (404) — check user_id match'; return null; }
+      if(r.status === 404){ return null; }
       return r.json();
     })
     .then(data => {
       if(!data) return;
       const s = data.status;
-      document.getElementById('avaSub').textContent = 'Poll #' + _pollCount + ' status: ' + s;
 
       // ── Terminal success ──
       if(['draft_ready','approved','sent'].includes(s) || data.draft_output){
@@ -1013,9 +1011,7 @@ function poll(){
         if(stage < 1){ setStage(1, 'Processing...', null); stage = 1; }
       }
     })
-    .catch((err) => {
-      document.getElementById('avaSub').textContent = 'Poll #' + _pollCount + ' error: ' + err.message;
-    });
+    .catch(() => {});
 }
 
 let _pollTimeout = null;
@@ -1057,15 +1053,12 @@ function approveDraft(){
 }
 
 function editDraft(){
-  if(window._gmailDraftId){
-    window.open('https://mail.google.com/mail/u/0/#drafts/' + window._gmailDraftId, '_blank');
+  if(window._scGmailDraftId){
+    window.open('https://mail.google.com/mail/u/0/#drafts/' + window._scGmailDraftId, '_blank');
   } else {
     window.open('https://mail.google.com/mail/u/0/#drafts', '_blank');
   }
 }
-
-// Debug: show txId state on load
-document.getElementById('avaSub').textContent = txId ? 'JS ready, txId: ' + txId : 'JS ready, no txId';
 
 // On page load with ?watch=txId — job was just dispatched, start polling
 if(txId){

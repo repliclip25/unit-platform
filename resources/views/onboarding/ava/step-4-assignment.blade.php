@@ -176,7 +176,7 @@ body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-fon
 }
 .ob-client-row:last-child{border-bottom:none}
 .ob-client-dot{width:7px;height:7px;border-radius:50%;background:#22c55e;flex-shrink:0}
-.ob-client-name{font-size:12px;font-weight:700;color:#0D0D0D;flex:1;min-width:0;white-overflow:ellipsis;overflow:hidden;white-space:nowrap}
+.ob-client-name{font-size:12px;font-weight:700;color:#0D0D0D;flex:1;min-width:0;text-overflow:ellipsis;overflow:hidden;white-space:nowrap}
 .ob-client-asset{font-size:11px;color:#9CA3AF;white-space:nowrap}
 
 /* Seed data option */
