@@ -1064,15 +1064,15 @@ class AvaWorker implements WorkerContract
                 'nudge_copy' => [
                     'd1' => [
                         'subject' => "AVA is watching — but doesn't know your clients' domains yet",
-                        'body'    => "Hi {name},\n\nAVA is live and monitoring your inbox — but she can't connect renewal emails to clients yet because her memory is empty.\n\nRight now every domain renewal notice, SSL alert, or hosting invoice comes back as \"Unknown client.\" AVA can't draft a useful response without knowing who the email belongs to.\n\nYou're at {score}% memory coverage. Add {needed} more clients with a domain or service and a contact email to reach reliable drafts.\n\nTakes 90 seconds per client:\n{app_url}/onboarding/step/memory\n\nFranklin at UNIT",
+                        'body'    => "Hi {name},\n\nAVA is live and monitoring your inbox — but she can't connect renewal emails to clients yet because her memory is empty.\n\nRight now every domain renewal notice, SSL alert, or hosting invoice comes back as \"Unknown client.\" AVA can't draft a useful response without knowing who the email belongs to.\n\nYou're at {score}% memory coverage. Add {needed} more clients with a domain or service and a contact email to reach reliable drafts.\n\nTakes 90 seconds per client:\n{app_url}/workers/ava/memory\n\nFranklin at UNIT",
                     ],
                     'd3' => [
                         'subject' => '{score}% there — {needed} more domains to go',
-                        'body'    => "Hi {name},\n\nThree days in — AVA is processing renewal emails but memory is at {score}%.\n\nAt {threshold} complete clients she starts matching renewals reliably. You're {needed} away.\n\nEach entry takes 90 seconds: client name, contact email, domain or service name.\n\n{app_url}/onboarding/step/memory\n\nMost IT managers finish their top clients in one sitting — usually 10–15 minutes.\n\nFranklin at UNIT",
+                        'body'    => "Hi {name},\n\nThree days in — AVA is processing renewal emails but memory is at {score}%.\n\nAt {threshold} complete clients she starts matching renewals reliably. You're {needed} away.\n\nEach entry takes 90 seconds: client name, contact email, domain or service name.\n\n{app_url}/workers/ava/memory\n\nMost IT managers finish their top clients in one sitting — usually 10–15 minutes.\n\nFranklin at UNIT",
                     ],
                     'd7' => [
                         'subject' => "One week in — AVA still can't recognise your clients",
-                        'body'    => "Hi {name},\n\nA week since setup — memory is still at {score}%.\n\nEvery domain renewal, SSL alert, and hosting notice is coming back \"Unknown.\" Every draft needs a full rewrite before it's usable.\n\nYou need {needed} complete records. That's {needed} clients with a contact email and at least one domain or service.\n\nHere's the link:\n{app_url}/onboarding/step/memory\n\nIf the form isn't working for you, reply and I'll help you import via CSV.\n\nFranklin at UNIT",
+                        'body'    => "Hi {name},\n\nA week since setup — memory is still at {score}%.\n\nEvery domain renewal, SSL alert, and hosting notice is coming back \"Unknown.\" Every draft needs a full rewrite before it's usable.\n\nYou need {needed} complete records. That's {needed} clients with a contact email and at least one domain or service.\n\nHere's the link:\n{app_url}/workers/ava/memory\n\nIf the form isn't working for you, reply and I'll help you import via CSV.\n\nFranklin at UNIT",
                     ],
                 ],
             ],
@@ -1110,15 +1110,15 @@ class AvaWorker implements WorkerContract
                 'nudge_copy' => [
                     'd1' => [
                         'subject' => "AVA is live — but doesn't know your book of business yet",
-                        'body'    => "Hi {name},\n\nAVA is monitoring your inbox — but every renewal notice coming in is returning \"Unknown insured.\" She can't draft a renewal response without knowing who the policy belongs to.\n\nYou're at {score}% memory coverage. Add {needed} more insureds with a contact email and at least one policy to reach reliable drafts.\n\nTakes 90 seconds per client:\n{app_url}/onboarding/step/memory\n\nThe sooner your book is loaded, the sooner AVA catches every renewal before it slips.\n\nFranklin at UNIT",
+                        'body'    => "Hi {name},\n\nAVA is monitoring your inbox — but every renewal notice coming in is returning \"Unknown insured.\" She can't draft a renewal response without knowing who the policy belongs to.\n\nYou're at {score}% memory coverage. Add {needed} more insureds with a contact email and at least one policy to reach reliable drafts.\n\nTakes 90 seconds per client:\n{app_url}/workers/ava/memory\n\nThe sooner your book is loaded, the sooner AVA catches every renewal before it slips.\n\nFranklin at UNIT",
                     ],
                     'd3' => [
                         'subject' => 'Policy renewals coming in — AVA still missing {needed} clients',
-                        'body'    => "Hi {name},\n\nThree days in — AVA is processing renewal notices but memory is at {score}%.\n\nAt {threshold} complete insureds she starts matching policies reliably. You're {needed} away.\n\nEach entry takes 90 seconds: insured name, contact email, policy type.\n\n{app_url}/onboarding/step/memory\n\nA missed renewal is an uninsured client. Worth 10 minutes today.\n\nFranklin at UNIT",
+                        'body'    => "Hi {name},\n\nThree days in — AVA is processing renewal notices but memory is at {score}%.\n\nAt {threshold} complete insureds she starts matching policies reliably. You're {needed} away.\n\nEach entry takes 90 seconds: insured name, contact email, policy type.\n\n{app_url}/workers/ava/memory\n\nA missed renewal is an uninsured client. Worth 10 minutes today.\n\nFranklin at UNIT",
                     ],
                     'd7' => [
                         'subject' => 'One week in — {needed} policies still unmatched',
-                        'body'    => "Hi {name},\n\nA week since you set up AVA — memory is at {score}%.\n\nEvery renewal notice she's seen this week came back without a match. Those drafts are useless until your book is loaded.\n\nYou need {needed} more complete insureds — name, contact email, and one policy each.\n\n{app_url}/onboarding/step/memory\n\nIf you'd rather import your book via CSV, reply to this email and I'll send you the template.\n\nFranklin at UNIT",
+                        'body'    => "Hi {name},\n\nA week since you set up AVA — memory is at {score}%.\n\nEvery renewal notice she's seen this week came back without a match. Those drafts are useless until your book is loaded.\n\nYou need {needed} more complete insureds — name, contact email, and one policy each.\n\n{app_url}/workers/ava/memory\n\nIf you'd rather import your book via CSV, reply to this email and I'll send you the template.\n\nFranklin at UNIT",
                     ],
                 ],
             ],
@@ -1154,15 +1154,15 @@ class AvaWorker implements WorkerContract
                 'nudge_copy' => [
                     'd1' => [
                         'subject' => "AVA is watching — but your clients' licenses aren't loaded",
-                        'body'    => "Hi {name},\n\nAVA is live and monitoring your inbox — but she can't connect renewal notices to clients without knowing your book.\n\nEvery license renewal, permit notice, or certification alert is coming back \"Unknown.\" AVA can't draft a useful response until you load your clients.\n\nYou're at {score}% coverage. Add {needed} more clients with a contact email and at least one license or permit.\n\n{app_url}/onboarding/step/memory\n\nFranklin at UNIT",
+                        'body'    => "Hi {name},\n\nAVA is live and monitoring your inbox — but she can't connect renewal notices to clients without knowing your book.\n\nEvery license renewal, permit notice, or certification alert is coming back \"Unknown.\" AVA can't draft a useful response until you load your clients.\n\nYou're at {score}% coverage. Add {needed} more clients with a contact email and at least one license or permit.\n\n{app_url}/workers/ava/memory\n\nFranklin at UNIT",
                     ],
                     'd3' => [
                         'subject' => '{needed} more clients to go — compliance notices piling up',
-                        'body'    => "Hi {name},\n\nThree days in — AVA is at {score}% memory. She's seeing renewal notices but can't match them to clients yet.\n\nAt {threshold} complete clients she starts drafting reliably. You're {needed} away.\n\nClient name. Contact email. License or permit name. 90 seconds each.\n\n{app_url}/onboarding/step/memory\n\nFranklin at UNIT",
+                        'body'    => "Hi {name},\n\nThree days in — AVA is at {score}% memory. She's seeing renewal notices but can't match them to clients yet.\n\nAt {threshold} complete clients she starts drafting reliably. You're {needed} away.\n\nClient name. Contact email. License or permit name. 90 seconds each.\n\n{app_url}/workers/ava/memory\n\nFranklin at UNIT",
                     ],
                     'd7' => [
                         'subject' => 'One week in — license renewals still unmatched',
-                        'body'    => "Hi {name},\n\nA week since setup — memory is at {score}%.\n\nA lapsed license is a crisis. AVA can prevent it — but only once she knows your clients.\n\nYou need {needed} more complete records. Reply to this email if you'd like help importing via CSV.\n\n{app_url}/onboarding/step/memory\n\nFranklin at UNIT",
+                        'body'    => "Hi {name},\n\nA week since setup — memory is at {score}%.\n\nA lapsed license is a crisis. AVA can prevent it — but only once she knows your clients.\n\nYou need {needed} more complete records. Reply to this email if you'd like help importing via CSV.\n\n{app_url}/workers/ava/memory\n\nFranklin at UNIT",
                     ],
                 ],
             ],
@@ -1197,15 +1197,15 @@ class AvaWorker implements WorkerContract
                 'nudge_copy' => [
                     'd1' => [
                         'subject' => "AVA is running — but can't recognise your clients yet",
-                        'body'    => "Hi {name},\n\nAVA is monitoring your inbox — but every renewal email coming in is returning \"Unknown client.\" She can't draft a response until she knows who each email belongs to.\n\nYou're at {score}% memory coverage. Add {needed} more clients with a contact email and at least one asset.\n\n{app_url}/onboarding/step/memory\n\nFranklin at UNIT",
+                        'body'    => "Hi {name},\n\nAVA is monitoring your inbox — but every renewal email coming in is returning \"Unknown client.\" She can't draft a response until she knows who each email belongs to.\n\nYou're at {score}% memory coverage. Add {needed} more clients with a contact email and at least one asset.\n\n{app_url}/workers/ava/memory\n\nFranklin at UNIT",
                     ],
                     'd3' => [
                         'subject' => 'AVA at {score}% — {needed} more clients to reliable drafts',
-                        'body'    => "Hi {name},\n\nThree days in — memory is at {score}%. You're {needed} clients away from reliable drafts.\n\nEach entry takes 90 seconds: client name, contact email, asset name.\n\n{app_url}/onboarding/step/memory\n\nFranklin at UNIT",
+                        'body'    => "Hi {name},\n\nThree days in — memory is at {score}%. You're {needed} clients away from reliable drafts.\n\nEach entry takes 90 seconds: client name, contact email, asset name.\n\n{app_url}/workers/ava/memory\n\nFranklin at UNIT",
                     ],
                     'd7' => [
                         'subject' => 'One week in — AVA still waiting on your clients',
-                        'body'    => "Hi {name},\n\nA week since setup — memory is still at {score}%.\n\nAVA can't do what she was built to do without your book of business. You need {needed} more complete records.\n\n{app_url}/onboarding/step/memory\n\nIf the quick-add form isn't working, reply and I'll help you import via CSV.\n\nFranklin at UNIT",
+                        'body'    => "Hi {name},\n\nA week since setup — memory is still at {score}%.\n\nAVA can't do what she was built to do without your book of business. You need {needed} more complete records.\n\n{app_url}/workers/ava/memory\n\nIf the quick-add form isn't working, reply and I'll help you import via CSV.\n\nFranklin at UNIT",
                     ],
                 ],
             ],

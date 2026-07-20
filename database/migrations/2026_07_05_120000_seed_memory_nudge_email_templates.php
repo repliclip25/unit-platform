@@ -29,7 +29,7 @@ You're at {score}% memory coverage. You need {needed} more complete client recor
 A complete record takes 90 seconds: client name + contact email + one policy.
 
 Add your next client here:
-{app_url}/onboarding/step/memory
+{app_url}/workers/ava/memory
 
 The sooner you load your book, the sooner AVA starts producing drafts you can actually approve.
 
@@ -58,7 +58,7 @@ You're {needed} complete records away. Each one takes about 90 seconds.
 Client name. Contact email. Policy name. That's it.
 
 Add them here:
-{app_url}/onboarding/step/memory
+{app_url}/workers/ava/memory
 
 Most brokers hit the threshold in one sitting. Takes about 10 minutes for 5 clients.
 
@@ -85,7 +85,7 @@ I'll be straight: without your book of business loaded, AVA can't do what she wa
 You need {needed} complete records to reach reliable drafts. That's {needed} clients with a contact email and a policy — about {needed} minutes of work.
 
 Here's the link:
-{app_url}/onboarding/step/memory
+{app_url}/workers/ava/memory
 
 If the quick-add form isn't working for you, reply to this email and I'll help you import via CSV.
 
