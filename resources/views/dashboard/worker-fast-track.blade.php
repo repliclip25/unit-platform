@@ -522,7 +522,7 @@ function showResult(data) {
 
   var gmailLink = document.getElementById('ft-r-gmail-link');
   if (data.gmail_draft_id) {
-    gmailLink.href = 'https://mail.google.com/mail/u/0/#drafts';
+    gmailLink.href = 'https://mail.google.com/mail/u/0/#drafts/' + data.gmail_draft_id;
     gmailLink.style.display = 'inline-block';
   }
 
