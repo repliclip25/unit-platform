@@ -13,9 +13,9 @@
                 <div>
                     <h2 class="text-white font-semibold">Review Column Mapping</h2>
                     <p class="text-gray-500 text-xs mt-0.5">{{ $total }} rows detected · showing first 5 · adjust mapping below then confirm import</p>
-                <p class="text-gray-600 text-xs mt-1">Need the template? <a href="{{ route('memory.import.template', $type) }}" class="text-brand hover:underline">Download {{ $type }}_import_template.csv</a></p>
+                <p class="text-gray-600 text-xs mt-1">Need the template? <a href="{{ route('memory.import.template', $type) }}" class="text-brand-text hover:underline">Download {{ $type }}_import_template.csv</a></p>
                 </div>
-                <span class="text-xs bg-brand/15 text-brand border border-brand/40 px-2 py-1 rounded capitalize">{{ $type }}</span>
+                <span class="text-xs bg-brand/15 text-brand-text border border-brand/40 px-2 py-1 rounded capitalize">{{ $type }}</span>
             </div>
 
             <form method="POST" action="{{ route('memory.import.commit') }}">

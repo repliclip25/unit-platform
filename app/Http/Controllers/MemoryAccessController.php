@@ -31,46 +31,6 @@ class MemoryAccessController extends Controller
     }
     private const MEMORY_TABLES       = ['clients', 'contacts', 'assets'];
 
-    // ── My grants overview (outgoing + incoming) ──────────────────────────────
-
-    public function index(Request $request)
-    {
-        $userId = $request->user()->id;
-
-        $outgoing = DB::table('memory_access_grants as g')
-            ->join('users as u', 'u.id', '=', 'g.grantee_user_id')
-            ->join('worker_deployments as d', 'd.id', '=', 'g.deployment_id')
-            ->where('g.owner_user_id', $userId)
-            ->whereIn('g.status', ['pending', 'accepted'])
-            ->select('g.*', 'u.name as grantee_name', 'u.email as grantee_email',
-                     'u.profile_code as grantee_code', 'd.name as deployment_name',
-                     'd.worker_slug')
-            ->orderByDesc('g.created_at')
-            ->get()
-            ->map(fn($g) => $this->withEventSummary($g));
-
-        $incoming = DB::table('memory_access_grants as g')
-            ->join('users as u', 'u.id', '=', 'g.owner_user_id')
-            ->join('worker_deployments as d', 'd.id', '=', 'g.deployment_id')
-            ->where('g.grantee_user_id', $userId)
-            ->where('g.status', 'accepted')
-            ->select('g.*', 'u.name as owner_name', 'u.email as owner_email',
-                     'u.profile_code as owner_code', 'd.name as deployment_name',
-                     'd.worker_slug')
-            ->orderByDesc('g.accepted_at')
-            ->get();
-
-        $myDeployments = DB::table('worker_deployments')
-            ->where('user_id', $userId)
-            ->where('status', '!=', 'decommissioned')
-            ->select('id', 'name', 'worker_slug')
-            ->get();
-
-        $myProfileCode = DB::table('users')->where('id', $userId)->value('profile_code');
-
-        return view('memory.access', compact('outgoing', 'incoming', 'myDeployments', 'myProfileCode'));
-    }
-
     // ── Send an invite ─────────────────────────────────────────────────────────
 
     public function invite(Request $request)
@@ -435,18 +395,6 @@ class MemoryAccessController extends Controller
             }
         }
         return $memory;
-    }
-
-    private function withEventSummary(object $grant): object
-    {
-        $grant->event_count = DB::table('memory_access_events')
-            ->where('grant_id', $grant->id)
-            ->count();
-        $grant->last_action = DB::table('memory_access_events')
-            ->where('grant_id', $grant->id)
-            ->orderByDesc('created_at')
-            ->value('created_at');
-        return $grant;
     }
 
     private function logEvent(int $grantId, int $actorId, string $action, string $table, ?int $recordId, ?string $notes = null): void

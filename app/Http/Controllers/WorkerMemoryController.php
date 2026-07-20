@@ -9,20 +9,6 @@ use App\Platform\Services\MemoryImportService;
 
 class WorkerMemoryController extends Controller
 {
-    public function index(string $slug, Request $request, MemoryImportService $importer)
-    {
-        $dep = DB::table('worker_deployments')->where('user_id', auth()->id())
-            ->where(fn($q) => $q->where('worker_slug', $slug)->when(is_numeric($slug), fn($q2) => $q2->orWhere('id', (int)$slug)))
-            ->firstOrFail();
-        $id       = $dep->id;
-        $userId   = auth()->id();
-        $clients  = DB::table('clients')->where('user_id', $userId)->whereNull('deleted_at')->orderBy('name')->get();
-        $contacts = DB::table('contacts')->where('user_id', $userId)->whereNull('deleted_at')->get();
-        $assets         = DB::table('assets')->where('user_id', $userId)->whereNull('deleted_at')->where('type', '!=', 'discovered')->orderBy('renewal_date')->get();
-        $discoveredAssets = DB::table('assets')->where('user_id', $userId)->whereNull('deleted_at')->where('type', 'discovered')->orderByDesc('created_at')->get();
-        return view('dashboard.worker-memory', compact('dep', 'clients', 'contacts', 'assets', 'discoveredAssets'));
-    }
-
     public function importPreview(int $id, Request $request, MemoryImportService $importer)
     {
         DB::table('worker_deployments')->where('id', $id)->where('user_id', auth()->id())->firstOrFail();

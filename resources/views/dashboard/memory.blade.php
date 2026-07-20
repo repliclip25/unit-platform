@@ -552,8 +552,8 @@ $sidebarLinks = [
           <div class="mem-empty-card">
             <div class="mem-empty-title">No groups yet</div>
             <div class="mem-empty-sub" style="margin-bottom:14px">Groups are created from within each worker's memory page.</div>
-            @foreach($myDeployments as $dep)
-            <a href="{{ route('workers.memory.groups', $dep->id) }}" class="mem-btn-secondary" style="margin:0 6px">{{ $dep->name }} →</a>
+            @foreach($myDeployments as $myDep)
+            <a href="{{ route('workers.memory.groups', $myDep->id) }}" class="mem-btn-secondary" style="margin:0 6px">{{ $myDep->name }} →</a>
             @endforeach
           </div>
           @else
@@ -732,7 +732,7 @@ $sidebarLinks = [
             <div><label class="mem-field-label">Which deployment's memory</label>
               <select name="deployment_id" class="mem-select">
                 <option value="">Select a deployment…</option>
-                @foreach($myDeployments as $dep)<option value="{{ $dep->id }}" {{ old('deployment_id') == $dep->id ? 'selected' : '' }}>{{ $dep->name }} ({{ $dep->worker_slug }})</option>@endforeach
+                @foreach($myDeployments as $myDep)<option value="{{ $myDep->id }}" {{ old('deployment_id') == $myDep->id ? 'selected' : '' }}>{{ $myDep->name }} ({{ $myDep->worker_slug }})</option>@endforeach
               </select>
             </div>
             @php

@@ -23,8 +23,7 @@
             </p>
         </div>
         <button onclick="document.getElementById('new-group-form').classList.toggle('hidden')"
-                class="text-sm px-4 py-2 rounded-lg font-semibold transition hover:opacity-90 shrink-0"
-                class="ac-on">
+                class="text-sm px-4 py-2 rounded-lg font-semibold transition hover:opacity-90 shrink-0 ac-on">
             + New Group
         </button>
     </div>
@@ -73,8 +72,7 @@
                 </div>
             </div>
             <div class="flex gap-2">
-                <button type="submit" class="text-sm px-5 py-2 rounded-lg font-semibold transition hover:opacity-90"
-                        class="ac-on">Create Group</button>
+                <button type="submit" class="text-sm px-5 py-2 rounded-lg font-semibold transition hover:opacity-90 ac-on">Create Group</button>
                 <button type="button" onclick="document.getElementById('new-group-form').classList.add('hidden')"
                         class="text-sm px-4 py-2 rounded-lg border transition hover:opacity-80"
                         style="border-color:var(--border);color:var(--text-muted)">Cancel</button>
@@ -134,7 +132,7 @@
             <div class="flex items-center gap-2 shrink-0">
                 <button onclick="toggleGroupEdit({{ $group->id }})"
                         class="text-xs font-medium transition hover:opacity-80"
-                        class="ac-text">Edit</button>
+                        style="color:var(--accent-text)">Edit</button>
                 <form method="POST" action="{{ route('workers.memory.groups.destroy', [$dep->id, $group->id]) }}"
                       onsubmit="return confirm('Remove group \'{{ addslashes($group->name) }}\'? Assets are not deleted.')">
                     @csrf @method('DELETE')
@@ -187,8 +185,7 @@
                               style="background:var(--bg-card);color:var(--text-primary);border-color:var(--border)">{{ $group->notes }}</textarea>
                 </div>
                 <div class="sm:col-span-2 flex gap-2">
-                    <button type="submit" class="text-sm px-4 py-2 rounded-lg font-semibold transition hover:opacity-90"
-                            class="ac-on">Save</button>
+                    <button type="submit" class="text-sm px-4 py-2 rounded-lg font-semibold transition hover:opacity-90 ac-on">Save</button>
                     <button type="button" onclick="toggleGroupEdit({{ $group->id }})"
                             class="text-sm px-4 py-2 rounded-lg border transition hover:opacity-80"
                             style="border-color:var(--border);color:var(--text-muted)">Cancel</button>
@@ -272,8 +269,7 @@
             Group related assets together — e.g. all assets for one client's website, or all policies under one contract.
         </p>
         <button onclick="document.getElementById('new-group-form').classList.remove('hidden'); window.scrollTo({top:0,behavior:'smooth'})"
-                class="text-sm px-5 py-2 rounded-lg font-semibold transition hover:opacity-90"
-                class="ac-on">Create your first group</button>
+                class="text-sm px-5 py-2 rounded-lg font-semibold transition hover:opacity-90 ac-on">Create your first group</button>
     </div>
     @endforelse
 
