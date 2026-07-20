@@ -13,8 +13,7 @@
             <p class="text-gray-500 text-xs mt-0.5">All available models · BYOK keys · custom endpoints</p>
         </div>
         <button onclick="document.getElementById('register-panel').classList.toggle('hidden')"
-            class="text-sm font-bold px-4 py-2 rounded-xl text-gray-900 hover:opacity-90 flex items-center gap-2 shrink-0"
-            class="ac-bg">
+            class="text-sm font-bold px-4 py-2 rounded-xl text-gray-900 hover:opacity-90 flex items-center gap-2 shrink-0 ac-bg">
             + Register Model
         </button>
     </div>
@@ -80,7 +79,7 @@
                 </div>
             </div>
             <div class="flex flex-wrap items-center gap-3">
-                <button type="submit" class="text-sm font-bold px-6 py-2 rounded-lg hover:opacity-90" class="ac-on">
+                <button type="submit" class="text-sm font-bold px-6 py-2 rounded-lg hover:opacity-90 ac-on">
                     Register Model
                 </button>
                 <p class="text-xs" style="color:var(--text-faint)">After registering, select from any worker's Configure tab.</p>
@@ -120,7 +119,7 @@
                         @if($keys->has($providerKey))
                             <span class="flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-full"
                                   style="background:rgba(var(--accent-rgb),0.12);color:var(--accent-text);border:1px solid rgba(var(--accent-rgb),0.25)">
-                                <span class="w-1.5 h-1.5 rounded-full" class="ac-bg"></span>
+                                <span class="w-1.5 h-1.5 rounded-full ac-bg"></span>
                                 Your key
                             </span>
                             <form method="POST" action="{{ route('settings.api-keys.destroy', $providerKey) }}"
@@ -165,7 +164,7 @@
                             </div>
                         </div>
                         <div class="flex items-center gap-3">
-                            <button type="submit" class="text-sm font-bold px-5 py-2 rounded-lg hover:opacity-90" class="ac-on">Save Key</button>
+                            <button type="submit" class="text-sm font-bold px-5 py-2 rounded-lg hover:opacity-90 ac-on">Save Key</button>
                             <button type="button" onclick="toggleKeyForm('{{ $providerKey }}')"
                                 class="text-xs" style="color:var(--text-faint)">Cancel</button>
                         </div>
