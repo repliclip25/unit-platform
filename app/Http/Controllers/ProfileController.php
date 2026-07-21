@@ -101,10 +101,15 @@ class ProfileController extends Controller
         // Referral URL
         $referralUrl = $user->referral_code ? url('/register?ref=' . $user->referral_code) : null;
 
+        $shell = \App\Platform\Services\WorkerShellService::build($user->id, '');
+        extract($shell); // workerCatalog, registryRows, registryRow, profileImg, coverImg, tokenTotal
+        $firstName = explode(' ', trim($user->name))[0];
+
         return view('profile.show', compact(
             'user', 'deployments', 'contracts', 'gmailCredentials',
             'deploymentCredentials', 'sessions', 'depCounts',
-            'clockCards', 'referralUrl'
+            'clockCards', 'referralUrl',
+            'workerCatalog', 'tokenTotal', 'firstName'
         ));
     }
 
