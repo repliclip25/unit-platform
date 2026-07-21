@@ -1128,9 +1128,14 @@ class WorkerController extends Controller
             ->orderBy('month')
             ->get();
 
+        $shell = \App\Platform\Services\WorkerShellService::build(auth()->id(), $dep->worker_slug);
+        extract($shell); // workerCatalog, registryRows, registryRow, profileImg, coverImg, tokenTotal
+        $firstName = explode(' ', trim(auth()->user()->name))[0];
+
         return view('dashboard.worker-billing', compact(
             'dep', 'contract', 'billing', 'pricing',
-            'monthUsage', 'stageBreakdown', 'dailySpend', 'allTime', 'monthlyHistory'
+            'monthUsage', 'stageBreakdown', 'dailySpend', 'allTime', 'monthlyHistory',
+            'workerCatalog', 'registryRows', 'registryRow', 'profileImg', 'coverImg', 'tokenTotal', 'firstName'
         ));
     }
 

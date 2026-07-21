@@ -21,7 +21,15 @@ class TransactionController extends Controller
         else $query->where('status', '!=', 'dismissed'); // default: hide dismissed
         $transactions  = $query->paginate(25);
         $currentFilter = $filter;
-        return view('dashboard.transactions', compact('transactions', 'currentFilter'));
+
+        $shell = \App\Platform\Services\WorkerShellService::build($userId, '');
+        extract($shell); // workerCatalog, registryRows, registryRow, profileImg, coverImg, tokenTotal
+        $firstName = explode(' ', trim(auth()->user()->name))[0];
+
+        return view('dashboard.transactions', compact(
+            'transactions', 'currentFilter',
+            'workerCatalog', 'tokenTotal', 'firstName'
+        ));
     }
 
     public function show(string $txId)
@@ -33,7 +41,14 @@ class TransactionController extends Controller
             $nuxRegister = DB::table('nux_register')->where('transaction_id', $tx->id)->first();
         }
 
-        return view('dashboard.transaction-detail', compact('tx', 'nuxRegister'));
+        $shell = \App\Platform\Services\WorkerShellService::build(auth()->id(), '');
+        extract($shell); // workerCatalog, registryRows, registryRow, profileImg, coverImg, tokenTotal
+        $firstName = explode(' ', trim(auth()->user()->name))[0];
+
+        return view('dashboard.transaction-detail', compact(
+            'tx', 'nuxRegister',
+            'workerCatalog', 'tokenTotal', 'firstName'
+        ));
     }
 
     public function status(string $txId)
