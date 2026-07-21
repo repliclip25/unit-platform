@@ -45,6 +45,8 @@ body{font-family:'Inter',sans-serif;background:var(--db-bg);color:var(--db-text)
 .ob-menu-dropdown{position:absolute;top:calc(100% + 8px);right:0;min-width:220px;background:var(--db-card);border:1px solid var(--db-border);border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.18);padding:8px;z-index:50;display:none}
 .ob-menu-dropdown.open{display:block}
 .ob-menu-user{padding:8px 10px 10px;border-bottom:1px solid var(--db-border);margin-bottom:6px}
+.ob-menu-avatar{width:34px;height:34px;border-radius:50%;background:var(--db-chip);color:var(--db-text);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;flex-shrink:0}
+.ob-menu-item-icon{width:13px;height:13px;stroke:currentColor;stroke-width:1.8;fill:none;margin-right:8px;vertical-align:-2px;flex-shrink:0}
 .ob-menu-token{padding:0 10px 8px}
 .ob-menu-item{display:block;width:100%;text-align:left;padding:8px 10px;border-radius:8px;font-size:13.5px;font-weight:600;color:var(--db-text);text-decoration:none;background:none;border:none;cursor:pointer;font-family:inherit}
 .ob-menu-item:hover{background:var(--db-chip)}
@@ -159,7 +161,7 @@ $sidebarLinks = [
 
 {{-- ══ TOP BAR ══ --}}
 <div class="ob-topbar">
-  <div class="ob-topbar-logo">UNIT</div>
+  <a href="{{ route('dashboard') }}" class="ob-topbar-logo" style="text-decoration:none">UNIT</a>
   <div class="ob-topbar-right">
     <a href="{{ route('profile.show') }}" class="ob-topbar-name" style="text-decoration:none">{{ auth()->user()->name }}</a>
     <button class="ob-theme-toggle" id="theme-toggle" type="button" title="Toggle dark/light mode" aria-label="Toggle theme"></button>
@@ -168,17 +170,27 @@ $sidebarLinks = [
         <svg viewBox="0 0 24 24"><path stroke-linecap="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
       </button>
       <div class="ob-menu-dropdown" id="menu-dropdown">
-        <div class="ob-menu-user">
-          <div class="ob-topbar-name">{{ auth()->user()->name }}</div>
-          <div class="ob-topbar-email">{{ auth()->user()->email }}</div>
+        <div class="ob-menu-user" style="display:flex;align-items:center;gap:10px">
+          <div class="ob-menu-avatar">{{ strtoupper(substr(auth()->user()->name,0,1)) }}</div>
+          <div style="min-width:0">
+            <div class="ob-topbar-name" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ auth()->user()->name }}</div>
+            <div class="ob-topbar-email" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ auth()->user()->email }}</div>
+          </div>
         </div>
-        <div class="ob-menu-token"><span class="ob-token-badge">{{ $tokenFmt }} tokens</span></div>
         <div class="ob-menu-mobile-links">
-          @foreach($sidebarLinks as [$lbl,,$href,])
-          <a href="{{ $href }}" class="ob-menu-item">{{ $lbl }}</a>
+          <a href="{{ route('dashboard') }}" class="ob-menu-item">
+            <svg viewBox="0 0 24 24" class="ob-menu-item-icon"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+            Dashboard
+          </a>
+          @foreach($sidebarLinks as [$lbl,$ico,$href,])
+          <a href="{{ $href }}" class="ob-menu-item">
+            <svg viewBox="0 0 24 24" class="ob-menu-item-icon"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $ico }}"/></svg>
+            {{ $lbl }}
+          </a>
           @endforeach
           <div style="border-top:1px solid var(--db-border);margin:6px 0"></div>
         </div>
+        <div class="ob-menu-token"><span class="ob-token-badge">{{ $tokenFmt }} tokens</span></div>
         <a href="{{ route('settings.api-keys') }}" class="ob-menu-item">Settings</a>
         <form method="POST" action="{{ route('logout') }}">@csrf<button type="submit" class="ob-menu-item">Logout</button></form>
       </div>
