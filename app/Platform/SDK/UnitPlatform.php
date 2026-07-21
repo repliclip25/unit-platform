@@ -270,6 +270,8 @@ final class UnitPlatform
 
     public static function commitOutput(string $txId, WorkerOutput $output): void
     {
+        self::maybeIncrementTrialUsage($txId, $output->status);
+
         $update = ['updated_at' => now(), 'status' => $output->status];
 
         if (isset(self::STAGE_COLUMNS[$output->stage])) {
@@ -287,12 +289,37 @@ final class UnitPlatform
         self::logStageCompleted($txId, $output->stage);
     }
 
+    // ── Trial quota: charged once, the first time a transaction reaches a
+    //    success status (see TransactionService::SUCCESS_STATUSES). Must run
+    //    BEFORE the status column is overwritten, since the "already counted"
+    //    check depends on seeing the pre-update status.
+    private static function maybeIncrementTrialUsage(string $txId, string $newStatus): void
+    {
+        if (!in_array($newStatus, \App\Platform\Services\TransactionService::SUCCESS_STATUSES, true)) {
+            return;
+        }
+
+        $tx = DB::table('transactions')->where('tx_id', $txId)->first(['status', 'deployment_id']);
+        if (!$tx || !$tx->deployment_id) {
+            return;
+        }
+
+        // Already counted on an earlier success status (e.g. draft_ready → approved) — skip
+        if (in_array($tx->status, \App\Platform\Services\TransactionService::SUCCESS_STATUSES, true)) {
+            return;
+        }
+
+        \App\Platform\Services\TransactionService::incrementTrialUsage($tx->deployment_id);
+    }
+
     // ─────────────────────────────────────────────────────────────────────
     // STATUS — lightweight status-only update (also drives stage log)
     // ─────────────────────────────────────────────────────────────────────
 
     public static function setStatus(string $txId, string $status): void
     {
+        self::maybeIncrementTrialUsage($txId, $status);
+
         $mapped = self::STATUS_STAGE_MAP[$status] ?? null;
         $currentStage = $mapped ? $mapped['stage'] : null;
 

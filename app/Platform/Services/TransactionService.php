@@ -33,48 +33,67 @@ class TransactionService
                     ->where('deployment_id', $deploymentId)
                     ->increment('unit_count');
 
-                // Only increment trial counter while the deployment is still in trial
-                $billing = DB::table('deployment_billing')
-                    ->where('deployment_id', $deploymentId)
-                    ->first(['status', 'trial_transactions_used', 'worker_slug', 'user_id']);
-
-                if ($billing && $billing->status === 'trial') {
-                    DB::table('deployment_billing')
-                        ->where('deployment_id', $deploymentId)
-                        ->increment('trial_transactions_used');
-
-                    // Keep trial ledger in sync so re-deploy credits are accurate
-                    if ($billing->user_id && $billing->worker_slug) {
-                        DB::table('user_worker_trial_ledger')
-                            ->where('user_id', $billing->user_id)
-                            ->where('worker_slug', $billing->worker_slug)
-                            ->update(['used' => $billing->trial_transactions_used + 1, 'updated_at' => now()]);
-                    }
-
-                    // Fire 50% nudge exactly once when trial crosses the halfway point
-                    $newUsed = $billing->trial_transactions_used + 1;
-                    $limit   = (int) ($billing->trial_transactions_limit ?? 0);
-                    if ($limit > 0 && $newUsed === (int) ceil($limit / 2)) {
-                        try {
-                            $user = DB::table('users')->where('id', $billing->user_id)->first();
-                            if ($user) {
-                                $templateKey = $billing->worker_slug . '_trial_halfway';
-                                EmailDispatcher::send($templateKey, $user->email, $user->name, $user->id, [
-                                    '{used}'  => $newUsed,
-                                    '{limit}' => $limit,
-                                ]);
-                            }
-                        } catch (\Throwable $e) {
-                            Log::error('[TransactionService] trial_halfway nudge failed', ['error' => $e->getMessage()]);
-                        }
-                    }
-                }
+                // Trial quota is charged only once a transaction actually succeeds
+                // (see UnitPlatform::maybeIncrementTrialUsage) — not at creation time,
+                // so failed/blocked/dismissed/filtered attempts don't burn the trial.
             }
         });
 
         $this->log($workerSlug, $txId, 'transaction_created', ['raw_input' => $rawInput]);
 
         return $this->find($txId);
+    }
+
+    // ── Terminal statuses that count as a "successfully processed" unit for
+    //    trial-quota purposes. Approved/sent are human-decision states that
+    //    follow draft_ready, not separate completions — see
+    //    UnitPlatform::maybeIncrementTrialUsage, which guards against
+    //    double-counting a transaction that passes through more than one
+    //    of these on its way through human review.
+    public const SUCCESS_STATUSES = ['draft_ready', 'approved', 'sent'];
+
+    // Increments trial_transactions_used for a deployment still on trial.
+    // Called exactly once per transaction, the first time it reaches a
+    // success status (see UnitPlatform::maybeIncrementTrialUsage).
+    public static function incrementTrialUsage(int $deploymentId): void
+    {
+        $billing = DB::table('deployment_billing')
+            ->where('deployment_id', $deploymentId)
+            ->first(['status', 'trial_transactions_used', 'trial_transactions_limit', 'worker_slug', 'user_id']);
+
+        if (!$billing || $billing->status !== 'trial') {
+            return;
+        }
+
+        DB::table('deployment_billing')
+            ->where('deployment_id', $deploymentId)
+            ->increment('trial_transactions_used');
+
+        // Keep trial ledger in sync so re-deploy credits are accurate
+        if ($billing->user_id && $billing->worker_slug) {
+            DB::table('user_worker_trial_ledger')
+                ->where('user_id', $billing->user_id)
+                ->where('worker_slug', $billing->worker_slug)
+                ->update(['used' => $billing->trial_transactions_used + 1, 'updated_at' => now()]);
+        }
+
+        // Fire 50% nudge exactly once when trial crosses the halfway point
+        $newUsed = $billing->trial_transactions_used + 1;
+        $limit   = (int) ($billing->trial_transactions_limit ?? 0);
+        if ($limit > 0 && $newUsed === (int) ceil($limit / 2)) {
+            try {
+                $user = DB::table('users')->where('id', $billing->user_id)->first();
+                if ($user) {
+                    $templateKey = $billing->worker_slug . '_trial_halfway';
+                    EmailDispatcher::send($templateKey, $user->email, $user->name, $user->id, [
+                        '{used}'  => $newUsed,
+                        '{limit}' => $limit,
+                    ]);
+                }
+            } catch (\Throwable $e) {
+                Log::error('[TransactionService] trial_halfway nudge failed', ['error' => $e->getMessage()]);
+            }
+        }
     }
 
     public function find(string $txId): object
