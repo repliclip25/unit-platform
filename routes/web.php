@@ -135,7 +135,15 @@ Route::middleware(['auth', 'verified', 'onboarded', 'not-pending-del'])->group(f
     Route::post('/transactions/{txId}/decide',  [TransactionController::class, 'decide'])->name('transactions.decide');
 
     // ── Renewal Register ────────────────────────────────────────────────────
-    Route::get('/register', [RegisterController::class, 'index'])->name('register');
+    // Named 'renewal-register', not 'register' — that name (and the bare
+    // /register URI) belongs to Auth\RegisteredUserController (routes/auth.php,
+    // loaded after this file). Two routes sharing one name previously left
+    // this route completely unreachable: incoming GET /register always
+    // matched the auth registration route, whose `guest` middleware silently
+    // redirected any logged-in tenant to /dashboard before this controller
+    // ever ran. Confirmed via `php artisan route:list --path=register`,
+    // which showed only the auth route — this one had vanished entirely.
+    Route::get('/renewal-register', [RegisterController::class, 'index'])->name('renewal-register');
 
     // ── Memory Management ───────────────────────────────────────────────────
     // Memory now lives per-worker at /workers/{slug}/memory (the underlying

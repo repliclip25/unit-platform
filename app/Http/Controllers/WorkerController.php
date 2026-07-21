@@ -1069,7 +1069,14 @@ class WorkerController extends Controller
             ->firstOrFail();
         $id      = $dep->id;
         $entries = DB::table('renewal_register')->where('deployment_id', $id)->orderByDesc('created_at')->paginate(25);
-        return view('dashboard.worker-log', compact('dep', 'entries'));
+
+        $shell = \App\Platform\Services\WorkerShellService::build(auth()->id(), $dep->worker_slug);
+        extract($shell); // workerCatalog, registryRows, registryRow, profileImg, coverImg, tokenTotal
+        $firstName = explode(' ', trim(auth()->user()->name))[0];
+
+        return view('dashboard.worker-log', compact(
+            'dep', 'entries', 'workerCatalog', 'tokenTotal', 'firstName'
+        ));
     }
 
     public function billing(string $slug)
