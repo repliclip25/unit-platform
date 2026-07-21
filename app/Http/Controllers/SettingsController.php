@@ -37,7 +37,14 @@ class SettingsController extends Controller
                 'worker_slug' => $dep->worker_slug,
             ]);
 
-        return view('dashboard.api-keys', compact('keys', 'customModels', 'platformKeys', 'workers'));
+        $shell = \App\Platform\Services\WorkerShellService::build($userId, '');
+        extract($shell); // workerCatalog, registryRows, registryRow, profileImg, coverImg, tokenTotal
+        $firstName = explode(' ', trim(auth()->user()->name))[0];
+
+        return view('dashboard.api-keys', compact(
+            'keys', 'customModels', 'platformKeys', 'workers',
+            'workerCatalog', 'tokenTotal', 'firstName'
+        ));
     }
 
     public function storeApiKey(Request $request)
