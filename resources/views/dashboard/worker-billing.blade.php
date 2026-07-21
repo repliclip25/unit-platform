@@ -319,8 +319,9 @@ $sidebarLinks = [
   <main class="mem-main">
     <div class="mem-wrap">
 
+      <a href="{{ route('billing') }}" style="font-size:12px;color:var(--db-text-muted);text-decoration:none;display:inline-block;margin-bottom:8px">← Billing</a>
       <div class="wb-h1">Billing — {{ $dep->name }}</div>
-      <div class="wb-sub">Usage and cost breakdown for this worker</div>
+      <div class="wb-sub">Usage and cost breakdown for this worker — subscription and plan live on the main <a href="{{ route('billing') }}" style="color:var(--db-text-muted);text-decoration:underline">Billing</a> page.</div>
 
       {{-- Status banner --}}
       @if($isTrial)

@@ -391,6 +391,7 @@ $statusColors = [
             @else
               <a href="{{ route('transactions') }}?deployment={{ $dep->id }}" class="bill-clock-link">View transactions →</a>
             @endif
+            <a href="{{ route('workers.billing', $dep->worker_slug) }}" class="bill-clock-link">View cost breakdown →</a>
           </div>
         </div>
 
