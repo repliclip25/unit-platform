@@ -101,7 +101,7 @@ body{font-family:'Inter',sans-serif;background:var(--db-bg);color:var(--db-text)
 .dc-date{font-size:11.5px;color:var(--db-text-muted)}
 .dc-customize-btn{font-size:11.5px;color:var(--db-text-muted);background:none;border:none;cursor:pointer;font-family:inherit}
 .dc-customize-btn:hover{color:var(--db-text)}
-.dc-empty-desk{border:1px solid var(--db-border);border-radius:12px;padding:16px 20px;font-size:13px;color:var(--db-text-muted)}
+.dc-empty-desk{border:1px solid var(--db-border);border-radius:12px;padding:16px 20px;font-size:13px;color:var(--db-text-muted);margin-bottom:20px}
 #desk-feed{border-top:1px solid var(--db-border);border-bottom:1px solid var(--db-border);margin-bottom:20px}
 #desk-feed strong{color:var(--db-text);font-size:1.05em}
 .dc-desk-row{display:flex;align-items:center;justify-content:space-between;padding:12px 0;gap:12px;border-bottom:1px solid var(--db-border)}
@@ -145,7 +145,9 @@ body{font-family:'Inter',sans-serif;background:var(--db-bg);color:var(--db-text)
 .dc-wc-footer{padding:12px 20px;border-top:1px solid var(--db-border);display:flex;align-items:center;justify-content:space-between;gap:12px}
 .dc-wc-fast-track{font-size:12px;font-weight:700;color:var(--db-text);text-decoration:none}
 .dc-wc-fast-track:hover{opacity:.8}
-.dc-wc-last{font-size:11.5px;color:var(--db-text-muted)}
+.dc-wc-last{font-size:11.5px;color:var(--db-text-muted);text-align:right}
+.dc-wc-last-tx{color:var(--db-text-muted);text-decoration:none;font-family:monospace}
+.dc-wc-last-tx:hover{color:var(--db-text);text-decoration:underline}
 
 .dc-empty-worker{border-radius:16px;border:1px solid var(--db-border);padding:36px 20px;text-align:center}
 .dc-empty-worker p:first-child{font-size:13.5px;color:var(--db-text-muted)}
@@ -474,6 +476,7 @@ $notifTextColors = ['error'=>'#f87171','warning'=>'#fbbf24','info'=>'var(--db-te
                   <span class="dc-wc-last">
                       @if($card['lastTx'])
                           Last shift: {{ \Carbon\Carbon::parse($card['lastTx']->created_at)->diffForHumans(null, true, true, 1) }} ago
+                          · <a href="{{ route('transactions.show', $card['lastTx']->tx_id) }}" class="dc-wc-last-tx">{{ $card['lastTx']->tx_id }}</a>
                       @else
                           Never run
                       @endif

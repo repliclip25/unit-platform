@@ -85,10 +85,17 @@ class DeskService
             $staticPool = DeskCardRegistry::active();
             $workerPool = self::buildWorkerPool($userId);
             $allPool    = array_merge($workerPool, $staticPool);
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('[DeskService] resolve() setup failed', ['user' => $userId, 'error' => $e->getMessage()]);
+            return collect();
+        }
 
-            $results = collect();
+        $results = collect();
 
-            foreach ($allPool as $key => $def) {
+        foreach ($allPool as $key => $def) {
+            // Isolated per-card: one broken card resolver must not blank out
+            // the entire desk feed for every other (working) card.
+            try {
                 $row = $rows->get($key);
 
                 // Determine visibility: use saved row if exists, else default
@@ -112,12 +119,13 @@ class DeskService
                     'position'          => $position,
                     'last_dismissed_at' => $fakeRow->last_dismissed_at,
                 ], $data));
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::error('[DeskService] card resolver failed', ['user' => $userId, 'key' => $key, 'error' => $e->getMessage()]);
+                continue;
             }
-
-            return $results->sortBy('position')->values();
-        } catch (\Throwable) {
-            return collect();
         }
+
+        return $results->sortBy('position')->values();
     }
 
     // ── All cards for Customize Desk drawer ──────────────────────────────────
