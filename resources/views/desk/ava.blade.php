@@ -749,7 +749,7 @@ $sidebarLinks = [
     if (!txId) return;
     switcherLabel.textContent = txId;
     timelineEl.innerHTML = '<p style="font-size:12px;color:var(--db-text-muted)">Loading…</p>';
-    fetch('/desk/ava/tx/' + encodeURIComponent(txId))
+    fetch('{{ url("/app/desk/ava/tx") }}/' + encodeURIComponent(txId))
       .then(function (r) { return r.json(); })
       .then(function (data) {
         if (data.error) {
