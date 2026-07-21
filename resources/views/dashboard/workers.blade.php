@@ -112,10 +112,10 @@ $depBySlug = $deployments->groupBy('worker_slug');
 
         if ($pendingDrafts > 0) {
             $statusQuote = "I've prepared " . $pendingDrafts . " " . ($pendingDrafts === 1 ? 'draft' : 'drafts') . ". " . ($pendingDrafts === 1 ? 'It\'s' : 'One is') . " waiting for your approval.";
-            $statusCta   = ['label' => 'Review now →', 'url' => route('app.transactions')];
+            $statusCta   = ['label' => 'Review now →', 'url' => route('app.workers.transactions', $firstDep->worker_slug)];
         } elseif ($recentCount > 0) {
             $statusQuote = "Processed {$recentCount} " . ($recentCount === 1 ? 'email' : 'emails') . " this week. Everything's up to date.";
-            $statusCta   = ['label' => 'View activity →', 'url' => route('app.transactions')];
+            $statusCta   = ['label' => 'View activity →', 'url' => route('app.workers.transactions', $firstDep->worker_slug)];
         } else {
             $statusQuote = "Watching your inbox. Ready to act the moment something comes in.";
             $statusCta   = ['label' => 'Open workspace →', 'url' => route('app.workers.show', $worker->slug)];

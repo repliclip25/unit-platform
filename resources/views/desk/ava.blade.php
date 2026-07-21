@@ -267,7 +267,7 @@ $sidebarLinks = [
   ['Fast Track',   'M13 10V3L4 14h7v7l9-11h-7z', route('app.workers.fast-track.page','ava')],
   ['Integrations', 'M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1', route('app.workers.connect','ava')],
   ['Billing',      'M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z', route('app.billing')],
-  ['Activity Log', 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2', route('app.transactions').'?deployment='.$dep->id],
+  ['Activity Log', 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2', route('app.workers.transactions', $dep->worker_slug)],
 ];
 @endphp
 
@@ -510,7 +510,7 @@ $sidebarLinks = [
                 @if($__canAct)
                 <a href="{{ route($alert['route'], $alert['params']) }}" style="display:inline-block;font-size:12px;font-weight:700;color:#0D0D0D;text-decoration:underline">{{ $alert['action'] }} →</a>
                 @else
-                <a href="{{ route('app.transactions') }}" style="display:inline-block;font-size:12px;font-weight:700;color:#0D0D0D;text-decoration:underline">View in Activity Log →</a>
+                <a href="{{ route('app.workers.transactions', $dep->worker_slug) }}" style="display:inline-block;font-size:12px;font-weight:700;color:#0D0D0D;text-decoration:underline">View in Activity Log →</a>
                 @endif
               </div>
               @endforeach
@@ -640,7 +640,7 @@ $sidebarLinks = [
         {{-- Stage timeline for the selected transaction --}}
         <div class="ob-act-hd">
           Live Activity
-          <a href="{{ route('app.transactions') }}" class="ob-sc-view-link" style="margin:0">View Live Feed →</a>
+          <a href="{{ route('app.workers.transactions', $dep->worker_slug) }}" class="ob-sc-view-link" style="margin:0">View Live Feed →</a>
         </div>
         <div class="ob-sc-feed" id="tx-timeline">
           <p style="font-size:12px;color:var(--db-text-muted)">Loading…</p>

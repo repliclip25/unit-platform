@@ -136,7 +136,21 @@ Route::middleware(['auth', 'verified', 'onboarded', 'not-pending-del'])->group(f
     Route::post('/self-learn/dismiss', [DashboardController::class, 'selfLearnDismiss'])->name('self-learn.dismiss');
 
     // ── Transactions ────────────────────────────────────────────────────────
-    Route::get('/transactions',              [TransactionController::class, 'index'])->name('transactions');
+    // Transactions are worker-scoped (see workers.transactions below) — each
+    // worker emits/records its own shape of transaction, so a combined
+    // cross-worker feed doesn't make sense as the primary view. This bare
+    // route stays only as a redirect to the tenant's primary deployment, the
+    // same pattern /memory already uses.
+    Route::get('/transactions', function () {
+        $slug = \Illuminate\Support\Facades\DB::table('worker_deployments')
+            ->where('user_id', auth()->id())
+            ->whereIn('status', ['active', 'paused'])
+            ->orderBy('created_at')
+            ->value('worker_slug');
+        return $slug
+            ? redirect()->route('app.workers.transactions', array_merge(['slug' => $slug], request()->query()))
+            : redirect()->route('app.workers.index');
+    })->name('transactions');
     Route::get('/transactions/{txId}',       [TransactionController::class, 'show'])->name('transactions.show');
     Route::post('/transactions/{txId}/refire',  [TransactionController::class, 'refire'])->name('transactions.refire');
     Route::post('/transactions/{txId}/dismiss', [TransactionController::class, 'dismiss'])->name('transactions.dismiss');
@@ -218,6 +232,7 @@ Route::middleware(['auth', 'verified', 'onboarded', 'not-pending-del'])->group(f
     Route::get('/workers/{slug}/observe',                            [WorkerController::class, 'observe'])->name('workers.observe');
     Route::get('/workers/{slug}/schema',                             [WorkerController::class, 'schema'])->name('workers.schema');
     Route::get('/workers/{slug}/billing',                            [WorkerController::class, 'billing'])->name('workers.billing');
+    Route::get('/workers/{slug}/transactions',                       [TransactionController::class, 'index'])->name('workers.transactions');
     Route::post('/workers/{id}/fast-track',                          [WorkerController::class, 'fastTrack'])->name('workers.fast-track');
     Route::get('/workers/{slug}/fast-track',                          [WorkerController::class, 'fastTrackPage'])->name('workers.fast-track.page');
     Route::patch('/workers/{id}/fast-track/scenario',                 [WorkerController::class, 'updateFastTrackScenario'])->name('workers.fast-track.scenario');

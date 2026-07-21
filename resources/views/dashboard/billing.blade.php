@@ -399,9 +399,9 @@ $statusColors = [
           <div class="bill-clock">
             @if($hoursSaved !== null)
               <div class="bill-clock-num">{{ $hoursSaved }} <span class="bill-clock-lbl">hrs saved</span></div>
-              <a href="{{ route('app.transactions') }}?deployment={{ $dep->id }}" class="bill-clock-link">{{ number_format($processed) }} emails → view transactions</a>
+              <a href="{{ route('app.workers.transactions', $dep->worker_slug) }}" class="bill-clock-link">{{ number_format($processed) }} emails → view transactions</a>
             @else
-              <a href="{{ route('app.transactions') }}?deployment={{ $dep->id }}" class="bill-clock-link">View transactions →</a>
+              <a href="{{ route('app.workers.transactions', $dep->worker_slug) }}" class="bill-clock-link">View transactions →</a>
             @endif
             <a href="{{ route('app.workers.billing', $dep->worker_slug) }}" class="bill-clock-link">View cost breakdown →</a>
           </div>

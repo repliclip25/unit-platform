@@ -232,7 +232,7 @@ class DeskService
                     return $n > 0 ? [
                         'text'   => "<strong>{$n}</strong> " . ($n === 1 ? 'item' : 'items') . ' marked urgent',
                         'dot'    => 'amber',
-                        'action' => ['label' => 'Review', 'url' => route('app.transactions', ['filter' => 'draft_ready', 'priority' => 'high'])],
+                        'action' => ['label' => 'Review', 'url' => route('app.workers.transactions', ['slug' => $dep->worker_slug, 'filter' => 'draft_ready', 'priority' => 'high'])],
                         'always' => false,
                     ] : null;
                 })(),
@@ -243,7 +243,7 @@ class DeskService
                     return $n > 0 ? [
                         'text'   => "<strong>{$n}</strong> " . ($n === 1 ? 'item' : 'items') . ' failed or stuck in pipeline',
                         'dot'    => 'red',
-                        'action' => ['label' => 'View', 'url' => route('app.transactions', ['filter' => 'failed'])],
+                        'action' => ['label' => 'View', 'url' => route('app.workers.transactions', ['slug' => $dep->worker_slug, 'filter' => 'failed'])],
                         'always' => false,
                     ] : null;
                 })(),

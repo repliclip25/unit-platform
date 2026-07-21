@@ -26,6 +26,16 @@ class TransactionControllerTest extends TestCase
             'category' => 'Operations',
             'version'  => '1.0',
         ]);
+
+        // Transactions are worker-scoped — index/redirect both need a real deployment
+        DB::table('worker_deployments')->insert([
+            'user_id'     => $this->user->id,
+            'worker_slug' => 'ava',
+            'name'        => 'AVA',
+            'status'      => 'active',
+            'created_at'  => now(),
+            'updated_at'  => now(),
+        ]);
     }
 
     // ── helpers ──────────────────────────────────────────────────────────────
@@ -58,7 +68,7 @@ class TransactionControllerTest extends TestCase
         $this->makeTx(['status' => 'dismissed']); // should be hidden by default
 
         $this->actingAs($this->user)
-            ->get(route('app.transactions'))
+            ->get(route('app.workers.transactions', 'ava'))
             ->assertOk()
             ->assertViewIs('dashboard.transactions');
     }
@@ -69,7 +79,7 @@ class TransactionControllerTest extends TestCase
         $this->makeTx(['tx_id' => 'TX-FAIL',  'status' => 'failed']);
 
         $response = $this->actingAs($this->user)
-            ->get(route('app.transactions', ['filter' => 'draft_ready']));
+            ->get(route('app.workers.transactions', ['slug' => 'ava', 'filter' => 'draft_ready']));
 
         $response->assertOk();
         $txns = $response->viewData('transactions');
@@ -89,7 +99,7 @@ class TransactionControllerTest extends TestCase
         ]);
 
         $response = $this->actingAs($this->user)
-            ->get(route('app.transactions'));
+            ->get(route('app.workers.transactions', 'ava'));
 
         $txns = $response->viewData('transactions');
         $this->assertCount(0, $txns);
@@ -168,16 +178,8 @@ class TransactionControllerTest extends TestCase
         Queue::fake();
         $txId = $this->makeTx(['status' => 'failed', 'read_output' => json_encode(['x' => 1])]);
 
-        DB::table('worker_deployments')->insert([
-            'id'          => 1,
-            'user_id'     => $this->user->id,
-            'worker_slug' => 'ava',
-            'name'        => 'Test',
-            'status'      => 'active',
-            'created_at'  => now(),
-            'updated_at'  => now(),
-        ]);
-        DB::table('transactions')->where('tx_id', $txId)->update(['deployment_id' => 1]);
+        $depId = DB::table('worker_deployments')->where('user_id', $this->user->id)->where('worker_slug', 'ava')->value('id');
+        DB::table('transactions')->where('tx_id', $txId)->update(['deployment_id' => $depId]);
 
         $this->actingAs($this->user)
             ->post(route('app.transactions.refire', $txId))
@@ -226,7 +228,7 @@ class TransactionControllerTest extends TestCase
 
         $this->actingAs($this->user)
             ->post(route('app.transactions.dismiss', $txId), ['reason' => 'Not relevant'])
-            ->assertRedirect(route('app.transactions'));
+            ->assertRedirect(route('app.workers.transactions', 'ava'));
 
         $tx = DB::table('transactions')->where('tx_id', $txId)->first();
         $this->assertEquals('dismissed', $tx->status);
@@ -251,7 +253,7 @@ class TransactionControllerTest extends TestCase
 
         $this->actingAs($this->user)
             ->post(route('app.transactions.dismiss', $txId))
-            ->assertRedirect(route('app.transactions'));
+            ->assertRedirect(route('app.workers.transactions', 'ava'));
 
         $this->assertEquals('dismissed', DB::table('transactions')->where('tx_id', $txId)->value('status'));
     }
@@ -267,7 +269,7 @@ class TransactionControllerTest extends TestCase
 
         $this->actingAs($this->user)
             ->delete(route('app.transactions.delete', $txId))
-            ->assertRedirect(route('app.transactions'));
+            ->assertRedirect(route('app.workers.transactions', 'ava'));
 
         $this->assertNull(DB::table('transactions')->where('tx_id', $txId)->first());
     }
@@ -311,7 +313,7 @@ class TransactionControllerTest extends TestCase
 
         $this->actingAs($this->user)
             ->post(route('app.transactions.decide', $txId), ['decision' => 'approved'])
-            ->assertRedirect(route('app.transactions'));
+            ->assertRedirect(route('app.workers.transactions', 'ava'));
 
         $tx = DB::table('transactions')->where('tx_id', $txId)->first();
         // Approval marks the tx as 'approved' — sending happens manually from Gmail
@@ -343,7 +345,7 @@ class TransactionControllerTest extends TestCase
 
         $this->actingAs($this->user)
             ->post(route('app.transactions.decide', $txId), ['decision' => 'rejected', 'notes' => 'Wrong client'])
-            ->assertRedirect(route('app.transactions'));
+            ->assertRedirect(route('app.workers.transactions', 'ava'));
 
         $tx = DB::table('transactions')->where('tx_id', $txId)->first();
         $this->assertEquals('rejected', $tx->status);

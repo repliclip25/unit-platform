@@ -159,13 +159,13 @@ body{font-family:'Inter',sans-serif;background:var(--db-bg);color:var(--db-text)
 @php
 $tokenFmt = $tokenTotal >= 1000000 ? number_format($tokenTotal/1000000,1).'M' : number_format($tokenTotal);
 $sidebarLinks = [
-  ['Memory',       'M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18', route('app.workers.memory','ava'), false],
-  ['Templates',    'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z', route('app.workers.templates',['slug'=>'ava']), false],
-  ['Rules',        'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4', route('app.workers.rules','ava'), false],
-  ['Fast Track',   'M13 10V3L4 14h7v7l9-11h-7z', route('app.workers.fast-track.page','ava'), false],
-  ['Integrations', 'M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1', route('app.workers.connect','ava'), false],
+  ['Memory',       'M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18', route('app.workers.memory',$dep->worker_slug), false],
+  ['Templates',    'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z', route('app.workers.templates',['slug'=>$dep->worker_slug]), false],
+  ['Rules',        'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4', route('app.workers.rules',$dep->worker_slug), false],
+  ['Fast Track',   'M13 10V3L4 14h7v7l9-11h-7z', route('app.workers.fast-track.page',$dep->worker_slug), false],
+  ['Integrations', 'M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1', route('app.workers.connect',$dep->worker_slug), false],
   ['Billing',      'M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z', route('app.billing'), false],
-  ['Activity Log', 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2', route('app.transactions'), true],
+  ['Activity Log', 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2', route('app.workers.transactions',$dep->worker_slug), true],
 ];
 $pendingCount = $transactions->getCollection()->where('status', 'draft_ready')->whereNull('human_decision')->count();
 $statusMeta = [
@@ -291,7 +291,7 @@ $priorityColors = ['Critical'=>'#ef4444','High'=>'#f59e0b','Medium'=>'#9ca3af','
       <div class="tx-header">
         <div>
           <div class="tx-h1">Transactions</div>
-          <div class="tx-sub">AVA pipeline activity · human review queue</div>
+          <div class="tx-sub">{{ $dep->name }} pipeline activity · human review queue</div>
         </div>
         @if($pendingCount > 0)
         <div class="tx-pending-badge">
@@ -303,7 +303,7 @@ $priorityColors = ['Critical'=>'#ef4444','High'=>'#f59e0b','Medium'=>'#9ca3af','
 
       <div class="tx-tabs">
         @foreach([['all','All'],['draft_ready','Pending Review'],['approved','Approved'],['failed','Failed'],['dismissed','Dismissed']] as [$val,$label])
-        <a href="{{ route('app.transactions', ['filter' => $val]) }}" class="tx-tab {{ ($currentFilter ?? 'all') === $val ? 'active' : '' }}">
+        <a href="{{ route('app.workers.transactions', ['slug' => $dep->worker_slug, 'filter' => $val]) }}" class="tx-tab {{ ($currentFilter ?? 'all') === $val ? 'active' : '' }}">
           {{ $label }}
           @if($val === 'draft_ready' && $pendingCount > 0)<span class="tx-tab-badge">{{ $pendingCount }}</span>@endif
         </a>

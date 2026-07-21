@@ -414,8 +414,8 @@ class DashboardService
                 'severity' => 'warning',
                 'message'  => "{$staleDrafts} draft" . ($staleDrafts > 1 ? 's have' : ' has') . " been waiting for review for more than 3 days.",
                 'action'   => 'Review',
-                'route'    => 'app.transactions',
-                'params'   => ['filter' => 'draft_ready'],
+                'route'    => 'app.workers.transactions',
+                'params'   => ['slug' => $slug, 'filter' => 'draft_ready'],
             ];
         }
 

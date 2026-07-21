@@ -99,7 +99,7 @@ class DashboardController extends Controller
                 $cta   = ['label' => 'Run Fast Track', 'url' => route('app.workers.show', $dep->worker_slug) . '#fast-track'];
             } elseif ($drafts > 0) {
                 $quote = "Morning! I've {$verbProc} {$total} {$unit} and prepared {$drafts} " . ($drafts === 1 ? $outputWord : $outputWord . 's') . ". " . ($drafts === 1 ? 'It needs' : 'They need') . " your approval.";
-                $cta   = ['label' => 'Review now', 'url' => route('app.transactions', ['filter' => 'draft_ready'])];
+                $cta   = ['label' => 'Review now', 'url' => route('app.workers.transactions', ['slug' => $dep->worker_slug, 'filter' => 'draft_ready'])];
             } elseif ($failed > 0) {
                 $quote = "I hit {$failed} " . ($failed === 1 ? 'issue' : 'issues') . " I couldn't resolve on my own — flagged for your review.";
                 $cta   = ['label' => 'See what happened', 'url' => route('app.workers.show', $dep->worker_slug)];

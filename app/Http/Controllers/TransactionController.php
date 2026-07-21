@@ -8,12 +8,18 @@ use Illuminate\Support\Facades\Log;
 
 class TransactionController extends Controller
 {
-    public function index(Request $request)
+    public function index(Request $request, string $slug)
     {
         $userId = auth()->id();
+        $dep = DB::table('worker_deployments')
+            ->where('user_id', $userId)
+            ->where('worker_slug', $slug)
+            ->whereIn('status', ['active', 'paused'])
+            ->orderByDesc('id')
+            ->firstOrFail();
+
         $filter = $request->query('filter', 'all');
-        $query  = DB::table('transactions')->where('user_id', $userId)->orderByDesc('id');
-        if ($request->filled('deployment')) $query->where('deployment_id', (int) $request->query('deployment'));
+        $query  = DB::table('transactions')->where('deployment_id', $dep->id)->orderByDesc('id');
         if ($filter === 'draft_ready')   $query->where('status', 'draft_ready');
         elseif ($filter === 'approved')  $query->whereIn('status', ['approved','sent']);
         elseif ($filter === 'failed')    $query->where('status', 'failed');
@@ -22,12 +28,12 @@ class TransactionController extends Controller
         $transactions  = $query->paginate(25);
         $currentFilter = $filter;
 
-        $shell = \App\Platform\Services\WorkerShellService::build($userId, '');
+        $shell = \App\Platform\Services\WorkerShellService::build($userId, $slug);
         extract($shell); // workerCatalog, registryRows, registryRow, profileImg, coverImg, tokenTotal
         $firstName = explode(' ', trim(auth()->user()->name))[0];
 
         return view('dashboard.transactions', compact(
-            'transactions', 'currentFilter',
+            'transactions', 'currentFilter', 'dep',
             'workerCatalog', 'tokenTotal', 'firstName'
         ));
     }
@@ -152,7 +158,7 @@ class TransactionController extends Controller
             'triggered_by'    => auth()->id(),
         ]);
 
-        return redirect()->route('app.transactions')->with('success', 'Transaction dismissed — removed from active queues.');
+        return redirect()->route('app.workers.transactions', $tx->worker_slug)->with('success', 'Transaction dismissed — removed from active queues.');
     }
 
     public function destroy(string $txId)
@@ -166,7 +172,7 @@ class TransactionController extends Controller
 
         DB::table('transactions')->where('tx_id', $txId)->delete();
 
-        return redirect()->route('app.transactions')->with('success', 'Test transaction deleted.');
+        return redirect()->route('app.workers.transactions', $tx->worker_slug)->with('success', 'Test transaction deleted.');
     }
 
     public function decide(string $txId, Request $request)
@@ -214,6 +220,6 @@ class TransactionController extends Controller
             ? "✓ {$txId} approved — draft is in your Gmail, ready to review and send."
             : "✗ {$txId} rejected — draft deleted.";
 
-        return redirect()->route('app.transactions')->with('success', $msg);
+        return redirect()->route('app.workers.transactions', $tx->worker_slug)->with('success', $msg);
     }
 }
