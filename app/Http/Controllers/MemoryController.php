@@ -322,12 +322,19 @@ class MemoryController extends Controller
             'import_mapping' => $mapping,
         ]);
 
+        $shell = \App\Platform\Services\WorkerShellService::build(auth()->id(), '');
+        extract($shell); // workerCatalog, registryRows, registryRow, profileImg, coverImg, tokenTotal
+        $firstName = explode(' ', trim(auth()->user()->name))[0];
+
         return view('dashboard.memory-import-preview', [
             'headers' => $data['headers'],
             'rows'    => array_slice($data['rows'], 0, 5),
             'mapping' => $mapping,
             'type'    => $type,
             'total'   => count($data['rows']),
+            'workerCatalog' => $workerCatalog,
+            'tokenTotal'    => $tokenTotal,
+            'firstName'     => $firstName,
         ]);
     }
 

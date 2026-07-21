@@ -11,16 +11,24 @@ class WorkerMemoryController extends Controller
 {
     public function importPreview(int $id, Request $request, MemoryImportService $importer)
     {
-        DB::table('worker_deployments')->where('id', $id)->where('user_id', auth()->id())->firstOrFail();
+        $dep = DB::table('worker_deployments')->where('id', $id)->where('user_id', auth()->id())->firstOrFail();
         $request->validate(['file' => 'required|file|mimes:csv,xlsx,xls|max:5120', 'type' => 'required|in:clients,contacts,assets']);
         $data    = $importer->readFile($request->file('file'));
         $mapping = $importer->suggestMapping($data['headers'], $request->type);
         $tmpPath = $request->file('file')->store('imports', 'local');
         session(['import_tmp' => $tmpPath, 'import_headers' => $data['headers'], 'import_rows' => $data['rows'], 'import_type' => $request->type, 'import_dep_id' => $id]);
+
+        $shell = \App\Platform\Services\WorkerShellService::build(auth()->id(), $dep->worker_slug);
+        extract($shell); // workerCatalog, registryRows, registryRow, profileImg, coverImg, tokenTotal
+        $firstName = explode(' ', trim(auth()->user()->name))[0];
+
         return view('dashboard.memory-import-preview', [
             'headers' => $data['headers'], 'rows' => array_slice($data['rows'], 0, 5),
             'mapping' => $mapping, 'type' => $request->type, 'total' => count($data['rows']),
             'dep_id'  => $id,
+            'workerCatalog' => $workerCatalog,
+            'tokenTotal'    => $tokenTotal,
+            'firstName'     => $firstName,
         ]);
     }
 

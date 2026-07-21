@@ -53,7 +53,14 @@ class AssetGroupController extends Controller
             ->orderBy('name')
             ->get();
 
-        return view('dashboard.asset-groups', compact('dep', 'groups', 'clients', 'assets', 'groupTypes'));
+        $shell = \App\Platform\Services\WorkerShellService::build($userId, $dep->worker_slug);
+        extract($shell); // workerCatalog, registryRows, registryRow, profileImg, coverImg, tokenTotal
+        $firstName = explode(' ', trim(auth()->user()->name))[0];
+
+        return view('dashboard.asset-groups', compact(
+            'dep', 'groups', 'clients', 'assets', 'groupTypes',
+            'workerCatalog', 'tokenTotal', 'firstName'
+        ));
     }
 
     // ── Store new group ───────────────────────────────────────────────────────
