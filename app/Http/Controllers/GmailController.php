@@ -328,7 +328,14 @@ class GmailController extends Controller
     public function connect()
     {
         $credential = DB::table('user_gmail_credentials')->where('user_id', auth()->id())->first();
-        return view('dashboard.connect', compact('credential'));
+
+        $shell = \App\Platform\Services\WorkerShellService::build(auth()->id(), '');
+        extract($shell); // workerCatalog, registryRows, registryRow, profileImg, coverImg, tokenTotal
+        $firstName = explode(' ', trim(auth()->user()->name))[0];
+
+        return view('dashboard.connect', compact(
+            'credential', 'workerCatalog', 'tokenTotal', 'firstName'
+        ));
     }
 
     public function test(Request $request, TransactionService $txService)

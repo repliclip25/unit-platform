@@ -1,100 +1,356 @@
-<x-app-layout title="Connect AVA">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="csrf-token" content="{{ csrf_token() }}">
+<title>Connect AVA — UNIT</title>
+<link rel="icon" type="image/png" href="/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+button,select,input,textarea{outline:none}
+button:focus,select:focus{outline:none;box-shadow:none}
+html,body{height:100%;overflow:hidden}
 
-    <div class="max-w-2xl mx-auto">
+:root,[data-theme="dark"]{
+  --db-bg:#0D0D0D; --db-card:#1A1A1A; --db-text:#F5F5F5; --db-text-muted:#9CA3AF;
+  --db-border:rgba(255,255,255,.14); --db-chip:#262626;
+  --db-invert-bg:#F5F5F5; --db-invert-text:#0D0D0D;
+}
+[data-theme="light"]{
+  --db-bg:#F4F3F1; --db-card:#ffffff; --db-text:#0D0D0D; --db-text-muted:#6B7280;
+  --db-border:#E5E7EB; --db-chip:#ECEAE6;
+  --db-invert-bg:#0D0D0D; --db-invert-text:#ffffff;
+}
 
-        @if(session('success'))
-            <div class="mb-4 bg-green-900 border border-green-700 text-green-200 rounded-xl px-5 py-3 text-sm">
-                {{ session('success') }}
-            </div>
-        @endif
-        @if(session('error'))
-            <div class="mb-4 bg-red-900 border border-red-700 text-red-200 rounded-xl px-5 py-3 text-sm">
-                {{ session('error') }}
-            </div>
-        @endif
+body{font-family:'Inter',sans-serif;background:var(--db-bg);color:var(--db-text);-webkit-font-smoothing:antialiased}
 
-        {{-- Step 1: Connect Gmail --}}
-        <div class="bg-gray-900 border border-gray-800 rounded-xl mb-4">
-            <div class="px-6 py-5 border-b border-gray-800 flex items-center justify-between gap-3 flex-wrap">
-                <div class="flex items-center gap-3">
-                    <div class="w-7 h-7 rounded-full flex items-center justify-center text-sm font-bold shrink-0 {{ $credential ? 'bg-green-600 text-white' : 'bg-gray-700 text-gray-300' }}">
-                        {{ $credential ? '✓' : '1' }}
-                    </div>
-                    <h2 class="text-white font-semibold">Connect Gmail Account</h2>
-                </div>
-                @if($credential)
-                    <span class="text-green-400 text-xs shrink-0">Connected</span>
-                @endif
-            </div>
-            <div class="px-6 py-5">
-                @if($credential)
-                    <div class="flex items-center gap-3 mb-4 min-w-0">
-                        <div class="w-8 h-8 bg-gray-700 rounded-full flex items-center justify-center shrink-0">
-                            <span class="text-white text-xs">@</span>
-                        </div>
-                        <div class="min-w-0">
-                            <p class="text-white text-sm font-medium truncate">{{ $credential->gmail_address }}</p>
-                            <p class="text-gray-500 text-xs">Gmail account connected</p>
-                        </div>
-                    </div>
-                    <a href="{{ route('ava.gmail.authorize') }}"
-                       class="text-xs text-gray-500 hover:text-white underline">Reconnect different account</a>
-                @else
-                    <p class="text-gray-400 text-sm mb-4">Connect the Gmail account where your renewal and subscription emails arrive. AVA will monitor this inbox and create drafts there.</p>
-                    <a href="{{ route('ava.gmail.authorize') }}"
-                       class="inline-flex items-center gap-2 bg-white text-gray-900 text-sm font-medium rounded-lg px-4 py-2 hover:bg-gray-100 transition">
-                        <svg class="w-4 h-4" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
-                        Connect with Google
-                    </a>
-                @endif
-            </div>
+/* ── SHELL ── */
+.ob-shell{display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.ob-topbar{background:var(--db-bg);display:flex;align-items:center;justify-content:space-between;padding:0 24px;height:52px;flex-shrink:0}
+.ob-topbar-logo{font-size:21px;font-weight:900;letter-spacing:-.04em;color:var(--db-text)}
+.ob-topbar-name{font-size:13.5px;font-weight:700;color:var(--db-text)}
+.ob-topbar-email{font-size:12px;color:var(--db-text-muted)}
+.ob-topbar-right{display:flex;align-items:center;gap:12px}
+.ob-token-badge{font-size:11px;font-weight:600;color:var(--db-text-muted);background:var(--db-chip);border-radius:5px;padding:2px 7px;white-space:nowrap}
+.ob-theme-toggle{width:36px;height:20px;border-radius:10px;border:none;cursor:pointer;position:relative;background:var(--db-chip)}
+.ob-theme-toggle::after{content:'';position:absolute;top:3px;left:3px;width:14px;height:14px;border-radius:50%;background:var(--db-invert-bg);transition:transform .2s ease}
+[data-theme="dark"] .ob-theme-toggle::after{transform:translateX(16px)}
+.ob-menu-wrap{position:relative}
+.ob-hamburger{width:32px;height:32px;border-radius:8px;border:1px solid var(--db-border);background:var(--db-card);display:flex;align-items:center;justify-content:center;cursor:pointer}
+.ob-hamburger svg{width:15px;height:15px;stroke:var(--db-text);stroke-width:2;fill:none}
+.ob-menu-dropdown{position:absolute;top:calc(100% + 8px);right:0;min-width:220px;background:var(--db-card);border:1px solid var(--db-border);border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.18);padding:8px;z-index:50;display:none}
+.ob-menu-dropdown.open{display:block}
+.ob-menu-user{padding:8px 10px 10px;border-bottom:1px solid var(--db-border);margin-bottom:6px}
+.ob-menu-token{padding:0 10px 8px}
+.ob-menu-item{display:block;width:100%;text-align:left;padding:8px 10px;border-radius:8px;font-size:13.5px;font-weight:600;color:var(--db-text);text-decoration:none;background:none;border:none;cursor:pointer;font-family:inherit}
+.ob-menu-item:hover{background:var(--db-chip)}
+.ob-menu-mobile-links{display:none}
+
+.ob-page{display:grid;grid-template-columns:260px 1fr;flex:1;overflow:hidden}
+.mem-card-area{display:grid;grid-template-columns:1fr 320px;margin:12px 12px 12px 0;background:var(--db-card);border:1px solid var(--db-border);border-radius:20px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.06)}
+.ob-sidebar{background:var(--db-bg);display:flex;flex-direction:column;overflow-y:auto}
+.ob-steps{display:flex;flex-direction:column;padding:18px 24px 0;flex:1}
+.ob-workers-hd{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--db-text-muted);margin-bottom:10px}
+.ob-step{display:flex;align-items:flex-start;gap:14px;position:relative;text-decoration:none;color:inherit}
+.ob-step:not(:last-child) .ob-step-rail::after{content:'';position:absolute;left:13px;top:30px;width:2px;height:calc(100% - 6px);background:var(--db-border);border-radius:2px}
+.ob-step.done:not(:last-child) .ob-step-rail::after{background:var(--db-invert-bg)}
+.ob-step-rail{position:relative;flex-shrink:0;display:flex;flex-direction:column;align-items:center;padding-bottom:20px}
+.ob-step:last-child .ob-step-rail{padding-bottom:0}
+.ob-step-num{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;position:relative;z-index:1;flex-shrink:0;overflow:hidden}
+.ob-step.pending .ob-step-num{background:var(--db-chip);color:var(--db-text-muted);border:1.5px solid var(--db-border)}
+.ob-step.done .ob-step-num{background:var(--db-invert-bg);color:var(--db-invert-text)}
+.ob-step-body{padding-top:4px;padding-bottom:20px}
+.ob-step:last-child .ob-step-body{padding-bottom:0}
+.ob-step-label{font-size:14px;font-weight:700;color:var(--db-text);line-height:1.2}
+.ob-step.pending .ob-step-label{color:var(--db-text-muted)}
+.ob-step-desc{font-size:12px;color:var(--db-text-muted);margin-top:2px;line-height:1.4;display:flex;align-items:center;gap:5px}
+
+.ob-links-section{padding:16px 24px 8px;border-top:1px solid var(--db-border);flex-shrink:0}
+.ob-links-hd{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--db-text-muted);margin-bottom:8px}
+.ob-link{display:flex;align-items:center;gap:9px;padding:6px 10px;border-radius:8px;text-decoration:none;font-size:13px;font-weight:500;color:var(--db-text-muted);transition:all .12s}
+.ob-link:hover{background:var(--db-card);color:var(--db-text)}
+.ob-link svg{width:13px;height:13px;stroke:currentColor;stroke-width:1.8;fill:none;flex-shrink:0}
+.ob-link.active{background:var(--db-card);color:var(--db-text)}
+
+.ob-security{margin:8px 24px 16px;padding:13px 15px;border-radius:12px;background:var(--db-chip);border:1px solid var(--db-border);flex-shrink:0}
+.ob-security-row{display:flex;align-items:center;gap:7px;margin-bottom:4px}
+.ob-security-row svg{width:12px;height:12px;stroke:var(--db-text-muted);flex-shrink:0;fill:none}
+.ob-security-title{font-size:12.5px;font-weight:700;color:var(--db-text)}
+.ob-security p{font-size:11.5px;color:var(--db-text-muted);line-height:1.55}
+
+.mem-right{background:var(--db-card);border-left:1px solid var(--db-border);overflow-y:auto}
+
+/* ── CONTENT ── */
+.mem-main{overflow-y:auto;padding:28px 32px 60px}
+.mem-wrap{max-width:700px;margin:0 auto}
+
+.mem-status{border-radius:12px;padding:10px 14px;font-size:13.5px;margin-bottom:16px}
+.mem-status.success{background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.25);color:#22c55e}
+.mem-status.error{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.25);color:#ef4444}
+
+.cn-card{border:1px solid var(--db-border);border-radius:16px;margin-bottom:16px;overflow:hidden}
+.cn-card-head{padding:16px 20px;border-bottom:1px solid var(--db-border);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.cn-step-row{display:flex;align-items:center;gap:12px}
+.cn-step-num{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;flex-shrink:0}
+.cn-step-num.done{background:#22c55e;color:#fff}
+.cn-step-num.pending{background:var(--db-chip);color:var(--db-text-muted)}
+.cn-step-title{font-size:13.5px;font-weight:700;color:var(--db-text)}
+.cn-connected-tag{font-size:11px;color:#22c55e;flex-shrink:0}
+.cn-card-body{padding:16px 20px}
+.cn-body-text{font-size:12.5px;color:var(--db-text-muted);margin-bottom:14px;line-height:1.6}
+
+.cn-account-row{display:flex;align-items:center;gap:10px;margin-bottom:14px;min-width:0}
+.cn-account-avatar{width:32px;height:32px;border-radius:50%;background:var(--db-chip);display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--db-text);flex-shrink:0}
+.cn-account-email{font-size:13px;font-weight:600;color:var(--db-text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cn-account-sub{font-size:11px;color:var(--db-text-muted)}
+
+.cn-link{font-size:12px;color:var(--db-text-muted);text-decoration:underline}
+.cn-link:hover{color:var(--db-text)}
+
+.mem-btn{padding:10px 18px;border-radius:9px;border:none;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;background:var(--db-invert-bg);color:var(--db-invert-text);white-space:nowrap;text-decoration:none;display:inline-flex;align-items:center;gap:8px}
+.mem-btn:hover{opacity:.9}
+.mem-btn-secondary{padding:9px 16px;border-radius:9px;border:1px solid var(--db-border);background:transparent;color:var(--db-text-muted);font-size:12.5px;font-weight:600;cursor:pointer;font-family:inherit;text-decoration:none;display:inline-block}
+.mem-btn-secondary:hover{background:var(--db-chip);color:var(--db-text)}
+
+/* ══ MOBILE ══ */
+@media(max-width:1024px){
+  html,body{overflow-x:hidden;overflow-y:auto;height:auto;width:100%}
+  .ob-shell{height:auto;overflow:visible;width:100%}
+  .ob-shell,.ob-shell *{min-width:0}
+  .ob-topbar{height:auto;padding:12px 16px;flex-wrap:wrap;gap:6px}
+  .ob-topbar-logo{font-size:18px}
+  .ob-topbar-email{display:none}
+  .ob-page{display:block;height:auto;overflow:visible;width:100%}
+  .ob-sidebar{width:100%;flex-direction:column;padding:0;overflow:hidden;border-bottom:none}
+  .ob-steps,.ob-links-section,.ob-security{display:none}
+  .ob-menu-mobile-links{display:block}
+  .mem-right{display:none}
+  .mem-main{padding:16px}
+  .mem-card-area{display:block;margin:0;border-radius:0;border:none;box-shadow:none;background:var(--db-card)}
+}
+</style>
+<script>
+(function () {
+  var saved = localStorage.getItem('unit-theme-v2') || 'light';
+  document.documentElement.setAttribute('data-theme', saved);
+})();
+</script>
+</head>
+<body>
+
+@php
+$tokenFmt = $tokenTotal >= 1000000 ? number_format($tokenTotal/1000000,1).'M' : number_format($tokenTotal);
+$sidebarLinks = [
+  ['Memory',       'M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18', route('workers.memory','ava'), false],
+  ['Templates',    'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z', route('workers.templates',['slug'=>'ava']), false],
+  ['Rules',        'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4', route('workers.rules','ava'), false],
+  ['Fast Track',   'M13 10V3L4 14h7v7l9-11h-7z', route('workers.fast-track.page','ava'), false],
+  ['Integrations', 'M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1', route('workers.connect','ava'), true],
+  ['Billing',      'M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z', route('billing'), false],
+  ['Activity Log', 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2', route('transactions'), false],
+];
+@endphp
+
+<div class="ob-shell">
+
+{{-- ══ TOP BAR ══ --}}
+<div class="ob-topbar">
+  <div class="ob-topbar-logo">UNIT</div>
+  <div class="ob-topbar-right">
+    <a href="{{ route('profile.show') }}" class="ob-topbar-name" style="text-decoration:none">{{ auth()->user()->name }}</a>
+    <button class="ob-theme-toggle" id="theme-toggle" type="button" title="Toggle dark/light mode" aria-label="Toggle theme"></button>
+    <div class="ob-menu-wrap">
+      <button class="ob-hamburger" id="menu-toggle" type="button" aria-label="Menu">
+        <svg viewBox="0 0 24 24"><path stroke-linecap="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
+      <div class="ob-menu-dropdown" id="menu-dropdown">
+        <div class="ob-menu-user">
+          <div class="ob-topbar-name">{{ auth()->user()->name }}</div>
+          <div class="ob-topbar-email">{{ auth()->user()->email }}</div>
         </div>
-
-        {{-- Step 2: Activate Watch --}}
-        <div class="bg-gray-900 border border-gray-800 rounded-xl mb-4">
-            <div class="px-6 py-5 border-b border-gray-800 flex items-center justify-between gap-3 flex-wrap">
-                <div class="flex items-center gap-3">
-                    <div class="w-7 h-7 rounded-full flex items-center justify-center text-sm font-bold shrink-0 {{ $credential?->watch_active ? 'bg-green-600 text-white' : 'bg-gray-700 text-gray-300' }}">
-                        {{ $credential?->watch_active ? '✓' : '2' }}
-                    </div>
-                    <h2 class="text-white font-semibold">Activate Inbox Monitoring</h2>
-                </div>
-                @if($credential?->watch_active)
-                    <span class="text-green-400 text-xs shrink-0">Active · expires {{ \Carbon\Carbon::parse($credential->watch_expires_at)->format('M d') }}</span>
-                @endif
-            </div>
-            <div class="px-6 py-5">
-                @if(!$credential)
-                    <p class="text-gray-600 text-sm">Connect Gmail first.</p>
-                @elseif($credential->watch_active)
-                    <p class="text-gray-400 text-sm mb-3">AVA is watching your inbox. Every email that arrives will be automatically processed.</p>
-                    <a href="{{ route('ava.gmail.watch') }}"
-                       class="text-xs text-gray-500 hover:text-white underline">Renew watch</a>
-                @else
-                    <p class="text-gray-400 text-sm mb-4">Tell Gmail to push new emails to AVA automatically. This activates real-time inbox monitoring.</p>
-                    <a href="{{ route('ava.gmail.watch') }}"
-                       class="inline-flex items-center gap-2 bg-brand hover:bg-brand-deep text-brand-text text-sm font-medium rounded-lg px-4 py-2 transition">
-                        Activate Inbox Watch
-                    </a>
-                @endif
-            </div>
+        <div class="ob-menu-token"><span class="ob-token-badge">{{ $tokenFmt }} tokens</span></div>
+        <div class="ob-menu-mobile-links">
+          @foreach($sidebarLinks as [$lbl,,$href,])
+          <a href="{{ $href }}" class="ob-menu-item">{{ $lbl }}</a>
+          @endforeach
+          <div style="border-top:1px solid var(--db-border);margin:6px 0"></div>
         </div>
+        <a href="{{ route('settings.api-keys') }}" class="ob-menu-item">Settings</a>
+        <form method="POST" action="{{ route('logout') }}">@csrf<button type="submit" class="ob-menu-item">Logout</button></form>
+      </div>
+    </div>
+  </div>
+</div>
 
-        {{-- Step 3: Add Memory --}}
-        <div class="bg-gray-900 border border-gray-800 rounded-xl">
-            <div class="px-6 py-5 border-b border-gray-800 flex items-center gap-3">
-                <div class="w-7 h-7 rounded-full bg-gray-700 text-gray-300 flex items-center justify-center text-sm font-bold">3</div>
-                <h2 class="text-white font-semibold">Configure Memory</h2>
-            </div>
-            <div class="px-6 py-5">
-                <p class="text-gray-400 text-sm mb-4">Add your clients, contacts, and assets so AVA knows who owns what and how to handle each situation.</p>
-                <a href="{{ route('memory') }}"
-                   class="inline-flex items-center gap-2 bg-gray-800 hover:bg-gray-700 text-white text-sm font-medium rounded-lg px-4 py-2 transition">
-                    Go to Memory →
-                </a>
-            </div>
+<div class="ob-page">
+
+  {{-- ══ SIDEBAR ══ --}}
+  <aside class="ob-sidebar">
+    <div class="ob-steps">
+      <div class="ob-workers-hd">
+        <a href="{{ route('profile.show') }}" style="color:inherit;text-decoration:none">{{ strtoupper($firstName) }}'S WORKERS</a>
+      </div>
+      @foreach($workerCatalog as $wc)
+      @php
+        $wDot  = $wc->status==='active' ? '#22c55e' : '#f59e0b';
+        $wHref = !$wc->active ? route('workers.page') : ($wc->slug==='ava' ? route('desk.ava') : route('workers.overview',$wc->slug));
+      @endphp
+      <a href="{{ $wHref }}" class="ob-step {{ $wc->active ? 'done' : 'pending' }}" style="text-decoration:none{{ !$wc->active ? ';opacity:.5' : '' }}">
+        <div class="ob-step-rail">
+          <div class="ob-step-num" style="padding:0">
+            @if($wc->image)
+              <img src="{{ $wc->image }}" style="width:100%;height:100%;object-fit:cover;display:block{{ !$wc->active ? ';filter:grayscale(1)' : '' }}" alt="" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+              <span style="display:none;font-size:11px;font-weight:800;color:#6B7280;width:100%;height:100%;align-items:center;justify-content:center">{{ substr($wc->name,0,1) }}</span>
+            @else
+              <span style="font-size:11px;font-weight:800;color:#6B7280">{{ substr($wc->name,0,1) }}</span>
+            @endif
+          </div>
         </div>
-
+        <div class="ob-step-body">
+          <div class="ob-step-label">{{ $wc->name }}</div>
+          <div class="ob-step-desc">
+            @if($wc->active)
+              <span style="width:5px;height:5px;border-radius:50%;background:{{ $wDot }};flex-shrink:0;display:inline-block"></span>{{ $wc->role }}
+            @else
+              Not hired — {{ $wc->role }}
+            @endif
+          </div>
+        </div>
+      </a>
+      @endforeach
+      <a href="{{ route('workers.page') }}" class="ob-step pending" style="text-decoration:none;margin-top:4px">
+        <div class="ob-step-rail"><div class="ob-step-num" style="background:var(--db-chip);border:1.5px dashed var(--db-border);color:var(--db-text-muted);font-size:16px;font-weight:400">+</div></div>
+        <div class="ob-step-body"><div class="ob-step-label">Hire a worker</div></div>
+      </a>
     </div>
 
-</x-app-layout>
+    <div class="ob-links-section">
+      <div class="ob-links-hd">LINKS</div>
+      @foreach($sidebarLinks as [$lbl,$ico,$href,$isActive])
+      <a href="{{ $href }}" class="ob-link {{ $isActive ? 'active' : '' }}">
+        <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $ico }}"/></svg>
+        {{ $lbl }}
+      </a>
+      @endforeach
+    </div>
+
+    <div class="ob-security">
+      <div class="ob-security-row">
+        <svg viewBox="0 0 24 24" stroke-width="1.8"><rect x="3" y="11" width="18" height="11" rx="2"/><path stroke-linecap="round" d="M7 11V7a5 5 0 0110 0v4"/></svg>
+        <span class="ob-security-title">Secure. Private. Yours.</span>
+      </div>
+      <p>UNIT never stores your password — OAuth only.</p>
+    </div>
+  </aside>
+
+  {{-- ══ CONTENT ══ --}}
+  <div class="mem-card-area">
+  <main class="mem-main">
+    <div class="mem-wrap">
+
+      @if(session('success'))<div class="mem-status success">{{ session('success') }}</div>@endif
+      @if(session('error'))<div class="mem-status error">{{ session('error') }}</div>@endif
+
+      {{-- Step 1: Connect Gmail --}}
+      <div class="cn-card">
+        <div class="cn-card-head">
+          <div class="cn-step-row">
+            <div class="cn-step-num {{ $credential ? 'done' : 'pending' }}">{{ $credential ? '✓' : '1' }}</div>
+            <span class="cn-step-title">Connect Gmail Account</span>
+          </div>
+          @if($credential)<span class="cn-connected-tag">Connected</span>@endif
+        </div>
+        <div class="cn-card-body">
+          @if($credential)
+            <div class="cn-account-row">
+              <div class="cn-account-avatar">@</div>
+              <div style="min-width:0">
+                <div class="cn-account-email">{{ $credential->gmail_address }}</div>
+                <div class="cn-account-sub">Gmail account connected</div>
+              </div>
+            </div>
+            <a href="{{ route('ava.gmail.authorize') }}" class="cn-link">Reconnect different account</a>
+          @else
+            <p class="cn-body-text">Connect the Gmail account where your renewal and subscription emails arrive. AVA will monitor this inbox and create drafts there.</p>
+            <a href="{{ route('ava.gmail.authorize') }}" class="mem-btn" style="background:#fff;color:#111">
+              <svg width="16" height="16" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+              Connect with Google
+            </a>
+          @endif
+        </div>
+      </div>
+
+      {{-- Step 2: Activate Watch --}}
+      <div class="cn-card">
+        <div class="cn-card-head">
+          <div class="cn-step-row">
+            <div class="cn-step-num {{ $credential?->watch_active ? 'done' : 'pending' }}">{{ $credential?->watch_active ? '✓' : '2' }}</div>
+            <span class="cn-step-title">Activate Inbox Monitoring</span>
+          </div>
+          @if($credential?->watch_active)
+          <span class="cn-connected-tag">Active · expires {{ \Carbon\Carbon::parse($credential->watch_expires_at)->format('M d') }}</span>
+          @endif
+        </div>
+        <div class="cn-card-body">
+          @if(!$credential)
+            <p class="cn-body-text" style="margin-bottom:0">Connect Gmail first.</p>
+          @elseif($credential->watch_active)
+            <p class="cn-body-text">AVA is watching your inbox. Every email that arrives will be automatically processed.</p>
+            <a href="{{ route('ava.gmail.watch') }}" class="cn-link">Renew watch</a>
+          @else
+            <p class="cn-body-text">Tell Gmail to push new emails to AVA automatically. This activates real-time inbox monitoring.</p>
+            <a href="{{ route('ava.gmail.watch') }}" class="mem-btn">Activate Inbox Watch</a>
+          @endif
+        </div>
+      </div>
+
+      {{-- Step 3: Add Memory --}}
+      <div class="cn-card">
+        <div class="cn-card-head">
+          <div class="cn-step-row">
+            <div class="cn-step-num pending">3</div>
+            <span class="cn-step-title">Configure Memory</span>
+          </div>
+        </div>
+        <div class="cn-card-body">
+          <p class="cn-body-text">Add your clients, contacts, and assets so AVA knows who owns what and how to handle each situation.</p>
+          <a href="{{ route('memory') }}" class="mem-btn-secondary">Go to Memory →</a>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <aside class="mem-right"></aside>
+  </div>
+
+</div>{{-- ob-page --}}
+</div>{{-- ob-shell --}}
+
+<script>
+(function () {
+  document.getElementById('theme-toggle').addEventListener('click', function () {
+    var next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    localStorage.setItem('unit-theme-v2', next);
+  });
+
+  var menuToggle = document.getElementById('menu-toggle');
+  var menuDropdown = document.getElementById('menu-dropdown');
+  menuToggle.addEventListener('click', function (e) {
+    e.stopPropagation();
+    menuDropdown.classList.toggle('open');
+  });
+  document.addEventListener('click', function (e) {
+    if (!menuDropdown.contains(e.target) && e.target !== menuToggle) {
+      menuDropdown.classList.remove('open');
+    }
+  });
+})();
+</script>
+</body>
+</html>
