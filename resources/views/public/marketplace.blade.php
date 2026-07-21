@@ -123,7 +123,7 @@ textarea.req-in{resize:vertical;min-height:100px;line-height:1.6}
         <span class="wk-tag">NYCSCA</span><span class="wk-tag">DOB</span><span class="wk-tag">FDNY</span><span class="wk-tag">MTA</span><span class="wk-tag">Gmail</span><span class="wk-tag">Renewal</span>
       </div>
       <div class="wk-card-btns">
-        <a href="/w/ava" class="btn-ln" style="flex:1;text-align:center">View Profile</a>
+        <a href="{{ route('public.workers.show', 'ava') }}" class="btn-ln" style="flex:1;text-align:center">View Profile</a>
         <a href="{{ route('register') }}?worker=ava" class="btn-g" style="flex:1;text-align:center;justify-content:center">Hire Free →</a>
       </div>
     </div>
@@ -176,7 +176,7 @@ textarea.req-in{resize:vertical;min-height:100px;line-height:1.6}
         <span class="wk-tag">LinkedIn</span><span class="wk-tag">X</span><span class="wk-tag">Social Media</span><span class="wk-tag">Gmail</span>
       </div>
       <div class="wk-card-btns">
-        <a href="/w/nux" class="btn-ln" style="flex:1;text-align:center">View Profile</a>
+        <a href="{{ route('public.workers.index') }}" class="btn-ln" style="flex:1;text-align:center">View Profile</a>
         <a href="{{ route('register') }}?worker=nux" class="btn-g" style="flex:1;text-align:center;justify-content:center">Hire Free →</a>
       </div>
     </div>

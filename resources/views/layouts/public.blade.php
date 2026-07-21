@@ -1,84 +1,110 @@
 <!DOCTYPE html>
-<html lang="en" id="html-root" data-theme="dark">
+<html lang="en" id="html-root">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>@yield('title', 'UNIT') — Purpose-Built AI Workers</title>
 <meta name="description" content="@yield('description', 'UNIT is a platform for deploying purpose-built AI workers — each one trained for a specific workflow, ready to run on your team.')">
 <link rel="icon" type="image/png" href="/logo.png">
-<script>(function(){var t=localStorage.getItem('unit-theme-v2')||'dark';document.getElementById('html-root').setAttribute('data-theme',t)})();</script>
+<script>(function(){var t=localStorage.getItem('unit-theme');if(t)document.getElementById('html-root').setAttribute('data-theme',t)})();</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Space+Grotesk:wght@500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root{
-  --gold:#142C74;--gold-d:#0e2260;--glow:rgba(20,44,116,0.22);--gold-text:#ffffff;
-  --accent:var(--gold);--accent-rgb:20,44,116;
+  --gold:#F5C518;--gold-d:#d9ad12;--glow:rgba(245,197,24,.28);--gold-text:#8a6a06;
+  --accent:var(--gold);--accent-rgb:245,197,24;
   --green:#22c55e;--green-bg:rgba(34,197,94,0.1);--green-border:rgba(34,197,94,0.25);
+  --text:#0D0D0D;--t2:#374151;--t3:#6B7280;--t4:#9CA3AF;
+  --line:#E5E7EB;--line2:#d8dade;
+  --surf:#F8F8F6;--raised:#F1F1EF;--card:#ffffff;
+  --fd:'Inter',sans-serif;--fb:'Inter',sans-serif;
+  --bg:#FFFFFF;
+}
+[data-theme="dark"]{
+  --gold-text:#F5C518;
   --text:#ffffff;--t2:#cccccc;--t3:#999999;--t4:#555555;
   --line:rgba(255,255,255,0.12);--line2:rgba(255,255,255,0.18);
   --surf:#111111;--raised:#1a1a1a;--card:#1c1c1c;
-  --fd:'Space Grotesk','Inter',sans-serif;--fb:'Inter',sans-serif;
   --bg:#080810;
-}
-[data-theme="light"]{
-  --gold-text:var(--gold);
-  --text:#000000;--t2:#1a1a1a;--t3:#555555;--t4:#999999;
-  --line:#e2e2e0;--line2:#cccccc;
-  --surf:#f0f0ee;--raised:#e6e6e4;--card:#ffffff;
-  --bg:#ffffff;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
 body{background:var(--bg);color:var(--text);font-family:var(--fb);-webkit-font-smoothing:antialiased;overflow-x:hidden}
 a{color:inherit;text-decoration:none}
+button{cursor:pointer;font-family:inherit}
 .w{max-width:1200px;margin:0 auto;padding:0 48px}
 .w-md{max-width:900px;margin:0 auto;padding:0 40px}
 .w-lg{max-width:1200px;margin:0 auto;padding:0 48px}
 
-/* ── NAV (exact match to homepage) ── */
-header#nav{position:sticky;top:0;left:0;right:0;z-index:300;transition:background .3s,backdrop-filter .3s;background:rgba(8,8,16,0.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--line)}
-.ni{display:flex;align-items:center;justify-content:space-between;padding:18px 48px;max-width:1200px;margin:0 auto}
-.brand{display:flex;align-items:center;gap:10px;font-family:var(--fd);font-weight:800;font-size:18px;color:var(--text)}
-.brand img{width:30px;height:30px;border-radius:7px}
-.nl{display:flex;gap:28px}
-.nl a{font-size:14px;color:rgba(255,255,255,0.45);transition:color .15s;font-weight:500}
-.nl a:hover,.nl a.active{color:#fff}
-.nr{display:flex;align-items:center;gap:14px}
-.btn-g{display:inline-flex;align-items:center;gap:7px;background:var(--gold);color:#ffffff;font-weight:700;font-size:14px;padding:10px 22px;border-radius:8px;border:none;cursor:pointer;transition:transform .15s,box-shadow .2s;white-space:nowrap;font-family:var(--fb)}
-.btn-g:hover{transform:translateY(-1px);box-shadow:0 8px 32px var(--glow)}
-.btn-gh{font-size:14px;color:rgba(255,255,255,0.4);cursor:pointer;border:none;background:none;font-family:var(--fb);transition:color .15s}
-.btn-gh:hover{color:#fff}
-.btn-ln{display:inline-flex;align-items:center;gap:7px;font-size:14px;font-weight:600;padding:10px 20px;border-radius:8px;border:1px solid var(--line2);color:var(--t2);cursor:pointer;background:none;transition:border-color .15s,color .15s;font-family:var(--fb)}
-.btn-ln:hover{border-color:var(--gold);color:var(--gold)}
-.tog{width:36px;height:20px;border-radius:10px;border:none;cursor:pointer;position:relative;transition:background .2s}
-.tog::after{content:'';position:absolute;top:3px;left:3px;width:14px;height:14px;border-radius:50%;background:#fff;transition:transform .2s}
-[data-theme="dark"] .tog{background:var(--gold)}
-[data-theme="light"] .tog{background:#94a3b8}
-[data-theme="dark"] .tog::after{transform:translateX(16px)}
+/* ── NAV — same visual system as / and /workers, but position:sticky (not
+   fixed) so page content doesn't need extra top-padding to compensate ── */
+.nav{position:sticky;top:0;left:0;right:0;z-index:100;background:rgba(255,255,255,.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
+[data-theme="dark"] .nav{background:rgba(8,8,16,.92);border-color:var(--line)}
+.nav-i{display:flex;align-items:center;justify-content:space-between;height:62px;max-width:1200px;margin:0 auto;padding:0 48px}
+.logo{display:flex;align-items:center}
+.logo-name{font-family:var(--fd);font-size:1.5rem;font-weight:800;color:var(--text);letter-spacing:-.5px}
+.nav-links{display:flex;align-items:center;gap:28px;list-style:none}
+.nav-links a{font-size:14px;font-weight:500;color:var(--t2);transition:color .15s}
+.nav-links a:hover{color:var(--text)}
+.nav-links a.active{font-weight:700;color:var(--text)}
+.nav-acts{display:flex;align-items:center;gap:10px}
+.btn-login{padding:8px 18px;border-radius:8px;font-size:14px;font-weight:600;color:var(--t2);border:1px solid var(--line);transition:all .15s}
+.btn-login:hover{border-color:var(--t4);color:var(--text)}
+.btn-cta{padding:10px 22px;border-radius:99px;font-size:14px;font-weight:700;background:#0D0D0D;color:#fff;display:inline-flex;align-items:center;gap:6px;box-shadow:0 2px 12px rgba(0,0,0,.12);transition:opacity .15s,transform .15s}
+.btn-cta:hover{opacity:.9;transform:translateY(-1px)}
+[data-theme="dark"] .btn-cta{background:#fff;color:#0D0D0D}
+.ham{display:none;flex-direction:column;gap:5px;padding:4px;background:none;border:none}
+.ham span{display:block;width:22px;height:2px;background:var(--text);border-radius:2px}
 
-/* ── SHARED COMPONENTS ── */
-.eyebrow{display:inline-flex;align-items:center;gap:9px;border:1px solid rgba(20,44,116,0.28);background:rgba(20,44,116,0.06);color:var(--gold);font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:7px 15px;border-radius:100px;margin-bottom:28px}
+/* theme toggle — identical to / and /workers */
+.theme-toggle{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:1px solid var(--line);background:transparent;color:var(--t2);cursor:pointer;transition:all .2s;flex-shrink:0}
+.theme-toggle:hover{background:var(--surf);color:var(--text)}
+.theme-toggle svg{width:17px;height:17px}
+.icon-sun{display:none}.icon-moon{display:block}
+[data-theme="dark"] .icon-sun{display:block}[data-theme="dark"] .icon-moon{display:none}
+
+/* mobile menu — identical to / and /workers */
+.mob-menu{display:none;position:fixed;inset:0;z-index:200;background:#fff;flex-direction:column;padding:24px clamp(20px,5vw,48px)}
+[data-theme="dark"] .mob-menu{background:#080810}
+.mob-menu.open{display:flex}
+.mob-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:36px}
+.mob-close{font-size:22px;color:var(--t3);padding:4px;background:none;border:none}
+.mob-links{display:flex;flex-direction:column;list-style:none}
+.mob-links a{display:block;padding:14px 0;font-size:1.05rem;font-weight:600;color:var(--t2);border-bottom:1px solid var(--line)}
+.mob-ctas{margin-top:28px;display:flex;flex-direction:column;gap:10px}
+
+/* ── SHARED CONTENT COMPONENTS (used directly by page bodies) ── */
+.eyebrow{display:inline-flex;align-items:center;gap:9px;border:1px solid rgba(245,197,24,.35);background:rgba(245,197,24,.08);color:var(--gold-text);font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:7px 15px;border-radius:100px;margin-bottom:28px}
 .slabel{font-size:11px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--gold-text);margin-bottom:12px}
-.sh2{font-family:var(--fd);font-size:44px;font-weight:800;letter-spacing:-1.5px;line-height:1.06;margin-bottom:14px}
+.sh2{font-family:var(--fd);font-size:44px;font-weight:800;letter-spacing:-1.5px;line-height:1.06;margin-bottom:14px;color:var(--text)}
 .ssub{font-size:16px;line-height:1.65;color:var(--t2)}
 .sec{padding:90px 0}
-.sec-dark{background:rgba(4,4,10,0.55);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.sec-dark{background:var(--surf);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
 .sh{text-align:center;max-width:640px;margin:0 auto 56px}
 .pub-divider{height:1px;background:var(--line);margin:40px 0}
 
-/* ── FOOTER (exact match to homepage — always dark) ── */
-footer{background:rgba(4,4,10,0.99);border-top:1px solid rgba(255,255,255,0.08);padding:52px 0 28px}
-.foot-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr;gap:36px;margin-bottom:40px}
-.foot-brand{font-size:13px;color:#777777;line-height:1.65;margin-top:10px;max-width:200px}
-.foot-col h4{font-size:10.5px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#555555;margin-bottom:14px}
-.foot-col a{display:block;font-size:13.5px;color:#888888;margin-bottom:9px;transition:color .15s}
-.foot-col a:hover{color:#ffffff}
-.foot-btm{display:flex;justify-content:space-between;padding-top:20px;border-top:1px solid rgba(255,255,255,0.08);font-size:12px;color:#555555}
-.foot-brand-name{color:#ffffff!important;font-family:var(--fd);font-weight:800;font-size:18px}
+.btn-g{display:inline-flex;align-items:center;gap:7px;background:var(--gold);color:#0D0D0D;font-weight:700;font-size:14px;padding:10px 22px;border-radius:8px;border:none;cursor:pointer;transition:transform .15s,box-shadow .2s;white-space:nowrap;font-family:var(--fb)}
+.btn-g:hover{transform:translateY(-1px);box-shadow:0 8px 32px var(--glow)}
+.btn-gh{font-size:14px;color:var(--t4);cursor:pointer;border:none;background:none;font-family:var(--fb);transition:color .15s}
+.btn-gh:hover{color:var(--text)}
+.btn-ln{display:inline-flex;align-items:center;gap:7px;font-size:14px;font-weight:600;padding:10px 20px;border-radius:8px;border:1px solid var(--line2);color:var(--t2);cursor:pointer;background:none;transition:border-color .15s,color .15s;font-family:var(--fb)}
+.btn-ln:hover{border-color:var(--gold);color:var(--gold-text)}
+
+/* ── FOOTER — identical to / and /workers ── */
+footer.footer{background:#0A0A0A;padding:clamp(40px,6vw,72px) 0 28px}
+.ft-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:44px;margin-bottom:44px}
+.ft-name{font-family:var(--fd);font-size:1.15rem;font-weight:800;color:#fff;margin-bottom:10px}
+.ft-desc{font-size:13.5px;color:rgba(255,255,255,.6);line-height:1.7;max-width:220px;margin-bottom:20px}
+.ft-col-h{font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.45);margin-bottom:14px}
+.ft-links{display:flex;flex-direction:column;gap:9px}
+.ft-links a{font-size:13.5px;color:rgba(255,255,255,.7);transition:color .15s}
+.ft-links a:hover{color:#fff}
+.ft-bottom{border-top:1px solid rgba(255,255,255,.12);padding-top:24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+.ft-bottom p{font-size:12.5px;color:rgba(255,255,255,.45)}
 
 /* ── PAGE BODY DEFAULTS ── */
 .pub-hero{padding:72px 0 56px;border-bottom:1px solid var(--line)}
-.pub-hero h1{font-family:var(--fd);font-size:clamp(30px,4vw,48px);font-weight:800;letter-spacing:-1.5px;line-height:1.1;margin-bottom:16px}
+.pub-hero h1{font-family:var(--fd);font-size:clamp(30px,4vw,48px);font-weight:800;letter-spacing:-1.5px;line-height:1.1;margin-bottom:16px;color:var(--text)}
 .pub-hero p{font-size:17px;color:var(--t3);max-width:580px;line-height:1.7;margin-top:6px}
 .pub-body{padding:56px 0 80px}
 .pub-body h2{font-family:var(--fd);font-size:22px;font-weight:800;margin:44px 0 12px;color:var(--text)}
@@ -90,113 +116,142 @@ footer{background:rgba(4,4,10,0.99);border-top:1px solid rgba(255,255,255,0.08);
 .pub-body strong{color:var(--text);font-weight:700}
 .pub-meta{font-size:12px;color:var(--t4);margin-top:8px}
 
-/* ── LIGHT THEME OVERRIDES ── */
-[data-theme="light"] header#nav{background:rgba(249,249,247,0.97)!important;border-bottom:1px solid #e2e2e0!important}
-[data-theme="light"] .nl a{color:#555555!important}
-[data-theme="light"] .nl a:hover,[data-theme="light"] .nl a.active{color:#000000!important}
-[data-theme="light"] .brand{color:#000000!important}
-[data-theme="light"] .btn-ln{color:#444444!important;border-color:#cccccc!important}
-[data-theme="light"] .btn-ln:hover{color:var(--gold)!important;border-color:var(--gold)!important}
-[data-theme="light"] .slabel{color:var(--gold)!important}
-[data-theme="light"] .sh2{color:#000000!important}
-[data-theme="light"] .ssub{color:#555555!important}
-[data-theme="light"] .sec-dark{background:#f0f0ee!important;border-color:#e2e2e0!important}
-footer{background:rgba(4,4,10,0.99)!important;color:#aaaaaa!important}
-
 /* ── RESPONSIVE ── */
+@media(max-width:1024px){
+  .ft-grid{grid-template-columns:1fr 1fr;gap:28px}
+}
+@media(max-width:768px){
+  .nav-links,.nav-acts{display:none}
+  .ham{display:flex}
+}
 @media(max-width:900px){
-  .foot-grid{grid-template-columns:1fr 1fr}
   .sh2{font-size:34px}
 }
 @media(max-width:640px){
-  .ni{padding:16px 20px}
+  .nav-i{padding:0 20px}
   .w{padding:0 20px}
   .w-md{padding:0 20px}
   .w-lg{padding:0 20px}
-  .nl{display:none}
-  .nr .btn-ln{display:none}
-  .foot-grid{grid-template-columns:1fr}
+  .ft-grid{grid-template-columns:1fr}
+  .ft-bottom{flex-direction:column;text-align:center}
 }
 </style>
 @yield('head')
 </head>
 <body>
 
-{{-- ── NAV (matches homepage exactly) ── --}}
-<header id="nav">
-  <div class="ni">
-    <a href="/" class="brand"><img src="/logo.png" alt="UNIT"><span>UNIT</span></a>
-    <nav class="nl">
-      <a href="/#workers">Workers</a>
-      <a href="{{ route('marketplace') }}" class="{{ request()->routeIs('marketplace') ? 'active' : '' }}">Marketplace</a>
-      <a href="{{ route('pricing') }}" class="{{ request()->routeIs('pricing') ? 'active' : '' }}">Pricing</a>
-      <a href="{{ route('blog') }}" class="{{ request()->routeIs('blog*') ? 'active' : '' }}">Blog</a>
-      <a href="{{ route('about') }}" class="{{ request()->routeIs('about') ? 'active' : '' }}">Company</a>
-    </nav>
-    <div class="nr">
-      <button class="tog" id="pub-tog"></button>
+{{-- ── NAV — identical markup to / and /workers ── --}}
+<nav class="nav">
+  <div class="w nav-i">
+    <a href="{{ url('/') }}" class="logo"><span class="logo-name">UNIT</span></a>
+    <ul class="nav-links">
+      <li><a href="{{ route('public.workers.index') }}" class="{{ request()->routeIs('public.workers.index') ? 'active' : '' }}">Meet the Workers</a></li>
+      <li><a href="{{ route('marketplace') }}" class="{{ request()->routeIs('marketplace') ? 'active' : '' }}">Marketplace</a></li>
+      <li><a href="{{ route('pricing') }}" class="{{ request()->routeIs('pricing') ? 'active' : '' }}">Pricing</a></li>
+      <li><a href="{{ route('blog') }}" class="{{ request()->routeIs('blog*') ? 'active' : '' }}">Blog</a></li>
+      <li><a href="{{ route('about') }}" class="{{ request()->routeIs('about') ? 'active' : '' }}">Company</a></li>
+    </ul>
+    <div class="nav-acts">
+      <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+      </button>
       @auth
-        <a href="{{ route('app.dashboard') }}" class="btn-g">Dashboard</a>
+        <a href="{{ route('app.dashboard') }}" class="btn-login">Dashboard</a>
       @else
-        <a href="{{ route('login') }}" class="btn-gh">Sign In</a>
-        <a href="{{ route('register') }}" class="btn-g">Get Started Free</a>
+        <a href="{{ route('login') }}" class="btn-login">Log in</a>
+        <a href="{{ route('register') }}" class="btn-cta">Get Started Free</a>
       @endauth
     </div>
+    <button class="ham" id="ham" aria-label="Menu"><span></span><span></span><span></span></button>
   </div>
-</header>
+</nav>
+
+{{-- ── MOBILE MENU — identical markup to / and /workers ── --}}
+<div class="mob-menu" id="mob">
+  <div class="mob-top">
+    <a href="{{ url('/') }}" class="logo"><span class="logo-name">UNIT</span></a>
+    <button class="mob-close" id="mob-close">✕</button>
+  </div>
+  <ul class="mob-links">
+    <li><a href="{{ route('public.workers.index') }}" onclick="closeMob()">Meet the Workers</a></li>
+    <li><a href="{{ route('marketplace') }}" onclick="closeMob()">Marketplace</a></li>
+    <li><a href="{{ route('pricing') }}" onclick="closeMob()">Pricing</a></li>
+    <li><a href="{{ route('blog') }}" onclick="closeMob()">Blog</a></li>
+    <li><a href="{{ route('about') }}" onclick="closeMob()">Company</a></li>
+  </ul>
+  <div class="mob-ctas">
+    @auth
+      <a href="{{ route('app.dashboard') }}" class="btn-login" style="text-align:center">Dashboard</a>
+    @else
+      <a href="{{ route('login') }}" class="btn-login" style="text-align:center">Log in</a>
+      <a href="{{ route('register') }}" class="btn-cta" style="justify-content:center">Get Started Free</a>
+    @endauth
+  </div>
+</div>
 
 @yield('body')
 
-{{-- ── FOOTER (matches homepage exactly — always dark) ── --}}
-<footer>
+{{-- ── FOOTER — identical markup to / and /workers ── --}}
+<footer class="footer">
   <div class="w">
-    <div class="foot-grid">
+    <div class="ft-grid">
       <div>
-        <a href="/" style="display:inline-flex;align-items:center;gap:10px;margin-bottom:4px">
-          <img src="/logo.png" alt="UNIT" style="width:26px;height:26px;border-radius:6px">
-          <span class="foot-brand-name">UNIT</span>
-        </a>
-        <p class="foot-brand">A platform for deploying purpose-built AI workers. Each worker is trained for a specific workflow and runs on your team.</p>
+        <div class="ft-name">UNIT</div>
+        <p class="ft-desc">AI workers that show up every day, handle the work that slows you down, and help your business grow.</p>
       </div>
-      <div class="foot-col">
-        <h4>Workers</h4>
-        <a href="/w/ava">AVA — Renewal Coordinator</a>
-        <a href="{{ route('marketplace') }}">All Workers</a>
-        <a href="/referral">Refer &amp; Earn</a>
-        <a href="{{ route('influencer.apply') }}">Partner Program</a>
+      <div>
+        <div class="ft-col-h">Workers</div>
+        <div class="ft-links">
+          <a href="{{ route('public.workers.show', 'ava') }}">AVA — Renewals</a>
+          <a href="{{ route('public.workers.index') }}">All Workers</a>
+          <a href="{{ route('referral.index') }}">Refer &amp; Earn</a>
+          <a href="{{ route('influencer.apply') }}">Partner Program</a>
+        </div>
       </div>
-      <div class="foot-col">
-        <h4>Product</h4>
-        <a href="/#how">How It Works</a>
-        <a href="{{ route('marketplace') }}">Marketplace</a>
-        <a href="{{ route('register') }}">Sign Up Free</a>
+      <div>
+        <div class="ft-col-h">Platform</div>
+        <div class="ft-links">
+          <a href="{{ route('pricing') }}">Pricing</a>
+          <a href="{{ route('marketplace') }}">Marketplace</a>
+          <a href="{{ route('register') }}">Sign Up Free</a>
+          <a href="{{ route('login') }}">Log In</a>
+        </div>
       </div>
-      <div class="foot-col">
-        <h4>Company</h4>
-        <a href="{{ route('about') }}">About Us</a>
-        <a href="{{ route('blog') }}">Blog</a>
-        <a href="{{ route('influencer.apply') }}">Become a Partner</a>
-      </div>
-      <div class="foot-col">
-        <h4>Legal</h4>
-        <a href="{{ route('privacy') }}">Privacy Policy</a>
-        <a href="{{ route('terms') }}">Terms of Use</a>
+      <div>
+        <div class="ft-col-h">Company</div>
+        <div class="ft-links">
+          <a href="{{ route('about') }}">About Us</a>
+          <a href="{{ route('blog') }}">Blog</a>
+          <a href="{{ route('privacy') }}">Privacy Policy</a>
+          <a href="{{ route('terms') }}">Terms of Use</a>
+        </div>
       </div>
     </div>
-    <div class="foot-btm">
-      <span>© {{ date('Y') }} UNIT. All rights reserved.</span>
-      <span><a href="{{ route('privacy') }}" style="color:inherit">Privacy</a> · <a href="{{ route('terms') }}" style="color:inherit">Terms</a></span>
+    <div class="ft-bottom">
+      <p>© {{ date('Y') }} UNIT. All rights reserved.</p>
+      <p>Built with purpose. Powered by AI.</p>
     </div>
   </div>
 </footer>
 
 <script>
-document.getElementById('pub-tog').addEventListener('click', function(){
-  var h = document.getElementById('html-root');
-  var t = h.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-  h.setAttribute('data-theme', t);
-  localStorage.setItem('unit-theme-v2', t);
+// ── Theme — identical key/logic to / and /workers ──
+const root = document.getElementById('html-root');
+const saved = localStorage.getItem('unit-theme');
+if (saved) root.setAttribute('data-theme', saved);
+document.getElementById('theme-toggle').addEventListener('click', function () {
+  const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  root.setAttribute('data-theme', next);
+  localStorage.setItem('unit-theme', next);
 });
+
+// ── Mobile menu ──
+const ham = document.getElementById('ham');
+const mob = document.getElementById('mob');
+ham.addEventListener('click', () => mob.classList.add('open'));
+document.getElementById('mob-close').addEventListener('click', () => mob.classList.remove('open'));
+function closeMob() { mob.classList.remove('open'); }
 </script>
 @yield('scripts')
 </body>
