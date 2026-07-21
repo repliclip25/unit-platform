@@ -137,10 +137,15 @@ class DashboardController extends Controller
             ->count();
         $referralEligible = $realTxCount >= 5;
 
+        $shell = \App\Platform\Services\WorkerShellService::build($userId, '');
+        extract($shell); // workerCatalog, registryRows, registryRow, profileImg, coverImg, tokenTotal
+        $firstName = explode(' ', trim(auth()->user()->name))[0];
+
         return view('dashboard.index', compact(
             'workerCards', 'notifications', 'referralCode', 'referralUrl', 'referralEligible',
             'clockValue', 'deskCards', 'deskAllCards',
-            'ovProcessed', 'ovDrafts', 'ovUrgent', 'ovFailed', 'ovStuck'
+            'ovProcessed', 'ovDrafts', 'ovUrgent', 'ovFailed', 'ovStuck',
+            'workerCatalog', 'tokenTotal', 'firstName'
         ));
     }
 
