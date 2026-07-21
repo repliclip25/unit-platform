@@ -345,7 +345,7 @@ class MemoryController extends Controller
         $type    = session('import_type');
 
         if (!$headers || !$rows) {
-            return redirect()->route('memory')->with('error', 'Import session expired. Please re-upload.');
+            return redirect()->route('app.memory')->with('error', 'Import session expired. Please re-upload.');
         }
 
         // Use user-adjusted mapping from form, or fall back to auto-mapping
@@ -362,7 +362,7 @@ class MemoryController extends Controller
         }
         session()->forget(['import_tmp', 'import_headers', 'import_rows', 'import_type', 'import_mapping']);
 
-        return redirect()->route('memory')->with('success',
+        return redirect()->route('app.memory')->with('success',
             "Import complete: {$result['inserted']} {$type} imported, {$result['skipped']} skipped."
         );
     }

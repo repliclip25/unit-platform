@@ -90,12 +90,12 @@
                         $href = $v['cta_url']
                             ?? ($v['cta_route']
                                 ? match(true) {
-                                    $v['cta_route'] === 'billing' && $deploymentId
-                                        => route('billing') . '?pick=' . $deploymentId,
-                                    $v['cta_route'] === 'billing.checkout' && $deploymentId
-                                        => route('billing') . '?pick=' . $deploymentId,
-                                    $v['cta_route'] === 'workers.show' && $deploymentId
-                                        => route('workers.show', $deploymentId),
+                                    $v['cta_route'] === 'app.billing' && $deploymentId
+                                        => route('app.billing') . '?pick=' . $deploymentId,
+                                    $v['cta_route'] === 'app.billing.checkout' && $deploymentId
+                                        => route('app.billing') . '?pick=' . $deploymentId,
+                                    $v['cta_route'] === 'app.workers.show' && $deploymentId
+                                        => route('app.workers.show', $deploymentId),
                                     default => route($v['cta_route']),
                                 }
                                 : '#');

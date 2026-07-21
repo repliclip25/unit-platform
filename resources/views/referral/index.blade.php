@@ -95,7 +95,7 @@ body{background:var(--db-bg);color:var(--db-text)}
 <div class="rf-topbar">
   <a href="{{ url('/') }}" class="rf-logo">UNIT</a>
   <div class="rf-topbar-right">
-    <a href="{{ route('dashboard') }}" class="rf-back">← Back to Dashboard</a>
+    <a href="{{ route('app.dashboard') }}" class="rf-back">← Back to Dashboard</a>
     <button type="button" class="rf-theme-toggle" id="theme-toggle" title="Toggle dark/light mode" aria-label="Toggle theme"></button>
   </div>
 </div>

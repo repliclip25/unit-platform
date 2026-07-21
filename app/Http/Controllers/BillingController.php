@@ -112,7 +112,7 @@ class BillingController extends Controller
             : ($pricing->stripe_test_price_id ?? $pricing->stripe_flat_price_id ?? null);
 
         if ($planSlug === 'enterprise' || !$priceId) {
-            return redirect()->route('billing')
+            return redirect()->route('app.billing')
                 ->with('info', 'Enterprise pricing is custom. Please contact ' . config('services.unit.support_email') . ' to get started.');
         }
 
@@ -177,8 +177,8 @@ class BillingController extends Controller
 
         try {
             $session = $builder->checkout([
-                'success_url' => route('billing.success', $deploymentId),
-                'cancel_url'  => route('billing'),
+                'success_url' => route('app.billing.success', $deploymentId),
+                'cancel_url'  => route('app.billing'),
             ]);
         } catch (\Stripe\Exception\InvalidRequestException $e) {
             // Coupon in DB doesn't exist in Stripe — retry without it
@@ -189,8 +189,8 @@ class BillingController extends Controller
                 $builder2 = $builder2->allowPromotionCodes();
                 if ($remainingTrial > 0) $builder2 = $builder2->trialDays($remainingTrial);
                 $session = $builder2->checkout([
-                    'success_url' => route('billing.success', $deploymentId),
-                    'cancel_url'  => route('billing'),
+                    'success_url' => route('app.billing.success', $deploymentId),
+                    'cancel_url'  => route('app.billing'),
                 ]);
             } else {
                 throw $e;
@@ -269,7 +269,7 @@ class BillingController extends Controller
         \App\Platform\Services\InfluencerService::handleConversion($user->id);
 
         $planLabel = ucfirst($planSlug);
-        return redirect()->route('workers.show', $deploymentId)
+        return redirect()->route('app.workers.show', $deploymentId)
             ->with('success', ucfirst($deployment->worker_slug) . " {$planLabel} plan activated. You're fully operational.");
     }
 
@@ -332,8 +332,8 @@ class BillingController extends Controller
         $builder = $builder->allowPromotionCodes();
 
         $session = $builder->checkout([
-            'success_url' => route('billing.success', $deploymentId),
-            'cancel_url'  => route('workers.show', $deploymentId),
+            'success_url' => route('app.billing.success', $deploymentId),
+            'cancel_url'  => route('app.workers.show', $deploymentId),
         ]);
 
         return redirect($session->url);
@@ -351,7 +351,7 @@ class BillingController extends Controller
             ]);
         }
 
-        return $user->redirectToBillingPortal(route('billing'));
+        return $user->redirectToBillingPortal(route('app.billing'));
     }
 
 }

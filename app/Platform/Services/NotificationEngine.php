@@ -75,7 +75,7 @@ class NotificationEngine
             $notifications->push(self::make(
                 'warning',
                 "Watch inactive on {$inbox->gmail_address} — emails will not be processed",
-                'Fix', route('workers.connect', $inbox->deployment_id),
+                'Fix', route('app.workers.connect', $inbox->deployment_id),
                 'platform'
             ));
         }
@@ -94,14 +94,14 @@ class NotificationEngine
                 $notifications->push(self::make(
                     'error',
                     "Trial exhausted on \"{$b->dep_name}\" — upgrade to continue processing",
-                    'Upgrade', route('billing.checkout', $b->deployment_id),
+                    'Upgrade', route('app.billing.checkout', $b->deployment_id),
                     'platform'
                 ));
             } elseif ($left <= 2) {
                 $notifications->push(self::make(
                     'warning',
                     self::render("Only {$left} trial run{plural} left on \"{$b->dep_name}\"", $left),
-                    'Upgrade', route('billing.checkout', $b->deployment_id),
+                    'Upgrade', route('app.billing.checkout', $b->deployment_id),
                     'platform'
                 ));
             }

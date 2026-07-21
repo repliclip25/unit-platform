@@ -365,7 +365,7 @@
 
 {{-- Mobile top bar --}}
 <div id="mob-bar" class="lg:hidden fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-4 py-3" style="backdrop-filter:blur(14px)">
-    <a href="{{ route('dashboard') }}" class="flex items-center gap-2.5">
+    <a href="{{ route('app.dashboard') }}" class="flex items-center gap-2.5">
         <img src="/logo.png" alt="UNIT" class="w-7 h-7 rounded-md">
         <span class="font-display font-bold text-base">UNIT</span>
     </a>
@@ -381,7 +381,7 @@
     <aside id="sidebar" class="fixed lg:static inset-y-0 left-0 z-40 w-64 flex flex-col transition-transform -translate-x-full lg:translate-x-0">
 
         <div class="px-5 py-5 shrink-0" style="border-bottom:1px solid var(--border)">
-            <a href="{{ route('dashboard') }}" class="flex items-center gap-3">
+            <a href="{{ route('app.dashboard') }}" class="flex items-center gap-3">
                 <img src="/logo.png" alt="UNIT" class="w-8 h-8 rounded-md">
                 <div>
                     <p class="font-display font-bold text-sm leading-tight" style="color:var(--text-primary)">UNIT Platform</p>
@@ -398,20 +398,20 @@
                     $navLink = fn($active) => 'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition ' . ($active ? '' : 'nav-link');
                     $navStyle = fn($active) => $active ? 'background:var(--accent);color:#000000' : '';
                 @endphp
-                <a href="{{ route('dashboard') }}" class="{{ $navLink(request()->routeIs('dashboard')) }}" style="{{ $navStyle(request()->routeIs('dashboard')) }}">
+                <a href="{{ route('app.dashboard') }}" class="{{ $navLink(request()->routeIs('app.dashboard')) }}" style="{{ $navStyle(request()->routeIs('app.dashboard')) }}">
                     <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
                     Command Center
                 </a>
-                <a href="{{ route('transactions') }}" class="{{ $navLink(request()->routeIs('transactions*')) }}" style="{{ $navStyle(request()->routeIs('transactions*')) }}">
+                <a href="{{ route('app.transactions') }}" class="{{ $navLink(request()->routeIs('app.transactions*')) }}" style="{{ $navStyle(request()->routeIs('app.transactions*')) }}">
                     <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
                     Transactions
                 </a>
-                <a href="{{ route('billing') }}" class="{{ $navLink(request()->routeIs('billing*')) }}" style="{{ $navStyle(request()->routeIs('billing*')) }}">
+                <a href="{{ route('app.billing') }}" class="{{ $navLink(request()->routeIs('app.billing*')) }}" style="{{ $navStyle(request()->routeIs('app.billing*')) }}">
                     <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
                     Billing
                 </a>
-                @php $memoryActive = request()->routeIs('memory') || request()->routeIs('memory.*') || request()->routeIs('memory.shared*'); @endphp
-                <a href="{{ route('memory') }}" class="{{ $navLink($memoryActive) }}" style="{{ $navStyle($memoryActive) }}">
+                @php $memoryActive = request()->routeIs('app.memory') || request()->routeIs('app.memory.*') || request()->routeIs('app.memory.shared*'); @endphp
+                <a href="{{ route('app.memory') }}" class="{{ $navLink($memoryActive) }}" style="{{ $navStyle($memoryActive) }}">
                     <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18"/></svg>
                     Memory
                 </a>
@@ -420,11 +420,11 @@
             <div>
                 <div class="px-3 mb-1.5 flex items-center justify-between">
                     <p class="nav-section-label text-xs uppercase tracking-widest font-semibold">My Team</p>
-                    <a href="{{ url('/workers') }}" class="text-xs font-semibold" class="ac-text">+ Hire</a>
+                    <a href="{{ route('app.workers.index') }}" class="text-xs font-semibold" class="ac-text">+ Hire</a>
                 </div>
                 @forelse($deployments as $dep)
                     @php $isActive = request()->segment(2) == $dep->id; @endphp
-                    <a href="{{ route('workers.show', $dep->worker_slug) }}"
+                    <a href="{{ route('app.workers.show', $dep->worker_slug) }}"
                        class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition {{ $isActive ? '' : 'nav-link' }}"
                        style="{{ $isActive ? 'background:var(--accent);color:#000000' : '' }}">
                         <div class="relative shrink-0">
@@ -440,14 +440,14 @@
                 @empty
                     <div class="mx-1 px-3 py-4 rounded-lg text-center" style="border:1px dashed var(--border)">
                         <p class="text-xs mb-1" style="color:var(--text-faint)">No employees hired yet</p>
-                        <a href="{{ url('/workers') }}" class="text-xs font-semibold" class="ac-text">Hire your first →</a>
+                        <a href="{{ route('app.workers.index') }}" class="text-xs font-semibold" class="ac-text">Hire your first →</a>
                     </div>
                 @endforelse
             </div>
 
             <div>
                 <p class="nav-section-label px-3 mb-1.5 text-xs uppercase tracking-widest font-semibold">Settings</p>
-                <a href="{{ route('settings.api-keys') }}" class="{{ $navLink(request()->routeIs('settings.*')) }}" style="{{ $navStyle(request()->routeIs('settings.*')) }}">
+                <a href="{{ route('app.settings.api-keys') }}" class="{{ $navLink(request()->routeIs('app.settings.*')) }}" style="{{ $navStyle(request()->routeIs('app.settings.*')) }}">
                     <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/></svg>
                     API Keys
                 </a>
@@ -537,12 +537,12 @@
                 </div>
             </div>
             <div class="flex items-center justify-between px-1">
-                <a href="{{ route('profile.show') }}"
+                <a href="{{ route('app.profile.show') }}"
                    class="text-xs truncate flex-1 transition hover:opacity-80"
                    style="color:var(--text-muted);text-decoration:none"
                    title="My Profile">{{ auth()->user()->name }}</a>
                 <div style="display:flex;align-items:center;gap:10px">
-                    <a href="{{ route('profile.show') }}"
+                    <a href="{{ route('app.profile.show') }}"
                        class="text-xs transition hover:opacity-80"
                        style="color:var(--text-faint);text-decoration:none">Profile</a>
                     <span style="color:var(--border)">·</span>
@@ -587,7 +587,7 @@
                     'amber' => ['bg'=>'rgba(120,53,15,0.18)', 'border'=>'rgba(245,158,11,0.35)','text'=>'#fde68a'],
                     default => ['bg'=>'rgba(55,65,81,0.2)',   'border'=>'rgba(107,114,128,0.3)','text'=>'#d1d5db'],
                 };
-                $__cta = $__topViolation['cta_url'] ?? ($__topViolation['cta_route'] ? route($__topViolation['cta_route']) : route('billing'));
+                $__cta = $__topViolation['cta_url'] ?? ($__topViolation['cta_route'] ? route($__topViolation['cta_route']) : route('app.billing'));
             @endphp
             <div class="mb-4 flex items-center justify-between gap-3 px-4 py-3 rounded-xl border text-sm"
                  style="background:{{ $__c['bg'] }};border-color:{{ $__c['border'] }};color:{{ $__c['text'] }}">
@@ -623,7 +623,7 @@
                 <a href="{{ route('terms') }}" class="text-xs" style="color:var(--text-muted)" target="_blank">Terms</a>
                 <a href="{{ route('privacy') }}" class="text-xs" style="color:var(--text-muted)" target="_blank">Privacy</a>
                 <a href="mailto:hello@unit.report" class="text-xs" style="color:var(--text-muted)">Support</a>
-                <a href="{{ route('billing') }}" class="text-xs" style="color:var(--text-muted)">Billing</a>
+                <a href="{{ route('app.billing') }}" class="text-xs" style="color:var(--text-muted)">Billing</a>
             </footer>
         </main>
     </div>

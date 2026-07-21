@@ -261,13 +261,13 @@ $tokenFmt = $tokenTotal >= 1000000
   ? number_format($tokenTotal/1000000,1).'M'
   : number_format($tokenTotal);
 $sidebarLinks = [
-  ['Memory',       'M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18', route('workers.memory','ava')],
-  ['Templates',    'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z', route('workers.templates',['slug'=>'ava'])],
-  ['Rules',        'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4', route('workers.rules','ava')],
-  ['Fast Track',   'M13 10V3L4 14h7v7l9-11h-7z', route('workers.fast-track.page','ava')],
-  ['Integrations', 'M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1', route('workers.connect','ava')],
-  ['Billing',      'M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z', route('billing')],
-  ['Activity Log', 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2', route('transactions').'?deployment='.$dep->id],
+  ['Memory',       'M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18', route('app.workers.memory','ava')],
+  ['Templates',    'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z', route('app.workers.templates',['slug'=>'ava'])],
+  ['Rules',        'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4', route('app.workers.rules','ava')],
+  ['Fast Track',   'M13 10V3L4 14h7v7l9-11h-7z', route('app.workers.fast-track.page','ava')],
+  ['Integrations', 'M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1', route('app.workers.connect','ava')],
+  ['Billing',      'M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z', route('app.billing')],
+  ['Activity Log', 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2', route('app.transactions').'?deployment='.$dep->id],
 ];
 @endphp
 
@@ -275,9 +275,9 @@ $sidebarLinks = [
 
 {{-- ══ TOP BAR: logo left · theme toggle + menu right ══ --}}
 <div class="ob-topbar">
-  <a href="{{ route('dashboard') }}" class="ob-topbar-logo" style="text-decoration:none">UNIT</a>
+  <a href="{{ route('app.dashboard') }}" class="ob-topbar-logo" style="text-decoration:none">UNIT</a>
   <div class="ob-topbar-right">
-    <a href="{{ route('profile.show') }}" class="ob-topbar-name" style="text-decoration:none">{{ auth()->user()->name }}</a>
+    <a href="{{ route('app.profile.show') }}" class="ob-topbar-name" style="text-decoration:none">{{ auth()->user()->name }}</a>
     <button class="ob-theme-toggle" id="theme-toggle" type="button" title="Toggle dark/light mode" aria-label="Toggle theme"></button>
     <div class="ob-menu-wrap">
       <button class="ob-hamburger" id="menu-toggle" type="button" aria-label="Menu">
@@ -292,7 +292,7 @@ $sidebarLinks = [
           </div>
         </div>
         <div class="ob-menu-mobile-links">
-          <a href="{{ route('dashboard') }}" class="ob-menu-item">
+          <a href="{{ route('app.dashboard') }}" class="ob-menu-item">
             <svg viewBox="0 0 24 24" class="ob-menu-item-icon"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
             Dashboard
           </a>
@@ -305,7 +305,7 @@ $sidebarLinks = [
           <div style="border-top:1px solid var(--db-border);margin:6px 0"></div>
         </div>
         <div class="ob-menu-token"><span class="ob-token-badge">{{ $tokenFmt }} tokens</span></div>
-        <a href="{{ route('settings.api-keys') }}" class="ob-menu-item">Settings</a>
+        <a href="{{ route('app.settings.api-keys') }}" class="ob-menu-item">Settings</a>
         <form method="POST" action="{{ route('logout') }}">@csrf<button type="submit" class="ob-menu-item">Logout</button></form>
       </div>
     </div>
@@ -320,13 +320,13 @@ $sidebarLinks = [
     {{-- MY WORKERS --}}
     <div class="ob-steps">
       <div class="ob-workers-hd">
-        <a href="{{ route('profile.show') }}" style="color:inherit;text-decoration:none">{{ strtoupper($firstName) }}'S WORKERS</a>
+        <a href="{{ route('app.profile.show') }}" style="color:inherit;text-decoration:none">{{ strtoupper($firstName) }}'S WORKERS</a>
       </div>
 
       @foreach($workerCatalog as $wc)
       @php
         $wDot  = $wc->status==='active' ? '#22c55e' : '#f59e0b';
-        $wHref = !$wc->active ? route('workers.page') : ($wc->slug==='ava' ? route('desk.ava') : route('workers.overview',$wc->slug));
+        $wHref = !$wc->active ? route('public.workers.index') : ($wc->slug==='ava' ? route('app.desk.ava') : route('app.workers.overview',$wc->slug));
         $isActive = $wc->active && $wc->slug==='ava';
       @endphp
       <a href="{{ $wHref }}" class="ob-step {{ $isActive ? 'active' : ($wc->active ? 'done' : 'pending') }}" style="text-decoration:none{{ !$wc->active ? ';opacity:.5' : '' }}">
@@ -354,7 +354,7 @@ $sidebarLinks = [
       </a>
       @endforeach
 
-      <a href="{{ route('workers.page') }}" class="ob-step pending" style="text-decoration:none;margin-top:4px">
+      <a href="{{ route('public.workers.index') }}" class="ob-step pending" style="text-decoration:none;margin-top:4px">
         <div class="ob-step-rail"><div class="ob-step-num" style="background:var(--db-chip);border:1.5px dashed var(--db-border);color:var(--db-text-muted);font-size:16px;font-weight:400">+</div></div>
         <div class="ob-step-body"><div class="ob-step-label">Hire a worker</div></div>
       </a>
@@ -469,7 +469,7 @@ $sidebarLinks = [
             </p>
             @endforeach
             @if($__horizonItems->count() > 4)
-            <a href="{{ route('workers.memory','ava') }}" style="display:block;margin-top:4px;font-size:11px;font-weight:700;color:#0D0D0D;text-decoration:underline">+ {{ $__horizonItems->count() - 4 }} more →</a>
+            <a href="{{ route('app.workers.memory','ava') }}" style="display:block;margin-top:4px;font-size:11px;font-weight:700;color:#0D0D0D;text-decoration:underline">+ {{ $__horizonItems->count() - 4 }} more →</a>
             @endif
             @endif
           </div>
@@ -510,7 +510,7 @@ $sidebarLinks = [
                 @if($__canAct)
                 <a href="{{ route($alert['route'], $alert['params']) }}" style="display:inline-block;font-size:12px;font-weight:700;color:#0D0D0D;text-decoration:underline">{{ $alert['action'] }} →</a>
                 @else
-                <a href="{{ route('transactions') }}" style="display:inline-block;font-size:12px;font-weight:700;color:#0D0D0D;text-decoration:underline">View in Activity Log →</a>
+                <a href="{{ route('app.transactions') }}" style="display:inline-block;font-size:12px;font-weight:700;color:#0D0D0D;text-decoration:underline">View in Activity Log →</a>
                 @endif
               </div>
               @endforeach
@@ -640,7 +640,7 @@ $sidebarLinks = [
         {{-- Stage timeline for the selected transaction --}}
         <div class="ob-act-hd">
           Live Activity
-          <a href="{{ route('transactions') }}" class="ob-sc-view-link" style="margin:0">View Live Feed →</a>
+          <a href="{{ route('app.transactions') }}" class="ob-sc-view-link" style="margin:0">View Live Feed →</a>
         </div>
         <div class="ob-sc-feed" id="tx-timeline">
           <p style="font-size:12px;color:var(--db-text-muted)">Loading…</p>
@@ -723,7 +723,7 @@ $sidebarLinks = [
   }
 
   function loadTxList() {
-    fetch('{{ route("desk.ava.tx-list") }}')
+    fetch('{{ route("app.desk.ava.tx-list") }}')
       .then(function (r) { return r.json(); })
       .then(function (data) {
         switcherDrop.innerHTML = '';
@@ -817,7 +817,7 @@ $sidebarLinks = [
         + '<div class="sc-draft-preview">' + esc(p.body || '') + '</div>';
       canvasActions.style.display = 'flex';
       approveBtn.dataset.txId = current.tx_id;
-      reviewLink.href = '/transactions/' + encodeURIComponent(current.tx_id);
+      reviewLink.href = '/app/transactions/' + encodeURIComponent(current.tx_id);
     } else {
       var payload = stage.canvas.payload || {};
       var rows = Object.keys(payload).map(function (key) {
@@ -855,7 +855,7 @@ $sidebarLinks = [
     if (!txId) return;
     approveBtn.disabled = true;
     approveBtn.textContent = 'Sending…';
-    fetch('/transactions/' + encodeURIComponent(txId) + '/decide', {
+    fetch('/app/transactions/' + encodeURIComponent(txId) + '/decide', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrf, 'Accept': 'application/json' },
       body: JSON.stringify({ decision: 'approved' }),

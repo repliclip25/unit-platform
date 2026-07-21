@@ -194,8 +194,8 @@ class AvaWorker implements WorkerContract
             'label'           => 'Gmail Account',
             'hint'            => 'The inbox AVA will monitor for renewal and subscription emails.',
             'multiple'        => true,
-            'connect_route'   => 'ava.connect',
-            'authorize_route' => 'ava.gmail.authorize',
+            'connect_route'   => 'app.ava.connect',
+            'authorize_route' => 'app.ava.gmail.authorize',
         ];
     }
 

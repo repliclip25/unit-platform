@@ -348,7 +348,7 @@ class NuxPipelineTest extends TestCase
         ]);
 
         $response = $this->actingAs($this->user)
-            ->get(route('transactions.show', $txId));
+            ->get(route('app.transactions.show', $txId));
 
         $response->assertOk();
         $nuxRegister = $response->viewData('nuxRegister');
@@ -375,7 +375,7 @@ class NuxPipelineTest extends TestCase
         ]);
 
         $response = $this->actingAs($this->user)
-            ->get(route('transactions.show', $txId));
+            ->get(route('app.transactions.show', $txId));
 
         $response->assertOk();
         $this->assertNull($response->viewData('nuxRegister'));

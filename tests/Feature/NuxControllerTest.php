@@ -76,7 +76,7 @@ class NuxControllerTest extends TestCase
         ]);
 
         $response = $this->actingAs($this->user)
-            ->get(route('nux.connect.linkedin', ['deployment_id' => $this->depId]));
+            ->get(route('app.nux.connect.linkedin', ['deployment_id' => $this->depId]));
 
         $response->assertRedirectContains('linkedin.com');
     }
@@ -101,7 +101,7 @@ class NuxControllerTest extends TestCase
         ]);
 
         $response = $this->actingAs($this->user)
-            ->get(route('nux.connect.x', ['deployment_id' => $this->depId]));
+            ->get(route('app.nux.connect.x', ['deployment_id' => $this->depId]));
 
         $location = $response->headers->get('Location');
         $this->assertTrue(
@@ -134,7 +134,7 @@ class NuxControllerTest extends TestCase
         ]);
 
         $response = $this->actingAs($this->user)
-            ->delete(route('nux.disconnect.linkedin'));
+            ->delete(route('app.nux.disconnect.linkedin'));
 
         $response->assertRedirect();
         $this->assertDatabaseMissing('nux_oauth_tokens', [
@@ -157,7 +157,7 @@ class NuxControllerTest extends TestCase
         ]);
 
         $response = $this->actingAs($this->user)
-            ->delete(route('nux.disconnect.x'));
+            ->delete(route('app.nux.disconnect.x'));
 
         $response->assertRedirect();
         $this->assertDatabaseMissing('nux_oauth_tokens', [
@@ -171,19 +171,19 @@ class NuxControllerTest extends TestCase
 
     public function test_guest_cannot_access_linkedin_authorize(): void
     {
-        $response = $this->get(route('nux.connect.linkedin'));
+        $response = $this->get(route('app.nux.connect.linkedin'));
         $response->assertRedirect(route('login'));
     }
 
     public function test_guest_cannot_access_x_authorize(): void
     {
-        $response = $this->get(route('nux.connect.x'));
+        $response = $this->get(route('app.nux.connect.x'));
         $response->assertRedirect(route('login'));
     }
 
     public function test_guest_cannot_disconnect_linkedin(): void
     {
-        $response = $this->delete(route('nux.disconnect.linkedin'));
+        $response = $this->delete(route('app.nux.disconnect.linkedin'));
         $response->assertRedirect(route('login'));
     }
 
@@ -192,7 +192,7 @@ class NuxControllerTest extends TestCase
     public function test_workers_dashboard_includes_nux(): void
     {
         $response = $this->actingAs($this->user)
-            ->get(route('workers.deploy'));
+            ->get(route('app.workers.index'));
 
         $response->assertOk();
         $response->assertSeeText('NUX');

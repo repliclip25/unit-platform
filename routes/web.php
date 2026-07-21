@@ -112,6 +112,14 @@ Route::middleware(['auth'])->group(function () {
 // All other authenticated routes require verified email + completed onboarding
 Route::middleware(['auth', 'verified', 'onboarded', 'not-pending-del'])->group(function () {
 
+    // ── Tenant app namespace ─────────────────────────────────────────────────
+    // Everything a logged-in tenant sees lives under /app/... with route names
+    // prefixed app.* — this disambiguates from the public marketplace, which
+    // owns the un-prefixed root (e.g. /workers/{slug} is the public profile,
+    // /app/workers/{slug} is the tenant's own deployment). Keeps URLs, route
+    // names, and logs unambiguous as the platform adds more worker types.
+    Route::prefix('app')->name('app.')->group(function () {
+
     // ── Transaction status polling (used by fast-track pipeline UI) ─────────
     Route::get('/transactions/{txId}/status', [TransactionController::class, 'status'])->name('transactions.status');
 
@@ -157,8 +165,8 @@ Route::middleware(['auth', 'verified', 'onboarded', 'not-pending-del'])->group(f
             ->orderBy('created_at')
             ->value('worker_slug');
         return $slug
-            ? redirect()->route('workers.memory', $slug)
-            : redirect()->route('workers.page');
+            ? redirect()->route('app.workers.memory', $slug)
+            : redirect()->route('app.workers.index');
     })->name('memory');
     Route::post('/memory/clients',                [MemoryController::class, 'storeClient'])->name('memory.clients.store');
     Route::patch('/memory/clients/{id}',          [MemoryController::class, 'updateClient'])->name('memory.clients.update');
@@ -189,7 +197,7 @@ Route::middleware(['auth', 'verified', 'onboarded', 'not-pending-del'])->group(f
     Route::post('/memory/import/commit',          [MemoryController::class, 'importCommit'])->name('memory.import.commit');
 
     // ── Worker Deployments ──────────────────────────────────────────────────
-    Route::get('/workers',                                           [WorkerController::class, 'index'])->name('workers.deploy');
+    Route::get('/workers',                                           [WorkerController::class, 'index'])->name('workers.index');
     Route::post('/workers',                                          [WorkerController::class, 'store'])->name('workers.store');
     Route::get('/workers/{slug}',                                    [WorkerController::class, 'show'])->name('workers.show');
     Route::get('/workers/{slug}/overview',                           [WorkerController::class, 'overview'])->name('workers.overview');
@@ -294,7 +302,11 @@ Route::middleware(['auth', 'verified', 'onboarded', 'not-pending-del'])->group(f
         return request()->user()->downloadInvoice($id);
     })->name('billing.invoice');
 
+    }); // end app prefix/name group
+
     // ── Admin-only: System QA + Tenant Controls + Admin actions ──────────────
+    // Deliberately OUTSIDE the /app prefix — admin tooling keeps its existing
+    // /admin/* paths and admin.* route names, untouched by this rename.
     Route::middleware('admin')->group(function () {
 
         // Reset fast track trial counter for a deployment
@@ -473,7 +485,7 @@ Route::middleware(['auth', 'verified', 'onboarded', 'not-pending-del'])->group(f
 }); // end onboarded + not-pending-del group
 
 // Profile — auth only (accessible even when deletion is pending)
-Route::middleware(['auth', 'verified'])->group(function () {
+Route::middleware(['auth', 'verified'])->prefix('app')->name('app.')->group(function () {
     Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
@@ -497,8 +509,9 @@ Route::get('/referral', [ReferralController::class, 'index'])->name('referral.in
 Route::get('/influencer/apply',  [InfluencerController::class, 'apply'])->name('influencer.apply');
 Route::post('/influencer/apply', [InfluencerController::class, 'submitApplication'])->name('influencer.apply.submit');
 
-Route::get('/workers', fn() => view('workers'))->name('workers.page');
-Route::get('/worker/{slug}', [WorkerPublicController::class, 'show2'])->name('workers.public.show2');
+// ── Public worker marketplace — plural, root-level, SEO-canonical ─────────
+Route::get('/workers', fn() => view('workers'))->name('public.workers.index');
+Route::get('/workers/{slug}', [WorkerPublicController::class, 'show2'])->name('public.workers.show');
 
 // ── AVA Onboarding v2 (new UI — parallel to existing flow) ────────────────
 Route::middleware(['auth', 'verified'])->prefix('hire/ava')->name('hire.ava.')->group(function () {

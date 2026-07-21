@@ -152,7 +152,7 @@ class TransactionController extends Controller
             'triggered_by'    => auth()->id(),
         ]);
 
-        return redirect()->route('transactions')->with('success', 'Transaction dismissed — removed from active queues.');
+        return redirect()->route('app.transactions')->with('success', 'Transaction dismissed — removed from active queues.');
     }
 
     public function destroy(string $txId)
@@ -166,7 +166,7 @@ class TransactionController extends Controller
 
         DB::table('transactions')->where('tx_id', $txId)->delete();
 
-        return redirect()->route('transactions')->with('success', 'Test transaction deleted.');
+        return redirect()->route('app.transactions')->with('success', 'Test transaction deleted.');
     }
 
     public function decide(string $txId, Request $request)
@@ -214,6 +214,6 @@ class TransactionController extends Controller
             ? "✓ {$txId} approved — draft is in your Gmail, ready to review and send."
             : "✗ {$txId} rejected — draft deleted.";
 
-        return redirect()->route('transactions')->with('success', $msg);
+        return redirect()->route('app.transactions')->with('success', $msg);
     }
 }

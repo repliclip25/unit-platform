@@ -1,13 +1,13 @@
 @php
     $tabs = [
-        ['label' => 'Overview',   'route' => 'workers.show',      'match' => 'workers.show'],
-        ['label' => 'Memory',     'route' => 'workers.memory',     'match' => 'workers.memory*'],
-        ['label' => 'Templates',  'route' => 'workers.templates',  'match' => 'workers.templates*'],
-        ['label' => 'Rules',      'route' => 'workers.rules',      'match' => 'workers.rules*'],
-        ['label' => 'Connect',    'route' => 'workers.connect',    'match' => 'workers.connect'],
-        ['label' => 'Configure',  'route' => 'workers.configure',  'match' => 'workers.configure'],
-        ['label' => 'Log',        'route' => 'workers.log',        'match' => 'workers.log'],
-        ['label' => 'Billing',    'route' => 'workers.billing',    'match' => 'workers.billing'],
+        ['label' => 'Overview',   'route' => 'app.workers.show',      'match' => 'app.workers.show'],
+        ['label' => 'Memory',     'route' => 'app.workers.memory',     'match' => 'app.workers.memory*'],
+        ['label' => 'Templates',  'route' => 'app.workers.templates',  'match' => 'app.workers.templates*'],
+        ['label' => 'Rules',      'route' => 'app.workers.rules',      'match' => 'app.workers.rules*'],
+        ['label' => 'Connect',    'route' => 'app.workers.connect',    'match' => 'app.workers.connect'],
+        ['label' => 'Configure',  'route' => 'app.workers.configure',  'match' => 'app.workers.configure'],
+        ['label' => 'Log',        'route' => 'app.workers.log',        'match' => 'app.workers.log'],
+        ['label' => 'Billing',    'route' => 'app.workers.billing',    'match' => 'app.workers.billing'],
     ];
 @endphp
 <div class="flex items-center gap-0.5 mb-6 overflow-x-auto" style="border-bottom:1px solid var(--border);scrollbar-width:none">
@@ -23,7 +23,7 @@
         <span class="text-xs" style="color:var(--text-faint)">·</span>
         <span class="text-xs" style="color:var(--text-muted)">{{ $dep->worker_slug }}</span>
         <span class="text-xs" style="color:var(--text-faint)">·</span>
-        <a href="{{ route('workers.show', $dep->worker_slug) }}#fast-track"
+        <a href="{{ route('app.workers.show', $dep->worker_slug) }}#fast-track"
            class="flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-lg transition hover:opacity-90"
            class="ac-on">
             <svg class="w-3 h-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>

@@ -649,7 +649,7 @@ body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-fon
             Try again
           </button>
           {{-- Next step button — shown on success --}}
-          <a href="{{ route('dashboard') }}" class="btn-approve" id="nextBtn" style="display:none;text-decoration:none;background:#22c55e">
+          <a href="{{ route('app.dashboard') }}" class="btn-approve" id="nextBtn" style="display:none;text-decoration:none;background:#22c55e">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
             Go to your dashboard
           </a>
@@ -697,11 +697,11 @@ body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-fon
       </div>
 
       <div class="ob-sc-btns">
-        <a href="{{ route('desk.ava') }}" class="btn-dash">
+        <a href="{{ route('app.desk.ava') }}" class="btn-dash">
           Go to AVA's Desk
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
         </a>
-        <a href="{{ route('desk.ava') }}" class="btn-watch">
+        <a href="{{ route('app.desk.ava') }}" class="btn-watch">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8" fill="currentColor" stroke="none"/></svg>
           Watch Ava in action
         </a>
@@ -750,7 +750,7 @@ body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-fon
             <div><div class="ob-sc-feed-text" style="font-weight:700">Reply ready for your review</div></div>
           </div>
         </div>
-        <a href="/transactions" class="ob-sc-view-link">View Live Feed →</a>
+        <a href="/app/transactions" class="ob-sc-view-link">View Live Feed →</a>
       </div>
 
       {{-- Draft card: fills remaining height, hidden until draft is ready --}}
@@ -788,7 +788,7 @@ body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-fon
         </div>
         <div class="sc-draft-actions">
           <button onclick="scApproveDraft()" id="scApproveBtn" class="sc-btn-approve">Approve &amp; send</button>
-          <a href="/transactions" class="sc-btn-review">Review in full</a>
+          <a href="/app/transactions" class="sc-btn-review">Review in full</a>
         </div>
       </div>
 
@@ -895,7 +895,7 @@ function scApproveDraft(){
   const btn = document.getElementById('scApproveBtn');
   btn.textContent = 'Approving...';
   btn.disabled = true;
-  fetch('/transactions/' + window._scTxId + '/decide', {
+  fetch('/app/transactions/' + window._scTxId + '/decide', {
     method: 'POST',
     credentials: 'same-origin',
     headers: { 'X-CSRF-TOKEN': CSRF, 'Content-Type': 'application/json', 'Accept': 'application/json' },
@@ -1039,7 +1039,7 @@ function submitRun(){
 
 function approveDraft(){
   if(!window._txId) return;
-  fetch('/transactions/' + window._txId + '/decide', {
+  fetch('/app/transactions/' + window._txId + '/decide', {
     method: 'POST',
     credentials: 'same-origin',
     headers: { 'X-CSRF-TOKEN': CSRF, 'Content-Type': 'application/json', 'Accept': 'application/json' },

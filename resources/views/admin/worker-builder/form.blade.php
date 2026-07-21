@@ -223,11 +223,11 @@
                     <div class="wb-row-2">
                         <div class="wb-field">
                             <label class="wb-label">CONNECT ROUTE</label>
-                            <input type="text" name="credentials[{{ $ci }}][connect_route]" value="{{ $cred['connect_route'] ?? '' }}" placeholder="workers.ava.gmail.connect" class="wb-input wb-mono">
+                            <input type="text" name="credentials[{{ $ci }}][connect_route]" value="{{ $cred['connect_route'] ?? '' }}" placeholder="app.workers.gmail.connect" class="wb-input wb-mono">
                         </div>
                         <div class="wb-field">
                             <label class="wb-label">AUTHORIZE ROUTE</label>
-                            <input type="text" name="credentials[{{ $ci }}][authorize_route]" value="{{ $cred['authorize_route'] ?? '' }}" placeholder="workers.ava.gmail.authorize" class="wb-input wb-mono">
+                            <input type="text" name="credentials[{{ $ci }}][authorize_route]" value="{{ $cred['authorize_route'] ?? '' }}" placeholder="app.workers.gmail.authorize" class="wb-input wb-mono">
                         </div>
                     </div>
                 </div>
@@ -569,11 +569,11 @@
         <div class="wb-row-2">
             <div class="wb-field">
                 <label class="wb-label">CONNECT ROUTE</label>
-                <input type="text" name="credentials[__ci__][connect_route]" placeholder="workers.ava.gmail.connect" class="wb-input wb-mono">
+                <input type="text" name="credentials[__ci__][connect_route]" placeholder="app.workers.gmail.connect" class="wb-input wb-mono">
             </div>
             <div class="wb-field">
                 <label class="wb-label">AUTHORIZE ROUTE</label>
-                <input type="text" name="credentials[__ci__][authorize_route]" placeholder="workers.ava.gmail.authorize" class="wb-input wb-mono">
+                <input type="text" name="credentials[__ci__][authorize_route]" placeholder="app.workers.gmail.authorize" class="wb-input wb-mono">
             </div>
         </div>
     </div>

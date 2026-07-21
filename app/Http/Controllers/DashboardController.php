@@ -96,19 +96,19 @@ class DashboardController extends Controller
 
             if ($total === 0) {
                 $quote = "Ready and standing by — send me something to work on.";
-                $cta   = ['label' => 'Run Fast Track', 'url' => route('workers.show', $dep->worker_slug) . '#fast-track'];
+                $cta   = ['label' => 'Run Fast Track', 'url' => route('app.workers.show', $dep->worker_slug) . '#fast-track'];
             } elseif ($drafts > 0) {
                 $quote = "Morning! I've {$verbProc} {$total} {$unit} and prepared {$drafts} " . ($drafts === 1 ? $outputWord : $outputWord . 's') . ". " . ($drafts === 1 ? 'It needs' : 'They need') . " your approval.";
-                $cta   = ['label' => 'Review now', 'url' => route('transactions', ['filter' => 'draft_ready'])];
+                $cta   = ['label' => 'Review now', 'url' => route('app.transactions', ['filter' => 'draft_ready'])];
             } elseif ($failed > 0) {
                 $quote = "I hit {$failed} " . ($failed === 1 ? 'issue' : 'issues') . " I couldn't resolve on my own — flagged for your review.";
-                $cta   = ['label' => 'See what happened', 'url' => route('workers.show', $dep->worker_slug)];
+                $cta   = ['label' => 'See what happened', 'url' => route('app.workers.show', $dep->worker_slug)];
             } elseif ($approved > 0) {
                 $quote = "All caught up. {$approved} " . ($approved === 1 ? $outputWord . ' has' : $outputWord . 's have') . " been approved and sent — nothing waiting on you.";
-                $cta   = ['label' => 'Open workspace', 'url' => route('workers.show', $dep->worker_slug)];
+                $cta   = ['label' => 'Open workspace', 'url' => route('app.workers.show', $dep->worker_slug)];
             } else {
                 $quote = "Working through the queue — I'll flag anything that needs you.";
-                $cta   = ['label' => 'Open workspace', 'url' => route('workers.show', $dep->worker_slug)];
+                $cta   = ['label' => 'Open workspace', 'url' => route('app.workers.show', $dep->worker_slug)];
             }
 
             $lastTx      = DB::table('transactions')->where('deployment_id', $depId)->orderByDesc('id')->first();
@@ -161,7 +161,7 @@ class DashboardController extends Controller
             ->first();
 
         if (!$dep) {
-            return redirect()->route('dashboard');
+            return redirect()->route('app.dashboard');
         }
 
         $depId = $dep->id;

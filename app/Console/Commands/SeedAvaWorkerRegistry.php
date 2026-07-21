@@ -180,8 +180,8 @@ class SeedAvaWorkerRegistry extends Command
                     'hint'            => 'The inbox AVA will monitor for renewal and subscription emails.',
                     'required'        => true,
                     'multiple'        => true,
-                    'connect_route'   => 'ava.connect',
-                    'authorize_route' => 'ava.gmail.authorize',
+                    'connect_route'   => 'app.ava.connect',
+                    'authorize_route' => 'app.ava.gmail.authorize',
                 ],
             ]),
             'instances'             => json_encode([

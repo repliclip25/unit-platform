@@ -46,7 +46,7 @@
 </div>
 @endif
 
-<a href="{{ url('/transactions?filter=pending') }}" class="btn">Review draft →</a>
+<a href="{{ url('/app/transactions?filter=pending') }}" class="btn">Review draft →</a>
 
 <hr class="divider">
 

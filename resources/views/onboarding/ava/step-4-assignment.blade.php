@@ -388,7 +388,7 @@ body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-fon
                 </div>
                 <div class="ob-form-actions">
                   <button type="submit" class="btn-add"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>Add {{ $clientNoun }}</button>
-                  <a href="{{ route('memory.import.template', 'clients') }}" class="ob-import-link" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>Import CSV</a>
+                  <a href="{{ route('app.memory.import.template', 'clients') }}" class="ob-import-link" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>Import CSV</a>
                 </div>
               </form>
             </div>
@@ -410,7 +410,7 @@ body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-fon
                 </div>
                 <div class="ob-form-actions">
                   <button type="submit" class="btn-add"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>Add {{ $clientNoun }}</button>
-                  <a href="{{ route('memory.import.template', 'clients') }}" class="ob-import-link" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>Import CSV</a>
+                  <a href="{{ route('app.memory.import.template', 'clients') }}" class="ob-import-link" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>Import CSV</a>
                 </div>
               </form>
             </div>

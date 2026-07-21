@@ -35,7 +35,7 @@
   ⚡ <strong>Free trial active.</strong> Your worker will process transactions at no cost until {{ $trialEndsAt }}.
 </div>
 
-<a href="{{ url('/workers/' . $deploymentId) }}" class="btn">View your worker →</a>
+<a href="{{ url('/app/workers/' . $deploymentId) }}" class="btn">View your worker →</a>
 
 <hr class="divider">
 

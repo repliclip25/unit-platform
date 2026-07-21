@@ -209,13 +209,13 @@ $myRules    = $activeKey ? ($rulesByPersona[$activeKey] ?? []) : [];
 $myDiff     = $activeKey ? ($diffByPersona[$activeKey] ?? ['stale'=>[],'orphaned'=>[],'missing'=>[]]) : [];
 $myIssues   = !empty($myDiff['stale']) || !empty($myDiff['orphaned']) || !empty($myDiff['missing']);
 $sidebarLinks = [
-  ['Memory',       'M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18', route('workers.memory',$dep->worker_slug), false],
-  ['Templates',    'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z', route('workers.templates',['slug'=>$dep->worker_slug]), false],
-  ['Rules',        'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4', route('workers.rules',$dep->worker_slug), true],
-  ['Fast Track',   'M13 10V3L4 14h7v7l9-11h-7z', route('workers.fast-track.page',$dep->worker_slug), false],
-  ['Integrations', 'M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1', route('workers.connect',$dep->worker_slug), false],
-  ['Billing',      'M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z', route('billing'), false],
-  ['Activity Log', 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2', route('transactions').'?deployment='.$dep->id, false],
+  ['Memory',       'M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18', route('app.workers.memory',$dep->worker_slug), false],
+  ['Templates',    'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z', route('app.workers.templates',['slug'=>$dep->worker_slug]), false],
+  ['Rules',        'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4', route('app.workers.rules',$dep->worker_slug), true],
+  ['Fast Track',   'M13 10V3L4 14h7v7l9-11h-7z', route('app.workers.fast-track.page',$dep->worker_slug), false],
+  ['Integrations', 'M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1', route('app.workers.connect',$dep->worker_slug), false],
+  ['Billing',      'M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z', route('app.billing'), false],
+  ['Activity Log', 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2', route('app.transactions').'?deployment='.$dep->id, false],
 ];
 @endphp
 
@@ -223,9 +223,9 @@ $sidebarLinks = [
 
 {{-- ══ TOP BAR ══ --}}
 <div class="ob-topbar">
-  <a href="{{ route('dashboard') }}" class="ob-topbar-logo" style="text-decoration:none">UNIT</a>
+  <a href="{{ route('app.dashboard') }}" class="ob-topbar-logo" style="text-decoration:none">UNIT</a>
   <div class="ob-topbar-right">
-    <a href="{{ route('profile.show') }}" class="ob-topbar-name" style="text-decoration:none">{{ auth()->user()->name }}</a>
+    <a href="{{ route('app.profile.show') }}" class="ob-topbar-name" style="text-decoration:none">{{ auth()->user()->name }}</a>
     <button class="ob-theme-toggle" id="theme-toggle" type="button" title="Toggle dark/light mode" aria-label="Toggle theme"></button>
     <div class="ob-menu-wrap">
       <button class="ob-hamburger" id="menu-toggle" type="button" aria-label="Menu">
@@ -240,7 +240,7 @@ $sidebarLinks = [
           </div>
         </div>
         <div class="ob-menu-mobile-links">
-          <a href="{{ route('dashboard') }}" class="ob-menu-item">
+          <a href="{{ route('app.dashboard') }}" class="ob-menu-item">
             <svg viewBox="0 0 24 24" class="ob-menu-item-icon"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
             Dashboard
           </a>
@@ -253,7 +253,7 @@ $sidebarLinks = [
           <div style="border-top:1px solid var(--db-border);margin:6px 0"></div>
         </div>
         <div class="ob-menu-token"><span class="ob-token-badge">{{ $tokenFmt }} tokens</span></div>
-        <a href="{{ route('settings.api-keys') }}" class="ob-menu-item">Settings</a>
+        <a href="{{ route('app.settings.api-keys') }}" class="ob-menu-item">Settings</a>
         <form method="POST" action="{{ route('logout') }}">@csrf<button type="submit" class="ob-menu-item">Logout</button></form>
       </div>
     </div>
@@ -266,12 +266,12 @@ $sidebarLinks = [
   <aside class="ob-sidebar">
     <div class="ob-steps">
       <div class="ob-workers-hd">
-        <a href="{{ route('profile.show') }}" style="color:inherit;text-decoration:none">{{ strtoupper($firstName) }}'S WORKERS</a>
+        <a href="{{ route('app.profile.show') }}" style="color:inherit;text-decoration:none">{{ strtoupper($firstName) }}'S WORKERS</a>
       </div>
       @foreach($workerCatalog as $wc)
       @php
         $wDot  = $wc->status==='active' ? '#22c55e' : '#f59e0b';
-        $wHref = !$wc->active ? route('workers.page') : ($wc->slug==='ava' ? route('desk.ava') : route('workers.overview',$wc->slug));
+        $wHref = !$wc->active ? route('public.workers.index') : ($wc->slug==='ava' ? route('app.desk.ava') : route('app.workers.overview',$wc->slug));
         $isActive = $wc->active && $wc->slug === $dep->worker_slug;
       @endphp
       <a href="{{ $wHref }}" class="ob-step {{ $isActive ? 'active' : ($wc->active ? 'done' : 'pending') }}" style="text-decoration:none{{ !$wc->active ? ';opacity:.5' : '' }}">
@@ -297,7 +297,7 @@ $sidebarLinks = [
         </div>
       </a>
       @endforeach
-      <a href="{{ route('workers.page') }}" class="ob-step pending" style="text-decoration:none;margin-top:4px">
+      <a href="{{ route('public.workers.index') }}" class="ob-step pending" style="text-decoration:none;margin-top:4px">
         <div class="ob-step-rail"><div class="ob-step-num" style="background:var(--db-chip);border:1.5px dashed var(--db-border);color:var(--db-text-muted);font-size:16px;font-weight:400">+</div></div>
         <div class="ob-step-body"><div class="ob-step-label">Hire a worker</div></div>
       </a>
@@ -351,7 +351,7 @@ $sidebarLinks = [
         </div>
 
         <div class="persona-picker {{ $activeP ? '' : 'open' }}" id="persona-picker">
-          <form method="POST" action="{{ route('workers.persona', $dep->id) }}">
+          <form method="POST" action="{{ route('app.workers.persona', $dep->id) }}">
             @csrf @method('PATCH')
             <div class="persona-grid">
               @foreach($personas as $key => $p)
@@ -383,7 +383,7 @@ $sidebarLinks = [
               Resetting takes 2 seconds and keeps platform rules intact.
             </div>
           </div>
-          <form method="POST" action="{{ route('workers.rules.reset', $dep->id) }}">
+          <form method="POST" action="{{ route('app.workers.rules.reset', $dep->id) }}">
             @csrf
             <button type="submit" class="mem-btn">Reset to latest</button>
           </form>
@@ -419,7 +419,7 @@ $sidebarLinks = [
                   </div>
                   <div class="rule-actions">
                     <button type="button" class="rule-action-btn" onclick="toggleEdit('rule-{{ $rule->id }}')">Edit</button>
-                    <form method="POST" action="{{ route('workers.rules.destroy', [$dep->id, $rule->id]) }}">
+                    <form method="POST" action="{{ route('app.workers.rules.destroy', [$dep->id, $rule->id]) }}">
                       @csrf @method('DELETE')
                       <button type="submit" class="rule-action-btn">Remove</button>
                     </form>
@@ -427,7 +427,7 @@ $sidebarLinks = [
                 </div>
               </div>
               <div id="edit-rule-{{ $rule->id }}" class="mem-edit-panel" style="display:none">
-                <form method="POST" action="{{ route('workers.rules.update', [$dep->id, $rule->id]) }}" style="display:flex;flex-direction:column;gap:10px">
+                <form method="POST" action="{{ route('app.workers.rules.update', [$dep->id, $rule->id]) }}" style="display:flex;flex-direction:column;gap:10px">
                   @csrf @method('PATCH')
                   <div style="display:flex;align-items:center;gap:8px">
                     <span class="rule-id">{{ $rule->rule_id }}</span>
@@ -457,7 +457,7 @@ $sidebarLinks = [
 
             <div class="mem-form-card">
               <div class="mem-form-head">Add rule<span>Scoped to {{ $activeP['label'] }}</span></div>
-              <form method="POST" action="{{ route('workers.rules.store', $dep->id) }}" class="mem-form-body">
+              <form method="POST" action="{{ route('app.workers.rules.store', $dep->id) }}" class="mem-form-body">
                 @csrf
                 <input type="hidden" name="persona" value="{{ $activeKey }}">
                 <div><label class="mem-field-label">Priority</label>

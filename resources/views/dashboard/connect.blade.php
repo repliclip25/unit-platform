@@ -147,13 +147,13 @@ body{font-family:'Inter',sans-serif;background:var(--db-bg);color:var(--db-text)
 @php
 $tokenFmt = $tokenTotal >= 1000000 ? number_format($tokenTotal/1000000,1).'M' : number_format($tokenTotal);
 $sidebarLinks = [
-  ['Memory',       'M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18', route('workers.memory','ava'), false],
-  ['Templates',    'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z', route('workers.templates',['slug'=>'ava']), false],
-  ['Rules',        'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4', route('workers.rules','ava'), false],
-  ['Fast Track',   'M13 10V3L4 14h7v7l9-11h-7z', route('workers.fast-track.page','ava'), false],
-  ['Integrations', 'M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1', route('workers.connect','ava'), true],
-  ['Billing',      'M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z', route('billing'), false],
-  ['Activity Log', 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2', route('transactions'), false],
+  ['Memory',       'M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18', route('app.workers.memory','ava'), false],
+  ['Templates',    'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z', route('app.workers.templates',['slug'=>'ava']), false],
+  ['Rules',        'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4', route('app.workers.rules','ava'), false],
+  ['Fast Track',   'M13 10V3L4 14h7v7l9-11h-7z', route('app.workers.fast-track.page','ava'), false],
+  ['Integrations', 'M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1', route('app.workers.connect','ava'), true],
+  ['Billing',      'M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z', route('app.billing'), false],
+  ['Activity Log', 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2', route('app.transactions'), false],
 ];
 @endphp
 
@@ -161,9 +161,9 @@ $sidebarLinks = [
 
 {{-- ══ TOP BAR ══ --}}
 <div class="ob-topbar">
-  <a href="{{ route('dashboard') }}" class="ob-topbar-logo" style="text-decoration:none">UNIT</a>
+  <a href="{{ route('app.dashboard') }}" class="ob-topbar-logo" style="text-decoration:none">UNIT</a>
   <div class="ob-topbar-right">
-    <a href="{{ route('profile.show') }}" class="ob-topbar-name" style="text-decoration:none">{{ auth()->user()->name }}</a>
+    <a href="{{ route('app.profile.show') }}" class="ob-topbar-name" style="text-decoration:none">{{ auth()->user()->name }}</a>
     <button class="ob-theme-toggle" id="theme-toggle" type="button" title="Toggle dark/light mode" aria-label="Toggle theme"></button>
     <div class="ob-menu-wrap">
       <button class="ob-hamburger" id="menu-toggle" type="button" aria-label="Menu">
@@ -178,7 +178,7 @@ $sidebarLinks = [
           </div>
         </div>
         <div class="ob-menu-mobile-links">
-          <a href="{{ route('dashboard') }}" class="ob-menu-item">
+          <a href="{{ route('app.dashboard') }}" class="ob-menu-item">
             <svg viewBox="0 0 24 24" class="ob-menu-item-icon"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
             Dashboard
           </a>
@@ -191,7 +191,7 @@ $sidebarLinks = [
           <div style="border-top:1px solid var(--db-border);margin:6px 0"></div>
         </div>
         <div class="ob-menu-token"><span class="ob-token-badge">{{ $tokenFmt }} tokens</span></div>
-        <a href="{{ route('settings.api-keys') }}" class="ob-menu-item">Settings</a>
+        <a href="{{ route('app.settings.api-keys') }}" class="ob-menu-item">Settings</a>
         <form method="POST" action="{{ route('logout') }}">@csrf<button type="submit" class="ob-menu-item">Logout</button></form>
       </div>
     </div>
@@ -204,12 +204,12 @@ $sidebarLinks = [
   <aside class="ob-sidebar">
     <div class="ob-steps">
       <div class="ob-workers-hd">
-        <a href="{{ route('profile.show') }}" style="color:inherit;text-decoration:none">{{ strtoupper($firstName) }}'S WORKERS</a>
+        <a href="{{ route('app.profile.show') }}" style="color:inherit;text-decoration:none">{{ strtoupper($firstName) }}'S WORKERS</a>
       </div>
       @foreach($workerCatalog as $wc)
       @php
         $wDot  = $wc->status==='active' ? '#22c55e' : '#f59e0b';
-        $wHref = !$wc->active ? route('workers.page') : ($wc->slug==='ava' ? route('desk.ava') : route('workers.overview',$wc->slug));
+        $wHref = !$wc->active ? route('public.workers.index') : ($wc->slug==='ava' ? route('app.desk.ava') : route('app.workers.overview',$wc->slug));
       @endphp
       <a href="{{ $wHref }}" class="ob-step {{ $wc->active ? 'done' : 'pending' }}" style="text-decoration:none{{ !$wc->active ? ';opacity:.5' : '' }}">
         <div class="ob-step-rail">
@@ -234,7 +234,7 @@ $sidebarLinks = [
         </div>
       </a>
       @endforeach
-      <a href="{{ route('workers.page') }}" class="ob-step pending" style="text-decoration:none;margin-top:4px">
+      <a href="{{ route('public.workers.index') }}" class="ob-step pending" style="text-decoration:none;margin-top:4px">
         <div class="ob-step-rail"><div class="ob-step-num" style="background:var(--db-chip);border:1.5px dashed var(--db-border);color:var(--db-text-muted);font-size:16px;font-weight:400">+</div></div>
         <div class="ob-step-body"><div class="ob-step-label">Hire a worker</div></div>
       </a>
@@ -285,10 +285,10 @@ $sidebarLinks = [
                 <div class="cn-account-sub">Gmail account connected</div>
               </div>
             </div>
-            <a href="{{ route('ava.gmail.authorize') }}" class="cn-link">Reconnect different account</a>
+            <a href="{{ route('app.ava.gmail.authorize') }}" class="cn-link">Reconnect different account</a>
           @else
             <p class="cn-body-text">Connect the Gmail account where your renewal and subscription emails arrive. AVA will monitor this inbox and create drafts there.</p>
-            <a href="{{ route('ava.gmail.authorize') }}" class="mem-btn" style="background:#fff;color:#111">
+            <a href="{{ route('app.ava.gmail.authorize') }}" class="mem-btn" style="background:#fff;color:#111">
               <svg width="16" height="16" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
               Connect with Google
             </a>
@@ -312,10 +312,10 @@ $sidebarLinks = [
             <p class="cn-body-text" style="margin-bottom:0">Connect Gmail first.</p>
           @elseif($credential->watch_active)
             <p class="cn-body-text">AVA is watching your inbox. Every email that arrives will be automatically processed.</p>
-            <a href="{{ route('ava.gmail.watch') }}" class="cn-link">Renew watch</a>
+            <a href="{{ route('app.ava.gmail.watch') }}" class="cn-link">Renew watch</a>
           @else
             <p class="cn-body-text">Tell Gmail to push new emails to AVA automatically. This activates real-time inbox monitoring.</p>
-            <a href="{{ route('ava.gmail.watch') }}" class="mem-btn">Activate Inbox Watch</a>
+            <a href="{{ route('app.ava.gmail.watch') }}" class="mem-btn">Activate Inbox Watch</a>
           @endif
         </div>
       </div>
@@ -330,7 +330,7 @@ $sidebarLinks = [
         </div>
         <div class="cn-card-body">
           <p class="cn-body-text">Add your clients, contacts, and assets so AVA knows who owns what and how to handle each situation.</p>
-          <a href="{{ route('memory') }}" class="mem-btn-secondary">Go to Memory →</a>
+          <a href="{{ route('app.memory') }}" class="mem-btn-secondary">Go to Memory →</a>
         </div>
       </div>
 

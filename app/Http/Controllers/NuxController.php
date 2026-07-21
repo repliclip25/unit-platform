@@ -30,7 +30,7 @@ class NuxController extends Controller
         $code  = $request->query('code');
 
         if ($request->query('error') || $state !== session('nux_linkedin_state')) {
-            return redirect()->route('dashboard')
+            return redirect()->route('app.dashboard')
                 ->with('error', 'LinkedIn authorization failed. Please try again.');
         }
 
@@ -40,13 +40,13 @@ class NuxController extends Controller
         $success = $linkedin->handleCallback($userId, $code, $depId);
 
         if (!$success) {
-            return redirect()->route('dashboard')
+            return redirect()->route('app.dashboard')
                 ->with('error', 'LinkedIn connection failed. Please try again.');
         }
 
         session()->forget('nux_linkedin_state');
 
-        return redirect()->route('dashboard')
+        return redirect()->route('app.dashboard')
             ->with('success', 'LinkedIn connected successfully.');
     }
 
@@ -68,20 +68,20 @@ class NuxController extends Controller
         $code  = $request->query('code');
 
         if ($request->query('error') || $state !== session('nux_x_state')) {
-            return redirect()->route('dashboard')
+            return redirect()->route('app.dashboard')
                 ->with('error', 'X authorization failed. Please try again.');
         }
 
         $success = $x->handleCallback(auth()->id(), $code, $state);
 
         if (!$success) {
-            return redirect()->route('dashboard')
+            return redirect()->route('app.dashboard')
                 ->with('error', 'X connection failed. Please try again.');
         }
 
         session()->forget('nux_x_state');
 
-        return redirect()->route('dashboard')
+        return redirect()->route('app.dashboard')
             ->with('success', 'X connected successfully.');
     }
 

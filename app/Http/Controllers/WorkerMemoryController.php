@@ -38,13 +38,13 @@ class WorkerMemoryController extends Controller
         $headers = session('import_headers');
         $rows    = session('import_rows');
         $type    = session('import_type');
-        if (!$headers || !$rows) return redirect()->route('workers.memory', $id)->with('error', 'Import session expired.');
+        if (!$headers || !$rows) return redirect()->route('app.workers.memory', $id)->with('error', 'Import session expired.');
         $mapping = [];
         foreach ($headers as $i => $h) { $mapping[$i] = $request->input("mapping.{$i}") ?: null; }
         $result = $importer->import($headers, $rows, $mapping, $type, auth()->id());
         if (session('import_tmp')) Storage::disk('local')->delete(session('import_tmp'));
         session()->forget(['import_tmp','import_headers','import_rows','import_type','import_dep_id']);
-        return redirect()->route('workers.memory', $id)->with('success', "Import complete: {$result['inserted']} {$type} imported, {$result['skipped']} skipped.");
+        return redirect()->route('app.workers.memory', $id)->with('success', "Import complete: {$result['inserted']} {$type} imported, {$result['skipped']} skipped.");
     }
 
     public function storeClient(int $id, Request $request)

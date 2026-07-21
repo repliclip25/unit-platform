@@ -142,6 +142,6 @@ class OAuthController extends Controller
             return redirect()->intended(route('hire.ava.welcome'));
         }
 
-        return redirect()->intended(route('dashboard'));
+        return redirect()->intended(route('app.dashboard'));
     }
 }

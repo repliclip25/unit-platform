@@ -49,7 +49,7 @@ class TransactionControllerTest extends TestCase
 
     public function test_index_requires_auth(): void
     {
-        $this->get(route('transactions'))->assertRedirect('/login');
+        $this->get(route('app.transactions'))->assertRedirect('/login');
     }
 
     public function test_index_shows_transactions_for_authenticated_user(): void
@@ -58,7 +58,7 @@ class TransactionControllerTest extends TestCase
         $this->makeTx(['status' => 'dismissed']); // should be hidden by default
 
         $this->actingAs($this->user)
-            ->get(route('transactions'))
+            ->get(route('app.transactions'))
             ->assertOk()
             ->assertViewIs('dashboard.transactions');
     }
@@ -69,7 +69,7 @@ class TransactionControllerTest extends TestCase
         $this->makeTx(['tx_id' => 'TX-FAIL',  'status' => 'failed']);
 
         $response = $this->actingAs($this->user)
-            ->get(route('transactions', ['filter' => 'draft_ready']));
+            ->get(route('app.transactions', ['filter' => 'draft_ready']));
 
         $response->assertOk();
         $txns = $response->viewData('transactions');
@@ -89,7 +89,7 @@ class TransactionControllerTest extends TestCase
         ]);
 
         $response = $this->actingAs($this->user)
-            ->get(route('transactions'));
+            ->get(route('app.transactions'));
 
         $txns = $response->viewData('transactions');
         $this->assertCount(0, $txns);
@@ -102,7 +102,7 @@ class TransactionControllerTest extends TestCase
         $txId = $this->makeTx(['status' => 'draft_ready']);
 
         $this->actingAs($this->user)
-            ->get(route('transactions.show', $txId))
+            ->get(route('app.transactions.show', $txId))
             ->assertOk()
             ->assertViewIs('dashboard.transaction-detail');
     }
@@ -120,7 +120,7 @@ class TransactionControllerTest extends TestCase
         ]);
 
         $this->actingAs($this->user)
-            ->get(route('transactions.show', 'TX-OTHER'))
+            ->get(route('app.transactions.show', 'TX-OTHER'))
             ->assertNotFound();
     }
 
@@ -131,7 +131,7 @@ class TransactionControllerTest extends TestCase
         $txId = $this->makeTx(['status' => 'reading']);
 
         $this->actingAs($this->user)
-            ->getJson(route('transactions.status', $txId))
+            ->getJson(route('app.transactions.status', $txId))
             ->assertOk()
             ->assertJson(['status' => 'reading', 'done' => false, 'failed' => false]);
     }
@@ -141,7 +141,7 @@ class TransactionControllerTest extends TestCase
         $txId = $this->makeTx(['status' => 'draft_ready']);
 
         $this->actingAs($this->user)
-            ->getJson(route('transactions.status', $txId))
+            ->getJson(route('app.transactions.status', $txId))
             ->assertJson(['done' => true, 'failed' => false]);
     }
 
@@ -150,14 +150,14 @@ class TransactionControllerTest extends TestCase
         $txId = $this->makeTx(['status' => 'failed']);
 
         $this->actingAs($this->user)
-            ->getJson(route('transactions.status', $txId))
+            ->getJson(route('app.transactions.status', $txId))
             ->assertJson(['done' => true, 'failed' => true]);
     }
 
     public function test_status_returns_404_for_unknown_tx(): void
     {
         $this->actingAs($this->user)
-            ->getJson(route('transactions.status', 'TX-NOPE'))
+            ->getJson(route('app.transactions.status', 'TX-NOPE'))
             ->assertNotFound();
     }
 
@@ -180,7 +180,7 @@ class TransactionControllerTest extends TestCase
         DB::table('transactions')->where('tx_id', $txId)->update(['deployment_id' => 1]);
 
         $this->actingAs($this->user)
-            ->post(route('transactions.refire', $txId))
+            ->post(route('app.transactions.refire', $txId))
             ->assertRedirect();
 
         $tx = DB::table('transactions')->where('tx_id', $txId)->first();
@@ -195,7 +195,7 @@ class TransactionControllerTest extends TestCase
         $txId = $this->makeTx(['status' => 'draft_ready']);
 
         $this->actingAs($this->user)
-            ->post(route('transactions.refire', $txId))
+            ->post(route('app.transactions.refire', $txId))
             ->assertRedirect()
             ->assertSessionHas('error');
 
@@ -211,7 +211,7 @@ class TransactionControllerTest extends TestCase
         ]);
 
         $this->actingAs($this->user)
-            ->post(route('transactions.refire', $txId))
+            ->post(route('app.transactions.refire', $txId))
             ->assertRedirect()
             ->assertSessionHas('error');
 
@@ -225,8 +225,8 @@ class TransactionControllerTest extends TestCase
         $txId = $this->makeTx(['status' => 'failed']);
 
         $this->actingAs($this->user)
-            ->post(route('transactions.dismiss', $txId), ['reason' => 'Not relevant'])
-            ->assertRedirect(route('transactions'));
+            ->post(route('app.transactions.dismiss', $txId), ['reason' => 'Not relevant'])
+            ->assertRedirect(route('app.transactions'));
 
         $tx = DB::table('transactions')->where('tx_id', $txId)->first();
         $this->assertEquals('dismissed', $tx->status);
@@ -238,7 +238,7 @@ class TransactionControllerTest extends TestCase
         $txId = $this->makeTx(['status' => 'sent']);
 
         $this->actingAs($this->user)
-            ->post(route('transactions.dismiss', $txId))
+            ->post(route('app.transactions.dismiss', $txId))
             ->assertRedirect()
             ->assertSessionHas('error');
 
@@ -250,8 +250,8 @@ class TransactionControllerTest extends TestCase
         $txId = $this->makeTx(['status' => 'draft_ready']);
 
         $this->actingAs($this->user)
-            ->post(route('transactions.dismiss', $txId))
-            ->assertRedirect(route('transactions'));
+            ->post(route('app.transactions.dismiss', $txId))
+            ->assertRedirect(route('app.transactions'));
 
         $this->assertEquals('dismissed', DB::table('transactions')->where('tx_id', $txId)->value('status'));
     }
@@ -266,8 +266,8 @@ class TransactionControllerTest extends TestCase
         ]);
 
         $this->actingAs($this->user)
-            ->delete(route('transactions.delete', $txId))
-            ->assertRedirect(route('transactions'));
+            ->delete(route('app.transactions.delete', $txId))
+            ->assertRedirect(route('app.transactions'));
 
         $this->assertNull(DB::table('transactions')->where('tx_id', $txId)->first());
     }
@@ -280,7 +280,7 @@ class TransactionControllerTest extends TestCase
         ]);
 
         $this->actingAs($this->user)
-            ->delete(route('transactions.delete', $txId))
+            ->delete(route('app.transactions.delete', $txId))
             ->assertRedirect()
             ->assertSessionHas('error');
 
@@ -310,8 +310,8 @@ class TransactionControllerTest extends TestCase
         ]);
 
         $this->actingAs($this->user)
-            ->post(route('transactions.decide', $txId), ['decision' => 'approved'])
-            ->assertRedirect(route('transactions'));
+            ->post(route('app.transactions.decide', $txId), ['decision' => 'approved'])
+            ->assertRedirect(route('app.transactions'));
 
         $tx = DB::table('transactions')->where('tx_id', $txId)->first();
         // Approval marks the tx as 'approved' — sending happens manually from Gmail
@@ -342,8 +342,8 @@ class TransactionControllerTest extends TestCase
         ]);
 
         $this->actingAs($this->user)
-            ->post(route('transactions.decide', $txId), ['decision' => 'rejected', 'notes' => 'Wrong client'])
-            ->assertRedirect(route('transactions'));
+            ->post(route('app.transactions.decide', $txId), ['decision' => 'rejected', 'notes' => 'Wrong client'])
+            ->assertRedirect(route('app.transactions'));
 
         $tx = DB::table('transactions')->where('tx_id', $txId)->first();
         $this->assertEquals('rejected', $tx->status);

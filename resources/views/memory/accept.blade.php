@@ -115,7 +115,7 @@ body{background:var(--db-bg);color:var(--db-text)}
         @csrf
         <button type="submit" class="act-btn act-btn-primary" style="width:100%">Accept Invitation</button>
       </form>
-      <a href="{{ route('dashboard') }}" class="act-btn act-btn-secondary">Decline</a>
+      <a href="{{ route('app.dashboard') }}" class="act-btn act-btn-secondary">Decline</a>
     </div>
 
   </div>

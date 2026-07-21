@@ -52,7 +52,7 @@
                     <h3 class="text-white text-sm font-semibold">Deployment Settings</h3>
                     <p class="text-gray-500 text-xs mt-0.5">Core configuration for this worker instance</p>
                 </div>
-                <form method="POST" action="{{ route('workers.config', $dep->id) }}" class="px-5 py-5 space-y-4">
+                <form method="POST" action="{{ route('app.workers.config', $dep->id) }}" class="px-5 py-5 space-y-4">
                     @csrf @method('PATCH')
                     <div>
                         <label class="text-gray-400 text-xs block mb-1">Deployment Name</label>
@@ -74,7 +74,7 @@
                     <h3 class="text-white text-sm font-semibold">Daily Summary</h3>
                     <p class="text-gray-500 text-xs mt-0.5">Choose when AVA emails you a daily recap of what it processed. Only sent on days with activity.</p>
                 </div>
-                <form method="POST" action="{{ route('workers.config', $dep->id) }}" class="px-5 py-5 space-y-4">
+                <form method="POST" action="{{ route('app.workers.config', $dep->id) }}" class="px-5 py-5 space-y-4">
                     @csrf @method('PATCH')
                     <input type="hidden" name="name" value="{{ $dep->name }}">
                     <input type="hidden" name="ai_model" value="{{ $currentModel }}">
@@ -102,7 +102,7 @@
                     <h3 class="text-white text-sm font-semibold">Capture Guardrails</h3>
                     <p class="text-gray-500 text-xs mt-0.5">Filter which emails enter the pipeline. Emails that don't match are marked <code class="text-xs bg-gray-800 px-1 rounded">filtered_out</code> — no AI runs, no cost.</p>
                 </div>
-                <form method="POST" action="{{ route('workers.config', $dep->id) }}" class="px-5 py-5 space-y-5">
+                <form method="POST" action="{{ route('app.workers.config', $dep->id) }}" class="px-5 py-5 space-y-5">
                     @csrf @method('PATCH')
                     <input type="hidden" name="name" value="{{ $dep->name }}">
                     <input type="hidden" name="ai_model" value="{{ $currentModel }}">
@@ -221,7 +221,7 @@
                     @endif
                 </div>
                 <div class="px-5 py-4">
-                    <form method="POST" action="{{ route('workers.persona', $dep->id) }}" x-data="{ selected: '{{ $currentPersona ?? '' }}' }">
+                    <form method="POST" action="{{ route('app.workers.persona', $dep->id) }}" x-data="{ selected: '{{ $currentPersona ?? '' }}' }">
                         @csrf @method('PATCH')
                         <div class="space-y-2 mb-4">
                             @foreach($personas as $key => $p)
@@ -280,7 +280,7 @@
                     </p>
                 </div>
 
-                <form method="POST" action="{{ route('workers.prompt-overrides', $dep->id) }}" class="px-5 py-5 space-y-8">
+                <form method="POST" action="{{ route('app.workers.prompt-overrides', $dep->id) }}" class="px-5 py-5 space-y-8">
                     @csrf
 
                     @foreach($pipelineStages as $stage)
@@ -427,7 +427,7 @@
                         <p class="text-white text-sm font-medium">Remove this worker</p>
                         <p class="text-gray-500 text-xs mt-0.5">Deletes the deployment and all associated configuration. Transaction history is preserved.</p>
                     </div>
-                    <form method="POST" action="{{ route('workers.destroy', $dep->id) }}"
+                    <form method="POST" action="{{ route('app.workers.destroy', $dep->id) }}"
                           onsubmit="return confirm('Permanently remove {{ addslashes($dep->name) }}? This cannot be undone.')">
                         @csrf @method('DELETE')
                         <button type="submit"
@@ -447,7 +447,7 @@
                     <h3 class="text-white text-sm font-semibold">AI Processing Model</h3>
                     <p class="text-gray-600 text-xs mt-0.5">Choose the model powering this worker's pipeline</p>
                 </div>
-                <form method="POST" action="{{ route('workers.model', $dep->id) }}" class="px-5 py-5 space-y-5">
+                <form method="POST" action="{{ route('app.workers.model', $dep->id) }}" class="px-5 py-5 space-y-5">
                     @csrf @method('PATCH')
 
                     @foreach($catalog as $providerKey => $provider)

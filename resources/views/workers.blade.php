@@ -378,7 +378,7 @@ body{font-family:var(--font-b);color:var(--text);background:var(--bg);-webkit-fo
   <div class="w nav-i">
     <a href="{{ url("/") }}" class="logo"><span class="logo-name">UNIT</span></a>
     <ul class="nav-links">
-      <li><a href="{{ route('workers.page') }}" class="active">Meet the Workers</a></li>
+      <li><a href="{{ route('public.workers.index') }}" class="active">Meet the Workers</a></li>
       <li><a href="{{ url('/') }}#timeline">How It Works</a></li>
       <li><a href="{{ route('marketplace') }}">For Business</a></li>
       <li><a href="{{ url('/') }}#resources">Resources</a></li>
@@ -386,12 +386,12 @@ body{font-family:var(--font-b);color:var(--text);background:var(--bg);-webkit-fo
     </ul>
     <div class="nav-acts">
       @auth
-        <a href="{{ route('dashboard') }}" class="btn-login" style="border-radius:99px">Dashboard</a>
+        <a href="{{ route('app.dashboard') }}" class="btn-login" style="border-radius:99px">Dashboard</a>
       @else
         <a href="{{ route('login') }}" class="btn-login" style="border-radius:99px">Log in</a>
       @endauth
       @if($__navAvaHasDesk)
-      <a href="{{ route('desk.ava') }}" class="btn-cta">Go to AVA's Desk <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+      <a href="{{ route('app.desk.ava') }}" class="btn-cta">Go to AVA's Desk <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
       @else
       <a href="{{ route('hire.ava.welcome') }}" class="btn-cta">Hire Your First Worker <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
       @endif
@@ -411,7 +411,7 @@ body{font-family:var(--font-b);color:var(--text);background:var(--bg);-webkit-fo
     <button class="mob-close" id="mob-close">✕</button>
   </div>
   <div class="mob-links">
-    <a href="{{ route('workers.page') }}" onclick="closeMob()">Meet the Workers</a>
+    <a href="{{ route('public.workers.index') }}" onclick="closeMob()">Meet the Workers</a>
     <a href="{{ url('/') }}#timeline" onclick="closeMob()">How It Works</a>
     <a href="{{ route('marketplace') }}" onclick="closeMob()">For Business</a>
     <a href="{{ url('/') }}#resources" onclick="closeMob()">Resources</a>
@@ -419,12 +419,12 @@ body{font-family:var(--font-b);color:var(--text);background:var(--bg);-webkit-fo
   </div>
   <div class="mob-ctas">
     @auth
-      <a href="{{ route('dashboard') }}" class="btn-login" style="text-align:center;padding:12px;border-radius:99px">Dashboard</a>
+      <a href="{{ route('app.dashboard') }}" class="btn-login" style="text-align:center;padding:12px;border-radius:99px">Dashboard</a>
     @else
       <a href="{{ route('login') }}" class="btn-login" style="text-align:center;padding:12px;border-radius:99px">Log in</a>
     @endauth
     @if($__navAvaHasDesk)
-    <a href="{{ route('desk.ava') }}" class="btn-cta" style="padding:12px;justify-content:center">Go to AVA's Desk →</a>
+    <a href="{{ route('app.desk.ava') }}" class="btn-cta" style="padding:12px;justify-content:center">Go to AVA's Desk →</a>
     @else
     <a href="{{ route('hire.ava.welcome') }}" class="btn-cta" style="padding:12px;justify-content:center">Hire Your First Worker →</a>
     @endif
@@ -545,11 +545,11 @@ body{font-family:var(--font-b);color:var(--text);background:var(--bg);-webkit-fo
           @endphp
           <div class="wk-btns">
             @if($avaHasDesk)
-              <a href="{{ route('desk.ava') }}" class="btn-hire-wk" style="background:#0D0D0D">AVA's Desk <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+              <a href="{{ route('app.desk.ava') }}" class="btn-hire-wk" style="background:#0D0D0D">AVA's Desk <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
             @else
               <a href="{{ route('hire.ava.welcome') }}" class="btn-hire-wk" style="background:#0D0D0D">Hire AVA <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
             @endif
-            <a href="{{ route('workers.public.show2', 'ava') }}" class="btn-watch-wk" style="color:#0D0D0D;border-color:#E5E7EB">Watch Ava's Day <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+            <a href="{{ route('public.workers.show', 'ava') }}" class="btn-watch-wk" style="color:#0D0D0D;border-color:#E5E7EB">Watch Ava's Day <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
           </div>
         </div>
       </div>
@@ -691,7 +691,7 @@ body{font-family:var(--font-b);color:var(--text);background:var(--bg);-webkit-fo
       </div>
       <div class="cta-foot-right">
         @if($__navAvaHasDesk)
-        <a href="{{ route('desk.ava') }}" class="btn-cta-main">
+        <a href="{{ route('app.desk.ava') }}" class="btn-cta-main">
           Go to AVA's Desk
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
         </a>
@@ -718,7 +718,7 @@ body{font-family:var(--font-b);color:var(--text);background:var(--bg);-webkit-fo
       <div>
         <div class="ft-col-h">Workers</div>
         <div class="ft-links">
-          <a href="{{ route('workers.public.show2', 'ava') }}">AVA — Renewals</a>
+          <a href="{{ route('public.workers.show', 'ava') }}">AVA — Renewals</a>
           <a href="#">DOX — Documents</a>
           <a href="#">MOX — Brand</a>
           <a href="#">NUX — Content</a>

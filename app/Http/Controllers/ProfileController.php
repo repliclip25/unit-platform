@@ -124,7 +124,7 @@ class ProfileController extends Controller
             'updated_at' => now(),
         ]);
 
-        return redirect()->route('profile.show')->with('success', 'Profile updated.');
+        return redirect()->route('app.profile.show')->with('success', 'Profile updated.');
     }
 
     public function updatePassword(Request $request): RedirectResponse
@@ -133,7 +133,7 @@ class ProfileController extends Controller
 
         // Users who signed up via OAuth may have no password
         if (!$user->password) {
-            return redirect()->route('profile.show')->with('error', 'Password changes are not available for OAuth accounts.');
+            return redirect()->route('app.profile.show')->with('error', 'Password changes are not available for OAuth accounts.');
         }
 
         $request->validate([
@@ -146,14 +146,14 @@ class ProfileController extends Controller
             'updated_at' => now(),
         ]);
 
-        return redirect()->route('profile.show')->with('success', 'Password updated.');
+        return redirect()->route('app.profile.show')->with('success', 'Password updated.');
     }
 
     public function revokeSession(Request $request, string $sessionId): RedirectResponse
     {
         // Never let a tenant revoke their own current session this way
         if ($sessionId === session()->getId()) {
-            return redirect()->route('profile.show')->with('error', 'Use Sign Out to end your current session.');
+            return redirect()->route('app.profile.show')->with('error', 'Use Sign Out to end your current session.');
         }
 
         DB::table('sessions')
@@ -161,7 +161,7 @@ class ProfileController extends Controller
             ->where('user_id', $request->user()->id)
             ->delete();
 
-        return redirect()->route('profile.show')->with('success', 'Session ended.');
+        return redirect()->route('app.profile.show')->with('success', 'Session ended.');
     }
 
     public function revokeOtherSessions(Request $request): RedirectResponse
@@ -171,7 +171,7 @@ class ProfileController extends Controller
             ->where('id', '!=', session()->getId())
             ->delete();
 
-        return redirect()->route('profile.show')->with('success', 'All other sessions ended.');
+        return redirect()->route('app.profile.show')->with('success', 'All other sessions ended.');
     }
 
     public function destroy(Request $request): RedirectResponse
@@ -223,7 +223,7 @@ class ProfileController extends Controller
             'updated_at'            => now(),
         ]);
 
-        return redirect()->route('profile.show')->with('success', 'Account deletion cancelled. Your account is fully restored.');
+        return redirect()->route('app.profile.show')->with('success', 'Account deletion cancelled. Your account is fully restored.');
     }
 
     /**

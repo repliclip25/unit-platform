@@ -560,17 +560,17 @@ class WorkerController extends Controller
 
         // If trial gate is on, send tenant to billing to pick a plan (card collected there, trial days applied)
         if ($trialGated) {
-            return redirect()->route('billing', ['pick' => $depId])
+            return redirect()->route('app.billing', ['pick' => $depId])
                 ->with('info', 'Your trial starts free. Choose a plan — your card will not be charged until the trial ends.');
         }
 
-        return redirect()->route('workers.show', $depId)->with('success', 'Worker deployed. AVA is now monitoring.');
+        return redirect()->route('app.workers.show', $depId)->with('success', 'Worker deployed. AVA is now monitoring.');
     }
 
     public function destroy(int $id)
     {
         $dep = DB::table('worker_deployments')->where('id', $id)->where('user_id', auth()->id())->first();
-        if (!$dep) return redirect()->route('workers.deploy')->with('error', 'Worker not found.');
+        if (!$dep) return redirect()->route('app.workers.index')->with('error', 'Worker not found.');
 
         // Sync trial usage back to ledger before removing the deployment
         $billing = DB::table('deployment_billing')->where('deployment_id', $id)->first();
@@ -586,7 +586,7 @@ class WorkerController extends Controller
             ->update(['deployment_id' => null, 'status' => 'decommissioned', 'updated_at' => now()]);
 
         DB::table('worker_deployments')->where('id', $id)->where('user_id', auth()->id())->delete();
-        return redirect()->route('workers.deploy')->with('success', 'Worker removed.');
+        return redirect()->route('app.workers.index')->with('success', 'Worker removed.');
     }
 
     public function updateStatus(Request $request, int $id)
@@ -708,13 +708,13 @@ class WorkerController extends Controller
             if (str_contains($e->getMessage(), 'invalid_grant')) {
                 DB::table('user_gmail_credentials')->where('id', $credentialId)->delete();
                 DB::table('deployment_credentials')->where('credential_id', $credentialId)->delete();
-                return redirect()->route('ava.gmail.authorize')
+                return redirect()->route('app.ava.gmail.authorize')
                     ->with('error', 'Gmail session expired for ' . $credential->gmail_address . '. Please reconnect.');
             }
             return back()->with('error', 'Watch renewal failed: ' . $e->getMessage());
         }
 
-        return redirect()->route('workers.connect', $deployment->worker_slug)->with('success', "Watch renewed for {$credential->gmail_address}.");
+        return redirect()->route('app.workers.connect', $deployment->worker_slug)->with('success', "Watch renewed for {$credential->gmail_address}.");
     }
 
     public function configure(string $slug)
@@ -841,7 +841,7 @@ class WorkerController extends Controller
                     'gate'      => 'PROMPT_TEST_EXHAUSTED',
                     'used'      => $used,
                     'limit'     => $limit,
-                    'subscribe' => route('billing'),
+                    'subscribe' => route('app.billing'),
                 ], 402);
             }
         }

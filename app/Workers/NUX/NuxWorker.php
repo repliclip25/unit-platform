@@ -143,7 +143,7 @@ class NuxWorker implements WorkerContract
                 'hint'            => 'The LinkedIn profile or page NUX watches for new posts.',
                 'required'        => true,
                 'multiple'        => false,
-                'connect_route'   => 'nux.connect.linkedin',
+                'connect_route'   => 'app.nux.connect.linkedin',
                 'authorize_route' => 'nux.linkedin.authorize',
             ],
             [
@@ -153,7 +153,7 @@ class NuxWorker implements WorkerContract
                 'hint'            => 'The X account NUX watches and repurposes content for.',
                 'required'        => true,
                 'multiple'        => false,
-                'connect_route'   => 'nux.connect.x',
+                'connect_route'   => 'app.nux.connect.x',
                 'authorize_route' => 'nux.x.authorize',
             ],
             [
@@ -163,8 +163,8 @@ class NuxWorker implements WorkerContract
                 'hint'            => 'NUX delivers finished drafts here for your review.',
                 'required'        => true,
                 'multiple'        => false,
-                'connect_route'   => 'nux.connect.gmail',
-                'authorize_route' => 'nux.gmail.authorize',
+                'connect_route'   => 'app.nux.connect.gmail',
+                'authorize_route' => 'app.nux.gmail.authorize',
             ],
         ];
     }

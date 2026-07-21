@@ -143,13 +143,13 @@ body{font-family:'Inter',sans-serif;background:var(--db-bg);color:var(--db-text)
 @php
 $tokenFmt = $tokenTotal >= 1000000 ? number_format($tokenTotal/1000000,1).'M' : number_format($tokenTotal);
 $sidebarLinks = [
-  ['Memory',       'M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18', route('workers.memory',$dep->worker_slug)],
-  ['Templates',    'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z', route('workers.templates',['slug'=>$dep->worker_slug])],
-  ['Rules',        'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4', route('workers.rules',$dep->worker_slug)],
-  ['Fast Track',   'M13 10V3L4 14h7v7l9-11h-7z', route('workers.fast-track.page',$dep->worker_slug)],
-  ['Integrations', 'M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1', route('workers.connect',$dep->worker_slug)],
-  ['Billing',      'M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z', route('workers.billing',$dep->worker_slug)],
-  ['Activity Log', 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2', route('transactions').'?deployment='.$dep->id],
+  ['Memory',       'M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18', route('app.workers.memory',$dep->worker_slug)],
+  ['Templates',    'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z', route('app.workers.templates',['slug'=>$dep->worker_slug])],
+  ['Rules',        'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4', route('app.workers.rules',$dep->worker_slug)],
+  ['Fast Track',   'M13 10V3L4 14h7v7l9-11h-7z', route('app.workers.fast-track.page',$dep->worker_slug)],
+  ['Integrations', 'M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1', route('app.workers.connect',$dep->worker_slug)],
+  ['Billing',      'M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z', route('app.workers.billing',$dep->worker_slug)],
+  ['Activity Log', 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2', route('app.transactions').'?deployment='.$dep->id],
 ];
 $profileImg = $registryRow?->profile_image ? asset('storage/' . $registryRow->profile_image) : null;
 @endphp
@@ -158,9 +158,9 @@ $profileImg = $registryRow?->profile_image ? asset('storage/' . $registryRow->pr
 
 {{-- ══ TOP BAR — identical to /desk/{slug}, /workers/{slug}/overview ══ --}}
 <div class="ob-topbar">
-  <a href="{{ route('dashboard') }}" class="ob-topbar-logo" style="text-decoration:none">UNIT</a>
+  <a href="{{ route('app.dashboard') }}" class="ob-topbar-logo" style="text-decoration:none">UNIT</a>
   <div class="ob-topbar-right">
-    <a href="{{ route('profile.show') }}" class="ob-topbar-name" style="text-decoration:none">{{ auth()->user()->name }}</a>
+    <a href="{{ route('app.profile.show') }}" class="ob-topbar-name" style="text-decoration:none">{{ auth()->user()->name }}</a>
     <button class="ob-theme-toggle" id="theme-toggle" type="button" title="Toggle dark/light mode" aria-label="Toggle theme"></button>
     <div class="ob-menu-wrap">
       <button class="ob-hamburger" id="menu-toggle" type="button" aria-label="Menu">
@@ -175,7 +175,7 @@ $profileImg = $registryRow?->profile_image ? asset('storage/' . $registryRow->pr
           </div>
         </div>
         <div class="ob-menu-mobile-links">
-          <a href="{{ route('dashboard') }}" class="ob-menu-item">
+          <a href="{{ route('app.dashboard') }}" class="ob-menu-item">
             <svg viewBox="0 0 24 24" class="ob-menu-item-icon"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
             Dashboard
           </a>
@@ -188,7 +188,7 @@ $profileImg = $registryRow?->profile_image ? asset('storage/' . $registryRow->pr
           <div style="border-top:1px solid var(--db-border);margin:6px 0"></div>
         </div>
         <div class="ob-menu-token"><span class="ob-token-badge">{{ $tokenFmt }} tokens</span></div>
-        <a href="{{ route('settings.api-keys') }}" class="ob-menu-item">Settings</a>
+        <a href="{{ route('app.settings.api-keys') }}" class="ob-menu-item">Settings</a>
         <form method="POST" action="{{ route('logout') }}">@csrf<button type="submit" class="ob-menu-item">Logout</button></form>
       </div>
     </div>
@@ -199,7 +199,7 @@ $profileImg = $registryRow?->profile_image ? asset('storage/' . $registryRow->pr
   <div class="wd-card-area">
   <main class="wd-main">
 
-    <a href="{{ route('dashboard') }}" class="wd-back">← Back to Dashboard</a>
+    <a href="{{ route('app.dashboard') }}" class="wd-back">← Back to Dashboard</a>
 
     <div class="wd-identity">
       @if($profileImg)
@@ -246,7 +246,7 @@ $profileImg = $registryRow?->profile_image ? asset('storage/' . $registryRow->pr
           <div class="wd-plan-tagline">{{ $tier->tagline }}</div>
           <div class="wd-plan-price">${{ number_format($tier->monthly_flat_rate, 0) }}<span>/month</span></div>
           <div class="wd-plan-limit">{{ $tier->transaction_limit ? number_format($tier->transaction_limit).' '.$unitLabel.'/month' : 'Unlimited '.$unitLabel }}</div>
-          <form method="POST" action="{{ route('billing.checkout', $dep->id) }}">
+          <form method="POST" action="{{ route('app.billing.checkout', $dep->id) }}">
             @csrf
             <input type="hidden" name="plan" value="{{ $tier->plan_slug }}">
             <button type="submit" class="wd-plan-btn">Subscribe — ${{ number_format($tier->monthly_flat_rate, 0) }}/mo</button>
@@ -264,7 +264,7 @@ $profileImg = $registryRow?->profile_image ? asset('storage/' . $registryRow->pr
     @if($workerStopped)
     <div class="wd-banner warn">
       <div><div class="wd-banner-title">Worker is {{ $dep->status }}</div><div class="wd-banner-body">Not processing any emails right now.</div></div>
-      <form method="POST" action="{{ route('workers.status', $dep->id) }}">
+      <form method="POST" action="{{ route('app.workers.status', $dep->id) }}">
         @csrf @method('PATCH')
         <input type="hidden" name="status" value="active">
         <button type="submit" class="wd-banner-action">Resume →</button>
@@ -279,7 +279,7 @@ $profileImg = $registryRow?->profile_image ? asset('storage/' . $registryRow->pr
       @if($subscriptionPlans->isNotEmpty())
       <div class="wd-manage-row">
         @foreach($subscriptionPlans as $sp)
-        <form method="POST" action="{{ route('billing.reactivate', $dep->id) }}">
+        <form method="POST" action="{{ route('app.billing.reactivate', $dep->id) }}">
           @csrf
           <input type="hidden" name="plan" value="{{ $sp->plan_slug }}">
           <button type="submit" class="wd-manage-btn">{{ $sp->display_name }}{{ $sp->monthly_flat_rate > 0 ? ' · $'.number_format($sp->monthly_flat_rate,0).'/mo' : ' · Custom' }}</button>
@@ -293,14 +293,14 @@ $profileImg = $registryRow?->profile_image ? asset('storage/' . $registryRow->pr
     @foreach($watchInactiveInboxes as $inactiveInbox)
     <div class="wd-banner warn">
       <div><div class="wd-banner-title">Gmail disconnected</div><div class="wd-banner-body">{{ $inactiveInbox->gmail_address }} is not watching for new mail.</div></div>
-      <a href="{{ route('workers.connect', $dep->worker_slug) }}" class="wd-banner-action">Reconnect →</a>
+      <a href="{{ route('app.workers.connect', $dep->worker_slug) }}" class="wd-banner-action">Reconnect →</a>
     </div>
     @endforeach
 
     @if($billingAlert)
     <div class="wd-banner warn">
       <div><div class="wd-banner-title">Payment past due</div><div class="wd-banner-body">Worker may be suspended soon.</div></div>
-      <a href="{{ route('workers.billing', $dep->worker_slug) }}" class="wd-banner-action">Fix billing →</a>
+      <a href="{{ route('app.workers.billing', $dep->worker_slug) }}" class="wd-banner-action">Fix billing →</a>
     </div>
     @endif
 
@@ -319,7 +319,7 @@ $profileImg = $registryRow?->profile_image ? asset('storage/' . $registryRow->pr
     @unless($productionReadiness['ready'])
     <div class="wd-banner notice">
       <div><div class="wd-banner-title">{{ $productionReadiness['title'] }}</div><div class="wd-banner-body">{{ $productionReadiness['body'] }}</div></div>
-      <a href="{{ route('workers.connect', $dep->worker_slug) }}" class="wd-banner-action">{{ $productionReadiness['connect_label'] }} →</a>
+      <a href="{{ route('app.workers.connect', $dep->worker_slug) }}" class="wd-banner-action">{{ $productionReadiness['connect_label'] }} →</a>
     </div>
     @endunless
 
@@ -352,19 +352,19 @@ $profileImg = $registryRow?->profile_image ? asset('storage/' . $registryRow->pr
     <div class="wd-card">
       <div class="wd-card-title">Configure</div>
       <div class="wd-links">
-        <a href="{{ route('workers.configure', $dep->worker_slug) }}" class="wd-link">
+        <a href="{{ route('app.workers.configure', $dep->worker_slug) }}" class="wd-link">
           <div class="wd-link-icon"><svg width="15" height="15" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><circle cx="12" cy="12" r="3"/></svg></div>
           <span class="wd-link-label">Configure</span>
         </a>
-        <a href="{{ route('workers.memory', $dep->worker_slug) }}" class="wd-link">
+        <a href="{{ route('app.workers.memory', $dep->worker_slug) }}" class="wd-link">
           <div class="wd-link-icon"><svg width="15" height="15" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18"/></svg></div>
           <span class="wd-link-label">Memory</span>
         </a>
-        <a href="{{ route('workers.rules', $dep->worker_slug) }}" class="wd-link">
+        <a href="{{ route('app.workers.rules', $dep->worker_slug) }}" class="wd-link">
           <div class="wd-link-icon"><svg width="15" height="15" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg></div>
           <span class="wd-link-label">Rules</span>
         </a>
-        <a href="{{ route('workers.templates', $dep->worker_slug) }}" class="wd-link">
+        <a href="{{ route('app.workers.templates', $dep->worker_slug) }}" class="wd-link">
           <div class="wd-link-icon"><svg width="15" height="15" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg></div>
           <span class="wd-link-label">Templates</span>
         </a>
@@ -376,19 +376,19 @@ $profileImg = $registryRow?->profile_image ? asset('storage/' . $registryRow->pr
       <div class="wd-card-title">Manage worker</div>
       <div class="wd-manage-row">
         @if($dep->status === 'active')
-        <form method="POST" action="{{ route('workers.status', $dep->id) }}">
+        <form method="POST" action="{{ route('app.workers.status', $dep->id) }}">
           @csrf @method('PATCH')
           <input type="hidden" name="status" value="paused">
           <button type="submit" class="wd-manage-btn">Pause worker</button>
         </form>
         @elseif($dep->status === 'paused')
-        <form method="POST" action="{{ route('workers.status', $dep->id) }}">
+        <form method="POST" action="{{ route('app.workers.status', $dep->id) }}">
           @csrf @method('PATCH')
           <input type="hidden" name="status" value="active">
           <button type="submit" class="wd-manage-btn">Resume worker</button>
         </form>
         @endif
-        <form method="POST" action="{{ route('workers.destroy', $dep->id) }}" onsubmit="return confirm('Remove {{ addslashes($dep->name) }}? This cannot be undone.')">
+        <form method="POST" action="{{ route('app.workers.destroy', $dep->id) }}" onsubmit="return confirm('Remove {{ addslashes($dep->name) }}? This cannot be undone.')">
           @csrf @method('DELETE')
           <button type="submit" class="wd-manage-btn danger">Remove worker</button>
         </form>

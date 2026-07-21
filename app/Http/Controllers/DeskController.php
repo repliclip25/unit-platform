@@ -27,7 +27,7 @@ class DeskController extends Controller
             ->first();
 
         if (!$dep) {
-            return redirect()->route('dashboard');
+            return redirect()->route('app.dashboard');
         }
 
         $depId = $dep->id;

@@ -919,12 +919,12 @@ body{
     </ul>
     <div class="nav-acts">
       @auth
-        <a href="{{ route('dashboard') }}" class="btn-login" style="border-radius:99px">Dashboard</a>
+        <a href="{{ route('app.dashboard') }}" class="btn-login" style="border-radius:99px">Dashboard</a>
       @else
         <a href="{{ route('login') }}" class="btn-login" style="border-radius:99px">Log in</a>
       @endauth
       @if($__navAvaHasDesk)
-      <a href="{{ route('desk.ava') }}" class="btn-cta">
+      <a href="{{ route('app.desk.ava') }}" class="btn-cta">
         Go to AVA's Desk
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
       </a>
@@ -962,12 +962,12 @@ body{
   </div>
   <div class="mob-ctas">
     @auth
-      <a href="{{ route('dashboard') }}" class="btn-login" style="text-align:center;padding:12px;border-radius:99px">Dashboard</a>
+      <a href="{{ route('app.dashboard') }}" class="btn-login" style="text-align:center;padding:12px;border-radius:99px">Dashboard</a>
     @else
       <a href="{{ route('login') }}" class="btn-login" style="text-align:center;padding:12px;border-radius:99px">Log in</a>
     @endauth
     @if($__navAvaHasDesk)
-    <a href="{{ route('desk.ava') }}" class="btn-cta" style="padding:12px;justify-content:center">Go to AVA's Desk →</a>
+    <a href="{{ route('app.desk.ava') }}" class="btn-cta" style="padding:12px;justify-content:center">Go to AVA's Desk →</a>
     @else
     <a href="{{ route('hire.ava.welcome') }}" class="btn-cta" style="padding:12px;justify-content:center">Hire Your First Worker →</a>
     @endif
@@ -1196,9 +1196,9 @@ body{
               ->whereIn('status', ['active', 'paused'])->exists();
           @endphp
           <div class="wk-btns">
-            <a href="{{ route('workers.public.show2', 'ava') }}" class="btn-wk-outline">Watch Ava's Day <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+            <a href="{{ route('public.workers.show', 'ava') }}" class="btn-wk-outline">Watch Ava's Day <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
             @if($avaHasDesk)
-              <a href="{{ route('desk.ava') }}" class="btn-wk">AVA's Desk <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+              <a href="{{ route('app.desk.ava') }}" class="btn-wk">AVA's Desk <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
             @else
               <a href="{{ route('hire.ava.welcome') }}" class="btn-wk">Hire AVA <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
             @endif
@@ -1653,7 +1653,7 @@ body{
       </div>
       <div class="cta-right">
         @if($__navAvaHasDesk)
-        <a href="{{ route('desk.ava') }}" class="btn-cta-main">
+        <a href="{{ route('app.desk.ava') }}" class="btn-cta-main">
           Go to AVA's Desk
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
         </a>
@@ -1730,7 +1730,7 @@ body{
       <div>
         <div class="ft-col-h">Workers</div>
         <div class="ft-links">
-          <a href="{{ route('workers.public.show2', 'ava') }}">AVA — Renewal Coordinator</a>
+          <a href="{{ route('public.workers.show', 'ava') }}">AVA — Renewal Coordinator</a>
           <a href="{{ route('marketplace') }}">All Workers</a>
           <a href="{{ route('referral.index') }}">Refer &amp; Earn</a>
         </div>

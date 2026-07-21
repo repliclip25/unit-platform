@@ -19,7 +19,7 @@ class VerifyEmailController extends Controller
         if ($request->user()->hasVerifiedEmail()) {
             // Already verified — go to onboarding if not complete, otherwise dashboard
             return $request->user()->hasCompletedOnboarding()
-                ? redirect()->route('dashboard')
+                ? redirect()->route('app.dashboard')
                 : redirect()->route('hire.ava.welcome');
         }
 

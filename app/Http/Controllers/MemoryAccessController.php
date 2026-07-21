@@ -14,7 +14,7 @@ class MemoryAccessController extends Controller
 
     public function redirectToAccess()
     {
-        return redirect()->route('memory')->withFragment('access');
+        return redirect()->route('app.memory')->withFragment('access');
     }
 
     public static function generateProfileCode(): string
@@ -141,7 +141,7 @@ class MemoryAccessController extends Controller
             ->first();
 
         if (!$grant) {
-            return redirect()->route('dashboard')->with('error', 'This invitation link is invalid or has already been used.');
+            return redirect()->route('app.dashboard')->with('error', 'This invitation link is invalid or has already been used.');
         }
 
         // Must be logged in as the intended grantee
@@ -150,7 +150,7 @@ class MemoryAccessController extends Controller
         }
 
         if (auth()->id() !== (int) $grant->grantee_user_id) {
-            return redirect()->route('dashboard')->with('error', 'This invitation was sent to a different account.');
+            return redirect()->route('app.dashboard')->with('error', 'This invitation was sent to a different account.');
         }
 
         return view('memory.accept', compact('grant', 'token'));
@@ -167,14 +167,14 @@ class MemoryAccessController extends Controller
             ->first();
 
         if (!$grant) {
-            return redirect()->route('dashboard')->with('error', 'Invitation not found or already accepted.');
+            return redirect()->route('app.dashboard')->with('error', 'Invitation not found or already accepted.');
         }
 
         DB::table('memory_access_grants')
             ->where('id', $grant->id)
             ->update(['status' => 'accepted', 'accepted_at' => now(), 'updated_at' => now()]);
 
-        return redirect()->route('memory.shared', $grant->id)
+        return redirect()->route('app.memory.shared', $grant->id)
             ->with('success', 'Invitation accepted — you now have access to this memory.');
     }
 

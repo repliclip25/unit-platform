@@ -136,7 +136,7 @@ footer{background:rgba(4,4,10,0.99)!important;color:#aaaaaa!important}
     <div class="nr">
       <button class="tog" id="pub-tog"></button>
       @auth
-        <a href="{{ route('dashboard') }}" class="btn-g">Dashboard</a>
+        <a href="{{ route('app.dashboard') }}" class="btn-g">Dashboard</a>
       @else
         <a href="{{ route('login') }}" class="btn-gh">Sign In</a>
         <a href="{{ route('register') }}" class="btn-g">Get Started Free</a>

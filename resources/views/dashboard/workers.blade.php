@@ -112,13 +112,13 @@ $depBySlug = $deployments->groupBy('worker_slug');
 
         if ($pendingDrafts > 0) {
             $statusQuote = "I've prepared " . $pendingDrafts . " " . ($pendingDrafts === 1 ? 'draft' : 'drafts') . ". " . ($pendingDrafts === 1 ? 'It\'s' : 'One is') . " waiting for your approval.";
-            $statusCta   = ['label' => 'Review now →', 'url' => route('transactions')];
+            $statusCta   = ['label' => 'Review now →', 'url' => route('app.transactions')];
         } elseif ($recentCount > 0) {
             $statusQuote = "Processed {$recentCount} " . ($recentCount === 1 ? 'email' : 'emails') . " this week. Everything's up to date.";
-            $statusCta   = ['label' => 'View activity →', 'url' => route('transactions')];
+            $statusCta   = ['label' => 'View activity →', 'url' => route('app.transactions')];
         } else {
             $statusQuote = "Watching your inbox. Ready to act the moment something comes in.";
-            $statusCta   = ['label' => 'Open workspace →', 'url' => route('workers.show', $worker->slug)];
+            $statusCta   = ['label' => 'Open workspace →', 'url' => route('app.workers.show', $worker->slug)];
         }
     }
 @endphp
@@ -259,7 +259,7 @@ $depBySlug = $deployments->groupBy('worker_slug');
         </div>
 
         @elseif($hasDeployment)
-        <a href="{{ route('workers.show', $worker->slug) }}"
+        <a href="{{ route('app.workers.show', $worker->slug) }}"
            style="display:block;text-align:center;width:100%;box-sizing:border-box;padding:12px;border-radius:12px;background:rgba({{ $m['rgb'] }},.12);border:1px solid rgba({{ $m['rgb'] }},.25);color:{{ $color }};font-size:13px;font-weight:700;text-decoration:none;transition:background .15s"
            onmouseover="this.style.background='rgba({{ $m['rgb'] }},.2)'" onmouseout="this.style.background='rgba({{ $m['rgb'] }},.12)'">
             Open workspace →
@@ -276,7 +276,7 @@ $depBySlug = $deployments->groupBy('worker_slug');
         </button>
 
         <div id="deploy-form-{{ $worker->slug }}" style="display:none;margin-top:14px">
-            <form method="POST" action="{{ route('workers.store') }}">
+            <form method="POST" action="{{ route('app.workers.store') }}">
                 @csrf
                 <input type="hidden" name="worker_slug" value="{{ $worker->slug }}">
                 <div style="margin-bottom:10px">
@@ -316,7 +316,7 @@ $depBySlug = $deployments->groupBy('worker_slug');
                 <p style="font-size:12px;font-weight:600;color:var(--text-secondary)">{{ $depCount }} instance{{ $depCount !== 1 ? 's' : '' }} running</p>
                 <p style="font-size:11px;color:var(--text-muted);margin-top:2px">Connect another inbox to add more</p>
             </div>
-            @php $connectRoute = $worker->slug === 'nux' ? route('nux.connect.linkedin') : route('ava.gmail.authorize'); @endphp
+            @php $connectRoute = $worker->slug === 'nux' ? route('app.nux.connect.linkedin') : route('app.ava.gmail.authorize'); @endphp
             <a href="{{ $connectRoute }}"
                style="font-size:11px;font-weight:700;padding:8px 14px;border-radius:8px;background:{{ $color }};color:#ffffff;text-decoration:none;white-space:nowrap;flex-shrink:0">
                 + Connect

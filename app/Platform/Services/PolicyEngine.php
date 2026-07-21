@@ -57,7 +57,7 @@ class PolicyEngine
             ],
             'cta_label'    => 'Update Payment',
             'cta_url'      => null,
-            'cta_route'    => 'billing.portal',
+            'cta_route'    => 'app.billing.portal',
             'color'        => 'red',
         ],
 
@@ -75,7 +75,7 @@ class PolicyEngine
             ],
             'cta_label'    => 'View Usage',
             'cta_url'      => null,
-            'cta_route'    => 'billing',
+            'cta_route'    => 'app.billing',
             'color'        => 'amber',
         ],
 
@@ -95,7 +95,7 @@ class PolicyEngine
             ],
             'cta_label'    => 'Choose a Plan',
             'cta_url'      => null,
-            'cta_route'    => 'billing',
+            'cta_route'    => 'app.billing',
             'color'        => 'amber',
         ],
 
@@ -113,7 +113,7 @@ class PolicyEngine
             ],
             'cta_label'    => 'Reactivate',
             'cta_url'      => null,
-            'cta_route'    => 'billing.portal',
+            'cta_route'    => 'app.billing.portal',
             'color'        => 'red',
         ],
 
@@ -131,7 +131,7 @@ class PolicyEngine
             ],
             'cta_label'    => 'Upgrade Plan',
             'cta_url'      => null,
-            'cta_route'    => 'billing',
+            'cta_route'    => 'app.billing',
             'color'        => 'amber',
         ],
 
@@ -148,7 +148,7 @@ class PolicyEngine
             ],
             'cta_label'    => 'Resume Worker',
             'cta_url'      => null,
-            'cta_route'    => 'workers.show',
+            'cta_route'    => 'app.workers.show',
             'color'        => 'gray',
         ],
 
@@ -165,7 +165,7 @@ class PolicyEngine
             ],
             'cta_label'    => 'View Usage',
             'cta_url'      => null,
-            'cta_route'    => 'billing',
+            'cta_route'    => 'app.billing',
             'color'        => 'amber',
         ],
 
@@ -183,7 +183,7 @@ class PolicyEngine
             ],
             'cta_label'    => 'Renew Watch',
             'cta_url'      => null,
-            'cta_route'    => 'ava.gmail.watch',
+            'cta_route'    => 'app.ava.gmail.watch',
             'color'        => 'amber',
         ],
     ];

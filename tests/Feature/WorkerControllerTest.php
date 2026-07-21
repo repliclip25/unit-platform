@@ -42,13 +42,13 @@ class WorkerControllerTest extends TestCase
 
     public function test_index_requires_auth(): void
     {
-        $this->get(route('workers.deploy'))->assertRedirect('/login');
+        $this->get(route('app.workers.index'))->assertRedirect('/login');
     }
 
     public function test_index_loads_for_authenticated_user(): void
     {
         $this->actingAs($this->user)
-            ->get(route('workers.deploy'))
+            ->get(route('app.workers.index'))
             ->assertOk()
             ->assertViewIs('dashboard.workers');
     }
@@ -61,7 +61,7 @@ class WorkerControllerTest extends TestCase
         $this->user->refresh();
 
         $this->actingAs($this->user)
-            ->post(route('workers.store'), ['worker_slug' => 'ava', 'name' => 'My AVA'])
+            ->post(route('app.workers.store'), ['worker_slug' => 'ava', 'name' => 'My AVA'])
             ->assertRedirect()
             ->assertSessionHas('error');
 
@@ -71,7 +71,7 @@ class WorkerControllerTest extends TestCase
     public function test_store_validates_required_fields(): void
     {
         $this->actingAs($this->user)
-            ->post(route('workers.store'), [])
+            ->post(route('app.workers.store'), [])
             ->assertSessionHasErrors(['worker_slug', 'name']);
     }
 
@@ -82,8 +82,8 @@ class WorkerControllerTest extends TestCase
         $id = $this->makeDeployment();
 
         $this->actingAs($this->user)
-            ->delete(route('workers.destroy', $id))
-            ->assertRedirect(route('workers.deploy'));
+            ->delete(route('app.workers.destroy', $id))
+            ->assertRedirect(route('app.workers.index'));
 
         $this->assertNull(DB::table('worker_deployments')->where('id', $id)->first());
     }
@@ -101,7 +101,7 @@ class WorkerControllerTest extends TestCase
         ]);
 
         $this->actingAs($this->user)
-            ->delete(route('workers.destroy', $id));
+            ->delete(route('app.workers.destroy', $id));
 
         // Row should still exist
         $this->assertNotNull(DB::table('worker_deployments')->where('id', $id)->first());
@@ -114,7 +114,7 @@ class WorkerControllerTest extends TestCase
         $id = $this->makeDeployment(['status' => 'active']);
 
         $this->actingAs($this->user)
-            ->patch(route('workers.status', $id), ['status' => 'paused'])
+            ->patch(route('app.workers.status', $id), ['status' => 'paused'])
             ->assertRedirect();
 
         $this->assertEquals('paused', DB::table('worker_deployments')->where('id', $id)->value('status'));
@@ -125,7 +125,7 @@ class WorkerControllerTest extends TestCase
         $id = $this->makeDeployment();
 
         $this->actingAs($this->user)
-            ->patch(route('workers.status', $id), ['status' => 'deleted'])
+            ->patch(route('app.workers.status', $id), ['status' => 'deleted'])
             ->assertSessionHasErrors('status');
 
         $this->assertEquals('active', DB::table('worker_deployments')->where('id', $id)->value('status'));
@@ -144,7 +144,7 @@ class WorkerControllerTest extends TestCase
         ]);
 
         $this->actingAs($this->user)
-            ->patch(route('workers.status', $id), ['status' => 'paused']);
+            ->patch(route('app.workers.status', $id), ['status' => 'paused']);
 
         // Should remain active since it belongs to $other
         $this->assertEquals('active', DB::table('worker_deployments')->where('id', $id)->value('status'));
@@ -157,7 +157,7 @@ class WorkerControllerTest extends TestCase
         $this->makeDeployment();
 
         $this->actingAs($this->user)
-            ->get(route('workers.show', 'ava'))
+            ->get(route('app.workers.show', 'ava'))
             ->assertOk()
             ->assertViewIs('dashboard.worker-detail');
     }
@@ -175,7 +175,7 @@ class WorkerControllerTest extends TestCase
         ]);
 
         $this->actingAs($this->user)
-            ->get(route('workers.show', 'ava'))
+            ->get(route('app.workers.show', 'ava'))
             ->assertNotFound();
     }
 }

@@ -232,7 +232,7 @@ class DeskService
                     return $n > 0 ? [
                         'text'   => "<strong>{$n}</strong> " . ($n === 1 ? 'item' : 'items') . ' marked urgent',
                         'dot'    => 'amber',
-                        'action' => ['label' => 'Review', 'url' => route('transactions', ['filter' => 'draft_ready', 'priority' => 'high'])],
+                        'action' => ['label' => 'Review', 'url' => route('app.transactions', ['filter' => 'draft_ready', 'priority' => 'high'])],
                         'always' => false,
                     ] : null;
                 })(),
@@ -243,7 +243,7 @@ class DeskService
                     return $n > 0 ? [
                         'text'   => "<strong>{$n}</strong> " . ($n === 1 ? 'item' : 'items') . ' failed or stuck in pipeline',
                         'dot'    => 'red',
-                        'action' => ['label' => 'View', 'url' => route('transactions', ['filter' => 'failed'])],
+                        'action' => ['label' => 'View', 'url' => route('app.transactions', ['filter' => 'failed'])],
                         'always' => false,
                     ] : null;
                 })(),
@@ -293,7 +293,7 @@ class DeskService
                         'text'   => $text,
                         'dot'    => $dot,
                         'action' => $left === 0
-                            ? ['label' => 'Upgrade', 'url' => route('billing')]
+                            ? ['label' => 'Upgrade', 'url' => route('app.billing')]
                             : null,
                         'always' => true,
                     ];
@@ -328,7 +328,7 @@ class DeskService
             return [
                 'text'   => $text,
                 'dot'    => $days <= 7 ? 'amber' : 'grey',
-                'action' => ['label' => 'View assets', 'url' => route('memory')],
+                'action' => ['label' => 'View assets', 'url' => route('app.memory')],
                 'always' => false,
             ];
         }
@@ -344,7 +344,7 @@ class DeskService
                     ? "<strong>{$n}</strong> memory " . ($n === 1 ? 'enrichment' : 'enrichments') . " added this week"
                     : 'No new memory enrichments this week',
                 'dot'    => $n > 0 ? 'green' : 'grey',
-                'action' => $n > 0 ? ['label' => 'View memory', 'url' => route('memory')] : null,
+                'action' => $n > 0 ? ['label' => 'View memory', 'url' => route('app.memory')] : null,
                 'always' => true,
             ];
         }
@@ -362,7 +362,7 @@ class DeskService
             return [
                 'text'   => "<strong>{$clients}</strong> {$cLabel} · <strong>{$contacts}</strong> {$tLabel} · <strong>{$assets}</strong> {$aLabel} in your memory",
                 'dot'    => $total > 0 ? 'green' : 'grey',
-                'action' => ['label' => 'View memory', 'url' => route('memory')],
+                'action' => ['label' => 'View memory', 'url' => route('app.memory')],
                 'always' => true,
             ];
         }
@@ -403,7 +403,7 @@ class DeskService
             return [
                 'text'        => "New! <strong>{$name}</strong> is available — expand your team",
                 'dot'         => 'accent',
-                'action'      => ['label' => 'See worker', 'url' => route('workers.deploy')],
+                'action'      => ['label' => 'See worker', 'url' => route('app.workers.index')],
                 'always'      => false,
                 'dismissible' => true,
                 'dismiss_key' => 'marketing.new_worker',

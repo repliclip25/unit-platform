@@ -30,6 +30,6 @@ class EnsureNotPendingDeletion
         }
 
         // Redirect to profile where they see the cancellation banner
-        return redirect()->route('profile.show');
+        return redirect()->route('app.profile.show');
     }
 }

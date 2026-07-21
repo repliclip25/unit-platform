@@ -225,13 +225,13 @@ $tokenFmt = $tokenTotal >= 1000000 ? number_format($tokenTotal/1000000,1).'M' : 
 $urgentAssets = $assets->filter(fn($a) => $a->renewal_date && now()->diffInDays($a->renewal_date, false) <= 30 && now()->diffInDays($a->renewal_date, false) >= 0)->count();
 $expiredAssets = $assets->filter(fn($a) => $a->renewal_date && now()->diffInDays($a->renewal_date, false) < 0)->count();
 $sidebarLinks = [
-  ['Memory',       'M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18', route('workers.memory',$dep->worker_slug), true],
-  ['Templates',    'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z', route('workers.templates',['slug'=>$dep->worker_slug]), false],
-  ['Rules',        'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4', route('workers.rules',$dep->worker_slug), false],
-  ['Fast Track',   'M13 10V3L4 14h7v7l9-11h-7z', route('workers.fast-track.page',$dep->worker_slug), false],
-  ['Integrations', 'M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1', route('workers.connect',$dep->worker_slug), false],
-  ['Billing',      'M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z', route('billing'), false],
-  ['Activity Log', 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2', route('transactions').'?deployment='.$dep->id, false],
+  ['Memory',       'M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18', route('app.workers.memory',$dep->worker_slug), true],
+  ['Templates',    'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z', route('app.workers.templates',['slug'=>$dep->worker_slug]), false],
+  ['Rules',        'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4', route('app.workers.rules',$dep->worker_slug), false],
+  ['Fast Track',   'M13 10V3L4 14h7v7l9-11h-7z', route('app.workers.fast-track.page',$dep->worker_slug), false],
+  ['Integrations', 'M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1', route('app.workers.connect',$dep->worker_slug), false],
+  ['Billing',      'M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z', route('app.billing'), false],
+  ['Activity Log', 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2', route('app.transactions').'?deployment='.$dep->id, false],
 ];
 @endphp
 
@@ -239,9 +239,9 @@ $sidebarLinks = [
 
 {{-- ══ TOP BAR ══ --}}
 <div class="ob-topbar">
-  <a href="{{ route('dashboard') }}" class="ob-topbar-logo" style="text-decoration:none">UNIT</a>
+  <a href="{{ route('app.dashboard') }}" class="ob-topbar-logo" style="text-decoration:none">UNIT</a>
   <div class="ob-topbar-right">
-    <a href="{{ route('profile.show') }}" class="ob-topbar-name" style="text-decoration:none">{{ auth()->user()->name }}</a>
+    <a href="{{ route('app.profile.show') }}" class="ob-topbar-name" style="text-decoration:none">{{ auth()->user()->name }}</a>
     <button class="ob-theme-toggle" id="theme-toggle" type="button" title="Toggle dark/light mode" aria-label="Toggle theme"></button>
     <div class="ob-menu-wrap">
       <button class="ob-hamburger" id="menu-toggle" type="button" aria-label="Menu">
@@ -256,7 +256,7 @@ $sidebarLinks = [
           </div>
         </div>
         <div class="ob-menu-mobile-links">
-          <a href="{{ route('dashboard') }}" class="ob-menu-item">
+          <a href="{{ route('app.dashboard') }}" class="ob-menu-item">
             <svg viewBox="0 0 24 24" class="ob-menu-item-icon"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
             Dashboard
           </a>
@@ -269,7 +269,7 @@ $sidebarLinks = [
           <div style="border-top:1px solid var(--db-border);margin:6px 0"></div>
         </div>
         <div class="ob-menu-token"><span class="ob-token-badge">{{ $tokenFmt }} tokens</span></div>
-        <a href="{{ route('settings.api-keys') }}" class="ob-menu-item">Settings</a>
+        <a href="{{ route('app.settings.api-keys') }}" class="ob-menu-item">Settings</a>
         <form method="POST" action="{{ route('logout') }}">@csrf<button type="submit" class="ob-menu-item">Logout</button></form>
       </div>
     </div>
@@ -282,12 +282,12 @@ $sidebarLinks = [
   <aside class="ob-sidebar">
     <div class="ob-steps">
       <div class="ob-workers-hd">
-        <a href="{{ route('profile.show') }}" style="color:inherit;text-decoration:none">{{ strtoupper($firstName) }}'S WORKERS</a>
+        <a href="{{ route('app.profile.show') }}" style="color:inherit;text-decoration:none">{{ strtoupper($firstName) }}'S WORKERS</a>
       </div>
       @foreach($workerCatalog as $wc)
       @php
         $wDot  = $wc->status==='active' ? '#22c55e' : '#f59e0b';
-        $wHref = !$wc->active ? route('workers.page') : ($wc->slug==='ava' ? route('desk.ava') : route('workers.overview',$wc->slug));
+        $wHref = !$wc->active ? route('public.workers.index') : ($wc->slug==='ava' ? route('app.desk.ava') : route('app.workers.overview',$wc->slug));
         $wActive = $wc->active && $wc->slug === $dep->worker_slug;
       @endphp
       <a href="{{ $wHref }}" class="ob-step {{ $wActive ? 'active' : ($wc->active ? 'done' : 'pending') }}" style="text-decoration:none{{ !$wc->active ? ';opacity:.5' : '' }}">
@@ -313,7 +313,7 @@ $sidebarLinks = [
         </div>
       </a>
       @endforeach
-      <a href="{{ route('workers.page') }}" class="ob-step pending" style="text-decoration:none;margin-top:4px">
+      <a href="{{ route('public.workers.index') }}" class="ob-step pending" style="text-decoration:none;margin-top:4px">
         <div class="ob-step-rail"><div class="ob-step-num" style="background:var(--db-chip);border:1.5px dashed var(--db-border);color:var(--db-text-muted);font-size:16px;font-weight:400">+</div></div>
         <div class="ob-step-body"><div class="ob-step-label">Hire a worker</div></div>
       </a>
@@ -352,7 +352,7 @@ $sidebarLinks = [
           <div class="mem-persona-prompt-title">Tell us what AVA is renewing for you</div>
           <div class="mem-persona-prompt-sub">Pick your use case to get the right asset types and terminology below — one click.</div>
         </div>
-        <form method="POST" action="{{ route('workers.persona', $avaDeploymentId) }}" class="mem-persona-form">
+        <form method="POST" action="{{ route('app.workers.persona', $avaDeploymentId) }}" class="mem-persona-form">
           @csrf @method('PATCH')
           <select name="persona" required class="mem-select" style="width:auto">
             <option value="">Choose a use case…</option>
@@ -414,14 +414,14 @@ $sidebarLinks = [
                 </div>
                 <div style="display:flex;gap:10px;flex-shrink:0">
                   <button type="button" class="mem-row-action" onclick="toggleEdit('client-{{ $client->id }}')">Edit</button>
-                  <form method="POST" action="{{ route('memory.clients.destroy', $client->id) }}">
+                  <form method="POST" action="{{ route('app.memory.clients.destroy', $client->id) }}">
                     @csrf @method('DELETE')
                     <button class="mem-row-action" onclick="return confirm('Remove {{ addslashes($client->name) }}?')">Remove</button>
                   </form>
                 </div>
               </div>
               <div id="edit-client-{{ $client->id }}" class="mem-edit-panel" style="display:none">
-                <form method="POST" action="{{ route('memory.clients.update', $client->id) }}" style="display:flex;flex-direction:column;gap:10px">
+                <form method="POST" action="{{ route('app.memory.clients.update', $client->id) }}" style="display:flex;flex-direction:column;gap:10px">
                   @csrf @method('PATCH')
                   <div><label class="mem-field-label">{{ ucfirst($memoryCopy['client_noun']) }} name</label><input type="text" name="name" value="{{ $client->name }}" required class="mem-input"></div>
                   <div class="mem-field-row">
@@ -462,14 +462,14 @@ $sidebarLinks = [
                 </div>
                 <div style="display:flex;gap:10px;flex-shrink:0">
                   <button type="button" class="mem-row-action" onclick="toggleEdit('contact-{{ $contact->id }}')">Edit</button>
-                  <form method="POST" action="{{ route('memory.contacts.destroy', $contact->id) }}">
+                  <form method="POST" action="{{ route('app.memory.contacts.destroy', $contact->id) }}">
                     @csrf @method('DELETE')
                     <button class="mem-row-action" onclick="return confirm('Remove {{ addslashes($contact->name) }}?')">Remove</button>
                   </form>
                 </div>
               </div>
               <div id="edit-contact-{{ $contact->id }}" class="mem-edit-panel" style="display:none">
-                <form method="POST" action="{{ route('memory.contacts.update', $contact->id) }}" style="display:flex;flex-direction:column;gap:10px">
+                <form method="POST" action="{{ route('app.memory.contacts.update', $contact->id) }}" style="display:flex;flex-direction:column;gap:10px">
                   @csrf @method('PATCH')
                   <div><label class="mem-field-label">Full Name</label><input type="text" name="name" value="{{ $contact->name }}" required class="mem-input"></div>
                   <div><label class="mem-field-label">Email</label><input type="email" name="email" value="{{ $contact->email }}" required class="mem-input"></div>
@@ -516,14 +516,14 @@ $sidebarLinks = [
                 </div>
                 <div style="display:flex;gap:10px;flex-shrink:0">
                   <button type="button" class="mem-row-action" onclick="toggleAssetEdit({{ $asset->id }})">Edit</button>
-                  <form method="POST" action="{{ route('memory.assets.destroy', $asset->id) }}">
+                  <form method="POST" action="{{ route('app.memory.assets.destroy', $asset->id) }}">
                     @csrf @method('DELETE')
                     <button class="mem-row-action" onclick="return confirm('Remove {{ addslashes($asset->name) }}?')">Remove</button>
                   </form>
                 </div>
               </div>
               <div id="asset-edit-{{ $asset->id }}" class="mem-edit-panel" style="display:none">
-                <form method="POST" action="{{ route('memory.assets.update', $asset->id) }}" style="display:flex;flex-direction:column;gap:10px">
+                <form method="POST" action="{{ route('app.memory.assets.update', $asset->id) }}" style="display:flex;flex-direction:column;gap:10px">
                   @csrf @method('PATCH')
                   <div><label class="mem-field-label">{{ ucfirst($memoryCopy['asset_noun']) }} name</label><input type="text" name="name" value="{{ $asset->name }}" required class="mem-input"></div>
                   <div class="mem-field-row">
@@ -565,7 +565,7 @@ $sidebarLinks = [
             <div class="mem-empty-title">No groups yet</div>
             <div class="mem-empty-sub" style="margin-bottom:14px">Groups are created from within each worker's memory page.</div>
             @foreach($myDeployments as $myDep)
-            <a href="{{ route('workers.memory.groups', $myDep->id) }}" class="mem-btn-secondary" style="margin:0 6px">{{ $myDep->name }} →</a>
+            <a href="{{ route('app.workers.memory.groups', $myDep->id) }}" class="mem-btn-secondary" style="margin:0 6px">{{ $myDep->name }} →</a>
             @endforeach
           </div>
           @else
@@ -575,7 +575,7 @@ $sidebarLinks = [
           <div style="margin-bottom:18px">
             <div class="mem-group-dep">
               <div><span class="mem-group-dep-name">{{ $depName }}</span><span class="mem-group-dep-slug">{{ $workerSlug }}</span></div>
-              <a href="{{ route('workers.memory.groups', $depId) }}" class="mem-row-action">Manage →</a>
+              <a href="{{ route('app.workers.memory.groups', $depId) }}" class="mem-row-action">Manage →</a>
             </div>
             @foreach($depGroups as $group)
             @php
@@ -590,7 +590,7 @@ $sidebarLinks = [
                   @if($gDays !== null)<span class="mem-badge" style="background:{{ $gDays<=0?'rgba(239,68,68,.15)':($gDays<=30?'rgba(245,158,11,.15)':'var(--db-chip)') }};color:{{ $gDays<=0?'#ef4444':($gDays<=30?'#f59e0b':'var(--db-text-muted)') }}">{{ $gDays <= 0 ? 'Expired' : 'Next '.$gDays.'d' }}</span>@endif
                   <div class="mem-row-sub">{{ $group->items->count() }} asset{{ $group->items->count() !== 1 ? 's' : '' }}{{ $group->client_name ? ' · '.$group->client_name : '' }}</div>
                 </div>
-                <a href="{{ route('workers.memory.groups', $depId) }}" class="mem-btn-secondary">Edit</a>
+                <a href="{{ route('app.workers.memory.groups', $depId) }}" class="mem-btn-secondary">Edit</a>
               </div>
               @if($group->items->isNotEmpty())
               <div class="mem-group-items">
@@ -622,14 +622,14 @@ $sidebarLinks = [
                 </div>
                 <div style="display:flex;gap:10px;flex-shrink:0">
                   <button type="button" class="mem-row-action" onclick="toggleEdit('rule-{{ $rule->id }}')">Edit</button>
-                  <form method="POST" action="{{ route('memory.rules.destroy', $rule->id) }}">
+                  <form method="POST" action="{{ route('app.memory.rules.destroy', $rule->id) }}">
                     @csrf @method('DELETE')
                     <button class="mem-row-action" onclick="return confirm('Remove rule {{ addslashes($rule->rule_id) }}?')">Remove</button>
                   </form>
                 </div>
               </div>
               <div id="edit-rule-{{ $rule->id }}" class="mem-edit-panel" style="display:none">
-                <form method="POST" action="{{ route('memory.rules.update', $rule->id) }}" style="display:flex;flex-direction:column;gap:10px">
+                <form method="POST" action="{{ route('app.memory.rules.update', $rule->id) }}" style="display:flex;flex-direction:column;gap:10px">
                   @csrf @method('PATCH')
                   <div class="mem-field-row">
                     <div><label class="mem-field-label">Rule ID</label><input type="text" name="rule_id" value="{{ $rule->rule_id }}" class="mem-input" style="font-family:monospace"></div>
@@ -675,7 +675,7 @@ $sidebarLinks = [
               <div class="mem-shared-stat"><div class="mem-shared-stat-num">{{ $count }}</div><div class="mem-shared-stat-label">{{ $label }}</div></div>
               @endforeach
             </div>
-            <a href="{{ route('memory.shared', $grant->id) }}" class="mem-btn" style="align-self:center">Open Memory →</a>
+            <a href="{{ route('app.memory.shared', $grant->id) }}" class="mem-btn" style="align-self:center">Open Memory →</a>
           </div>
           <div class="mem-shared-meta">
             <span>Accepted {{ \Carbon\Carbon::parse($grant->accepted_at)->diffForHumans() }}</span>
@@ -706,7 +706,7 @@ $sidebarLinks = [
             <div style="text-align:right;flex-shrink:0">
               <div class="mem-row-sub">{{ $grant->event_count }} actions</div>
               @if($grant->last_action)<div class="mem-row-sub2">Last: {{ \Carbon\Carbon::parse($grant->last_action)->diffForHumans() }}</div>@endif
-              <form method="POST" action="{{ route('memory.access.revoke', $grant->id) }}" style="margin-top:8px" onsubmit="return confirm('Revoke access for {{ $grant->grantee_name }}?')">
+              <form method="POST" action="{{ route('app.memory.access.revoke', $grant->id) }}" style="margin-top:8px" onsubmit="return confirm('Revoke access for {{ $grant->grantee_name }}?')">
                 @csrf
                 <button class="mem-btn-secondary" style="color:#ef4444;border-color:rgba(239,68,68,.3)">Revoke</button>
               </form>
@@ -737,7 +737,7 @@ $sidebarLinks = [
             Invite a team member
             <div style="font-size:12px;font-weight:400;color:var(--db-text-muted);margin-top:3px">They must already have a UNIT account. Enter their profile code (UNIT-XXXXX) or email.</div>
           </div>
-          <form method="POST" action="{{ route('memory.access.invite') }}" class="mem-form-body">
+          <form method="POST" action="{{ route('app.memory.access.invite') }}" class="mem-form-body">
             @csrf
             @if($errors->any())<div class="mem-status error">{{ $errors->first() }}</div>@endif
             <div><label class="mem-field-label">Profile code or email</label><input type="text" name="lookup" value="{{ old('lookup') }}" placeholder="UNIT-AB3XY or name@company.com" class="mem-input" style="font-family:monospace"></div>
@@ -779,7 +779,7 @@ $sidebarLinks = [
     <div class="mem-right-inner">
       <div class="mem-import-title">Bulk Import</div>
       <div class="mem-import-sub" style="margin-bottom:12px">Upload a CSV or Excel file to populate {{ $memoryCopy['client_noun_plural'] }}, contacts, or assets.</div>
-      <form method="POST" action="{{ route('memory.import.preview') }}" enctype="multipart/form-data" class="mem-import-form" id="import-form" style="flex-direction:column;align-items:stretch">
+      <form method="POST" action="{{ route('app.memory.import.preview') }}" enctype="multipart/form-data" class="mem-import-form" id="import-form" style="flex-direction:column;align-items:stretch">
         @csrf
         <select name="type" id="import-type" onchange="updateTemplateLink(this.value)" class="mem-select">
           <option value="clients">{{ ucfirst($memoryCopy['client_noun_plural']) }}</option>
@@ -792,7 +792,7 @@ $sidebarLinks = [
         </label>
         <button type="submit" class="mem-btn">Preview Import</button>
       </form>
-      <div class="mem-tpl-link" style="margin-bottom:20px">Download template: <a id="tpl-link" href="{{ route('memory.import.template', 'clients') }}">clients_import_template.csv</a></div>
+      <div class="mem-tpl-link" style="margin-bottom:20px">Download template: <a id="tpl-link" href="{{ route('app.memory.import.template', 'clients') }}">clients_import_template.csv</a></div>
 
       <hr style="border:none;border-top:1px solid var(--db-border);margin-bottom:20px">
 
@@ -806,7 +806,7 @@ $sidebarLinks = [
       <div id="add-panel-clients" class="add-panel">
         <div class="mem-form-card">
           <div class="mem-form-head">Add {{ ucfirst($memoryCopy['client_noun']) }}</div>
-          <form method="POST" action="{{ route('memory.clients.store') }}" class="mem-form-body">
+          <form method="POST" action="{{ route('app.memory.clients.store') }}" class="mem-form-body">
             @csrf
             <div><label class="mem-field-label">{{ ucfirst($memoryCopy['client_noun']) }} name</label><input type="text" name="name" required placeholder="e.g. {{ $memoryCopy['example_client'] }}" class="mem-input"></div>
             <div class="mem-field-row">
@@ -828,7 +828,7 @@ $sidebarLinks = [
       <div id="add-panel-contacts" class="add-panel" style="display:none">
         <div class="mem-form-card">
           <div class="mem-form-head">Add Contact</div>
-          <form method="POST" action="{{ route('memory.contacts.store') }}" class="mem-form-body">
+          <form method="POST" action="{{ route('app.memory.contacts.store') }}" class="mem-form-body">
             @csrf
             <div><label class="mem-field-label">Full Name</label><input type="text" name="name" required class="mem-input"></div>
             <div><label class="mem-field-label">Email</label><input type="email" name="email" required class="mem-input"></div>
@@ -852,7 +852,7 @@ $sidebarLinks = [
       <div id="add-panel-assets" class="add-panel" style="display:none">
         <div class="mem-form-card">
           <div class="mem-form-head">Add {{ ucfirst($memoryCopy['asset_noun']) }}</div>
-          <form method="POST" action="{{ route('memory.assets.store') }}" class="mem-form-body">
+          <form method="POST" action="{{ route('app.memory.assets.store') }}" class="mem-form-body">
             @csrf
             <div><label class="mem-field-label">{{ ucfirst($memoryCopy['asset_noun']) }} name</label><input type="text" name="name" required placeholder="e.g. {{ $memoryCopy['example_asset'] }}" class="mem-input"></div>
             <div class="mem-field-row">
@@ -883,7 +883,7 @@ $sidebarLinks = [
       <div id="add-panel-rules" class="add-panel" style="display:none">
         <div class="mem-form-card">
           <div class="mem-form-head">Add Rule</div>
-          <form method="POST" action="{{ route('memory.rules.store') }}" class="mem-form-body">
+          <form method="POST" action="{{ route('app.memory.rules.store') }}" class="mem-form-body">
             @csrf
             <div class="mem-field-row">
               <div><label class="mem-field-label">Rule ID</label><input type="text" name="rule_id" placeholder="AVA-007" class="mem-input" style="font-family:monospace"></div>

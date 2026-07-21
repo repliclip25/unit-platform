@@ -57,7 +57,7 @@
                         <strong>{{ $pendingReview }}</strong> draft{{ $pendingReview !== 1 ? 's' : '' }} awaiting your review
                     </span>
                 </div>
-                <a href="{{ route('transactions', ['filter' => 'draft_ready']) }}"
+                <a href="{{ route('app.transactions', ['filter' => 'draft_ready']) }}"
                    class="text-xs px-3 py-1.5 rounded-lg font-medium transition"
                    style="background:rgba(var(--accent-rgb),0.20);color:var(--accent);border:1px solid rgba(var(--accent-rgb),0.45)">
                     Review Now →

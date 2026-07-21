@@ -158,7 +158,7 @@
         </div>
         @else
         <div class="flex items-center gap-3">
-            <a x-show="done && !failed" :href="'/transactions/' + txId"
+            <a x-show="done && !failed" :href="'/app/transactions/' + txId"
                class="text-xs text-brand hover:underline">View full transaction →</a>
             <button @click="$dispatch('close-pipeline')"
                     class="text-xs text-gray-500 hover:text-white transition">Close</button>

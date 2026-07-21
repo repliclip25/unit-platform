@@ -16,7 +16,7 @@ class ProfileTest extends TestCase
 
         $response = $this
             ->actingAs($user)
-            ->get('/profile');
+            ->get('/app/profile');
 
         $response->assertOk();
     }
@@ -27,14 +27,14 @@ class ProfileTest extends TestCase
 
         $response = $this
             ->actingAs($user)
-            ->patch('/profile', [
+            ->patch('/app/profile', [
                 'name'  => 'Test User',
                 'email' => $user->email, // keep same email to avoid verification reset
             ]);
 
         $response
             ->assertSessionHasNoErrors()
-            ->assertRedirect('/profile');
+            ->assertRedirect('/app/profile');
 
         $user->refresh();
 
@@ -47,14 +47,14 @@ class ProfileTest extends TestCase
 
         $response = $this
             ->actingAs($user)
-            ->patch('/profile', [
+            ->patch('/app/profile', [
                 'name'  => 'Test User',
                 'email' => $user->email,
             ]);
 
         $response
             ->assertSessionHasNoErrors()
-            ->assertRedirect('/profile');
+            ->assertRedirect('/app/profile');
 
         $this->assertNotNull($user->refresh()->email_verified_at);
     }
@@ -65,7 +65,7 @@ class ProfileTest extends TestCase
 
         $response = $this
             ->actingAs($user)
-            ->delete('/profile', [
+            ->delete('/app/profile', [
                 'confirm_delete' => 'DELETE', // platform requires typing DELETE to confirm
             ]);
 
@@ -80,15 +80,15 @@ class ProfileTest extends TestCase
 
         $response = $this
             ->actingAs($user)
-            ->from('/profile')
-            ->delete('/profile', [
+            ->from('/app/profile')
+            ->delete('/app/profile', [
                 'confirm_delete' => 'wrong', // not DELETE
             ]);
 
         // Validation uses the default error bag — no named bag on this form
         $response
             ->assertSessionHasErrors('confirm_delete')
-            ->assertRedirect('/profile');
+            ->assertRedirect('/app/profile');
 
         $this->assertNull($user->fresh()->deletion_requested_at);
     }

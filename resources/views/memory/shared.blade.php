@@ -174,9 +174,9 @@ $tables = [
 
 {{-- ══ TOP BAR ══ --}}
 <div class="ob-topbar">
-  <a href="{{ route('dashboard') }}" class="ob-topbar-logo" style="text-decoration:none">UNIT</a>
+  <a href="{{ route('app.dashboard') }}" class="ob-topbar-logo" style="text-decoration:none">UNIT</a>
   <div class="ob-topbar-right">
-    <a href="{{ route('profile.show') }}" class="ob-topbar-name" style="text-decoration:none">{{ auth()->user()->name }}</a>
+    <a href="{{ route('app.profile.show') }}" class="ob-topbar-name" style="text-decoration:none">{{ auth()->user()->name }}</a>
     <button class="ob-theme-toggle" id="theme-toggle" type="button" title="Toggle dark/light mode" aria-label="Toggle theme"></button>
     <div class="ob-menu-wrap">
       <button class="ob-hamburger" id="menu-toggle" type="button" aria-label="Menu">
@@ -191,18 +191,18 @@ $tables = [
           </div>
         </div>
         <div class="ob-menu-mobile-links">
-          <a href="{{ route('dashboard') }}" class="ob-menu-item">
+          <a href="{{ route('app.dashboard') }}" class="ob-menu-item">
             <svg viewBox="0 0 24 24" class="ob-menu-item-icon"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
             Dashboard
           </a>
-          <a href="{{ route('memory') }}#shared" class="ob-menu-item">
+          <a href="{{ route('app.memory') }}#shared" class="ob-menu-item">
             <svg viewBox="0 0 24 24" class="ob-menu-item-icon"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
             My Memory
           </a>
           <div style="border-top:1px solid var(--db-border);margin:6px 0"></div>
         </div>
         <div class="ob-menu-token"><span class="ob-token-badge">{{ $tokenFmt }} tokens</span></div>
-        <a href="{{ route('settings.api-keys') }}" class="ob-menu-item">Settings</a>
+        <a href="{{ route('app.settings.api-keys') }}" class="ob-menu-item">Settings</a>
         <form method="POST" action="{{ route('logout') }}">@csrf<button type="submit" class="ob-menu-item">Logout</button></form>
       </div>
     </div>
@@ -215,12 +215,12 @@ $tables = [
   <aside class="ob-sidebar">
     <div class="ob-steps">
       <div class="ob-workers-hd">
-        <a href="{{ route('profile.show') }}" style="color:inherit;text-decoration:none">{{ strtoupper($firstName) }}'S WORKERS</a>
+        <a href="{{ route('app.profile.show') }}" style="color:inherit;text-decoration:none">{{ strtoupper($firstName) }}'S WORKERS</a>
       </div>
       @foreach($workerCatalog as $wc)
       @php
         $wDot  = $wc->status==='active' ? '#22c55e' : '#f59e0b';
-        $wHref = !$wc->active ? route('workers.page') : ($wc->slug==='ava' ? route('desk.ava') : route('workers.overview',$wc->slug));
+        $wHref = !$wc->active ? route('public.workers.index') : ($wc->slug==='ava' ? route('app.desk.ava') : route('app.workers.overview',$wc->slug));
       @endphp
       <a href="{{ $wHref }}" class="ob-step {{ $wc->active ? 'done' : 'pending' }}" style="text-decoration:none{{ !$wc->active ? ';opacity:.5' : '' }}">
         <div class="ob-step-rail">
@@ -245,7 +245,7 @@ $tables = [
         </div>
       </a>
       @endforeach
-      <a href="{{ route('workers.page') }}" class="ob-step pending" style="text-decoration:none;margin-top:4px">
+      <a href="{{ route('public.workers.index') }}" class="ob-step pending" style="text-decoration:none;margin-top:4px">
         <div class="ob-step-rail"><div class="ob-step-num" style="background:var(--db-chip);border:1.5px dashed var(--db-border);color:var(--db-text-muted);font-size:16px;font-weight:400">+</div></div>
         <div class="ob-step-body"><div class="ob-step-label">Hire a worker</div></div>
       </a>
@@ -253,7 +253,7 @@ $tables = [
 
     <div class="ob-links-section">
       <div class="ob-links-hd">LINKS</div>
-      <a href="{{ route('memory') }}#shared" class="ob-link">
+      <a href="{{ route('app.memory') }}#shared" class="ob-link">
         <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
         My Memory
       </a>
@@ -301,7 +301,7 @@ $tables = [
 
         @if(in_array('upload', $permissions))
         <div class="mem-form-card" id="upload-{{ $tableName }}" style="display:none;border:none;border-bottom:1px solid var(--db-border);border-radius:0">
-          <form method="POST" action="{{ route('memory.access.upload', $grant->id) }}" class="mem-form-body">
+          <form method="POST" action="{{ route('app.memory.access.upload', $grant->id) }}" class="mem-form-body">
             @csrf
             <input type="hidden" name="table_name" value="{{ $tableName }}">
             <div class="mem-field-row">
@@ -336,7 +336,7 @@ $tables = [
             @if($alreadyCopied)
               <span class="mem-row-copied">Copied</span>
             @elseif(in_array('copy', $permissions) && $granteeDeployments->isNotEmpty())
-              <form method="POST" action="{{ route('memory.access.copy', $grant->id) }}" style="display:flex;gap:6px;align-items:center">
+              <form method="POST" action="{{ route('app.memory.access.copy', $grant->id) }}" style="display:flex;gap:6px;align-items:center">
                 @csrf
                 <input type="hidden" name="table_name" value="{{ $tableName }}">
                 <input type="hidden" name="record_id" value="{{ $record->id }}">

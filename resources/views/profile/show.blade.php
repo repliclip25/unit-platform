@@ -188,13 +188,13 @@ $hasPassword = !empty(auth()->user()->password);
 $initials    = collect(explode(' ', $user->name))->map(fn($w) => strtoupper($w[0]))->take(2)->implode('');
 $tokenFmt = $tokenTotal >= 1000000 ? number_format($tokenTotal/1000000,1).'M' : number_format($tokenTotal);
 $sidebarLinks = [
-  ['Memory',       'M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18', route('workers.memory','ava'), false],
-  ['Templates',    'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z', route('workers.templates',['slug'=>'ava']), false],
-  ['Rules',        'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4', route('workers.rules','ava'), false],
-  ['Fast Track',   'M13 10V3L4 14h7v7l9-11h-7z', route('workers.fast-track.page','ava'), false],
-  ['Integrations', 'M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1', route('workers.connect','ava'), false],
-  ['Billing',      'M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z', route('billing'), false],
-  ['Activity Log', 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2', route('transactions'), false],
+  ['Memory',       'M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18', route('app.workers.memory','ava'), false],
+  ['Templates',    'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z', route('app.workers.templates',['slug'=>'ava']), false],
+  ['Rules',        'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4', route('app.workers.rules','ava'), false],
+  ['Fast Track',   'M13 10V3L4 14h7v7l9-11h-7z', route('app.workers.fast-track.page','ava'), false],
+  ['Integrations', 'M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1', route('app.workers.connect','ava'), false],
+  ['Billing',      'M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z', route('app.billing'), false],
+  ['Activity Log', 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2', route('app.transactions'), false],
 ];
 @endphp
 
@@ -204,7 +204,7 @@ $sidebarLinks = [
 <div class="ob-topbar">
   <div class="ob-topbar-logo">UNIT</div>
   <div class="ob-topbar-right">
-    <a href="{{ route('profile.show') }}" class="ob-topbar-name" style="text-decoration:none">{{ auth()->user()->name }}</a>
+    <a href="{{ route('app.profile.show') }}" class="ob-topbar-name" style="text-decoration:none">{{ auth()->user()->name }}</a>
     <button class="ob-theme-toggle" id="theme-toggle" type="button" title="Toggle dark/light mode" aria-label="Toggle theme"></button>
     <div class="ob-menu-wrap">
       <button class="ob-hamburger" id="menu-toggle" type="button" aria-label="Menu">
@@ -222,7 +222,7 @@ $sidebarLinks = [
           @endforeach
           <div style="border-top:1px solid var(--db-border);margin:6px 0"></div>
         </div>
-        <a href="{{ route('settings.api-keys') }}" class="ob-menu-item">Settings</a>
+        <a href="{{ route('app.settings.api-keys') }}" class="ob-menu-item">Settings</a>
         <form method="POST" action="{{ route('logout') }}">@csrf<button type="submit" class="ob-menu-item">Logout</button></form>
       </div>
     </div>
@@ -235,12 +235,12 @@ $sidebarLinks = [
   <aside class="ob-sidebar">
     <div class="ob-steps">
       <div class="ob-workers-hd">
-        <a href="{{ route('profile.show') }}" style="color:inherit;text-decoration:none">{{ strtoupper($firstName) }}'S WORKERS</a>
+        <a href="{{ route('app.profile.show') }}" style="color:inherit;text-decoration:none">{{ strtoupper($firstName) }}'S WORKERS</a>
       </div>
       @foreach($workerCatalog as $wc)
       @php
         $wDot  = $wc->status==='active' ? '#22c55e' : '#f59e0b';
-        $wHref = !$wc->active ? route('workers.page') : ($wc->slug==='ava' ? route('desk.ava') : route('workers.overview',$wc->slug));
+        $wHref = !$wc->active ? route('public.workers.index') : ($wc->slug==='ava' ? route('app.desk.ava') : route('app.workers.overview',$wc->slug));
       @endphp
       <a href="{{ $wHref }}" class="ob-step {{ $wc->active ? 'done' : 'pending' }}" style="text-decoration:none{{ !$wc->active ? ';opacity:.5' : '' }}">
         <div class="ob-step-rail">
@@ -265,7 +265,7 @@ $sidebarLinks = [
         </div>
       </a>
       @endforeach
-      <a href="{{ route('workers.page') }}" class="ob-step pending" style="text-decoration:none;margin-top:4px">
+      <a href="{{ route('public.workers.index') }}" class="ob-step pending" style="text-decoration:none;margin-top:4px">
         <div class="ob-step-rail"><div class="ob-step-num" style="background:var(--db-chip);border:1.5px dashed var(--db-border);color:var(--db-text-muted);font-size:16px;font-weight:400">+</div></div>
         <div class="ob-step-body"><div class="ob-step-label">Hire a worker</div></div>
       </a>
@@ -303,7 +303,7 @@ $sidebarLinks = [
         <p style="font-size:14px;font-weight:700;color:#f87171;margin-bottom:2px">⚠ Account scheduled for deletion</p>
         <p style="font-size:12px;color:rgba(248,113,113,.7)">All data deleted on <strong>{{ $deletionDate->format('F j, Y') }}</strong> ({{ $deletionDate->diffForHumans() }}).</p>
     </div>
-    <form method="POST" action="{{ route('profile.cancel-deletion') }}">
+    <form method="POST" action="{{ route('app.profile.cancel-deletion') }}">
         @csrf
         <button type="submit" style="padding:8px 16px;border-radius:9px;border:none;background:#ef4444;color:#fff;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit">Cancel deletion</button>
     </form>
@@ -436,12 +436,12 @@ $sidebarLinks = [
                         <span style="font-weight:400;color:var(--db-text-muted)"> · since {{ \Carbon\Carbon::parse($dep->created_at)->format('M j, Y') }}</span>
                     </p>
                 </div>
-                <a href="{{ route('workers.show', $dep->worker_slug) }}" class="pf-open-btn">Open →</a>
+                <a href="{{ route('app.workers.show', $dep->worker_slug) }}" class="pf-open-btn">Open →</a>
             </div>
             @empty
             <div style="text-align:center;padding:20px 0">
                 <p style="font-size:13px;color:var(--db-text-muted);margin-bottom:10px">No employees hired yet.</p>
-                <a href="{{ url('/workers') }}" class="pf-btn pf-btn-primary" style="text-decoration:none;display:inline-block">Hire your first employee →</a>
+                <a href="{{ route('app.workers.index') }}" class="pf-btn pf-btn-primary" style="text-decoration:none;display:inline-block">Hire your first employee →</a>
             </div>
             @endforelse
         </div>
@@ -490,13 +490,13 @@ $sidebarLinks = [
                     </div>
                 </div>
                 @if(!$watchOk)
-                <a href="{{ route('ava.gmail.authorize') }}" class="pf-badge-muted" style="text-decoration:none">Reconnect</a>
+                <a href="{{ route('app.ava.gmail.authorize') }}" class="pf-badge-muted" style="text-decoration:none">Reconnect</a>
                 @endif
             </div>
             @empty
             <div style="text-align:center;padding:12px 0">
                 <p style="font-size:12px;color:var(--db-text-muted);margin-bottom:8px">No Gmail inboxes connected.</p>
-                <a href="{{ route('ava.gmail.authorize') }}" class="pf-link-action" style="font-weight:700">+ Connect Gmail →</a>
+                <a href="{{ route('app.ava.gmail.authorize') }}" class="pf-link-action" style="font-weight:700">+ Connect Gmail →</a>
             </div>
             @endforelse
 
@@ -538,7 +538,7 @@ $sidebarLinks = [
         <div id="acc-account" class="pf-accordion-body closed" style="max-height:600px">
             <div style="padding:0 20px 20px;border-top:1px solid var(--db-border)">
                 <div style="height:16px"></div>
-                <form method="POST" action="{{ route('profile.update') }}">
+                <form method="POST" action="{{ route('app.profile.update') }}">
                     @csrf @method('PATCH')
                     <div class="pf-field">
                         <label class="pf-label" for="name">Full name</label>
@@ -573,7 +573,7 @@ $sidebarLinks = [
                 <div style="height:16px"></div>
                 @if($hasPassword)
                 <p style="font-size:12px;font-weight:700;color:var(--db-text);margin-bottom:12px">Change password</p>
-                <form method="POST" action="{{ route('profile.password') }}">
+                <form method="POST" action="{{ route('app.profile.password') }}">
                     @csrf @method('PUT')
                     <div class="pf-field">
                         <label class="pf-label" for="current_password">Current password</label>
@@ -617,7 +617,7 @@ $sidebarLinks = [
                         <p style="font-size:11px;color:var(--db-text-muted)">{{ $sess->ip_address ?? 'Unknown IP' }} · {{ $sess->last_active_at->diffForHumans() }}</p>
                     </div>
                     @if(!$sess->is_current)
-                    <form method="POST" action="{{ route('profile.session.revoke', $sess->id) }}" style="flex-shrink:0">
+                    <form method="POST" action="{{ route('app.profile.session.revoke', $sess->id) }}" style="flex-shrink:0">
                         @csrf @method('DELETE')
                         <button type="submit" class="pf-btn pf-btn-ghost" style="font-size:11px;padding:6px 12px">End</button>
                     </form>
@@ -626,7 +626,7 @@ $sidebarLinks = [
                 @endforeach
                 @if($sessions->where('is_current', false)->count() > 1)
                 <div style="margin-top:12px">
-                    <form method="POST" action="{{ route('profile.sessions.revoke-all') }}">
+                    <form method="POST" action="{{ route('app.profile.sessions.revoke-all') }}">
                         @csrf @method('DELETE')
                         <button type="submit" class="pf-btn pf-btn-ghost" style="font-size:12px;width:100%">End all other sessions</button>
                     </form>
@@ -672,7 +672,7 @@ $sidebarLinks = [
         <p style="font-size:13px;color:var(--db-text-muted);margin-bottom:20px;line-height:1.6">
             Your account will be <strong style="color:var(--db-text)">scheduled for deletion</strong> — not immediate. You have <strong style="color:var(--db-text)">30 days</strong> to cancel. After that, all employees, transactions, memory, and subscriptions are permanently removed.
         </p>
-        <form method="POST" action="{{ route('profile.destroy') }}">
+        <form method="POST" action="{{ route('app.profile.destroy') }}">
             @csrf @method('DELETE')
             <div class="pf-field">
                 <label class="pf-label" for="confirm_delete">Type DELETE to confirm</label>

@@ -451,7 +451,7 @@
                         </div>
                         <div class="flex items-center gap-3 shrink-0">
                             <span class="text-gray-700 text-xs">{{ \Carbon\Carbon::parse($tx->created_at)->diffForHumans() }}</span>
-                            <a href="{{ route('transactions.show', $tx->id) }}" class="text-xs text-brand hover:underline">View →</a>
+                            <a href="{{ route('app.transactions.show', $tx->id) }}" class="text-xs text-brand hover:underline">View →</a>
                         </div>
                     </div>
                     @endforeach

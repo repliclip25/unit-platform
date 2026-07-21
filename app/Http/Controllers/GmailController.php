@@ -145,7 +145,7 @@ class GmailController extends Controller
             }
         }
 
-        return redirect()->route('ava.connect')->with('success', $message);
+        return redirect()->route('app.ava.connect')->with('success', $message);
     }
 
     // PUBLIC — Google Pub/Sub pushes here
@@ -311,7 +311,7 @@ class GmailController extends Controller
             if (str_contains($e->getMessage(), 'invalid_grant')) {
                 // Token revoked or expired — wipe the credential and send back to re-authorize
                 DB::table('user_gmail_credentials')->where('id', $credential->id)->delete();
-                return redirect()->route('ava.gmail.authorize')
+                return redirect()->route('app.ava.gmail.authorize')
                     ->with('error', 'Your Gmail session expired. Please reconnect your inbox.');
             }
             return back()->with('error', 'Could not activate inbox watch: ' . $e->getMessage());
@@ -322,7 +322,7 @@ class GmailController extends Controller
             'watch_expires_at' => date('Y-m-d H:i:s', $result['expiration'] / 1000),
             'updated_at'       => now(),
         ]);
-        return redirect()->route('ava.connect')->with('success', 'Inbox watch activated. AVA is now monitoring your email.');
+        return redirect()->route('app.ava.connect')->with('success', 'Inbox watch activated. AVA is now monitoring your email.');
     }
 
     public function connect()

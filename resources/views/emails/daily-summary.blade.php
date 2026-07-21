@@ -31,6 +31,6 @@
 
 <p style="white-space:pre-wrap; font-size:14px; line-height:1.7; color:#3f3f46;">{{ $body }}</p>
 
-<a href="{{ url('/transactions') }}" class="btn">View all transactions →</a>
+<a href="{{ url('/app/transactions') }}" class="btn">View all transactions →</a>
 
 @include('emails.partials.footer', ['footerNote' => "AVA · Daily Summary · You're receiving this as part of your UNIT workspace digest."])

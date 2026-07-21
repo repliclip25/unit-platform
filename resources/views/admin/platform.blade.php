@@ -1203,7 +1203,7 @@ details summary::-webkit-details-marker { display:none; }
             @foreach([
                 ['label' => 'Tenants',      'icon' => '👥', 'route' => 'admin.tenants'],
                 ['label' => 'Influencers',  'icon' => '🌟', 'route' => 'admin.influencers'],
-                ['label' => 'Transactions', 'icon' => '📋', 'route' => 'transactions'],
+                ['label' => 'Transactions', 'icon' => '📋', 'route' => 'app.transactions'],
                 ['label' => 'Horizon',      'icon' => '⚡', 'url' => '/horizon'],
                 ['label' => 'QA Center',    'icon' => '🔬', 'route' => 'qa'],
             ] as $link)
