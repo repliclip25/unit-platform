@@ -1222,7 +1222,7 @@ class WorkerController extends Controller
             ]);
         }
 
-        $returnRoute = $request->input('return') === 'page' ? 'workers.fast-track.page' : 'workers.show';
+        $returnRoute = $request->input('return') === 'page' ? 'app.workers.fast-track.page' : 'app.workers.show';
 
         return redirect()->route($returnRoute, ['slug' => $dep->worker_slug, 'watch' => $tx->tx_id]);
     }

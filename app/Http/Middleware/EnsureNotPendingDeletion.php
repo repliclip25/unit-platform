@@ -10,8 +10,8 @@ class EnsureNotPendingDeletion
 {
     // Routes the pending-deletion user is allowed to access
     private const ALLOWED_ROUTES = [
-        'profile.show',
-        'profile.cancel-deletion',
+        'app.profile.show',
+        'app.profile.cancel-deletion',
         'logout',
     ];
 
