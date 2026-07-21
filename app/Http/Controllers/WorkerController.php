@@ -56,20 +56,14 @@ class WorkerController extends Controller
             ->firstOrFail();
         $id               = $dep->id;
         $contract         = \App\Platform\Services\WorkerRegistry::resolve($dep->worker_slug);
-        $credential       = $dep->credential_id ? DB::table('user_gmail_credentials')->where('id', $dep->credential_id)->first() : null;
-        $credentials      = DB::table('user_gmail_credentials')->where('user_id', auth()->id())->get();
         $connectedInboxes = DB::table('deployment_credentials')
             ->join('user_gmail_credentials', 'user_gmail_credentials.id', '=', 'deployment_credentials.credential_id')
             ->where('deployment_credentials.deployment_id', $id)
             ->select('user_gmail_credentials.*', 'deployment_credentials.is_primary', 'deployment_credentials.id as pivot_id')
             ->get();
-        $availableCredentials = $credentials->filter(fn($c) => !$connectedInboxes->contains('id', $c->id))->values();
-        $txCount          = DB::table('transactions')->where('deployment_id', $id)->count();
-        $recentTx         = DB::table('transactions')->where('deployment_id', $id)->orderByDesc('created_at')->limit(5)->get();
-        $usage            = DB::table('usage_events')->where('deployment_id', $id)->selectRaw('SUM(tokens_input+tokens_output) as tokens, SUM(cost_usd) as cost')->first();
-        $pendingReview    = DB::table('transactions')->where('deployment_id', $id)->where('status', 'draft_ready')->whereNull('human_decision')->count();
-        $stuckCount       = DB::table('transactions')->where('deployment_id', $id)->whereNotIn('status', ['draft_ready','approved','sent','failed'])->where('updated_at', '<', now()->subMinutes(5))->count();
-        $customModels     = DB::table('tenant_custom_models')->where('user_id', auth()->id())->where('active', true)->get();
+        $txCount       = DB::table('transactions')->where('deployment_id', $id)->count();
+        $pendingReview = DB::table('transactions')->where('deployment_id', $id)->where('status', 'draft_ready')->whereNull('human_decision')->count();
+        $stuckCount    = DB::table('transactions')->where('deployment_id', $id)->whereNotIn('status', ['draft_ready','approved','sent','failed'])->where('updated_at', '<', now()->subMinutes(5))->count();
         // Self-heal: create missing billing record, or fix one that was created with limit=0
         $existingBilling = DB::table('deployment_billing')->where('deployment_id', $id)->first();
         $hasBilling = $existingBilling !== null;
@@ -98,6 +92,10 @@ class WorkerController extends Controller
         }
 
         $policyViolations = \App\Platform\Services\PolicyEngine::evaluate(auth()->id(), $id);
+        $isTrialExhausted = collect($policyViolations)->contains('code', 'TRIAL_EXHAUSTED');
+        $otherViolations  = collect($policyViolations)->filter(fn($v) => $v['code'] !== 'TRIAL_EXHAUSTED')->values()->all();
+        $trialReason      = collect($policyViolations)->firstWhere('code', 'TRIAL_EXHAUSTED')['context']['reason'] ?? 'transactions';
+        $billing          = DB::table('deployment_billing')->where('deployment_id', $id)->first();
         $registryRow      = DB::table('worker_registry')->where('slug', $dep->worker_slug)->first();
 
         // ── Contract-driven production readiness ──────────────────────────────
@@ -117,32 +115,20 @@ class WorkerController extends Controller
                                || $sourceSlots->contains(fn($s) => in_array($s['key'], $connectedOauthPlatforms));
             $productionReadiness = [
                 'ready'           => $productionReady,
-                'banner_title'    => 'Not production ready — no social accounts connected',
-                'banner_body'     => 'Connect at least one source account (LinkedIn or X) via the Connect tab before this worker can monitor your feed.',
-                'connect_label'   => 'Connect Account →',
-                'fast_track_desc' => 'Run a sample social post through the full pipeline — draft lands in your inbox',
-                'no_credential_msg' => 'Connect a social account to run Fast Track',
+                'title'           => 'Not production ready — no social accounts connected',
+                'body'            => 'Connect at least one source account (LinkedIn or X) via the Connect tab before this worker can monitor your feed.',
+                'connect_label'   => 'Connect Account',
                 'connected_accounts' => $connectedOauthPlatforms,
             ];
         } else {
             // Single-slot workers (AVA): use Gmail inbox connections
             $productionReadiness = [
                 'ready'           => $connectedInboxes->isNotEmpty(),
-                'banner_title'    => 'Not production ready — no inbox connected',
-                'banner_body'     => 'This worker has no Gmail inbox connected via the Connect tab. Real emails will not be received or processed until you connect an inbox.',
-                'connect_label'   => 'Connect Inbox →',
-                'fast_track_desc' => 'Run a sample email through the full pipeline — draft lands in your Drafts folder',
-                'no_credential_msg' => 'Connect an inbox to run Fast Track',
+                'title'           => 'Not production ready — no inbox connected',
+                'body'            => 'This worker has no Gmail inbox connected via the Connect tab. Real emails will not be received or processed until you connect an inbox.',
+                'connect_label'   => 'Connect Inbox',
                 'connected_accounts' => [],
             ];
-        }
-
-        $overviewPanels = [];
-        $overviewMeta   = [];
-        if ($contract && method_exists($contract, 'overview')) {
-            $resolved       = \App\Platform\Services\DashboardService::resolve($dep, $contract->overview(), $contract);
-            $overviewPanels = $resolved['panels'] ?? [];
-            $overviewMeta   = $resolved['meta']   ?? [];
         }
 
         // Trial plans are the free-experience tier — exclude from subscription paywall.
@@ -154,74 +140,34 @@ class WorkerController extends Controller
             ->orderBy('sort_order')
             ->get();
 
-        // ── Observe data (last 7 days, embedded in detail page) ───────────────
-        $observeDays = 7;
-        $observeFrom = now()->subDays($observeDays - 1)->startOfDay();
+        $unitLabel = $contract ? ($contract->billing()['unit_label_plural'] ?? 'transactions') : 'transactions';
 
-        $pubsubHits = DB::table('platform_events')
-            ->where('type', 'gmail.pubsub.hit')
-            ->where('created_at', '>=', $observeFrom)
-            ->whereRaw("JSON_UNQUOTE(JSON_EXTRACT(payload, '$.gmail_address')) IN (
-                SELECT ugc.gmail_address FROM user_gmail_credentials ugc
-                JOIN deployment_credentials dc ON dc.credential_id = ugc.id
-                WHERE dc.deployment_id = ?
-            )", [$id])
-            ->selectRaw('DATE(created_at) as day, COUNT(*) as hits')
-            ->groupBy('day')->orderBy('day')->get()->keyBy('day');
-
-        $observeFunnel = DB::table('transactions')
-            ->where('deployment_id', $id)
-            ->where('created_at', '>=', $observeFrom)
-            ->selectRaw("COUNT(*) as total, SUM(status='filtered_out') as filtered_out,
-                SUM(status='dismissed') as dismissed,
-                SUM(status IN ('draft_ready','approved','sent')) as completed,
-                SUM(status='failed') as failed")
-            ->first();
-
-        $txPerDay = DB::table('transactions')
-            ->where('deployment_id', $id)
-            ->where('created_at', '>=', $observeFrom)
-            ->selectRaw('DATE(created_at) as day, COUNT(*) as total,
-                SUM(status = "filtered_out") as filtered,
-                SUM(status IN ("draft_ready","approved","sent")) as completed')
-            ->groupBy('day')->orderBy('day')->get()->keyBy('day');
-
-        $stageSpend = DB::table('usage_events')
-            ->where('deployment_id', $id)
-            ->where('created_at', '>=', $observeFrom)
-            ->whereNotNull('stage')
-            ->groupBy('stage')
-            ->selectRaw('stage, COUNT(*) as calls, SUM(cost_usd) as cost, SUM(tokens_input+tokens_output) as tokens')
-            ->orderByRaw('SUM(cost_usd) DESC')
-            ->get();
-
-        $avgDuration = DB::table('transactions')
-            ->where('deployment_id', $id)
-            ->where('created_at', '>=', $observeFrom)
-            ->whereIn('status', ['draft_ready', 'approved', 'sent', 'failed'])
-            ->selectRaw('AVG(TIMESTAMPDIFF(SECOND, created_at, updated_at)) as avg_seconds')
-            ->value('avg_seconds');
-
-        $chartDays = collect();
-        for ($i = $observeDays - 1; $i >= 0; $i--) {
-            $day = now()->subDays($i)->format('Y-m-d');
-            $chartDays->push([
-                'day'       => $day,
-                'label'     => now()->subDays($i)->format('M d'),
-                'hits'      => $pubsubHits->get($day)?->hits ?? 0,
-                'total'     => $txPerDay->get($day)?->total ?? 0,
-                'filtered'  => $txPerDay->get($day)?->filtered ?? 0,
-                'completed' => $txPerDay->get($day)?->completed ?? 0,
-            ]);
-        }
+        // ── System notices: worker paused/stopped, disconnected inbox, billing status ──
+        $watchInactiveInboxes = $connectedInboxes->where('watch_active', false);
+        $workerStopped        = in_array($dep->status, ['stopped', 'decommissioned']);
+        $billingAlert         = $billing && $billing->status === 'past_due';
+        $isCanceled           = $billing && $billing->status === 'canceled';
+        $subscriptionPlans    = $isCanceled
+            ? DB::table('worker_pricing')
+                ->where('worker_slug', $dep->worker_slug)
+                ->where('active', true)
+                ->where('is_trial_plan', false)
+                ->orderBy('sort_order')
+                ->get()
+            : collect();
+        $tokenTotal = rescue(
+            fn() => (int) DB::table('usage_events')->where('user_id', auth()->id())->sum(DB::raw('tokens_input + tokens_output')),
+            0,
+            false
+        );
 
         return view('dashboard.worker-detail', compact(
-            'dep', 'contract', 'credential', 'credentials', 'connectedInboxes', 'availableCredentials',
-            'txCount', 'recentTx', 'usage', 'pendingReview', 'stuckCount',
-            'customModels', 'policyViolations', 'registryRow',
-            'isMultiCredential', 'productionReadiness', 'overviewPanels', 'overviewMeta',
-            'pricingTiers',
-            'observeFunnel', 'stageSpend', 'avgDuration', 'chartDays'
+            'dep', 'contract', 'connectedInboxes',
+            'txCount', 'pendingReview', 'stuckCount',
+            'policyViolations', 'isTrialExhausted', 'otherViolations', 'trialReason', 'billing',
+            'registryRow', 'isMultiCredential', 'productionReadiness', 'pricingTiers', 'unitLabel',
+            'watchInactiveInboxes', 'workerStopped', 'billingAlert', 'isCanceled', 'subscriptionPlans',
+            'tokenTotal'
         ));
     }
 
