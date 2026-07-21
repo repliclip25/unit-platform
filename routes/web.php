@@ -96,6 +96,7 @@ Route::middleware(['auth'])->group(function () {
     Route::view('/templates/onboarding', 'templates.onboarding')->name('templates.onboarding');
     Route::view('/templates/desk',       'templates.desk')->name('templates.desk');
     Route::view('/templates/page',       'templates.page')->name('templates.page');
+    Route::view('/templates/action',     'templates.action')->name('templates.action');
 
     // Memory seed (used by the v2 onboarding flow's "load sample data" button)
     Route::post('/onboarding/memory/seed',         [\App\Http\Controllers\OnboardingController::class, 'seedMemory'])->name('onboarding.memory.seed');
