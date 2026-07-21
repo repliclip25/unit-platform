@@ -220,9 +220,9 @@ class SeedAvaWorkerRegistry extends Command
                 'banner' => '/workers/ava/banner.jpg',
             ]),
             'notifications'         => json_encode([
-                ['key' => 'drafts_awaiting_review', 'level' => 'info',    'query' => 'tx_draft_ready_undecided', 'trigger' => ['operator' => '>', 'value' => 0], 'message' => '{count} draft{plural} awaiting your review', 'action_label' => 'Review', 'action_route' => 'transactions'],
-                ['key' => 'urgent_unresolved',      'level' => 'warning', 'query' => 'tx_urgent_open',          'trigger' => ['operator' => '>', 'value' => 0], 'message' => '{count} urgent item{plural} with no action taken', 'action_label' => 'View', 'action_route' => 'transactions'],
-                ['key' => 'failed_today',           'level' => 'error',   'query' => 'tx_failed_today',         'trigger' => ['operator' => '>', 'value' => 0], 'message' => '{count} transaction{plural} failed today', 'action_label' => 'Inspect', 'action_route' => 'transactions'],
+                ['key' => 'drafts_awaiting_review', 'level' => 'info',    'query' => 'tx_draft_ready_undecided', 'trigger' => ['operator' => '>', 'value' => 0], 'message' => '{count} draft{plural} awaiting your review', 'action_label' => 'Review', 'action_route' => 'app.transactions'],
+                ['key' => 'urgent_unresolved',      'level' => 'warning', 'query' => 'tx_urgent_open',          'trigger' => ['operator' => '>', 'value' => 0], 'message' => '{count} urgent item{plural} with no action taken', 'action_label' => 'View', 'action_route' => 'app.transactions'],
+                ['key' => 'failed_today',           'level' => 'error',   'query' => 'tx_failed_today',         'trigger' => ['operator' => '>', 'value' => 0], 'message' => '{count} transaction{plural} failed today', 'action_label' => 'Inspect', 'action_route' => 'app.transactions'],
             ]),
             'subscriptions'         => json_encode([]),
             'version_changelog'     => json_encode([

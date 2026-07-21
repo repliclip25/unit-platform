@@ -634,7 +634,7 @@ class AvaWorker implements WorkerContract
                 'trigger'      => ['operator' => '>', 'value' => 0],
                 'message'      => '{count} draft{plural} awaiting your review',
                 'action_label' => 'Review',
-                'action_route' => 'transactions',
+                'action_route' => 'app.transactions',
                 'action_params'=> ['filter' => 'draft_ready'],
             ],
             [
@@ -644,7 +644,7 @@ class AvaWorker implements WorkerContract
                 'trigger'      => ['operator' => '>', 'value' => 0],
                 'message'      => '{count} urgent item{plural} with no action taken',
                 'action_label' => 'View',
-                'action_route' => 'transactions',
+                'action_route' => 'app.transactions',
                 'action_params'=> ['filter' => 'urgent'],
             ],
             [
@@ -654,7 +654,7 @@ class AvaWorker implements WorkerContract
                 'trigger'      => ['operator' => '>', 'value' => 0],
                 'message'      => '{count} transaction{plural} failed today',
                 'action_label' => 'Inspect',
-                'action_route' => 'transactions',
+                'action_route' => 'app.transactions',
                 'action_params'=> ['filter' => 'failed'],
             ],
         ];

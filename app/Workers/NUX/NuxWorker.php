@@ -533,7 +533,7 @@ class NuxWorker implements WorkerContract
                 'trigger'       => ['operator' => '>', 'value' => 0],
                 'message'       => '{count} repurposed draft{plural} awaiting your review',
                 'action_label'  => 'Review',
-                'action_route'  => 'transactions',
+                'action_route'  => 'app.transactions',
                 'action_params' => ['filter' => 'draft_ready'],
             ],
             [
@@ -543,7 +543,7 @@ class NuxWorker implements WorkerContract
                 'trigger'       => ['operator' => '>', 'value' => 0],
                 'message'       => '{count} post{plural} failed to process today',
                 'action_label'  => 'Inspect',
-                'action_route'  => 'transactions',
+                'action_route'  => 'app.transactions',
                 'action_params' => ['filter' => 'failed'],
             ],
         ];
