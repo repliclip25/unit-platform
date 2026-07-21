@@ -208,8 +208,9 @@ class MemoryAccessController extends Controller
 
         $permissions = json_decode($grant->permissions, true);
 
-        // Load the owner's memory for this deployment
-        $memory = $this->loadMemory($grant->owner_user_id, $grant->deployment_id);
+        // Load the owner's memory — clients/contacts/assets are tenant-wide,
+        // not scoped to a single deployment
+        $memory = $this->loadMemory($grant->owner_user_id);
 
         // Track viewed event (once per session per grant)
         $sessionKey = 'sl_viewed_' . $grantId;
@@ -252,7 +253,14 @@ class MemoryAccessController extends Controller
                 return $group;
             });
 
-        return view('memory.shared', compact('grant', 'permissions', 'memory', 'copiedIds', 'granteeDeployments', 'ownerGroups'));
+        $shell = \App\Platform\Services\WorkerShellService::build($userId, 'shared');
+        extract($shell); // workerCatalog, registryRows, registryRow, profileImg, coverImg, tokenTotal
+        $firstName = explode(' ', trim($request->user()->name))[0];
+
+        return view('memory.shared', compact(
+            'grant', 'permissions', 'memory', 'copiedIds', 'granteeDeployments', 'ownerGroups',
+            'workerCatalog', 'tokenTotal', 'firstName'
+        ));
     }
 
     // ── Grantee: copy a record ─────────────────────────────────────────────────
@@ -302,13 +310,13 @@ class MemoryAccessController extends Controller
             return back()->with('error', 'You already copied this record.');
         }
 
-        // Copy the record into grantee's own memory
+        // Copy the record into grantee's own memory — clients/contacts/assets
+        // are tenant-wide, not scoped to a single deployment
         $row = (array) $source;
         unset($row['id']);
-        $row['user_id']       = $userId;
-        $row['deployment_id'] = $targetDepId;
-        $row['created_at']    = now();
-        $row['updated_at']    = now();
+        $row['user_id']    = $userId;
+        $row['created_at'] = now();
+        $row['updated_at'] = now();
 
         $newId = DB::table($tableName)->insertGetId($row);
 
@@ -349,10 +357,9 @@ class MemoryAccessController extends Controller
         if (!in_array('upload', $permissions)) abort(403, 'Upload permission not granted.');
 
         $data = $request->input('data');
-        $data['user_id']       = $grant->owner_user_id;
-        $data['deployment_id'] = $grant->deployment_id;
-        $data['created_at']    = now();
-        $data['updated_at']    = now();
+        $data['user_id']    = $grant->owner_user_id;
+        $data['created_at'] = now();
+        $data['updated_at'] = now();
 
         // Only allow safe fields
         $allowed = $this->allowedFields($tableName);
@@ -380,14 +387,14 @@ class MemoryAccessController extends Controller
             ->first();
     }
 
-    private function loadMemory(int $ownerUserId, int $deploymentId): array
+    private function loadMemory(int $ownerUserId): array
     {
         $memory = [];
         foreach (self::MEMORY_TABLES as $table) {
             try {
                 $memory[$table] = DB::table($table)
                     ->where('user_id', $ownerUserId)
-                    ->where('deployment_id', $deploymentId)
+                    ->whereNull('deleted_at')
                     ->orderByDesc('updated_at')
                     ->get();
             } catch (\Throwable) {
@@ -416,10 +423,13 @@ class MemoryAccessController extends Controller
 
     private function allowedFields(string $table): array
     {
+        // Must match the real clients/contacts/assets schema exactly — these
+        // tables have no `email`/`company` (clients), no `company`/`notes`
+        // (contacts), or `value` (assets) columns.
         return match($table) {
-            'clients'  => ['name', 'email', 'phone', 'company', 'status', 'address', 'notes', 'meta', 'deployment_id', 'user_id', 'created_at', 'updated_at'],
-            'contacts' => ['name', 'email', 'phone', 'role', 'company', 'department', 'is_decision_maker', 'notes', 'meta', 'client_id', 'deployment_id', 'user_id', 'created_at', 'updated_at'],
-            'assets'   => ['name', 'type', 'vendor', 'renewal_date', 'status', 'service_owner', 'notes', 'meta', 'client_id', 'deployment_id', 'user_id', 'created_at', 'updated_at'],
+            'clients'  => ['name', 'industry', 'role', 'preferred_style', 'status', 'address', 'notes', 'meta', 'user_id', 'created_at', 'updated_at'],
+            'contacts' => ['name', 'role', 'email', 'phone', 'department', 'is_decision_maker', 'meta', 'client_id', 'user_id', 'created_at', 'updated_at'],
+            'assets'   => ['name', 'type', 'vendor', 'renewal_date', 'cost_per_year', 'status', 'service_owner', 'notes', 'meta', 'client_id', 'user_id', 'created_at', 'updated_at'],
             default    => [],
         };
     }
