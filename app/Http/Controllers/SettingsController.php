@@ -3,13 +3,10 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
-use App\Platform\Services\UnitNotifier;
 
 class SettingsController extends Controller
 {
@@ -84,55 +81,11 @@ class SettingsController extends Controller
         return back()->with('success', 'Custom model removed.');
     }
 
-    public function deleteAccount(Request $request)
-    {
-        $request->validate(['confirm_delete' => 'required|in:DELETE']);
-
-        $user   = $request->user();
-        $userId = $user->id;
-        $email  = $user->email;
-        $name   = $user->name;
-
-        // Cancel Stripe subscriptions first
-        try {
-            if ($user->stripe_id) {
-                foreach ($user->subscriptions as $subscription) {
-                    $subscription->cancelNow();
-                }
-            }
-        } catch (\Throwable $e) {
-            Log::error('Account deletion: Stripe cancel failed', ['user_id' => $userId, 'error' => $e->getMessage()]);
-        }
-
-        // Wipe all tenant data
-        $deploymentIds = DB::table('worker_deployments')->where('user_id', $userId)->pluck('id');
-
-        DB::table('transactions')->where('user_id', $userId)->delete();
-        DB::table('renewal_register')->where('user_id', $userId)->delete();
-        DB::table('deployment_billing')->where('user_id', $userId)->delete();
-        DB::table('deployment_credentials')->whereIn('deployment_id', $deploymentIds)->delete();
-        DB::table('user_gmail_credentials')->where('user_id', $userId)->delete();
-        DB::table('worker_deployments')->where('user_id', $userId)->delete();
-        DB::table('usage_events')->where('user_id', $userId)->delete();
-        DB::table('platform_verifications')->where('user_id', $userId)->delete();
-        DB::table('clients')->where('user_id', $userId)->delete();
-        DB::table('contacts')->where('user_id', $userId)->delete();
-        DB::table('assets')->where('user_id', $userId)->delete();
-        DB::table('email_templates')->where('user_id', $userId)->delete();
-        DB::table('ava_rules')->where('user_id', $userId)->delete();
-        DB::table('tenant_api_keys')->where('user_id', $userId)->delete();
-        DB::table('tenant_custom_models')->where('user_id', $userId)->delete();
-        DB::table('fast_track_leads')->where('user_id', $userId)->delete();
-
-        Auth::logout();
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-
-        DB::table('users')->where('id', $userId)->delete();
-
-        Log::info('Account deleted', ['user_id' => $userId, 'email' => $email]);
-        UnitNotifier::adminAlert("Account Deleted: {$name}", "User {$name} ({$email}) deleted their account and all associated data.");
-
-        return redirect('/')->with('status', 'Your account and all data have been permanently deleted.');
-    }
+    // Account deletion lives on ProfileController::destroy() (route: profile.destroy)
+    // — a 30-day scheduled soft-delete with a cancellation window, matching the
+    // deletion_requested_at column and PurgeScheduledDeletionsCommand. This
+    // controller previously had its own deleteAccount() that hard-deleted
+    // everything immediately with no grace period — a dangerous divergent
+    // duplicate reachable from the Settings page. Removed; the Settings page's
+    // Danger Zone now posts to profile.destroy like the Profile page does.
 }

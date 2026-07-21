@@ -305,7 +305,7 @@
         <div class="px-5 py-5 flex flex-col sm:flex-row sm:items-start gap-4">
             <div class="flex-1">
                 <p class="text-sm font-semibold" style="color:var(--text-primary)">Delete account</p>
-                <p class="text-xs mt-1 leading-relaxed" style="color:var(--text-muted)">Permanently deletes your account, all workers, transactions, Gmail connections, memory, and billing records. This cannot be undone. Any active subscriptions will be canceled immediately.</p>
+                <p class="text-xs mt-1 leading-relaxed" style="color:var(--text-muted)">Schedules your account for deletion — you'll have 30 days to cancel before all workers, transactions, Gmail connections, memory, and billing records are permanently removed.</p>
             </div>
             <button onclick="document.getElementById('delete-account-modal').classList.remove('hidden')"
                     class="shrink-0 text-xs font-semibold px-4 py-2 rounded-lg transition self-start"
@@ -319,8 +319,8 @@
     <div id="delete-account-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center" style="background:rgba(0,0,0,.7)">
         <div class="w-full max-w-md mx-4 rounded-2xl p-6" style="background:var(--bg-card);border:1px solid rgba(239,68,68,.3)">
             <h3 class="text-base font-bold mb-2" style="color:#f87171">Delete your account</h3>
-            <p class="text-sm mb-5 leading-relaxed" style="color:var(--text-muted)">This will permanently delete everything — workers, transactions, Gmail connections, memory, and billing records. Your Stripe subscription will be canceled. <strong style="color:var(--text-primary)">This cannot be undone.</strong></p>
-            <form method="POST" action="{{ route('settings.account.delete') }}">
+            <p class="text-sm mb-5 leading-relaxed" style="color:var(--text-muted)">Your account will be <strong style="color:var(--text-primary)">scheduled for deletion</strong> — not immediate. You have <strong style="color:var(--text-primary)">30 days</strong> to cancel from your Profile page. After that, all workers, transactions, Gmail connections, memory, and billing records are permanently removed.</p>
+            <form method="POST" action="{{ route('profile.destroy') }}">
                 @csrf @method('DELETE')
                 <div class="mb-4">
                     <label class="block text-xs font-semibold mb-2" style="color:var(--text-muted)">
@@ -335,7 +335,7 @@
                     <button type="submit" id="confirm-delete-btn" disabled
                             class="flex-1 py-2.5 rounded-xl text-sm font-bold transition disabled:opacity-40 disabled:cursor-not-allowed"
                             style="background:#ef4444;color:#fff">
-                        Permanently delete everything
+                        Schedule deletion
                     </button>
                     <button type="button" onclick="document.getElementById('delete-account-modal').classList.add('hidden')"
                             class="flex-1 py-2.5 rounded-xl text-sm font-semibold"

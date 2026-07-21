@@ -258,7 +258,6 @@ Route::middleware(['auth', 'verified', 'onboarded', 'not-pending-del'])->group(f
     // ── Custom Model Registration ────────────────────────────────────────────
     Route::post('/settings/custom-models',       [SettingsController::class, 'storeCustomModel'])->name('settings.custom-models.store');
     Route::delete('/settings/custom-models/{id}',[SettingsController::class, 'destroyCustomModel'])->name('settings.custom-models.destroy');
-    Route::delete('/settings/account',           [SettingsController::class, 'deleteAccount'])->name('settings.account.delete');
 
     // ── AVA Connection & Onboarding ─────────────────────────────────────────
     Route::get('/ava/connect',        [GmailController::class, 'connect'])->name('ava.connect');
