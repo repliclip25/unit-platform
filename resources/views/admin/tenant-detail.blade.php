@@ -17,9 +17,9 @@
     $riskColor = ['low' => '#4ade80', 'medium' => 'var(--accent-text)', 'high' => '#f87171'][$riskLevel];
 
     $ctaOptions = [
-        'upgrade'   => ['label' => 'Upgrade Now →',       'url' => url('/billing')],
-        'dashboard' => ['label' => 'Go to Dashboard →',   'url' => url('/dashboard')],
-        'billing'   => ['label' => 'Manage Billing →',    'url' => url('/billing')],
+        'upgrade'   => ['label' => 'Upgrade Now →',       'url' => url('/app/billing')],
+        'dashboard' => ['label' => 'Go to Dashboard →',   'url' => url('/app/dashboard')],
+        'billing'   => ['label' => 'Manage Billing →',    'url' => url('/app/billing')],
         'workers'   => ['label' => 'Explore Workers →',   'url' => url('/workers')],
         'support'   => ['label' => 'Contact Support →',   'url' => 'mailto:' . config('mail.from.address')],
         'none'      => ['label' => '',                    'url' => ''],

@@ -88,7 +88,7 @@ class UsageGuard
                     . "Your UNIT account has been blocked under policy: {$policy['title']}.\n\n"
                     . $policy['description'] . "\n\n"
                     . "How to resolve:\n{$resolution}\n\n"
-                    . "Log in to take action:\n" . url('/billing') . "\n\n"
+                    . "Log in to take action:\n" . url('/app/billing') . "\n\n"
                     . "UNIT Platform";
 
                 try {

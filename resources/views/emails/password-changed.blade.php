@@ -11,7 +11,7 @@
   </tr>
 </table>
 
-<a href="{{ url('/dashboard') }}" class="btn">Go to your workspace →</a>
+<a href="{{ url('/app/dashboard') }}" class="btn">Go to your workspace →</a>
 
 <hr class="divider">
 

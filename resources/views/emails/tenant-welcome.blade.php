@@ -19,6 +19,6 @@
   </tr>
 </table>
 
-<a href="{{ url('/dashboard') }}" class="btn">Go to your workspace →</a>
+<a href="{{ url('/app/dashboard') }}" class="btn">Go to your workspace →</a>
 
 @include('emails.partials.footer', ['footerNote' => "You're receiving this because you just created a UNIT account. Questions? Reply to this email."])

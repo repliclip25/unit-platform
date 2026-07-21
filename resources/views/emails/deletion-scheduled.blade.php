@@ -14,7 +14,7 @@
   <strong>Changed your mind?</strong> Log in before {{ $deletionDate }} and cancel the deletion from your profile page. After that date, recovery is not possible.
 </div>
 
-<a href="{{ url('/profile') }}" class="btn">Cancel deletion →</a>
+<a href="{{ url('/app/profile') }}" class="btn">Cancel deletion →</a>
 
 <hr class="divider">
 

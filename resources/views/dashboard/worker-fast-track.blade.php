@@ -545,7 +545,7 @@ var FT_FAIL_STREAK = 0;
 
 function pollFastTrack() {
   var line = document.getElementById('ft-status-line');
-  fetch('{{ url("/transactions") }}/' + WATCH_TX + '/status', { headers: { Accept: 'application/json' } })
+  fetch('{{ url("/app/transactions") }}/' + WATCH_TX + '/status', { headers: { Accept: 'application/json' } })
     .then(function (r) {
       if (!r.ok) throw new Error('status ' + r.status);
       return r.json();

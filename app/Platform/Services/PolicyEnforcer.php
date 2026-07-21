@@ -164,7 +164,7 @@ class PolicyEnforcer
             . "Your UNIT account has been automatically blocked under policy: {$policy['title']}.\n\n"
             . $policy['description'] . $extras . "\n\n"
             . "How to resolve:\n{$resolution}\n\n"
-            . "Log in to your account to take action:\n" . url('/billing') . "\n\n"
+            . "Log in to your account to take action:\n" . url('/app/billing') . "\n\n"
             . "UNIT Platform";
 
         try {
