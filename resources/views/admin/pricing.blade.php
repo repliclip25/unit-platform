@@ -264,8 +264,8 @@
                             </div>
                             <div id="ef-trial-days-wrap">
                                 <div class="wf-lbl">Trial Duration (days)</div>
-                                <input type="number" name="trial_days" id="ef-trial_days" class="wf-input" placeholder="30" min="1" max="365">
-                                <div class="wf-hint">Leave blank to use the platform default. Options: 14 · 30 · 60 · 90</div>
+                                <input type="number" name="trial_days" id="ef-trial_days" class="wf-input" placeholder="{{ $defaultTrialDays }}" min="1" max="365">
+                                <div class="wf-hint">Leave blank to use the platform default ({{ $defaultTrialDays }} days). Other common options: 30 · 60 · 90</div>
                             </div>
                             <div></div>
                         </div>
@@ -491,7 +491,7 @@
                 </div>
                 <div>
                     <div class="wf-lbl">Free Trial Transactions</div>
-                    <input type="number" name="free_transactions" class="wf-input" value="10">
+                    <input type="number" name="free_transactions" class="wf-input" value="{{ $defaultTrialTransactions }}">
                 </div>
                 <div>
                     <div class="wf-lbl">Sort Order</div>

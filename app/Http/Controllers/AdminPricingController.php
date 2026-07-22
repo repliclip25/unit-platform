@@ -31,7 +31,16 @@ class AdminPricingController extends Controller
         $stripeTestMode = str_starts_with(config('cashier.secret', ''), 'sk_test_');
         $stripeDashBase = 'https://dashboard.stripe.com/' . ($stripeTestMode ? 'test/' : '');
 
-        return view('admin.pricing', compact('plans', 'registryWorkers', 'aiStagesMap', 'stripeTestMode', 'stripeDashBase'));
+        // Form defaults must track the actual platform constants — the "Add
+        // plan" form previously defaulted Free Trial Transactions to a
+        // hardcoded 10, silently different from the 25 used everywhere else.
+        $defaultTrialTransactions = \App\Platform\Services\PlatformDefaults::TRIAL_TRANSACTIONS;
+        $defaultTrialDays         = \App\Platform\Services\PlatformDefaults::TRIAL_DAYS;
+
+        return view('admin.pricing', compact(
+            'plans', 'registryWorkers', 'aiStagesMap', 'stripeTestMode', 'stripeDashBase',
+            'defaultTrialTransactions', 'defaultTrialDays'
+        ));
     }
 
     /**
