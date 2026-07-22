@@ -525,8 +525,14 @@ Route::get('/influencer/apply',  [InfluencerController::class, 'apply'])->name('
 Route::post('/influencer/apply', [InfluencerController::class, 'submitApplication'])->name('influencer.apply.submit');
 
 // ── Public worker marketplace — plural, root-level, SEO-canonical ─────────
-Route::get('/workers', fn() => view('workers'))->name('public.workers.index');
-Route::get('/workers/{slug}', [WorkerPublicController::class, 'show2'])->name('public.workers.show');
+Route::get('/ai-workers', fn() => view('workers'))->name('public.workers.index');
+Route::get('/ai-workers/{slug}', [WorkerPublicController::class, 'show2'])->name('public.workers.show');
+
+// ── 301 redirects from old /workers URLs (SEO: preserve link equity) ──────
+Route::redirect('/workers', '/ai-workers', 301);
+Route::get('/workers/{slug}', function (string $slug) {
+    return redirect('/ai-workers/' . $slug, 301);
+});
 
 // ── AVA Onboarding v2 (new UI — parallel to existing flow) ────────────────
 Route::middleware(['auth', 'verified'])->prefix('hire/ava')->name('hire.ava.')->group(function () {

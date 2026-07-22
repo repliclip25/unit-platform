@@ -911,7 +911,7 @@ body{
       <span class="logo-name">UNIT</span>
     </a>
     <ul class="nav-links">
-      <li><a href="/workers">Meet the Workers</a></li>
+      <li><a href="/ai-workers">Meet the Workers</a></li>
       <li><a href="#timeline">How It Works</a></li>
       <li><a href="#resources">Resources</a></li>
       <li><a href="{{ route('pricing') }}">Pricing</a></li>
@@ -953,7 +953,7 @@ body{
     <button class="mob-close" id="mob-close">✕</button>
   </div>
   <div class="mob-links">
-    <a href="/workers" onclick="closeMob()">Meet the Workers</a>
+    <a href="/ai-workers" onclick="closeMob()">Meet the Workers</a>
     <a href="#timeline" onclick="closeMob()">How It Works</a>
     <a href="#resources" onclick="closeMob()">Resources</a>
     <a href="{{ route('pricing') }}" onclick="closeMob()">Pricing</a>

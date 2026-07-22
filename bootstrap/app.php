@@ -28,7 +28,6 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
 
         $middleware->appendToGroup('web', \App\Http\Middleware\CaptureReferralCode::class);
-        $middleware->appendToGroup('web', \App\Http\Middleware\RedirectGuestWorkerPage::class);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         // Flare exception reporting (https://flareapp.io)
