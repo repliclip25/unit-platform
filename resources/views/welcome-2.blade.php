@@ -1732,7 +1732,7 @@ body{
         <div class="ft-links">
           <a href="{{ route('public.workers.show', 'ava') }}">AVA — Renewal Coordinator</a>
           <a href="{{ route('marketplace') }}">All Workers</a>
-          <a href="{{ route('referral.index') }}">Refer &amp; Earn</a>
+          <a href="{{ route('app.referral.index') }}">Refer &amp; Earn</a>
         </div>
       </div>
       <div>

@@ -205,7 +205,7 @@ footer.footer{background:#0A0A0A;padding:clamp(40px,6vw,72px) 0 28px}
         <div class="ft-links">
           <a href="{{ route('public.workers.show', 'ava') }}">AVA — Renewals</a>
           <a href="{{ route('public.workers.index') }}">All Workers</a>
-          <a href="{{ route('referral.index') }}">Refer &amp; Earn</a>
+          <a href="{{ route('app.referral.index') }}">Refer &amp; Earn</a>
           <a href="{{ route('influencer.apply') }}">Partner Program</a>
         </div>
       </div>

@@ -318,6 +318,10 @@ Route::middleware(['auth', 'verified', 'onboarded', 'not-pending-del'])->group(f
         return request()->user()->downloadInvoice($id);
     })->name('billing.invoice');
 
+    // ── Referral Program — tenant-only (ReferralController redirects guests
+    // to login), moved under /app/ to match every other authenticated page ──
+    Route::get('/referral', [ReferralController::class, 'index'])->name('referral.index');
+
     }); // end app prefix/name group
 
     // ── Admin-only: System QA + Tenant Controls + Admin actions ──────────────
@@ -517,9 +521,6 @@ Route::post('/fast-track/submit', [ReferralController::class, 'fastTrackSubmit']
 
 // ── Public Influencer Redirect ─────────────────────────────────────────
 Route::get('/r/{slug}', [ReferralController::class, 'influencerRedirect'])->name('influencer.redirect');
-
-// ── Referral Program Public Page ──────────────────────────────────────
-Route::get('/referral', [ReferralController::class, 'index'])->name('referral.index');
 
 // ── Influencer Application ─────────────────────────────────────────────
 Route::get('/influencer/apply',  [InfluencerController::class, 'apply'])->name('influencer.apply');

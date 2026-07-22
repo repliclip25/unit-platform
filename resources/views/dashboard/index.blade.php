@@ -333,11 +333,11 @@ $notifTextColors = ['error'=>'#f87171','warning'=>'#fbbf24','info'=>'var(--db-te
         <p style="flex:1;font-size:13px;color:var(--db-text-muted)">
           Earn <strong style="color:var(--db-text)">$25 credit</strong> for every colleague you bring to UNIT.
         </p>
-        <a href="{{ route('referral.index') }}" class="dc-refer-btn">Refer & Earn</a>
+        <a href="{{ route('app.referral.index') }}" class="dc-refer-btn">Refer & Earn</a>
       </div>
       @else
       <div class="dc-referral-chip">
-        <a href="{{ route('referral.index') }}">
+        <a href="{{ route('app.referral.index') }}">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
           Refer & Earn
         </a>

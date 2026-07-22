@@ -374,7 +374,7 @@ class DeskService
             return $count > 0 ? [
                 'text'   => "<strong>{$count}</strong> " . ($count === 1 ? 'referral' : 'referrals') . ' converted to paid this week',
                 'dot'    => 'green',
-                'action' => ['label' => 'View earnings', 'url' => route('referral.index')],
+                'action' => ['label' => 'View earnings', 'url' => route('app.referral.index')],
                 'always' => false,
             ] : null;
         }
@@ -386,7 +386,7 @@ class DeskService
                     ? 'Someone just joined UNIT with your referral link'
                     : "<strong>{$count}</strong> people joined UNIT with your referral link this week",
                 'dot'    => 'green',
-                'action' => ['label' => 'View referrals', 'url' => route('referral.index')],
+                'action' => ['label' => 'View referrals', 'url' => route('app.referral.index')],
                 'always' => false,
             ] : null;
         }
@@ -424,7 +424,7 @@ class DeskService
             return [
                 'text'        => "🎉 You've saved over <strong>{$hit} hours</strong> with UNIT — keep going",
                 'dot'         => 'accent',
-                'action'      => ['label' => 'Share', 'url' => route('referral.index')],
+                'action'      => ['label' => 'Share', 'url' => route('app.referral.index')],
                 'always'      => false,
                 'dismissible' => true,
                 'dismiss_key' => 'milestone.hours_saved',
