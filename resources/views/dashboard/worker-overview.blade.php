@@ -461,6 +461,16 @@ $sidebarLinks = [
       </div>
       @endif
 
+      @if($trialNearExhaustion)
+      <div class="wo-banner notice">
+        <div style="flex:1">
+          <div class="wo-banner-title">Trial ending soon</div>
+          <div class="wo-banner-body">Only {{ $trialLeft }} free {{ $unitLabel }} left. Upgrade now to avoid an interruption.</div>
+        </div>
+        <a href="{{ route('app.workers.billing', $dep->worker_slug) }}" class="wo-banner-action">Upgrade →</a>
+      </div>
+      @endif
+
       @foreach($otherViolations as $violation)
       <div class="wo-banner warn">
         <div style="flex:1">

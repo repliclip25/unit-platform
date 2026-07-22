@@ -105,6 +105,7 @@ class WorkerController extends Controller
         $trialReason      = collect($policyViolations)->firstWhere('code', 'TRIAL_EXHAUSTED')['context']['reason'] ?? 'transactions';
         $billing          = DB::table('deployment_billing')->where('deployment_id', $id)->first();
         $registryRow      = DB::table('worker_registry')->where('slug', $dep->worker_slug)->first();
+        ['near' => $trialNearExhaustion, 'left' => $trialLeft] = $this->trialNearExhaustionData($billing, $dep->worker_slug, $isTrialExhausted);
 
         // ── Contract-driven production readiness ──────────────────────────────
         $credDef = $contract ? $contract->credential() : [];
@@ -173,10 +174,31 @@ class WorkerController extends Controller
             'dep', 'contract', 'connectedInboxes',
             'txCount', 'pendingReview', 'stuckCount',
             'policyViolations', 'isTrialExhausted', 'otherViolations', 'trialReason', 'billing',
+            'trialNearExhaustion', 'trialLeft',
             'registryRow', 'isMultiCredential', 'productionReadiness', 'pricingTiers', 'unitLabel',
             'watchInactiveInboxes', 'workerStopped', 'billingAlert', 'isCanceled', 'subscriptionPlans',
             'tokenTotal'
         ));
+    }
+
+    // Shared "N free transactions left" near-exhaustion nudge — same amber
+    // threshold as DeskService's desk-card trial nudge, so the warning shows
+    // up consistently everywhere a trial's remaining count is surfaced.
+    const TRIAL_NEAR_EXHAUSTION_THRESHOLD = 3;
+
+    private function trialNearExhaustionData($billing, string $workerSlug, bool $isTrialExhausted): array
+    {
+        if (!$billing || $billing->status !== 'trial' || $isTrialExhausted) {
+            return ['near' => false, 'left' => null];
+        }
+
+        $limit = (int) ($billing->trial_transactions_limit ?: \App\Platform\Services\PlatformDefaults::freeTransactionsFor($workerSlug));
+        $used  = (int) $billing->trial_transactions_used;
+        $left  = max(0, $limit - $used);
+
+        return $left <= self::TRIAL_NEAR_EXHAUSTION_THRESHOLD
+            ? ['near' => true, 'left' => $left]
+            : ['near' => false, 'left' => null];
     }
 
     // Simplified, user-facing worker overview (new UX2 design). The full
@@ -217,6 +239,8 @@ class WorkerController extends Controller
         $otherViolations  = collect($policyViolations)->filter(fn($v) => $v['code'] !== 'TRIAL_EXHAUSTED')->values()->all();
         $trialReason      = collect($policyViolations)->firstWhere('code', 'TRIAL_EXHAUSTED')['context']['reason'] ?? 'transactions';
         $billing          = DB::table('deployment_billing')->where('deployment_id', $id)->first();
+        ['near' => $trialNearExhaustion, 'left' => $trialLeft] = $this->trialNearExhaustionData($billing, $dep->worker_slug, $isTrialExhausted);
+        $unitLabel        = $contract ? ($contract->billing()['unit_label_plural'] ?? 'transactions') : 'transactions';
 
         $pricingTiers = DB::table('worker_pricing')
             ->where('worker_slug', $dep->worker_slug)
@@ -358,6 +382,7 @@ class WorkerController extends Controller
             'dep', 'contract', 'workerCatalog', 'registryRows', 'registryRow', 'profileImg', 'coverImg', 'tokenTotal', 'firstName',
             'connectedInboxes', 'txCount', 'pendingReview', 'stuckCount',
             'policyViolations', 'isTrialExhausted', 'otherViolations', 'billing', 'trialReason',
+            'trialNearExhaustion', 'trialLeft', 'unitLabel',
             'pricingTiers', 'productionReadiness',
             'pubsubHits', 'observeFunnel', 'stageSpend', 'avgDuration', 'chartDays', 'chartMax', 'ingestedCount',
             'txList', 'selectedTxId', 'selectedTx', 'txStages'

@@ -264,6 +264,16 @@ $profileImg = $registryRow?->profile_image ? asset('storage/' . $registryRow->pr
     </div>
     @endif
 
+    @if($trialNearExhaustion)
+    <div class="wd-banner notice">
+      <div>
+        <div class="wd-banner-title">Trial ending soon</div>
+        <div class="wd-banner-body">Only {{ $trialLeft }} free {{ $unitLabel }} left. Upgrade now to avoid an interruption.</div>
+      </div>
+      <a href="{{ route('app.workers.billing', $dep->worker_slug) }}" class="wd-banner-action">Upgrade →</a>
+    </div>
+    @endif
+
     {{-- ── System notices ── --}}
     @if($workerStopped)
     <div class="wd-banner warn">
