@@ -40,7 +40,22 @@ class PublicPageController extends Controller
             ? (int) $trialPlans->first()->trial_days
             : null;
 
-        return view('public.pricing', compact('plans', 'trialTransactions', 'trialDays'));
+        // A logged-in visitor with an existing deployment shouldn't see a
+        // generic "Deploy" CTA — the card should nudge them toward whatever
+        // their actual subscription state calls for (upgrade, manage billing,
+        // go to their desk, etc).
+        $userBilling = collect();
+        if (auth()->check()) {
+            $userBilling = DB::table('deployment_billing')
+                ->where('user_id', auth()->id())
+                ->whereIn('worker_slug', $plans->pluck('worker_slug'))
+                ->orderByDesc('created_at')
+                ->get()
+                ->unique('worker_slug')
+                ->keyBy('worker_slug');
+        }
+
+        return view('public.pricing', compact('plans', 'trialTransactions', 'trialDays', 'userBilling'));
     }
     public function blog()
     {

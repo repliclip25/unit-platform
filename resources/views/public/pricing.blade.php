@@ -155,8 +155,20 @@
                     </li>
                     @endforeach
                 </ul>
+                @php
+                    if (!auth()->check()) {
+                        $freeCtaLabel = 'Get started free';
+                        $freeCtaHref  = route('register');
+                    } elseif ($userBilling->isNotEmpty()) {
+                        $freeCtaLabel = 'Go to your dashboard';
+                        $freeCtaHref  = route('app.dashboard');
+                    } else {
+                        $freeCtaLabel = 'Get started free';
+                        $freeCtaHref  = route('app.workers.index');
+                    }
+                @endphp
                 <div class="pc-cta">
-                    <a href="{{ route('register') }}" class="pc-btn" style="background:rgba(74,222,128,.14);color:#16a34a;border:1px solid rgba(74,222,128,.3)">Get started free</a>
+                    <a href="{{ $freeCtaHref }}" class="pc-btn" style="background:rgba(74,222,128,.14);color:#16a34a;border:1px solid rgba(74,222,128,.3)">{{ $freeCtaLabel }}</a>
                 </div>
             </div>
         </div>
@@ -169,6 +181,49 @@
             $r = hexdec(substr($hex,0,2)); $g = hexdec(substr($hex,2,2)); $b = hexdec(substr($hex,4,2));
             // Short name: take part before — or -
             $shortName = trim(preg_split('/\s*[—\-]\s*/', $plan->display_name ?: $plan->worker_slug)[0]);
+
+            // Nudge logged-in users based on their real subscription state for
+            // this worker, instead of always sending them back to Register.
+            $slug        = $plan->worker_slug;
+            $billing     = $userBilling[$slug] ?? null;
+            $deskRoute   = \Illuminate\Support\Facades\Route::has("app.desk.{$slug}") ? route("app.desk.{$slug}") : route('app.workers.billing', $slug);
+            $billingRoute = route('app.workers.billing', $slug);
+
+            if (!auth()->check()) {
+                $ctaLabel = "Deploy {$shortName}";
+                $ctaHref  = route('register');
+                $banner   = null;
+            } elseif (!$billing) {
+                $ctaLabel = "Deploy {$shortName}";
+                $ctaHref  = \Illuminate\Support\Facades\Route::has("hire.{$slug}.welcome") ? route("hire.{$slug}.welcome") : route('app.workers.index');
+                $banner   = null;
+            } elseif ($billing->status === 'active') {
+                $ctaLabel = "Go to your desk";
+                $ctaHref  = $deskRoute;
+                $banner   = "You're already on {$shortName} — this is your current plan.";
+            } elseif ($billing->status === 'trial') {
+                $used     = (int) $billing->trial_transactions_used;
+                $limit    = (int) $billing->trial_transactions_limit;
+                $ctaLabel = "Upgrade to {$shortName}";
+                $ctaHref  = $billingRoute;
+                $banner   = "Free trial in progress — {$used}/{$limit} transactions used.";
+            } elseif ($billing->status === 'trial_exhausted') {
+                $ctaLabel = "Upgrade now";
+                $ctaHref  = $billingRoute;
+                $banner   = "Your free trial is used up — upgrade to keep {$shortName} running.";
+            } elseif ($billing->status === 'past_due') {
+                $ctaLabel = "Update payment method";
+                $ctaHref  = route('app.billing.portal');
+                $banner   = "Payment past due on your {$shortName} subscription.";
+            } elseif ($billing->status === 'canceled') {
+                $ctaLabel = "Reactivate {$shortName}";
+                $ctaHref  = $billingRoute;
+                $banner   = "Your {$shortName} subscription was canceled.";
+            } else {
+                $ctaLabel = "Deploy {$shortName}";
+                $ctaHref  = route('app.workers.index');
+                $banner   = null;
+            }
         @endphp
         <div class="pc-card pc-card-worker" style="background:linear-gradient(150deg,rgba({{ $r }},{{ $g }},{{ $b }},.06) 0%,transparent 50%)">
             <div class="pc-glow-stripe" style="background:linear-gradient(90deg,transparent,{{ $accent }},transparent);opacity:.6"></div>
@@ -179,6 +234,11 @@
                 </div>
                 <div class="pc-name">{{ $plan->display_name ?: strtoupper($plan->worker_slug) }}</div>
                 @if($plan->tagline)<div class="pc-tagline">{{ $plan->tagline }}</div>@endif
+                @if($banner)
+                <div class="pc-tx-def" style="border-color:{{ $accent }}55;margin-bottom:14px">
+                    <strong style="color:{{ $accent }}">{{ $banner }}</strong>
+                </div>
+                @endif
                 <div class="pc-price-row">
                     <span class="pc-price">${{ number_format($plan->monthly_flat_rate) }}</span>
                     <span class="pc-price-unit">/month</span>
@@ -208,7 +268,7 @@
                     @endforeach
                 </ul>
                 <div class="pc-cta">
-                    <a href="{{ route('register') }}" class="pc-btn" style="background:{{ $accent }};color:#ffffff">Deploy {{ $shortName }}</a>
+                    <a href="{{ $ctaHref }}" class="pc-btn" style="background:{{ $accent }};color:#ffffff">{{ $ctaLabel }}</a>
                     @if($plan->worker_url)
                     <a href="{{ $plan->worker_url }}" class="pc-worker-link">Learn more about {{ $shortName }} →</a>
                     @endif
