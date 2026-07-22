@@ -338,9 +338,15 @@ class AdminTenantController extends Controller
 
     public function resetTrial(int $id, Request $request)
     {
-        $depId    = $request->input('deployment_id');
-        $days     = max(1, (int) $request->input('trial_days', 30));
-        $newLimit = (int) $request->input('trial_limit', 25);
+        $depId      = $request->input('deployment_id');
+        $workerSlug = $depId
+            ? DB::table('deployment_billing')->where('deployment_id', $depId)->value('worker_slug')
+            : null;
+
+        // Fall back to the real per-worker trial size (not a flat guess) when
+        // the admin leaves these fields blank.
+        $days     = max(1, (int) $request->input('trial_days', PlatformDefaults::trialDays($workerSlug ?? 'ava')));
+        $newLimit = (int) $request->input('trial_limit', PlatformDefaults::freeTransactionsFor($workerSlug ?? 'ava'));
 
         $query = DB::table('deployment_billing')
             ->where('user_id', $id)
@@ -356,21 +362,16 @@ class AdminTenantController extends Controller
         ]);
 
         // Also reset the trial ledger so re-deploys don't hit trial_exhausted immediately
-        if ($depId) {
-            $workerSlug = DB::table('deployment_billing')
-                ->where('deployment_id', $depId)
-                ->value('worker_slug');
-            if ($workerSlug) {
-                DB::table('user_worker_trial_ledger')
-                    ->where('user_id', $id)
-                    ->where('worker_slug', $workerSlug)
-                    ->update([
-                        'used'             => 0,
-                        'granted'          => $newLimit,
-                        'trial_expires_at' => now()->addDays($days),
-                        'updated_at'       => now(),
-                    ]);
-            }
+        if ($depId && $workerSlug) {
+            DB::table('user_worker_trial_ledger')
+                ->where('user_id', $id)
+                ->where('worker_slug', $workerSlug)
+                ->update([
+                    'used'             => 0,
+                    'granted'          => $newLimit,
+                    'trial_expires_at' => now()->addDays($days),
+                    'updated_at'       => now(),
+                ]);
         }
 
         return back()->with('success', "Trial reset: {$newLimit} transactions · {$days} days.");
@@ -602,12 +603,19 @@ class AdminTenantController extends Controller
 
         if (in_array('billing', $scopes)) {
             $run('billing', function () use ($id, &$log) {
-                $deps = DB::table('worker_deployments')->where('user_id', $id)->pluck('id');
-                foreach ($deps as $depId) {
-                    DB::table('deployment_billing')->where('deployment_id', $depId)->update([
+                // Must grant the same trial size PlatformDefaults resolves
+                // everywhere else — this previously hardcoded a flat 6 (not
+                // even close to the real 25), silently under-granting anyone
+                // this QA tool was reset for.
+                $deps = DB::table('worker_deployments')->where('user_id', $id)->get(['id', 'worker_slug']);
+                foreach ($deps as $dep) {
+                    $limit = PlatformDefaults::freeTransactionsFor($dep->worker_slug);
+                    $days  = PlatformDefaults::trialDays($dep->worker_slug);
+                    DB::table('deployment_billing')->where('deployment_id', $dep->id)->update([
                         'status'                  => 'trial',
                         'trial_transactions_used' => 0,
-                        'trial_transactions_limit'=> 6,
+                        'trial_transactions_limit'=> $limit,
+                        'trial_ends_at'           => now()->addDays($days),
                         'stripe_subscription_id'  => null,
                         'updated_at'              => now(),
                     ]);
@@ -615,7 +623,7 @@ class AdminTenantController extends Controller
                 DB::table('usage_events')->where('user_id', $id)->delete();
                 DB::table('users')->where('id', $id)->update(['monthly_spend_cap' => null, 'blocked_at' => null, 'block_reason' => null]);
                 $depCount   = $deps->count();
-                $trialLimit = $depCount * 6;
+                $trialLimit = $deps->sum(fn($dep) => PlatformDefaults::freeTransactionsFor($dep->worker_slug));
                 $log[] = "Reset {$depCount} deployment billing to trial (0/{$trialLimit} used), cleared usage events, unblocked";
             });
         }
