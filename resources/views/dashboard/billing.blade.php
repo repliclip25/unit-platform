@@ -348,7 +348,7 @@ $statusColors = [
         $hoursSaved  = $processed > 0 ? round($processed * 16 / 60, 1) : null;
 
         $trialUsed   = (int) ($bill?->trial_transactions_used  ?? 0);
-        $trialLimit  = (int) ($bill?->trial_transactions_limit ?? 25);
+        $trialLimit  = (int) ($bill?->trial_transactions_limit ?? \App\Platform\Services\PlatformDefaults::freeTransactionsFor($dep->worker_slug));
         $trialLeft   = max(0, $trialLimit - $trialUsed);
         $trialPct    = $trialLimit > 0 ? min(100, ($trialUsed / $trialLimit) * 100) : 0;
         $trialDaysLeft = $bill?->trial_ends_at ? max(0, (int) now()->diffInDays(\Carbon\Carbon::parse($bill->trial_ends_at), false)) : null;

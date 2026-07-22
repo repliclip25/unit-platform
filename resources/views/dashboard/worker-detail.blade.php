@@ -225,15 +225,18 @@ $profileImg = $registryRow?->profile_image ? asset('storage/' . $registryRow->pr
         <div>
           <div class="wd-paywall-title">Trial {{ $trialReason === 'expired' ? 'Expired' : 'Complete' }}</div>
           <div class="wd-paywall-body">
+            @php
+              $trialLimitFallback = \App\Platform\Services\PlatformDefaults::freeTransactionsFor($dep->worker_slug);
+            @endphp
             @if($trialReason === 'expired')
-              Your 14-day trial period has ended. Subscribe to keep {{ $dep->name }} running.
+              Your {{ \App\Platform\Services\PlatformDefaults::trialDays($dep->worker_slug) }}-day trial period has ended. Subscribe to keep {{ $dep->name }} running.
             @else
-              You've used all {{ $billing?->trial_transactions_limit ?? 25 }} free {{ $unitLabel }}. Choose a plan to continue.
+              You've used all {{ $billing?->trial_transactions_limit ?? $trialLimitFallback }} free {{ $unitLabel }}. Choose a plan to continue.
             @endif
           </div>
         </div>
         <div>
-          <div class="wd-paywall-count">{{ $billing?->trial_transactions_used ?? 0 }}/{{ $billing?->trial_transactions_limit ?? 25 }}</div>
+          <div class="wd-paywall-count">{{ $billing?->trial_transactions_used ?? 0 }}/{{ $billing?->trial_transactions_limit ?? $trialLimitFallback }}</div>
           <div class="wd-paywall-count-label">{{ $unitLabel }} used</div>
         </div>
       </div>

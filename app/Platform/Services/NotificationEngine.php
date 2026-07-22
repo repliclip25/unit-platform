@@ -89,7 +89,7 @@ class NotificationEngine
             ->get();
 
         foreach ($billingRecords as $b) {
-            $left = max(0, ($b->trial_transactions_limit ?? 10) - ($b->trial_transactions_used ?? 0));
+            $left = max(0, ($b->trial_transactions_limit ?? PlatformDefaults::freeTransactionsFor($b->worker_slug)) - ($b->trial_transactions_used ?? 0));
             if ($left === 0) {
                 $notifications->push(self::make(
                     'error',

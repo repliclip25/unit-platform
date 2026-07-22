@@ -510,7 +510,7 @@ body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-fon
         @php
           $billing = \Illuminate\Support\Facades\DB::table('deployment_billing')->where('deployment_id', $depId)->first();
           $trialsUsed  = $billing?->trial_transactions_used  ?? 0;
-          $trialsLimit = $billing?->trial_transactions_limit ?? 10;
+          $trialsLimit = $billing?->trial_transactions_limit ?? \App\Platform\Services\PlatformDefaults::freeTransactionsFor('ava');
           $isSubscribed = $billing?->status === 'active';
         @endphp
         @if(!$isSubscribed)

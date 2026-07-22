@@ -260,7 +260,7 @@ class AdminTenantController extends Controller
         }
         $trialNearEnd = $deployments->filter(fn($d) =>
             ($d->billing_status ?? '') === 'trial' &&
-            ($d->trial_transactions_used ?? 0) >= (($d->trial_transactions_limit ?? 10) * 0.8)
+            ($d->trial_transactions_used ?? 0) >= (($d->trial_transactions_limit ?? PlatformDefaults::freeTransactionsFor($d->worker_slug)) * 0.8)
         );
         if ($trialNearEnd->isNotEmpty()) {
             $churnSignals[] = "Trial ≥80% used on " . $trialNearEnd->count() . " worker(s)";

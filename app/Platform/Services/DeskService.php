@@ -274,7 +274,7 @@ class DeskService
                     if (!$billing || $billing->status !== 'trial') return null;
 
                     $used  = (int) $billing->trial_transactions_used;
-                    $limit = (int) ($billing->trial_transactions_limit ?: 25);
+                    $limit = (int) ($billing->trial_transactions_limit ?: PlatformDefaults::freeTransactionsFor($dep->worker_slug));
                     $left  = max(0, $limit - $used);
                     $pct   = $limit > 0 ? round(($used / $limit) * 100) : 0;
 

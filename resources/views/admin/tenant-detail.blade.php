@@ -249,8 +249,9 @@
                         $bColor = match($dep->billing_status ?? 'none') {
                             'active'=>'text-green-400','trial'=>'text-brand','past_due'=>'text-red-400',default=>'text-gray-600',
                         };
-                        $tPct = ($dep->trial_transactions_limit ?? 10) > 0
-                            ? min(100,(($dep->trial_transactions_used ?? 0) / ($dep->trial_transactions_limit ?? 10))*100) : 0;
+                        $trialLimitFallback = \App\Platform\Services\PlatformDefaults::freeTransactionsFor($dep->worker_slug);
+                        $tPct = ($dep->trial_transactions_limit ?? $trialLimitFallback) > 0
+                            ? min(100,(($dep->trial_transactions_used ?? 0) / ($dep->trial_transactions_limit ?? $trialLimitFallback))*100) : 0;
                     @endphp
                     <div class="flex items-center gap-3 mb-2">
                         <div class="flex-1 min-w-0">
@@ -264,7 +265,7 @@
                                 <div class="w-28 h-1 rounded-full bg-gray-800 overflow-hidden">
                                     <div class="h-full rounded-full {{ $tPct >= 80 ? 'bg-red-500' : 'bg-brand' }}" style="width:{{ $tPct }}%"></div>
                                 </div>
-                                <span class="text-gray-600 text-xs">{{ $dep->trial_transactions_used ?? 0 }}/{{ $dep->trial_transactions_limit ?? 10 }} tx</span>
+                                <span class="text-gray-600 text-xs">{{ $dep->trial_transactions_used ?? 0 }}/{{ $dep->trial_transactions_limit ?? $trialLimitFallback }} tx</span>
                             </div>
                             @endif
                         </div>

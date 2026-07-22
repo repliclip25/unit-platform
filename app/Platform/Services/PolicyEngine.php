@@ -267,7 +267,7 @@ class PolicyEngine
 
             if ($billing?->status === 'trial') {
                 $used      = (int) ($billing->trial_transactions_used  ?? 0);
-                $limit     = (int) ($billing->trial_transactions_limit ?? 10);
+                $limit     = (int) ($billing->trial_transactions_limit ?? PlatformDefaults::freeTransactionsFor($billing->worker_slug));
                 $expired   = $billing->trial_ends_at && now()->gt($billing->trial_ends_at);
                 $txUsedUp  = $used >= $limit;
 

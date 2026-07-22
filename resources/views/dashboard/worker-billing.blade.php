@@ -188,7 +188,7 @@ body{font-family:'Inter',sans-serif;background:var(--db-bg);color:var(--db-text)
 $isActiveSub = $billing?->status === 'active';
 $isTrial     = $billing?->status === 'trial';
 $trialUsed   = $billing?->trial_transactions_used ?? 0;
-$trialLimit  = $billing?->trial_transactions_limit ?? 10;
+$trialLimit  = $billing?->trial_transactions_limit ?? \App\Platform\Services\PlatformDefaults::freeTransactionsFor($dep->worker_slug);
 $trialLeft   = max(0, $trialLimit - $trialUsed);
 $trialPct    = $trialLimit > 0 ? round(($trialUsed / $trialLimit) * 100) : 0;
 
