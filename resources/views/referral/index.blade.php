@@ -290,7 +290,7 @@ $sidebarLinks = [
     <div class="mem-wrap">
 
       <div class="rf-h1">Refer & Earn</div>
-      <div class="rf-sub">Invite colleagues to UNIT. Earn $25 credit when they go paid.</div>
+      <div class="rf-sub">Invite colleagues to UNIT. Earn ${{ number_format($referralCreditUsd, 0) }} credit when they go paid.</div>
 
       <div class="rf-stats">
         <div class="rf-stat"><div class="rf-stat-num">{{ $referral->signups }}</div><div class="rf-stat-label">Signed up</div></div>
@@ -390,11 +390,11 @@ $sidebarLinks = [
         </div>
         <div class="rf-step">
           <div class="rf-step-num">2</div>
-          <div><div class="rf-step-title">They sign up and get 20 free transactions</div><div class="rf-step-sub">Double the usual free trial — a meaningful incentive to try it.</div></div>
+          <div><div class="rf-step-title">They sign up and get {{ $refereeTotalTx }} free transactions</div><div class="rf-step-sub">The usual {{ $refereeBaseTx }}-transaction free trial plus a {{ $refereeBonusTx }}-transaction referral bonus.</div></div>
         </div>
         <div class="rf-step">
           <div class="rf-step-num">3</div>
-          <div><div class="rf-step-title">You earn $25 credit when they subscribe</div><div class="rf-step-sub">Applied to your UNIT account automatically. No cap on earnings.</div></div>
+          <div><div class="rf-step-title">You earn ${{ number_format($referralCreditUsd, 0) }} credit when they subscribe</div><div class="rf-step-sub">Applied to your UNIT account automatically. No cap on earnings.</div></div>
         </div>
       </div>
 

@@ -29,9 +29,18 @@ class ReferralController extends Controller
         extract($shell); // workerCatalog, registryRows, registryRow, profileImg, coverImg, tokenTotal
         $firstName = explode(' ', trim(auth()->user()->name))[0];
 
+        // These numbers must track ReferralService's actual constants and the
+        // real trial default (PlatformDefaults), not be copy-pasted separately
+        // — see the "20 free transactions / double the trial" bug this fixed.
+        $referralCreditUsd = \App\Platform\Services\ReferralService::REFERRER_CREDIT_USD;
+        $refereeBonusTx    = \App\Platform\Services\ReferralService::REFEREE_BONUS_TX;
+        $refereeBaseTx     = \App\Platform\Services\PlatformDefaults::freeTransactionsFor('ava');
+        $refereeTotalTx    = $refereeBaseTx + $refereeBonusTx;
+
         return view('referral.index', compact(
             'referral', 'referralCode', 'referralUrl', 'credits',
-            'workerCatalog', 'tokenTotal', 'firstName'
+            'workerCatalog', 'tokenTotal', 'firstName',
+            'referralCreditUsd', 'refereeBonusTx', 'refereeBaseTx', 'refereeTotalTx'
         ));
     }
 
