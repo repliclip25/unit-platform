@@ -22,7 +22,25 @@ class PublicPageController extends Controller
             ->where('monthly_flat_rate', '>', 0)
             ->orderBy('monthly_flat_rate')
             ->get();
-        return view('public.pricing', compact('plans'));
+
+        // The Free Trial card's numbers must match what PolicyEngine actually
+        // enforces (via PlatformDefaults), not a hardcoded guess. If every
+        // worker's trial plan agrees on the same numbers, show them exactly;
+        // otherwise fall back to generic copy rather than show a wrong number.
+        $trialPlans = DB::table('worker_pricing')
+            ->where('active', true)
+            ->where('is_trial_plan', true)
+            ->whereIn('worker_slug', $plans->pluck('worker_slug'))
+            ->get(['free_transactions', 'trial_days']);
+
+        $trialTransactions = $trialPlans->pluck('free_transactions')->unique()->count() === 1
+            ? (int) $trialPlans->first()->free_transactions
+            : null;
+        $trialDays = $trialPlans->pluck('trial_days')->unique()->count() === 1
+            ? (int) $trialPlans->first()->trial_days
+            : null;
+
+        return view('public.pricing', compact('plans', 'trialTransactions', 'trialDays'));
     }
     public function blog()
     {

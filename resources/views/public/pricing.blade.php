@@ -133,9 +133,19 @@
                 <div class="pc-name">Try any worker free</div>
                 <div class="pc-tagline">See real work done on your real data before you spend a dollar.</div>
                 <div class="pc-price-row"><span class="pc-price">$0</span><span class="pc-price-unit">to start</span></div>
-                <div class="pc-price-sub">10 transactions, no card required</div>
+                <div class="pc-price-sub">
+                    @if($trialTransactions)
+                        {{ number_format($trialTransactions) }} transactions, no card required
+                    @else
+                        No card required
+                    @endif
+                </div>
                 <div class="pc-tx-def">
-                    <strong>Every worker ships with 10 free transactions.</strong> Full pipeline. Your inbox, your clients, your templates — not a sandbox.
+                    @if($trialTransactions)
+                        <strong>Every worker ships with {{ number_format($trialTransactions) }} free transactions{{ $trialDays ? ' over '.$trialDays.' days' : '' }}.</strong> Full pipeline. Your inbox, your clients, your templates — not a sandbox.
+                    @else
+                        <strong>Every worker ships with a free trial.</strong> Full pipeline. Your inbox, your clients, your templates — not a sandbox.
+                    @endif
                 </div>
                 <ul class="pc-features">
                     @foreach(['Full AI pipeline on live data','Memory bank, templates & rules','Human review dashboard','Upgrade anytime — no restart'] as $f)
