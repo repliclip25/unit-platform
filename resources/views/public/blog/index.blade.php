@@ -100,5 +100,11 @@
     </div>
   </div>
 
+  <div style="margin-top:24px;text-align:center;padding:28px 40px;background:var(--card);border:1px solid var(--line);border-radius:18px">
+    <div style="font-family:var(--fd);font-size:17px;font-weight:800;margin-bottom:6px">Write about UNIT and get paid for it</div>
+    <p style="font-size:13.5px;color:var(--t3);margin-bottom:16px">Newsletter writers and industry creators earn 20–30% recurring commission through our Partner Program.</p>
+    <a href="{{ route('influencer.apply') }}" class="btn-ln" style="display:inline-block">Partner Program →</a>
+  </div>
+
 </div>
 @endsection

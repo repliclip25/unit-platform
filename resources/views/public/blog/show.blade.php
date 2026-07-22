@@ -166,6 +166,13 @@
         <a href="{{ route('marketplace') }}" class="btn-g" style="display:block;text-align:center;font-size:13px">Browse Workers →</a>
       </div>
 
+      {{-- Partner program CTA --}}
+      <div class="sidebar-cta">
+        <h3>Earn with UNIT</h3>
+        <p>Creators and consultants earn 20–30% recurring commission promoting UNIT to their audience.</p>
+        <a href="{{ route('influencer.apply') }}" class="btn-ln" style="display:block;text-align:center;font-size:13px">Partner Program →</a>
+      </div>
+
     </aside>
   </div>
 </div>

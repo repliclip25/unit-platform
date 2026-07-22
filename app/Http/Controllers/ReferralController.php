@@ -25,7 +25,14 @@ class ReferralController extends Controller
             ->select('rc.*', 'u.email as referred_email')
             ->get();
 
-        return view('referral.index', compact('referral', 'referralCode', 'referralUrl', 'credits'));
+        $shell = \App\Platform\Services\WorkerShellService::build($userId, '');
+        extract($shell); // workerCatalog, registryRows, registryRow, profileImg, coverImg, tokenTotal
+        $firstName = explode(' ', trim(auth()->user()->name))[0];
+
+        return view('referral.index', compact(
+            'referral', 'referralCode', 'referralUrl', 'credits',
+            'workerCatalog', 'tokenTotal', 'firstName'
+        ));
     }
 
     public function influencerRedirect(string $slug, Request $request)
