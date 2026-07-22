@@ -13,6 +13,12 @@ use App\Platform\Services\PlatformDefaults;
 
 class WorkerController extends Controller
 {
+    // Fast Track's own separate testing allowance (distinct from the real
+    // trial_transactions_limit pool — see fastTrack() and fastTrackPage(),
+    // which must both read this same constant so the enforced cap and the
+    // displayed cap never drift apart again).
+    const FAST_TRACK_TRIAL_CAP = 10;
+
     public function index()
     {
         $userId = auth()->id();
@@ -1153,8 +1159,9 @@ class WorkerController extends Controller
 
         if (!$isSubscribed) {
             $usesCount = (int) ($config['fast_track_uses'] ?? 0);
-            if ($usesCount >= 10) {
-                return back()->with('error', 'Fast Track trial limit reached (10/10). Upgrade to a subscription for unlimited runs, or contact support to reset.');
+            if ($usesCount >= self::FAST_TRACK_TRIAL_CAP) {
+                $cap = self::FAST_TRACK_TRIAL_CAP;
+                return back()->with('error', "Fast Track trial limit reached ({$cap}/{$cap}). Upgrade to a subscription for unlimited runs, or contact support to reset.");
             }
         }
 
@@ -1266,8 +1273,9 @@ class WorkerController extends Controller
         $config    = json_decode($dep->config ?? '{}', true) ?: [];
         $ftUses    = (int) ($config['fast_track_uses'] ?? 0);
         $ftBilling = DB::table('deployment_billing')->where('deployment_id', $id)->first();
-        $ftPricing = DB::table('worker_pricing')->where('worker_slug', $dep->worker_slug)->orderByDesc('id')->first();
-        $ftMax     = (int) (($ftBilling?->trial_transactions_limit ?: 0) ?: ($ftPricing?->free_transactions ?: 25));
+        // Must match the cap actually enforced in fastTrack() — not the real
+        // trial_transactions_limit pool, which Fast Track runs are exempt from.
+        $ftMax     = self::FAST_TRACK_TRIAL_CAP;
         $ftLeft    = max(0, $ftMax - $ftUses);
         $ftSubscribed = $ftBilling && $ftBilling->status === 'active';
 
