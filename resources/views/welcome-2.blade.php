@@ -905,7 +905,7 @@ body{
 @endphp
 
 <x-public-nav :links="[
-  ['label' => 'Meet the Workers', 'href' => route('public.workers.index')],
+  ['label' => 'Meet the AI Worker', 'href' => route('public.workers.index')],
   ['label' => 'How It Works',     'href' => '#timeline'],
   ['label' => 'Resources',        'href' => '#resources'],
   ['label' => 'Pricing',          'href' => route('pricing')],

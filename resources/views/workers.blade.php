@@ -374,7 +374,7 @@ body{font-family:var(--font-b);color:var(--text);background:var(--bg);-webkit-fo
 @endphp
 
 <x-public-nav :links="[
-  ['label' => 'Meet the Workers', 'href' => route('public.workers.index'), 'active' => true],
+  ['label' => 'Meet the AI Worker', 'href' => route('public.workers.index'), 'active' => true],
   ['label' => 'How It Works',     'href' => url('/') . '#timeline'],
   ['label' => 'Resources',        'href' => url('/') . '#resources'],
   ['label' => 'Pricing',          'href' => route('pricing')],
