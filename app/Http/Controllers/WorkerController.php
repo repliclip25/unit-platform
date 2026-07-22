@@ -1202,6 +1202,10 @@ class WorkerController extends Controller
         $tx = $txService->create('ava-renewal-coordinator', [
             'source'             => 'fast_track_test',
             'fast_track'         => true,
+            // Fast Track has its own separate run cap (10, checked above) — it
+            // must not also burn the real trial_transactions_used pool (25).
+            // See UnitPlatform::maybeIncrementTrialUsage, which skips is_test rows.
+            'is_test'            => true,
             'user_id'            => auth()->id(),
             'deployment_id'      => $id,
             'credential_id'      => $credential->id,

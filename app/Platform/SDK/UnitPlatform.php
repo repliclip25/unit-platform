@@ -299,8 +299,14 @@ final class UnitPlatform
             return;
         }
 
-        $tx = DB::table('transactions')->where('tx_id', $txId)->first(['status', 'deployment_id']);
+        $tx = DB::table('transactions')->where('tx_id', $txId)->first(['status', 'deployment_id', 'is_test']);
         if (!$tx || !$tx->deployment_id) {
+            return;
+        }
+
+        // Test runs (e.g. Fast Track, which has its own separate 10-run cap)
+        // never burn the real trial pool — see WorkerController::fastTrack().
+        if ($tx->is_test) {
             return;
         }
 
