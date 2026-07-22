@@ -15,12 +15,13 @@ class WorkerController extends Controller
 {
     public function index()
     {
+        $userId = auth()->id();
         $deployments = DB::table('worker_deployments')
-            ->where('user_id', auth()->id())
+            ->where('user_id', $userId)
             ->whereIn('status', ['active', 'paused'])
             ->orderBy('created_at')
             ->get();
-        $credentials = DB::table('user_gmail_credentials')->where('user_id', auth()->id())->get();
+        $credentials = DB::table('user_gmail_credentials')->where('user_id', $userId)->get();
 
         // Catalog: only workers whose slug is registered in WorkerRegistry (source of truth)
         $registeredSlugs = \App\Platform\Services\WorkerRegistry::slugs();
@@ -28,12 +29,6 @@ class WorkerController extends Controller
             ->whereIn('slug', $registeredSlugs)
             ->whereIn('status', ['running', 'configured', 'connected'])
             ->get();
-
-        // Pull registry rows for images and visual identity
-        $registryRows = DB::table('worker_registry')
-            ->whereIn('slug', $registeredSlugs)
-            ->get()
-            ->keyBy('slug');
 
         // Resolve contracts for workers that are active or testing (not decommissioned)
         $contracts = collect(\App\Platform\Services\WorkerRegistry::all())
@@ -44,7 +39,14 @@ class WorkerController extends Controller
         $deploymentCounts = $deployments->groupBy('worker_slug')
             ->map(fn($group) => $group->count());
 
-        return view('dashboard.workers', compact('deployments', 'credentials', 'catalog', 'contracts', 'deploymentCounts', 'registryRows'));
+        $shell = \App\Platform\Services\WorkerShellService::build($userId, '');
+        extract($shell); // workerCatalog, registryRows, registryRow, profileImg, coverImg, tokenTotal
+        $firstName = explode(' ', trim(auth()->user()->name))[0];
+
+        return view('dashboard.workers', compact(
+            'deployments', 'credentials', 'catalog', 'contracts', 'deploymentCounts', 'registryRows',
+            'workerCatalog', 'tokenTotal', 'firstName'
+        ));
     }
 
     public function show(string $slug)
@@ -745,9 +747,14 @@ class WorkerController extends Controller
             ->orderByDesc('created_at')
             ->first();
 
+        $shell = \App\Platform\Services\WorkerShellService::build(auth()->id(), $dep->worker_slug);
+        extract($shell); // workerCatalog, registryRows, registryRow, profileImg, coverImg, tokenTotal
+        $firstName = explode(' ', trim(auth()->user()->name))[0];
+
         return view('dashboard.worker-configure', compact(
             'dep', 'contract', 'credentials', 'customModels',
-            'overrideRows', 'pipelineStages', 'defaultPrompts', 'lastTx'
+            'overrideRows', 'pipelineStages', 'defaultPrompts', 'lastTx',
+            'workerCatalog', 'tokenTotal', 'firstName'
         ));
     }
 
