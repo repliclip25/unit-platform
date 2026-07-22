@@ -913,7 +913,6 @@ body{
     <ul class="nav-links">
       <li><a href="/workers">Meet the Workers</a></li>
       <li><a href="#timeline">How It Works</a></li>
-      <li><a href="{{ route('marketplace') }}">For Business</a></li>
       <li><a href="#resources">Resources</a></li>
       <li><a href="{{ route('pricing') }}">Pricing</a></li>
     </ul>
@@ -956,7 +955,6 @@ body{
   <div class="mob-links">
     <a href="/workers" onclick="closeMob()">Meet the Workers</a>
     <a href="#timeline" onclick="closeMob()">How It Works</a>
-    <a href="{{ route('marketplace') }}" onclick="closeMob()">For Business</a>
     <a href="#resources" onclick="closeMob()">Resources</a>
     <a href="{{ route('pricing') }}" onclick="closeMob()">Pricing</a>
   </div>
@@ -1731,7 +1729,7 @@ body{
         <div class="ft-col-h">Workers</div>
         <div class="ft-links">
           <a href="{{ route('public.workers.show', 'ava') }}">AVA — Renewal Coordinator</a>
-          <a href="{{ route('marketplace') }}">All Workers</a>
+          <a href="{{ route('public.workers.index') }}">All Workers</a>
           <a href="{{ route('app.referral.index') }}">Refer &amp; Earn</a>
         </div>
       </div>
@@ -1739,7 +1737,6 @@ body{
         <div class="ft-col-h">Product</div>
         <div class="ft-links">
           <a href="#timeline">How It Works</a>
-          <a href="{{ route('marketplace') }}">Marketplace</a>
           <a href="{{ route('pricing') }}">Pricing</a>
           <a href="{{ route('hire.ava.welcome') }}">Sign Up Free</a>
         </div>

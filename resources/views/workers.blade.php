@@ -380,7 +380,6 @@ body{font-family:var(--font-b);color:var(--text);background:var(--bg);-webkit-fo
     <ul class="nav-links">
       <li><a href="{{ route('public.workers.index') }}" class="active">Meet the Workers</a></li>
       <li><a href="{{ url('/') }}#timeline">How It Works</a></li>
-      <li><a href="{{ route('marketplace') }}">For Business</a></li>
       <li><a href="{{ url('/') }}#resources">Resources</a></li>
       <li><a href="{{ route('pricing') }}">Pricing</a></li>
     </ul>
@@ -413,7 +412,6 @@ body{font-family:var(--font-b);color:var(--text);background:var(--bg);-webkit-fo
   <div class="mob-links">
     <a href="{{ route('public.workers.index') }}" onclick="closeMob()">Meet the Workers</a>
     <a href="{{ url('/') }}#timeline" onclick="closeMob()">How It Works</a>
-    <a href="{{ route('marketplace') }}" onclick="closeMob()">For Business</a>
     <a href="{{ url('/') }}#resources" onclick="closeMob()">Resources</a>
     <a href="{{ route('pricing') }}" onclick="closeMob()">Pricing</a>
   </div>
@@ -728,7 +726,6 @@ body{font-family:var(--font-b);color:var(--text);background:var(--bg);-webkit-fo
         <div class="ft-col-h">Platform</div>
         <div class="ft-links">
           <a href="{{ route('pricing') }}">Pricing</a>
-          <a href="{{ route('marketplace') }}">Marketplace</a>
           <a href="{{ route('hire.ava.welcome') }}">Get Started</a>
           <a href="{{ route('login') }}">Log In</a>
         </div>

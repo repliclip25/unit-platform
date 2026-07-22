@@ -163,7 +163,7 @@
       <div class="sidebar-cta">
         <h3>Deploy a worker free</h3>
         <p>Browse UNIT workers and run a live test — first 25 transactions free, no card required.</p>
-        <a href="{{ route('marketplace') }}" class="btn-g" style="display:block;text-align:center;font-size:13px">Browse Workers →</a>
+        <a href="{{ route('public.workers.index') }}" class="btn-g" style="display:block;text-align:center;font-size:13px">Browse Workers →</a>
       </div>
 
       {{-- Partner program CTA --}}

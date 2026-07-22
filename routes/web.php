@@ -64,8 +64,6 @@ Route::get('/about',                [PublicPageController::class, 'about'])->nam
 Route::get('/pricing',              [PublicPageController::class, 'pricing'])->name('pricing');
 Route::get('/privacy',              [PublicPageController::class, 'privacy'])->name('privacy');
 Route::get('/terms',                [PublicPageController::class, 'terms'])->name('terms');
-Route::get('/marketplace',          [PublicPageController::class, 'marketplace'])->name('marketplace');
-Route::post('/marketplace/request', [PublicPageController::class, 'requestWorker'])->middleware('throttle:5,1')->name('marketplace.request');
 Route::get('/blog',                 [PublicPageController::class, 'blog'])->name('blog');
 Route::get('/blog/{slug}',          [PublicPageController::class, 'blogPost'])->name('blog.show');
 

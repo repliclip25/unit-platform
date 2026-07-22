@@ -4,15 +4,12 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Mail;
-use App\Http\Controllers\AdminMessagingController;
 
 class PublicPageController extends Controller
 {
     public function about()       { return view('public.about'); }
     public function privacy()     { return view('public.privacy'); }
     public function terms()       { return view('public.terms'); }
-    public function marketplace() { return view('public.marketplace'); }
 
     public function pricing()
     {
@@ -88,161 +85,6 @@ class PublicPageController extends Controller
             'body'        => $body,
             'cover_image' => $row->cover_image ?? null,
         ];
-    }
-
-    public function requestWorker(Request $request)
-    {
-        $request->validate([
-            'name'            => 'required|string|max:120',
-            'email'           => 'required|email|max:200',
-            'company'         => 'nullable|string|max:200',
-            'role'            => 'nullable|string|max:120',
-            'org'             => 'nullable|string|max:200',
-            'current_process' => 'required|string|min:20|max:3000',
-            'pain_points'     => 'nullable|string|max:2000',
-            'volume'          => 'nullable|string|max:100',
-        ]);
-
-        // Save the request
-        $id = DB::table('worker_requests')->insertGetId([
-            'name'            => $request->name,
-            'email'           => $request->email,
-            'company'         => $request->company,
-            'role'            => $request->role,
-            'org'             => $request->org,
-            'current_process' => $request->current_process,
-            'pain_points'     => $request->pain_points,
-            'volume'          => $request->volume,
-            'status'          => 'pending',
-            'created_at'      => now(),
-            'updated_at'      => now(),
-        ]);
-
-        // Dispatch async job — AI generation + email send happen in the background
-        // so the form redirect is immediate instead of waiting 1–5 sec for Claude
-        \App\Jobs\WorkerRequestFollowupJob::dispatch($id, $request->all())
-            ->onQueue('default');
-
-        return redirect(route('marketplace') . '#request-worker')->with('request_sent', true);
-    }
-
-    private function generateFollowup(array $data): string
-    {
-        try {
-            $settingRow = DB::table('platform_settings')->whereIn('key', ['worker_request_system','worker_request_user'])->get()->keyBy('key');
-
-            $promptCtrl = new AdminPromptController();
-            $defaults   = $promptCtrl->defaults();
-
-            $system = $settingRow->has('worker_request_system')
-                ? $settingRow->get('worker_request_system')->value
-                : $defaults['worker_request_system'];
-
-            $name        = $data['name'] ?? '';
-            $company     = $data['company'] ?? '';
-            $role        = $data['role'] ?? '';
-            $org         = $data['org'] ?? '';
-            $process     = $data['current_process'] ?? '';
-            $painPoints  = $data['pain_points'] ?? '';
-            $volume      = $data['volume'] ?? '';
-
-            $userTemplate = $settingRow->has('worker_request_user')
-                ? $settingRow->get('worker_request_user')->value
-                : $defaults['worker_request_user'];
-
-            $prompt = str_replace(
-                ['{name}','{company}','{role}','{org}','{current_process}','{pain_points}','{volume}'],
-                [$name, $company, $role, $org, $process, $painPoints, $volume],
-                $userTemplate
-            );
-
-            $platform = new \App\Platform\Services\PlatformClaude();
-            return $platform->ask($system, $prompt, 900, 'worker_request_followup', 'public:worker_request');
-        } catch (\Throwable $e) {
-            $process = $data['current_process'] ?? 'your workflow';
-            return "We've gone through what you shared about {$process} and we'd like to learn more before we scope anything.\n\nA few questions:\n\n1. What does the input look like — is it an email, a form submission, a file, or something else?\n2. What does a completed output look like — a draft, a filed document, a sent message?\n3. Who reviews or approves the output before it goes anywhere?\n4. What tools or systems are already in place that a worker would need to read from or write to?\n5. What's the single biggest failure point in how this works today?\n\nReply to this email and we'll take it from there.";
-        }
-    }
-
-    private function sendFollowupEmail(string $name, string $email, string $aiBody): void
-    {
-        try {
-            $tpl = AdminMessagingController::getTemplate('inbound_worker_request_prospect');
-            $subject  = $tpl ? $tpl->subject : 'Re: Your worker request — a few questions from us';
-            $fromName = $tpl ? $tpl->from_name : 'Franklin at UNIT';
-
-            // Render plain-text AI body as simple HTML
-            $firstName = explode(' ', trim($name))[0];
-            $lines = explode("\n", $aiBody);
-            $htmlBody = '';
-            $inList = false;
-            foreach ($lines as $line) {
-                $line = trim($line);
-                if ($line === '') {
-                    if ($inList) { $htmlBody .= '</ol>'; $inList = false; }
-                    continue;
-                }
-                if (preg_match('/^\d+\.\s+(.+)$/', $line, $m2)) {
-                    if (!$inList) { $htmlBody .= '<ol style="margin:16px 0 16px 20px;padding:0">'; $inList = true; }
-                    $htmlBody .= '<li style="margin-bottom:10px;color:#1a1a1a;font-size:15px;line-height:1.7">' . e($m2[1]) . '</li>';
-                } else {
-                    if ($inList) { $htmlBody .= '</ol>'; $inList = false; }
-                    $htmlBody .= '<p style="margin:0 0 14px;color:#1a1a1a;font-size:15px;line-height:1.75">' . e($line) . '</p>';
-                }
-            }
-            if ($inList) $htmlBody .= '</ol>';
-
-            Mail::send([], [], function ($m) use ($name, $email, $subject, $fromName, $firstName, $htmlBody) {
-                $m->to($email, $name)
-                  ->from(config('services.unit.noreply_email'), $fromName)
-                  ->subject($subject)
-                  ->html("<!DOCTYPE html><html><body style='font-family:Inter,Arial,sans-serif;background:#f4f4f2;margin:0;padding:40px 20px'>
-<div style='max-width:580px;margin:0 auto'>
-  <div style='background:#0a0a12;border-radius:12px 12px 0 0;padding:22px 32px'>
-    <span style='font-family:Arial,sans-serif;font-weight:800;font-size:18px;color:#ffffff;letter-spacing:-0.5px'>UNIT</span>
-  </div>
-  <div style='background:#ffffff;padding:36px 32px;border-left:1px solid #e2e2e0;border-right:1px solid #e2e2e0'>
-    <p style='margin:0 0 20px;color:#1a1a1a;font-size:15px;line-height:1.75'>Hi {$firstName},</p>
-    {$htmlBody}
-    <div style='margin-top:32px;padding-top:24px;border-top:1px solid #f0f0ee'>
-      <p style='margin:0;color:#555555;font-size:14px'>— Franklin</p>
-      <p style='margin:4px 0 0;color:#999999;font-size:12px'>UNIT &middot; " . config('services.unit.noreply_email') . "</p>
-    </div>
-  </div>
-  <div style='background:#f9f9f7;border:1px solid #e2e2e0;border-top:none;border-radius:0 0 12px 12px;padding:14px 32px'>
-    <p style='margin:0;color:#aaaaaa;font-size:12px'>You submitted a worker request at unit.report.</p>
-  </div>
-</div></body></html>");
-            });
-        } catch (\Throwable) {
-            // Non-fatal — request is already saved
-        }
-    }
-
-    private function notifyAdmin(array $data, string $followup): void
-    {
-        try {
-            $tpl = AdminMessagingController::getTemplate('inbound_worker_request_admin');
-            $subject = str_replace(
-                ['{name}', '{company}'],
-                [$data['name'], $data['company'] ?? ''],
-                $tpl->subject ?? "Worker Request: {$data['name']} — {$data['company']}"
-            );
-
-            $body = "New worker request from {$data['name']} ({$data['email']})\n\n";
-            $body .= "Company: {$data['company']}\nRole: {$data['role']}\nOrg: {$data['org']}\n";
-            $body .= "Volume: {$data['volume']}\n\n";
-            $body .= "CURRENT PROCESS:\n{$data['current_process']}\n\n";
-            $body .= "PAIN POINTS:\n{$data['pain_points']}\n\n";
-            $body .= "AI FOLLOW-UP SENT:\n{$followup}";
-
-            Mail::send([], [], function ($m) use ($body, $subject) {
-                $m->to(config('services.unit.admin_email'), config('services.unit.noreply_name') . ' Admin')
-                  ->from(config('services.unit.noreply_email'), config('services.unit.noreply_name') . ' System')
-                  ->subject($subject)
-                  ->text($body);
-            });
-        } catch (\Throwable) {}
     }
 
     private function blogPostData(): array

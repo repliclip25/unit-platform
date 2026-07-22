@@ -27,8 +27,8 @@
 
   <h2>Our workers</h2>
   <p>UNIT's first deployed worker is <strong>AVA</strong> — a Renewal &amp; Subscription Coordinator trained on NYC agency workflows. AVA monitors inboxes, classifies renewals, pulls client history, drafts responses, and queues them for human review.</p>
-  <p>More workers are in development — NOVA (Filing Specialist) and REX (Compliance Monitor). Each is purpose-built for a specific org and workflow, not a general-purpose assistant. The marketplace will grow over time as new workers are built and validated.</p>
-  <p><a href="{{ route('marketplace') }}">Browse all workers →</a></p>
+  <p>More workers are in development — NOVA (Filing Specialist) and REX (Compliance Monitor). Each is purpose-built for a specific org and workflow, not a general-purpose assistant. The lineup will grow over time as new workers are built and validated.</p>
+  <p><a href="{{ route('public.workers.index') }}">Browse all workers →</a></p>
 
   <div class="pub-divider"></div>
 

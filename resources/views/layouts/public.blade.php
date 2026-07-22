@@ -146,7 +146,6 @@ footer.footer{background:#0A0A0A;padding:clamp(40px,6vw,72px) 0 28px}
     <a href="{{ url('/') }}" class="logo"><span class="logo-name">UNIT</span></a>
     <ul class="nav-links">
       <li><a href="{{ route('public.workers.index') }}" class="{{ request()->routeIs('public.workers.index') ? 'active' : '' }}">Meet the Workers</a></li>
-      <li><a href="{{ route('marketplace') }}" class="{{ request()->routeIs('marketplace') ? 'active' : '' }}">Marketplace</a></li>
       <li><a href="{{ route('pricing') }}" class="{{ request()->routeIs('pricing') ? 'active' : '' }}">Pricing</a></li>
       <li><a href="{{ route('blog') }}" class="{{ request()->routeIs('blog*') ? 'active' : '' }}">Blog</a></li>
       <li><a href="{{ route('about') }}" class="{{ request()->routeIs('about') ? 'active' : '' }}">Company</a></li>
@@ -175,7 +174,6 @@ footer.footer{background:#0A0A0A;padding:clamp(40px,6vw,72px) 0 28px}
   </div>
   <ul class="mob-links">
     <li><a href="{{ route('public.workers.index') }}" onclick="closeMob()">Meet the Workers</a></li>
-    <li><a href="{{ route('marketplace') }}" onclick="closeMob()">Marketplace</a></li>
     <li><a href="{{ route('pricing') }}" onclick="closeMob()">Pricing</a></li>
     <li><a href="{{ route('blog') }}" onclick="closeMob()">Blog</a></li>
     <li><a href="{{ route('about') }}" onclick="closeMob()">Company</a></li>
@@ -213,7 +211,6 @@ footer.footer{background:#0A0A0A;padding:clamp(40px,6vw,72px) 0 28px}
         <div class="ft-col-h">Platform</div>
         <div class="ft-links">
           <a href="{{ route('pricing') }}">Pricing</a>
-          <a href="{{ route('marketplace') }}">Marketplace</a>
           <a href="{{ route('register') }}">Sign Up Free</a>
           <a href="{{ route('login') }}">Log In</a>
         </div>
