@@ -315,14 +315,19 @@ class OnboardingController extends Controller
                 'updated_at'    => now(),
             ]);
 
-            // Provision trial billing row
+            // Provision trial billing row — must match PlatformDefaults, the
+            // same resolver WorkerController's deploy paths and PolicyEngine's
+            // enforcement use (was hardcoded to 10 with no trial_ends_at set
+            // at all, silently granting a shorter, never-expiring trial to
+            // anyone provisioned through this onboarding path).
             DB::table('deployment_billing')->insert([
                 'user_id'                   => $userId,
                 'deployment_id'             => $depId,
                 'worker_slug'               => 'ava',
                 'status'                    => 'trial',
                 'trial_transactions_used'   => 0,
-                'trial_transactions_limit'  => 10,
+                'trial_transactions_limit'  => \App\Platform\Services\PlatformDefaults::freeTransactionsFor('ava'),
+                'trial_ends_at'             => now()->addDays(\App\Platform\Services\PlatformDefaults::trialDays('ava')),
                 'created_at'                => now(),
                 'updated_at'                => now(),
             ]);
