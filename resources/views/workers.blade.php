@@ -373,61 +373,27 @@ body{font-family:var(--font-b);color:var(--text);background:var(--bg);-webkit-fo
     ->whereIn('status', ['active', 'paused'])->exists();
 @endphp
 
-<!-- NAV -->
-<nav class="nav">
-  <div class="w nav-i">
-    <a href="{{ url("/") }}" class="logo"><span class="logo-name">UNIT</span></a>
-    <ul class="nav-links">
-      <li><a href="{{ route('public.workers.index') }}" class="active">Meet the Workers</a></li>
-      <li><a href="{{ url('/') }}#timeline">How It Works</a></li>
-      <li><a href="{{ url('/') }}#resources">Resources</a></li>
-      <li><a href="{{ route('pricing') }}">Pricing</a></li>
-    </ul>
-    <div class="nav-acts">
-      @auth
-        <a href="{{ route('app.dashboard') }}" class="btn-login" style="border-radius:99px">Dashboard</a>
-      @else
-        <a href="{{ route('login') }}" class="btn-login" style="border-radius:99px">Log in</a>
-      @endauth
-      @if($__navAvaHasDesk)
-      <a href="{{ route('app.desk.ava') }}" class="btn-cta">Go to AVA's Desk <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
-      @else
-      <a href="{{ route('hire.ava.welcome') }}" class="btn-cta">Hire Your First Worker <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
-      @endif
-      <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">
-        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
-        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
-      </button>
-    </div>
-    <button class="ham" id="ham" aria-label="Menu"><span></span><span></span><span></span></button>
-  </div>
-</nav>
-
-<!-- MOBILE MENU -->
-<div class="mob-menu" id="mob">
-  <div class="mob-top">
-    <a href="{{ url("/") }}" class="logo"><span class="logo-name">UNIT</span></a>
-    <button class="mob-close" id="mob-close">✕</button>
-  </div>
-  <div class="mob-links">
-    <a href="{{ route('public.workers.index') }}" onclick="closeMob()">Meet the Workers</a>
-    <a href="{{ url('/') }}#timeline" onclick="closeMob()">How It Works</a>
-    <a href="{{ url('/') }}#resources" onclick="closeMob()">Resources</a>
-    <a href="{{ route('pricing') }}" onclick="closeMob()">Pricing</a>
-  </div>
-  <div class="mob-ctas">
-    @auth
-      <a href="{{ route('app.dashboard') }}" class="btn-login" style="text-align:center;padding:12px;border-radius:99px">Dashboard</a>
-    @else
-      <a href="{{ route('login') }}" class="btn-login" style="text-align:center;padding:12px;border-radius:99px">Log in</a>
-    @endauth
+<x-public-nav :links="[
+  ['label' => 'Meet the Workers', 'href' => route('public.workers.index'), 'active' => true],
+  ['label' => 'How It Works',     'href' => url('/') . '#timeline'],
+  ['label' => 'Resources',        'href' => url('/') . '#resources'],
+  ['label' => 'Pricing',          'href' => route('pricing')],
+]">
+  <x-slot:cta>
     @if($__navAvaHasDesk)
-    <a href="{{ route('app.desk.ava') }}" class="btn-cta" style="padding:12px;justify-content:center">Go to AVA's Desk →</a>
+    <a href="{{ route('app.desk.ava') }}" class="btn-cta">Go to AVA's Desk <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
     @else
-    <a href="{{ route('hire.ava.welcome') }}" class="btn-cta" style="padding:12px;justify-content:center">Hire Your First Worker →</a>
+    <a href="{{ route('hire.ava.welcome') }}" class="btn-cta">Hire Your First Worker <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
     @endif
-  </div>
-</div>
+  </x-slot>
+  <x-slot:mobileCta>
+    @if($__navAvaHasDesk)
+    <a href="{{ route('app.desk.ava') }}" class="btn-cta" style="justify-content:center">Go to AVA's Desk →</a>
+    @else
+    <a href="{{ route('hire.ava.welcome') }}" class="btn-cta" style="justify-content:center">Hire Your First Worker →</a>
+    @endif
+  </x-slot>
+</x-public-nav>
 
 <!-- HERO -->
 <section class="hero-page">
@@ -706,46 +672,7 @@ body{font-family:var(--font-b);color:var(--text);background:var(--bg);-webkit-fo
 </section>
 
 <!-- FOOTER -->
-<footer class="footer">
-  <div class="w">
-    <div class="ft-grid">
-      <div>
-        <div class="ft-name">UNIT</div>
-        <p class="ft-desc">AI workers that show up every day, handle the work that slows you down, and help your business grow.</p>
-      </div>
-      <div>
-        <div class="ft-col-h">Workers</div>
-        <div class="ft-links">
-          <a href="{{ route('public.workers.show', 'ava') }}">AVA — Renewals</a>
-          <a href="#">DOX — Documents</a>
-          <a href="#">MOX — Brand</a>
-          <a href="#">NUX — Content</a>
-        </div>
-      </div>
-      <div>
-        <div class="ft-col-h">Platform</div>
-        <div class="ft-links">
-          <a href="{{ route('pricing') }}">Pricing</a>
-          <a href="{{ route('hire.ava.welcome') }}">Get Started</a>
-          <a href="{{ route('login') }}">Log In</a>
-        </div>
-      </div>
-      <div>
-        <div class="ft-col-h">Company</div>
-        <div class="ft-links">
-          <a href="#">About</a>
-          <a href="#">Blog</a>
-          <a href="#">Contact</a>
-          <a href="#">Privacy</a>
-        </div>
-      </div>
-    </div>
-    <div class="ft-bottom">
-      <p>© {{ date('Y') }} UNIT. All rights reserved.</p>
-      <p>Built with purpose. Powered by AI.</p>
-    </div>
-  </div>
-</footer>
+<x-public-footer />
 
 <script>
 // ── Theme ──

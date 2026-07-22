@@ -140,97 +140,16 @@ footer.footer{background:#0A0A0A;padding:clamp(40px,6vw,72px) 0 28px}
 </head>
 <body>
 
-{{-- ── NAV — identical markup to / and /workers ── --}}
-<nav class="nav">
-  <div class="w nav-i">
-    <a href="{{ url('/') }}" class="logo"><span class="logo-name">UNIT</span></a>
-    <ul class="nav-links">
-      <li><a href="{{ route('public.workers.index') }}" class="{{ request()->routeIs('public.workers.index') ? 'active' : '' }}">Meet the Workers</a></li>
-      <li><a href="{{ route('pricing') }}" class="{{ request()->routeIs('pricing') ? 'active' : '' }}">Pricing</a></li>
-      <li><a href="{{ route('blog') }}" class="{{ request()->routeIs('blog*') ? 'active' : '' }}">Blog</a></li>
-      <li><a href="{{ route('about') }}" class="{{ request()->routeIs('about') ? 'active' : '' }}">Company</a></li>
-    </ul>
-    <div class="nav-acts">
-      <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">
-        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
-        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
-      </button>
-      @auth
-        <a href="{{ route('app.dashboard') }}" class="btn-login">Dashboard</a>
-      @else
-        <a href="{{ route('login') }}" class="btn-login">Log in</a>
-        <a href="{{ route('register') }}" class="btn-cta">Get Started Free</a>
-      @endauth
-    </div>
-    <button class="ham" id="ham" aria-label="Menu"><span></span><span></span><span></span></button>
-  </div>
-</nav>
-
-{{-- ── MOBILE MENU — identical markup to / and /workers ── --}}
-<div class="mob-menu" id="mob">
-  <div class="mob-top">
-    <a href="{{ url('/') }}" class="logo"><span class="logo-name">UNIT</span></a>
-    <button class="mob-close" id="mob-close">✕</button>
-  </div>
-  <ul class="mob-links">
-    <li><a href="{{ route('public.workers.index') }}" onclick="closeMob()">Meet the Workers</a></li>
-    <li><a href="{{ route('pricing') }}" onclick="closeMob()">Pricing</a></li>
-    <li><a href="{{ route('blog') }}" onclick="closeMob()">Blog</a></li>
-    <li><a href="{{ route('about') }}" onclick="closeMob()">Company</a></li>
-  </ul>
-  <div class="mob-ctas">
-    @auth
-      <a href="{{ route('app.dashboard') }}" class="btn-login" style="text-align:center">Dashboard</a>
-    @else
-      <a href="{{ route('login') }}" class="btn-login" style="text-align:center">Log in</a>
-      <a href="{{ route('register') }}" class="btn-cta" style="justify-content:center">Get Started Free</a>
-    @endauth
-  </div>
-</div>
+<x-public-nav :links="[
+  ['label' => 'Meet the Workers', 'href' => route('public.workers.index'), 'active' => request()->routeIs('public.workers.index')],
+  ['label' => 'Pricing',          'href' => route('pricing'),              'active' => request()->routeIs('pricing')],
+  ['label' => 'Blog',             'href' => route('blog'),                 'active' => request()->routeIs('blog*')],
+  ['label' => 'Company',          'href' => route('about'),                'active' => request()->routeIs('about')],
+]" />
 
 @yield('body')
 
-{{-- ── FOOTER — identical markup to / and /workers ── --}}
-<footer class="footer">
-  <div class="w">
-    <div class="ft-grid">
-      <div>
-        <div class="ft-name">UNIT</div>
-        <p class="ft-desc">AI workers that show up every day, handle the work that slows you down, and help your business grow.</p>
-      </div>
-      <div>
-        <div class="ft-col-h">Workers</div>
-        <div class="ft-links">
-          <a href="{{ route('public.workers.show', 'ava') }}">AVA — Renewals</a>
-          <a href="{{ route('public.workers.index') }}">All Workers</a>
-          <a href="{{ route('app.referral.index') }}">Refer &amp; Earn</a>
-          <a href="{{ route('influencer.apply') }}">Partner Program</a>
-        </div>
-      </div>
-      <div>
-        <div class="ft-col-h">Platform</div>
-        <div class="ft-links">
-          <a href="{{ route('pricing') }}">Pricing</a>
-          <a href="{{ route('register') }}">Sign Up Free</a>
-          <a href="{{ route('login') }}">Log In</a>
-        </div>
-      </div>
-      <div>
-        <div class="ft-col-h">Company</div>
-        <div class="ft-links">
-          <a href="{{ route('about') }}">About Us</a>
-          <a href="{{ route('blog') }}">Blog</a>
-          <a href="{{ route('privacy') }}">Privacy Policy</a>
-          <a href="{{ route('terms') }}">Terms of Use</a>
-        </div>
-      </div>
-    </div>
-    <div class="ft-bottom">
-      <p>© {{ date('Y') }} UNIT. All rights reserved.</p>
-      <p>Built with purpose. Powered by AI.</p>
-    </div>
-  </div>
-</footer>
+<x-public-footer />
 
 <script>
 // ── Theme — identical key/logic to / and /workers ──
