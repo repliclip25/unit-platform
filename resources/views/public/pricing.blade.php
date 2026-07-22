@@ -173,7 +173,13 @@
                     <span class="pc-price">${{ number_format($plan->monthly_flat_rate) }}</span>
                     <span class="pc-price-unit">/month</span>
                 </div>
-                <div class="pc-price-sub">{{ number_format($plan->included_transactions) }} tx included · ${{ number_format($plan->overage_price_per_tx, 2) }}/tx after</div>
+                <div class="pc-price-sub">
+                    @if($plan->included_transactions > 0)
+                        {{ number_format($plan->included_transactions) }} tx included · ${{ number_format($plan->overage_price_per_tx, 2) }}/tx after
+                    @else
+                        Unlimited transactions
+                    @endif
+                </div>
                 @if($plan->transaction_label)
                 <div class="pc-tx-def"><strong>1 transaction =</strong> {{ $plan->transaction_label }}</div>
                 @endif

@@ -13,7 +13,15 @@ class PublicPageController extends Controller
 
     public function pricing()
     {
-        $plans = DB::table('worker_pricing')->where('active', true)->orderBy('monthly_flat_rate')->get();
+        // This page renders its own hardcoded Free Trial and Enterprise cards
+        // around the worker cards, so only the single paid, non-trial plan per
+        // worker belongs here — not every plan_slug row in worker_pricing.
+        $plans = DB::table('worker_pricing')
+            ->where('active', true)
+            ->where('is_trial_plan', false)
+            ->where('monthly_flat_rate', '>', 0)
+            ->orderBy('monthly_flat_rate')
+            ->get();
         return view('public.pricing', compact('plans'));
     }
     public function blog()
