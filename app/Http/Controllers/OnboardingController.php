@@ -82,7 +82,19 @@ class OnboardingController extends Controller
             'awaiting' => DB::table('transactions')->where('user_id', $userId)->where('created_at', '>=', $todayStart)->where('status', 'draft_ready')->count(),
         ];
 
-        return view('onboarding.ava.step-5-onshift', compact('deployment', 'credential', 'watchTxId', 'firstName', 'todayStats'));
+        // The 3-column visual (Analyzing / Drafting / Reply is ready) is
+        // derived from the contract's grouped checkpoints, not hardcoded —
+        // adding/renaming a pipeline stage in AvaWorker changes this without
+        // touching this controller or the blade. See PipelineStageService.
+        $contract        = \App\Platform\Services\WorkerRegistry::resolve('ava');
+        $groupedStages   = \App\Platform\Services\PipelineStageService::groupedStages($contract->pipelineStages());
+        $onshiftColumns  = \App\Platform\Services\PipelineStageService::onboardingColumns(
+            $groupedStages,
+            [3, 1, 1], // reviewed+assessed+verified -> col 1, prepared -> col 2, delivered -> col 3
+            ['Ava is analyzing...', 'Ava is drafting...', 'Reply is ready!']
+        );
+
+        return view('onboarding.ava.step-5-onshift', compact('deployment', 'credential', 'watchTxId', 'firstName', 'todayStats', 'onshiftColumns'));
     }
 
     public function runAvaOnShift(Request $request)

@@ -555,50 +555,35 @@ body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-fon
         @endif
       </div>
 
-      {{-- STAGE 1: Analyzing --}}
-      <div class="ob-stage" id="stage1">
+      {{-- STAGES 1 & 2 — derived from the contract's pipeline groups, see
+           OnboardingController::showAvaOnShift() / PipelineStageService.
+           Column 3 (Reply is ready) keeps its own richer markup below. --}}
+      @foreach($onshiftColumns as $col)
+        @if($col['num'] === 3) @continue @endif
+      <div class="ob-stage" id="stage{{ $col['num'] }}">
         <div class="ob-stage-header">
-          <div class="ob-stage-num">1. Ava is analyzing...</div>
+          <div class="ob-stage-num">{{ $col['num'] }}. {{ $col['label'] }}</div>
         </div>
         <div class="ob-stage-img">
-          <img src="/images/ava-stand.png" alt="Ava analyzing">
+          <img src="{{ $col['image'] ?? '/images/ava-stand.png' }}" alt="{{ $col['label'] }}">
         </div>
         <div class="ob-stage-footer">
-          <div class="ob-progress-bar"><div class="ob-progress-fill" id="prog1"></div></div>
+          <div class="ob-progress-bar"><div class="ob-progress-fill" id="prog{{ $col['num'] }}"></div></div>
           <div class="ob-stage-status">
             <span class="ob-stage-status-dot"></span>
-            <span id="status1">Waiting...</span>
+            <span id="status{{ $col['num'] }}">Waiting...</span>
           </div>
         </div>
         <div class="ob-arrow">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
         </div>
       </div>
-
-      {{-- STAGE 2: Drafting --}}
-      <div class="ob-stage" id="stage2">
-        <div class="ob-stage-header">
-          <div class="ob-stage-num">2. Ava is drafting...</div>
-        </div>
-        <div class="ob-stage-img">
-          <img src="/images/ava-desk.png" alt="Ava drafting">
-        </div>
-        <div class="ob-stage-footer">
-          <div class="ob-progress-bar"><div class="ob-progress-fill" id="prog2"></div></div>
-          <div class="ob-stage-status">
-            <span class="ob-stage-status-dot"></span>
-            <span id="status2">Waiting...</span>
-          </div>
-        </div>
-        <div class="ob-arrow">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
-        </div>
-      </div>
+      @endforeach
 
       {{-- STAGE 3: Reply ready --}}
       <div class="ob-stage" id="stage3" style="grid-column:auto">
         <div class="ob-stage-header" style="padding-bottom:8px">
-          <div class="ob-stage-num">3. Reply is ready!</div>
+          <div class="ob-stage-num">{{ $onshiftColumns[2]['num'] }}. {{ $onshiftColumns[2]['label'] }}</div>
         </div>
         <div class="ob-draft-preview" id="draftPreview">
           <div class="ob-waiting" id="draftWaiting">
@@ -809,6 +794,19 @@ let txId      = @json($watchTxId);
 let pollTimer = null;
 let stage     = 0; // 0=idle, 1=analyzing, 2=drafting, 3=done
 
+// Contract stage key -> onboarding column number, built from the same
+// grouped data the columns above render from (PipelineStageService) — not a
+// second hardcoded mapping. Mirrors Fast Track's STATUS_TO_STAGE approach.
+const STAGE_KEY_TO_COLUMN = @json(
+    collect($onshiftColumns)->flatMap(fn($col) => collect($col['stage_keys'])->mapWithKeys(fn($key) => [$key => $col['num']]))
+);
+const STATUS_TO_STAGE_KEY = {
+  received: 'webhook', ingesting: 'webhook', reading: 'read_email', classifying: 'classify',
+  memory_lookup: 'memory', logging: 'log_entry', template_select: 'select_template',
+  drafting: 'draft_email', pushing: 'push_draft', draft_ready: 'push_draft',
+  approved: 'push_draft', sent: 'push_draft', blocked: 'read_email',
+};
+
 function togglePaste(){
   const ta = document.getElementById('emailPaste');
   ta.style.display = ta.style.display === 'none' ? 'block' : 'none';
@@ -997,18 +995,31 @@ function poll(){
         return;
       }
 
-      // ── In-progress — advance stages ──
-      if(data.classify_output || data.memory_output || s === 'drafting' || s === 'generating'){
-        setStage(2, null, 'Writing reply...');
+      // ── In-progress — advance stages, driven by STAGE_KEY_TO_COLUMN
+      // (built from the same contract groups the columns render from) ──
+      const STATUS_LABELS = {
+        reading: 'Reading email...', classifying: 'Classifying email...',
+        memory_lookup: 'Looking up memory...', logging: 'Logging transaction...',
+        template_select: 'Selecting template...', drafting: 'Writing reply...',
+      };
+      const stageKey = STATUS_TO_STAGE_KEY[s];
+      let col = stageKey ? STAGE_KEY_TO_COLUMN[stageKey] : null;
+      // Fall back to output-field presence if the status string itself isn't
+      // in the map (e.g. a future stage added to the contract before its
+      // status string is added here — degrade gracefully, don't get stuck).
+      if(!col){
+        if(data.classify_output || data.memory_output || s === 'generating') col = 2;
+        else if(data.read_output) col = 1;
+      }
+
+      if(col === 2){
+        setStage(2, null, STATUS_LABELS[s] || 'Writing reply...');
         stage = 2;
-      } else if(data.read_output || s === 'reading' || s === 'classifying'){
-        setStage(1, s === 'classifying' ? 'Classifying email...' : 'Reading email...', null);
+      } else if(col === 1){
+        setStage(1, STATUS_LABELS[s] || 'Reading email...', null);
         stage = 1;
-      } else if(s === 'logging' || s === 'selecting_template'){
-        setStage(2, null, 'Selecting template...');
-        stage = 2;
-      } else {
-        if(stage < 1){ setStage(1, 'Processing...', null); stage = 1; }
+      } else if(stage < 1){
+        setStage(1, 'Processing...', null); stage = 1;
       }
     })
     .catch(() => {});
