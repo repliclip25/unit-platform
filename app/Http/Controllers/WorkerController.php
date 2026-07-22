@@ -354,23 +354,33 @@ class WorkerController extends Controller
             $tx = DB::table('transactions')->where('tx_id', $selectedTxId)->where('deployment_id', $id)->first();
             if ($tx) {
                 $selectedTx = $tx;
+
+                // Grouped checkpoints derived from the contract's
+                // pipelineStages() — see PipelineStageService::groupedStages().
+                $groups     = \App\Platform\Services\PipelineStageService::groupedStages($contract->pipelineStages());
+                $allLogKeys = collect($groups)->pluck('log_stage_keys')->flatten()->all();
+
                 $completedStages = DB::table('transaction_stage_log')
                     ->where('tx_id', $tx->tx_id)
                     ->where('event', 'completed')
-                    ->whereIn('stage_key', array_keys(\App\Platform\Services\WorkerShellService::STAGE_META))
+                    ->whereIn('stage_key', $allLogKeys)
                     ->orderBy('created_at')
                     ->get()
-                    ->keyBy('stage_key');
+                    ->groupBy('stage_key');
 
-                foreach (\App\Platform\Services\WorkerShellService::STAGE_META as $stageKey => $meta) {
-                    $log = $completedStages->get($stageKey);
+                foreach ($groups as $group) {
+                    $log = collect($group['log_stage_keys'])
+                        ->map(fn($key) => $completedStages->get($key)?->last())
+                        ->filter()
+                        ->sortBy('created_at')
+                        ->last();
                     if (!$log) continue;
-                    $payload = $meta['col']
-                        ? (json_decode($tx->{$meta['col']} ?? 'null', true) ?? [])
+                    $payload = $group['output_column']
+                        ? (json_decode($tx->{$group['output_column']} ?? 'null', true) ?? [])
                         : ['gmail_draft_id' => $tx->gmail_draft_id];
                     $txStages[] = [
-                        'label'     => $meta['label'],
-                        'color'     => $meta['color'],
+                        'label'     => $group['label'],
+                        'color'     => $group['color'],
                         'timestamp' => \Carbon\Carbon::parse($log->created_at)->format('M j, g:i A'),
                         'payload'   => $payload,
                     ];

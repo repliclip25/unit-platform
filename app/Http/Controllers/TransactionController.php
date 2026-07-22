@@ -47,12 +47,20 @@ class TransactionController extends Controller
             $nuxRegister = DB::table('nux_register')->where('transaction_id', $tx->id)->first();
         }
 
+        // Stage titles must come from the contract, not be hand-typed here —
+        // resolve via the deployment's worker_slug, not the transaction's:
+        // some legacy transaction rows store a queue-name-style string there
+        // (e.g. "ava-renewal-coordinator") instead of the clean slug.
+        $dep         = DB::table('worker_deployments')->where('id', $tx->deployment_id)->first();
+        $contract    = \App\Platform\Services\WorkerRegistry::resolve($dep->worker_slug ?? 'ava');
+        $stagesByKey = collect($contract->pipelineStages())->keyBy('key');
+
         $shell = \App\Platform\Services\WorkerShellService::build(auth()->id(), '');
         extract($shell); // workerCatalog, registryRows, registryRow, profileImg, coverImg, tokenTotal
         $firstName = explode(' ', trim(auth()->user()->name))[0];
 
         return view('dashboard.transaction-detail', compact(
-            'tx', 'nuxRegister',
+            'tx', 'nuxRegister', 'stagesByKey',
             'workerCatalog', 'tokenTotal', 'firstName'
         ));
     }

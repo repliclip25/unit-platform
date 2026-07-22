@@ -426,7 +426,7 @@ $statusColor = $statusColors[$tx->status] ?? ['bg'=>'var(--db-chip)','color'=>'v
           <div class="td-card">
             <div class="td-card-head">
               <span class="td-card-num" style="background:rgba(99,102,241,.15);color:#818cf8">1</span>
-              <span class="td-card-title">Read</span>
+              <span class="td-card-title">{{ $stagesByKey['read_email']['label'] ?? 'Read' }}</span>
             </div>
             <div class="td-field">
               <div class="td-field-label">Summary</div>
@@ -448,7 +448,7 @@ $statusColor = $statusColors[$tx->status] ?? ['bg'=>'var(--db-chip)','color'=>'v
           <div class="td-card">
             <div class="td-card-head">
               <span class="td-card-num" style="background:rgba(var(--accent-rgb,241,211,98),.15);color:var(--accent-text,var(--db-text))">2</span>
-              <span class="td-card-title">Memory Lookup</span>
+              <span class="td-card-title">{{ $stagesByKey['memory']['label'] ?? 'Memory Lookup' }}</span>
               <span class="td-conf-badge">{{ $memory->confidence }}% confidence</span>
             </div>
             <div class="td-field-row">
@@ -510,7 +510,7 @@ $statusColor = $statusColors[$tx->status] ?? ['bg'=>'var(--db-chip)','color'=>'v
           <div class="td-card">
             <div class="td-card-head">
               <span class="td-card-num" style="background:rgba(245,158,11,.15);color:#fbbf24">3</span>
-              <span class="td-card-title">Classification</span>
+              <span class="td-card-title">{{ $stagesByKey['classify']['label'] ?? 'Classification' }}</span>
             </div>
             <div class="td-field-row">
               <div><div class="td-field-label">Category</div><div class="td-field-val">{{ $classify->category }}</div></div>
@@ -525,7 +525,7 @@ $statusColor = $statusColors[$tx->status] ?? ['bg'=>'var(--db-chip)','color'=>'v
           <div class="td-card">
             <div class="td-card-head">
               <span class="td-card-num" style="background:rgba(34,197,94,.15);color:#86efac">4</span>
-              <span class="td-card-title">Draft Email</span>
+              <span class="td-card-title">{{ $stagesByKey['draft_email']['label'] ?? 'Draft Email' }}</span>
             </div>
             <div class="td-field"><div class="td-field-label">To</div><div class="td-field-val">{{ $draft->to }}</div></div>
             <div class="td-field"><div class="td-field-label">Subject</div><div class="td-field-val">{{ $draft->subject }}</div></div>

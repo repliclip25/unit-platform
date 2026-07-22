@@ -159,17 +159,41 @@ class AvaWorker implements WorkerContract
         return \App\Workers\AVA\Jobs\FilterEmailJob::class;
     }
 
+    // Single source of truth for AVA's pipeline — every page that shows the
+    // pipeline (Fast Track, Desk, Transaction Detail, onshift onboarding)
+    // reads this array instead of hand-copying stage lists. To extend AVA's
+    // pipeline (e.g. add a post-approval invoice/payment stage), add one
+    // entry here — no other file needs to change.
+    //
+    // `group`/`group_label`/`group_color` collapse the raw stages into the
+    // business-facing checkpoints (Reviewed/Assessed/Verified/Prepared/
+    // Delivered) used by Desk and onboarding. `output_column` is the
+    // transactions table column holding this stage's result (null if the
+    // stage has no AI output of its own). `image` is the illustration shown
+    // for this stage's group on the onshift onboarding page. `log_stage_key`
+    // is the (shorter, historical) key UnitPlatform::STATUS_STAGE_MAP
+    // actually writes into transaction_stage_log.stage_key — only set when
+    // it differs from this stage's own `key`, so Desk's activity feed can
+    // look up real log rows without a second hardcoded map.
     public function pipelineStages(): array
     {
         return [
-            ['key' => 'webhook',        'label' => 'Inject & Fetch',  'sub' => 'Insert into inbox, read back',   'icon' => 'bolt',     'job_class' => null],
-            ['key' => 'read_email',     'label' => 'Read Email',      'sub' => 'Parse & extract fields',         'icon' => 'mail',     'job_class' => 'ReadEmailJob'],
-            ['key' => 'classify',       'label' => 'Classify',        'sub' => 'Category, priority & type',      'icon' => 'tag',      'job_class' => 'ClassifyEmailJob'],
-            ['key' => 'memory',         'label' => 'Memory Lookup',   'sub' => 'Match client, asset & rules',    'icon' => 'brain',    'job_class' => 'MemoryLookupJob'],
-            ['key' => 'log_entry',      'label' => 'Log Transaction', 'sub' => 'Write to register',              'icon' => 'log',      'job_class' => 'LogTransactionJob'],
-            ['key' => 'select_template','label' => 'Select Template', 'sub' => 'Pick best-match template',       'icon' => 'template', 'job_class' => 'SelectTemplateJob'],
-            ['key' => 'draft_email',    'label' => 'Draft Email',     'sub' => 'AI-personalised draft',          'icon' => 'draft',    'job_class' => 'DraftEmailJob'],
-            ['key' => 'push_draft',     'label' => 'Push to Gmail',   'sub' => 'Create draft in inbox',          'icon' => 'send',     'job_class' => 'PushToGmailJob'],
+            ['key' => 'webhook',        'label' => 'Inject & Fetch',  'sub' => 'Insert into inbox, read back',   'icon' => 'bolt',     'job_class' => null,
+                'output_column' => null,             'group' => 'reviewed', 'group_label' => 'Reviewed', 'group_color' => '#6366f1', 'image' => '/images/ava-stand.png', 'log_stage_key' => 'ingest'],
+            ['key' => 'read_email',     'label' => 'Read Email',      'sub' => 'Parse & extract fields',         'icon' => 'mail',     'job_class' => 'ReadEmailJob',
+                'output_column' => 'read_output',     'group' => 'reviewed', 'group_label' => 'Reviewed', 'group_color' => '#6366f1', 'image' => '/images/ava-stand.png', 'log_stage_key' => 'read'],
+            ['key' => 'classify',       'label' => 'Classify',        'sub' => 'Category, priority & type',      'icon' => 'tag',      'job_class' => 'ClassifyEmailJob',
+                'output_column' => 'classify_output', 'group' => 'assessed', 'group_label' => 'Assessed', 'group_color' => '#f59e0b', 'image' => '/images/ava-stand.png', 'log_stage_key' => 'classify'],
+            ['key' => 'memory',         'label' => 'Memory Lookup',   'sub' => 'Match client, asset & rules',    'icon' => 'brain',    'job_class' => 'MemoryLookupJob',
+                'output_column' => 'memory_output',   'group' => 'verified', 'group_label' => 'Verified', 'group_color' => '#8b5cf6', 'image' => '/images/ava-stand.png', 'log_stage_key' => 'memory'],
+            ['key' => 'log_entry',      'label' => 'Log Transaction', 'sub' => 'Write to register',              'icon' => 'log',      'job_class' => 'LogTransactionJob',
+                'output_column' => null,             'group' => 'verified', 'group_label' => 'Verified', 'group_color' => '#8b5cf6', 'image' => '/images/ava-stand.png', 'log_stage_key' => 'log'],
+            ['key' => 'select_template','label' => 'Select Template', 'sub' => 'Pick best-match template',       'icon' => 'template', 'job_class' => 'SelectTemplateJob',
+                'output_column' => null,             'group' => 'prepared', 'group_label' => 'Prepared', 'group_color' => '#f97316', 'image' => '/images/ava-desk.png', 'log_stage_key' => 'template'],
+            ['key' => 'draft_email',    'label' => 'Draft Email',     'sub' => 'AI-personalised draft',          'icon' => 'draft',    'job_class' => 'DraftEmailJob',
+                'output_column' => 'draft_output',    'group' => 'prepared', 'group_label' => 'Prepared', 'group_color' => '#f97316', 'image' => '/images/ava-desk.png', 'log_stage_key' => 'draft'],
+            ['key' => 'push_draft',     'label' => 'Push to Gmail',   'sub' => 'Create draft in inbox',          'icon' => 'send',     'job_class' => 'PushToGmailJob',
+                'output_column' => null,             'group' => 'delivered','group_label' => 'Delivered','group_color' => '#06b6d4', 'image' => '/images/ava-life.png', 'log_stage_key' => 'push'],
         ];
     }
 

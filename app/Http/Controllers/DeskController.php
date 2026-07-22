@@ -3,19 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Platform\Services\ClaudeService;
+use App\Platform\Services\PipelineStageService;
+use App\Platform\Services\WorkerRegistry;
 use App\Platform\Services\WorkerShellService;
 use Illuminate\Support\Facades\DB;
 
 class DeskController extends Controller
 {
-    // stage_key => [output column, business-facing badge label, timeline dot color]
-    private const STAGE_META = [
-        'read'     => ['col' => 'read_output',     'label' => 'Reviewed',  'color' => '#6366f1'],
-        'classify' => ['col' => 'classify_output', 'label' => 'Assessed',  'color' => '#f59e0b'],
-        'memory'   => ['col' => 'memory_output',   'label' => 'Verified',  'color' => '#8b5cf6'],
-        'draft'    => ['col' => 'draft_output',    'label' => 'Prepared',  'color' => '#f97316'],
-        'push'     => ['col' => null,              'label' => 'Delivered','color' => '#06b6d4'],
-    ];
     public function ava()
     {
         $userId = auth()->id();
@@ -144,30 +138,47 @@ class DeskController extends Controller
             return response()->json(['error' => 'Transaction not found'], 404);
         }
 
+        // Grouped checkpoints derived from the contract's pipelineStages() —
+        // adding/renaming a stage in AvaWorker changes this feed with no
+        // code here to touch. See PipelineStageService::groupedStages().
+        // Resolve via the deployment's worker_slug, not the transaction's —
+        // some legacy transaction rows have worker_slug set to a queue-name
+        // string (e.g. "ava-renewal-coordinator") instead of the clean slug.
+        $dep          = DB::table('worker_deployments')->where('id', $tx->deployment_id)->first();
+        $contract     = WorkerRegistry::resolve($dep->worker_slug ?? 'ava');
+        $groups       = PipelineStageService::groupedStages($contract->pipelineStages());
+        $allLogKeys   = collect($groups)->pluck('log_stage_keys')->flatten()->all();
+
         $completedStages = DB::table('transaction_stage_log')
             ->where('tx_id', $txId)
             ->where('event', 'completed')
-            ->whereIn('stage_key', array_keys(self::STAGE_META))
+            ->whereIn('stage_key', $allLogKeys)
             ->orderBy('created_at')
             ->get()
-            ->keyBy('stage_key');
+            ->groupBy('stage_key');
 
         $stages = [];
-        foreach (self::STAGE_META as $stageKey => $meta) {
-            $log = $completedStages->get($stageKey);
-            if (!$log) continue; // only show stages that actually ran
+        foreach ($groups as $group) {
+            // A checkpoint completes when the last of its raw stages logs
+            // "completed" — pick whichever of its log keys logged latest.
+            $log = collect($group['log_stage_keys'])
+                ->map(fn($key) => $completedStages->get($key)?->last())
+                ->filter()
+                ->sortBy('created_at')
+                ->last();
+            if (!$log) continue; // only show checkpoints that actually ran
 
-            $payload = $meta['col']
-                ? (json_decode($tx->{$meta['col']} ?? 'null', true) ?? [])
+            $payload = $group['output_column']
+                ? (json_decode($tx->{$group['output_column']} ?? 'null', true) ?? [])
                 : ['gmail_draft_id' => $tx->gmail_draft_id];
 
             $summary = $log->context_summary;
             if (!$summary) {
-                $summary = $this->generateStageContext($claude, $txId, $stageKey, $meta['label'], $payload, $tx);
+                $summary = $this->generateStageContext($claude, $txId, $group['key'], $group['label'], $payload, $tx);
                 DB::table('transaction_stage_log')->where('id', $log->id)->update(['context_summary' => $summary]);
             }
 
-            $canvas = $stageKey === 'draft'
+            $canvas = $group['key'] === 'prepared'
                 ? ['type' => 'email', 'payload' => [
                     'to'      => $payload['recipient_email'] ?? null,
                     'from'    => auth()->user()->email,
@@ -177,9 +188,9 @@ class DeskController extends Controller
                 : ['type' => 'data', 'payload' => $payload];
 
             $stages[] = [
-                'stage_key' => $stageKey,
-                'label'     => $meta['label'],
-                'color'     => $meta['color'],
+                'stage_key' => $group['key'],
+                'label'     => $group['label'],
+                'color'     => $group['color'],
                 'timestamp' => \Carbon\Carbon::parse($log->created_at)->format('g:i A'),
                 'summary'   => $summary,
                 'canvas'    => $canvas,
