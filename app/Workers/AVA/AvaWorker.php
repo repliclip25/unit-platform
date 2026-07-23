@@ -997,6 +997,13 @@ class AvaWorker implements WorkerContract
                 'per_deployment' => true,
                 'name'           => 'weekly_summary',
             ],
+            [
+                'job'            => \App\Workers\AVA\Jobs\AssetExpiryWatchJob::class,
+                'cron'           => '0 7 * * *',  // Daily at 7AM
+                'queue'          => 'ava',
+                'per_deployment' => true,
+                'name'           => 'asset_expiry_watch',
+            ],
         ];
     }
 

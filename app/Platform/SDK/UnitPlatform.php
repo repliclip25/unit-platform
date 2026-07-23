@@ -177,6 +177,16 @@ final class UnitPlatform
         );
     }
 
+    // ── CREATE TRANSACTION — the only way a worker starts a transaction that
+    //    didn't arrive via the standard webhook/ingest controller (e.g. a
+    //    scheduled watcher with no inbound email at all, like
+    //    AssetExpiryWatchJob). Wraps TransactionService::create() so workers
+    //    never import it directly. ─────────────────────────────────────────
+    public static function createTransaction(string $workerSlug, array $rawInput): object
+    {
+        return (new \App\Platform\Services\TransactionService())->create($workerSlug, $rawInput);
+    }
+
     // ─────────────────────────────────────────────────────────────────────
     // MEMORY LOADING — blueprint-driven, not hardcoded
     // ─────────────────────────────────────────────────────────────────────

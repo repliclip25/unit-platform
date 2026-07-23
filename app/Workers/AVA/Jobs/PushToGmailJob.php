@@ -28,9 +28,6 @@ class PushToGmailJob implements ShouldQueue
         $draft  = $input->stage('draft');
         $memory = $input->stage('memory');
 
-        // Credential fetched fresh by UnitPlatform — never from queue payload
-        $gmail = new GmailService($input->credential);
-
         // Resolve recipient: draft → fallback to tenant email
         $to = $draft['to'] ?? null;
         if (!$to || !filter_var($to, FILTER_VALIDATE_EMAIL)) {
@@ -44,7 +41,28 @@ class PushToGmailJob implements ShouldQueue
             return;
         }
 
-        if ($input->isFastTrack()) {
+        $draftId = null;
+
+        // No Gmail inbox connected for this deployment — e.g. a tenant who
+        // only maintains their asset registry and never granted inbox access
+        // (see AssetExpiryWatchJob). Surface the draft in-app for review
+        // instead of attempting a Gmail API call with no credential.
+        if (!$input->credential) {
+            UnitPlatform::commitOutput($this->txId, new WorkerOutput(
+                stage:  'push',
+                status: 'draft_ready',
+                data:   ['to' => $to, 'in_app_only' => true],
+            ));
+
+            UnitPlatform::register($this->txId, ['status' => 'Draft Ready']);
+
+            UnitPlatform::log('ava', $this->txId, 'draft_ready_in_app', [
+                'to' => $to, 'reason' => 'No Gmail credential connected',
+            ]);
+        } elseif ($input->isFastTrack()) {
+            // Credential fetched fresh by UnitPlatform — never from queue payload
+            $gmail = new GmailService($input->credential);
+
             // Fast track: create a draft only — never send to real contacts during testing
             $subject = '[Fast Track Test] ' . ($draft['subject'] ?? 'AVA Test');
             $body    = "⚡ Fast Track Test — no real email was sent.\n\nAVA drafted this reply for your review:\n\n" . ($draft['body'] ?? '');
@@ -61,6 +79,9 @@ class PushToGmailJob implements ShouldQueue
                 'to' => $to, 'gmail_draft_id' => $draftId,
             ]);
         } else {
+            // Credential fetched fresh by UnitPlatform — never from queue payload
+            $gmail = new GmailService($input->credential);
+
             $template = $input->stage('template');
 
             // Hard gate: approval is required if ANY of these say so — the template,
