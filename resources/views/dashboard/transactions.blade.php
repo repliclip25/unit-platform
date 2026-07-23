@@ -178,6 +178,7 @@ $statusMeta = [
     'blocked'      => ['bg' => 'rgba(249,115,22,.15)', 'color' => '#fb923c', 'label' => 'Blocked'],
     'drafting'     => ['bg' => 'rgba(99,102,241,.1)',  'color' => '#818cf8', 'label' => 'Drafting'],
     'dismissed'    => ['bg' => 'rgba(75,85,99,.2)',    'color' => '#6b7280', 'label' => 'Dismissed'],
+    'filtered_out' => ['bg' => 'rgba(107,114,128,.15)','color' => '#9ca3af', 'label' => 'Filtered'],
 ];
 $priorityColors = ['Critical'=>'#ef4444','High'=>'#f59e0b','Medium'=>'#9ca3af','Low'=>'#6b7280'];
 @endphp
@@ -303,7 +304,7 @@ $priorityColors = ['Critical'=>'#ef4444','High'=>'#f59e0b','Medium'=>'#9ca3af','
       </div>
 
       <div class="tx-tabs">
-        @foreach([['all','All'],['draft_ready','Pending Review'],['approved','Approved'],['failed','Failed'],['dismissed','Dismissed']] as [$val,$label])
+        @foreach([['all','All'],['draft_ready','Pending Review'],['approved','Approved'],['failed','Failed'],['filtered','Filtered'],['dismissed','Dismissed']] as [$val,$label])
         <a href="{{ route('app.workers.transactions', ['slug' => $dep->worker_slug, 'filter' => $val]) }}" class="tx-tab {{ ($currentFilter ?? 'all') === $val ? 'active' : '' }}">
           {{ $label }}
           @if($val === 'draft_ready' && $pendingCount > 0)<span class="tx-tab-badge">{{ $pendingCount }}</span>@endif
@@ -340,6 +341,8 @@ $priorityColors = ['Critical'=>'#ef4444','High'=>'#f59e0b','Medium'=>'#9ca3af','
                 @if($memory)
                   <div class="tx-asset">{{ $memory->asset ?? '—' }}</div>
                   <div class="tx-client">{{ $memory->matched_client ?? '—' }}</div>
+                @elseif($tx->status === 'filtered_out')
+                  <span style="color:var(--db-text-muted);font-size:12px">Not processed — filtered</span>
                 @else
                   <span class="tx-processing">Processing…</span>
                 @endif
@@ -357,6 +360,7 @@ $priorityColors = ['Critical'=>'#ef4444','High'=>'#f59e0b','Medium'=>'#9ca3af','
               <td>
                 <span class="tx-status-badge" style="background:{{ $sc['bg'] }};color:{{ $sc['color'] }}">{{ $sc['label'] }}</span>
                 @if($tx->human_decision)<div class="tx-human-decision">{{ ucfirst($tx->human_decision) }}</div>@endif
+                @if($tx->status === 'filtered_out' && $tx->filter_reason)<div class="tx-human-decision" style="color:var(--db-text-muted);max-width:220px;white-space:normal">{{ $tx->filter_reason }}</div>@endif
               </td>
               <td><span class="tx-age">{{ \Carbon\Carbon::parse($tx->created_at)->diffForHumans(null, true) }}</span></td>
               <td>

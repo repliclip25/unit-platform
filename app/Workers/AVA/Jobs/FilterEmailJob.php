@@ -103,8 +103,9 @@ class FilterEmailJob implements ShouldQueue
     private function dropWith(object $tx, string $reason): void
     {
         DB::table('transactions')->where('tx_id', $this->txId)->update([
-            'status'     => 'filtered_out',
-            'updated_at' => now(),
+            'status'        => 'filtered_out',
+            'filter_reason' => $reason,
+            'updated_at'    => now(),
         ]);
         Log::info('AVA FilterEmailJob: email filtered out', [
             'tx_id'  => $this->txId,

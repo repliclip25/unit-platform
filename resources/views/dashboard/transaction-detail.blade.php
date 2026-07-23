@@ -202,6 +202,7 @@ $source   = $rawInput['source'] ?? 'unknown';
 $isFastTrack    = $source === 'fast_track_test';
 $isFailed       = $tx->status === 'failed';
 $isDismissed    = $tx->status === 'dismissed';
+$isFiltered     = $tx->status === 'filtered_out';
 $canRefire      = $isFailed && !$isFastTrack;
 $canDismiss     = in_array($tx->status, ['failed','draft_ready','human_review','blocked']);
 $canDelete      = $isFastTrack;
@@ -222,6 +223,7 @@ $statusColors = [
     'approved'     => ['bg'=>'rgba(34,197,94,.15)','color'=>'#86efac'],
     'sent'         => ['bg'=>'rgba(34,197,94,.15)','color'=>'#86efac'],
     'blocked'      => ['bg'=>'rgba(249,115,22,.15)','color'=>'#fb923c'],
+    'filtered_out' => ['bg'=>'rgba(107,114,128,.15)','color'=>'#9ca3af'],
 ];
 $statusColor = $statusColors[$tx->status] ?? ['bg'=>'var(--db-chip)','color'=>'var(--db-text-muted)'];
 @endphp
@@ -414,6 +416,24 @@ $statusColor = $statusColors[$tx->status] ?? ['bg'=>'var(--db-chip)','color'=>'v
       {{-- Dismissed notice --}}
       @if($isDismissed)
       <div class="td-dismissed">○ This transaction was dismissed and removed from active queues. The audit trail is preserved below.</div>
+      @endif
+
+      {{-- Filtered notice — Stage 0 (Capture Filter) dropped this before it ever
+           reached Read/Classify/Memory/Draft. Those cards below are correctly
+           empty; this explains why instead of leaving the page looking blank. --}}
+      @if($isFiltered)
+      <div class="td-banner data">
+        <div class="td-banner-title" style="color:#9ca3af">◌ Filtered — never processed</div>
+        <div class="td-banner-body">
+          This email never reached AVA's pipeline. It was screened out by your capture rules before Read/Classify/Memory/Draft ran.
+          @if($tx->filter_reason)
+            <br><strong style="color:var(--db-text)">Reason:</strong> {{ $tx->filter_reason }}
+          @endif
+        </div>
+        <div class="td-banner-actions">
+          <a href="{{ route('app.workers.rules', $dep->worker_slug ?? 'ava') }}" class="td-btn td-btn-amber">Review Capture Rules →</a>
+        </div>
+      </div>
       @endif
 
       <div class="td-grid">

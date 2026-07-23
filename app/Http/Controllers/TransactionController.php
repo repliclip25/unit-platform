@@ -23,8 +23,9 @@ class TransactionController extends Controller
         if ($filter === 'draft_ready')   $query->where('status', 'draft_ready');
         elseif ($filter === 'approved')  $query->whereIn('status', ['approved','sent']);
         elseif ($filter === 'failed')    $query->where('status', 'failed');
+        elseif ($filter === 'filtered')  $query->where('status', 'filtered_out');
         elseif ($filter === 'dismissed') $query->where('status', 'dismissed');
-        else $query->where('status', '!=', 'dismissed'); // default: hide dismissed
+        else $query->whereNotIn('status', ['dismissed', 'filtered_out']); // default: hide dismissed + filtered noise
         $transactions  = $query->paginate(25);
         $currentFilter = $filter;
 
@@ -60,7 +61,7 @@ class TransactionController extends Controller
         $firstName = explode(' ', trim(auth()->user()->name))[0];
 
         return view('dashboard.transaction-detail', compact(
-            'tx', 'nuxRegister', 'stagesByKey',
+            'tx', 'nuxRegister', 'stagesByKey', 'dep',
             'workerCatalog', 'tokenTotal', 'firstName'
         ));
     }
