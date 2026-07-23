@@ -19,6 +19,10 @@ return Application::configure(basePath: dirname(__DIR__))
             'workers/ava/test',
             'workers/ava/gmail/webhook',
             'stripe/webhook',
+            // Logout has no sensitive side effect a forged cross-site POST could
+            // exploit, and a stale CSRF token (long-idle tab) shouldn't strand
+            // a user trying to log out on a 419 page with no obvious way out.
+            'logout',
         ]);
 
         $middleware->alias([
