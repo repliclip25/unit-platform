@@ -313,6 +313,18 @@ body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-fon
 .ob-stage.is-done .ob-stage-status-dot{background:#22c55e}
 @keyframes pdot{0%,100%{opacity:1}50%{opacity:.3}}
 
+/* ── Per-stage sub-steps within a column — one row per raw contract stage,
+   e.g. "Analyzing" lists Read Email / Classify / Memory Lookup / Log
+   Transaction. Driven by AvaWorker::pipelineStages() via
+   PipelineStageService::onboardingColumns(). ── */
+.ob-substeps{display:flex;flex-direction:column;gap:7px;margin-top:2px}
+.ob-substep{display:flex;align-items:center;gap:8px;font-size:11px;color:#9CA3AF;font-weight:600;transition:color .2s}
+.ob-substep-num{width:16px;height:16px;border-radius:50%;background:#F3F4F6;color:#9CA3AF;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;flex-shrink:0;transition:background .2s,color .2s}
+.ob-substep.is-active{color:#0D0D0D}
+.ob-substep.is-active .ob-substep-num{background:#F5C518;color:#0D0D0D;animation:pdot 1s ease infinite}
+.ob-substep.is-done{color:#0D0D0D}
+.ob-substep.is-done .ob-substep-num{background:#22c55e;color:#fff}
+
 /* Connector arrow between stages */
 .ob-arrow{
   position:absolute;right:-16px;top:50%;transform:translateY(-50%);
@@ -573,6 +585,14 @@ body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-fon
             <span class="ob-stage-status-dot"></span>
             <span id="status{{ $col['num'] }}">Waiting...</span>
           </div>
+          <div class="ob-substeps">
+            @foreach($col['stages'] as $i => $stage)
+            <div class="ob-substep" id="substep-{{ $stage['key'] }}">
+              <span class="ob-substep-num">{{ $i + 1 }}</span>
+              <span>{{ $stage['label'] }}</span>
+            </div>
+            @endforeach
+          </div>
         </div>
         <div class="ob-arrow">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
@@ -807,6 +827,23 @@ const STATUS_TO_STAGE_KEY = {
   approved: 'push_draft', sent: 'push_draft', blocked: 'read_email',
 };
 
+// Every raw stage across all columns, in order, with its output column —
+// drives the sub-step dots. Same source as the labels rendered above.
+const ALL_STAGES = @json(collect($onshiftColumns)->pluck('stages')->flatten(1)->values());
+
+function updateSubsteps(data, activeStageKey){
+  const activeIdx = ALL_STAGES.findIndex(function(st){ return st.key === activeStageKey; });
+  ALL_STAGES.forEach(function(st, i){
+    const el = document.getElementById('substep-' + st.key);
+    if(!el) return;
+    const hasOutput = st.output_column && !!data[st.output_column];
+    const passedByIndex = activeIdx > -1 && i < activeIdx;
+    const done = hasOutput || passedByIndex;
+    el.classList.toggle('is-done', done);
+    el.classList.toggle('is-active', !done && i === activeIdx);
+  });
+}
+
 function togglePaste(){
   const ta = document.getElementById('emailPaste');
   ta.style.display = ta.style.display === 'none' ? 'block' : 'none';
@@ -1021,6 +1058,8 @@ function poll(){
       } else if(stage < 1){
         setStage(1, 'Processing...', null); stage = 1;
       }
+
+      updateSubsteps(data, stageKey);
     })
     .catch(() => {});
 }

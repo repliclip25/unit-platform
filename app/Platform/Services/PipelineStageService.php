@@ -47,22 +47,30 @@ class PipelineStageService
     // ready") — a coarser, page-specific view built on top of the same
     // groups, not a second raw-stage field. $labels maps a 1-based column
     // number to its onboarding-facing title; $columnSize groups are folded
-    // into each column in order.
-    public static function onboardingColumns(array $groupedStages, array $columnGroupCounts, array $labels): array
+    // into each column in order. $rawStages (the contract's raw
+    // pipelineStages()) is used to attach each column's individual sub-steps
+    // — e.g. column 1 ("Analyzing") lists Read Email / Classify / Memory
+    // Lookup / Log Transaction as numbered sub-steps — so the onboarding
+    // visual can show real per-stage progress, not just one blob per column.
+    public static function onboardingColumns(array $groupedStages, array $columnGroupCounts, array $labels, array $rawStages = []): array
     {
-        $columns = [];
-        $cursor  = 0;
+        $rawByKey = collect($rawStages)->keyBy('key');
+        $columns  = [];
+        $cursor   = 0;
 
         foreach ($columnGroupCounts as $i => $count) {
             $slice = array_slice($groupedStages, $cursor, $count);
             $cursor += $count;
+
+            $stageKeys = collect($slice)->pluck('stage_keys')->flatten();
 
             $columns[] = [
                 'num'        => $i + 1,
                 'label'      => $labels[$i] ?? ('Step ' . ($i + 1)),
                 'image'      => $slice[0]['image'] ?? null,
                 'groups'     => $slice,
-                'stage_keys' => collect($slice)->pluck('stage_keys')->flatten()->all(),
+                'stage_keys' => $stageKeys->all(),
+                'stages'     => $stageKeys->map(fn($key) => $rawByKey->get($key))->filter()->values()->all(),
             ];
         }
 
