@@ -51,7 +51,7 @@ class LogTransactionJob implements ShouldQueue
             ], 'warning');
         }
 
-        SelectTemplateJob::dispatch($this->txId)->onQueue($input->queue);
+        UnitPlatform::advance($this->txId, 'log_entry');
     }
 
     public function failed(\Throwable $e): void

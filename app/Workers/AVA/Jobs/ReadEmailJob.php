@@ -76,7 +76,7 @@ PROMPT;
 
         UnitPlatform::log('ava', $this->txId, 'email_read', $output);
 
-        ClassifyEmailJob::dispatch($this->txId)->onQueue($input->queue);
+        UnitPlatform::advance($this->txId, 'read_email');
     }
 
     public function failed(\Throwable $e): void

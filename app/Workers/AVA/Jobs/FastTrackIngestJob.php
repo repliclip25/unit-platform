@@ -89,7 +89,7 @@ class FastTrackIngestJob implements ShouldQueue
         ]);
 
         // Hand off to the standard read stage — same pipeline as a real inbound email
-        ReadEmailJob::dispatch($this->txId)->onQueue($input->queue);
+        UnitPlatform::advance($this->txId, 'webhook');
     }
 
     public function failed(\Throwable $e): void

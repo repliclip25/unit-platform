@@ -121,7 +121,7 @@ PROMPT;
             ],
         ]));
 
-        MemoryLookupJob::dispatch($this->txId)->onQueue($input->queue);
+        UnitPlatform::advance($this->txId, 'classify');
     }
 
     public function failed(\Throwable $e): void

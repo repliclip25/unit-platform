@@ -143,7 +143,7 @@ PROMPT;
             ], 'warning');
         }
 
-        LogTransactionJob::dispatch($this->txId)->onQueue($input->queue);
+        UnitPlatform::advance($this->txId, 'memory');
     }
 
     public function failed(\Throwable $e): void

@@ -73,7 +73,7 @@ class DraftEmailJob implements ShouldQueue
             'low_confidence' => $lowConfidence,
         ]);
 
-        PushToGmailJob::dispatch($this->txId)->onQueue($input->queue);
+        UnitPlatform::advance($this->txId, 'draft_email');
     }
 
     private function fillPlaceholders(string $tpl, array $memory, array $read, string $firstName): string

@@ -289,6 +289,47 @@ final class UnitPlatform
         self::logStageCompleted($txId, $output->stage);
     }
 
+    // ── PIPELINE ADVANCE — dispatches whatever comes after a given stage,
+    //    resolved from the contract's pipelineStages() instead of each job
+    //    hardcoding its own successor. This is what makes a stage a genuine,
+    //    resumable unit: any job (or a synthetic entry point like a scheduled
+    //    watcher with no inbound email) can call advance() from wherever it
+    //    is, and the platform figures out what runs next — not the job
+    //    itself. Adding, removing, or reordering a stage in the contract
+    //    changes execution order platform-wide with no job file to touch.
+    // ─────────────────────────────────────────────────────────────────────
+    public static function advance(string $txId, string $fromStageKey): void
+    {
+        $input    = self::getInput($txId);
+        $contract = \App\Platform\Services\WorkerRegistry::resolve($input->workerSlug);
+        $stages   = $contract->pipelineStages();
+
+        $currentIndex = collect($stages)->search(fn($s) => $s['key'] === $fromStageKey);
+        if ($currentIndex === false) {
+            Log::warning('UnitPlatform::advance — unknown stage key', ['tx_id' => $txId, 'stage' => $fromStageKey]);
+            return;
+        }
+
+        // Find the next stage in contract order that actually has a job to
+        // run — skips synthetic stages with no job_class (e.g. 'webhook').
+        for ($i = $currentIndex + 1; $i < count($stages); $i++) {
+            if (empty($stages[$i]['job_class'])) continue;
+
+            $jobFqn = 'App\\Workers\\' . \Illuminate\Support\Str::studly($input->workerSlug)
+                . '\\Jobs\\' . $stages[$i]['job_class'];
+
+            if (!class_exists($jobFqn)) {
+                Log::error('UnitPlatform::advance — job class not found', ['tx_id' => $txId, 'job_class' => $jobFqn]);
+                return;
+            }
+
+            $jobFqn::dispatch($txId)->onQueue($input->queue);
+            return;
+        }
+
+        // No stage after this one — the pipeline is complete for this transaction.
+    }
+
     // ── Trial quota: charged once, the first time a transaction reaches a
     //    success status (see TransactionService::SUCCESS_STATUSES). Must run
     //    BEFORE the status column is overwritten, since the "already counted"

@@ -72,7 +72,7 @@ class SelectTemplateJob implements ShouldQueue
             'category'      => $category,
         ]);
 
-        DraftEmailJob::dispatch($this->txId)->onQueue($input->queue);
+        UnitPlatform::advance($this->txId, 'select_template');
     }
 
     public function failed(\Throwable $e): void
