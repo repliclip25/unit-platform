@@ -140,6 +140,9 @@ body{font-family:'Inter',sans-serif;background:var(--db-bg);color:var(--db-text)
 .mem-tpl-link{font-size:12.5px;color:var(--db-text-muted);margin-top:8px;display:block}
 .mem-tpl-link a{color:var(--db-text)}
 
+.mem-horizon{background:var(--db-chip);border:1px solid var(--db-border);border-radius:12px;padding:12px 16px;margin-bottom:14px;display:flex;flex-direction:column;gap:6px}
+.mem-horizon-row{font-size:12.5px}
+
 .mem-list{background:transparent;border:1px solid var(--db-border);border-radius:16px;overflow:hidden}
 .mem-row{padding:14px 18px;border-bottom:1px solid var(--db-border);display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
 .mem-row:last-child{border-bottom:none}
@@ -377,7 +380,8 @@ $sidebarLinks = [
         <div class="mem-stat"><div class="mem-stat-num">{{ $clients->count() }}</div><div class="mem-stat-label">{{ ucfirst($memoryCopy['client_noun_plural']) }}</div></div>
         <div class="mem-stat"><div class="mem-stat-num">{{ $contacts->count() }}</div><div class="mem-stat-label">Contacts</div></div>
         <div class="mem-stat"><div class="mem-stat-num">{{ $assets->count() }}</div><div class="mem-stat-label">Assets</div>
-          @if($urgentAssets)<div class="mem-stat-sub">{{ $urgentAssets }} expiring soon</div>@elseif($expiredAssets)<div class="mem-stat-sub">{{ $expiredAssets }} expired</div>@endif
+          @if($expiredAssets)<div class="mem-stat-sub" style="color:#f87171">{{ $expiredAssets }} expired</div>@endif
+          @if($urgentAssets)<div class="mem-stat-sub">{{ $urgentAssets }} expiring soon</div>@endif
         </div>
         <div class="mem-stat"><div class="mem-stat-num">{{ $myGroups->count() }}</div><div class="mem-stat-label">Groups</div><div class="mem-stat-sub" style="color:var(--db-text-muted)">{{ $myDeployments->count() }} worker{{ $myDeployments->count()!==1?'s':'' }}</div></div>
       </div>
@@ -500,6 +504,26 @@ $sidebarLinks = [
 
         {{-- ── ASSETS ── --}}
         <div id="sub-assets" class="sub-pane" style="display:none">
+            @php $overdueBucket = collect($renewalHorizon['buckets'])->firstWhere('overdue', true); @endphp
+            @if($renewalHorizon['total'] > 0)
+            <div class="mem-horizon">
+              @if($overdueBucket)
+              <div class="mem-horizon-row" style="color:#f87171">
+                <strong>{{ count($overdueBucket['items']) }} overdue</strong>
+                <span style="color:var(--db-text-muted)">
+                  — {{ collect($overdueBucket['items'])->take(3)->pluck('name')->implode(', ') }}{{ count($overdueBucket['items']) > 3 ? ', +'.(count($overdueBucket['items'])-3).' more' : '' }}
+                </span>
+              </div>
+              @endif
+              @foreach(collect($renewalHorizon['buckets'])->where('overdue', false) as $bucket)
+                @if(count($bucket['items']))
+                <div class="mem-horizon-row" style="color:var(--db-text-muted)">
+                  <strong style="color:var(--db-text)">{{ count($bucket['items']) }}</strong> renewing {{ $bucket['label'] }}
+                </div>
+                @endif
+              @endforeach
+            </div>
+            @endif
             <div class="mem-list">
               @forelse($assets as $asset)
               @php

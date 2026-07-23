@@ -136,12 +136,19 @@ class MemoryController extends Controller
             DB::table('users')->where('id', $userId)->update(['profile_code' => $myProfileCode]);
         }
 
+        // Same overdue/upcoming asset breakdown Desk's "Coming Up" panel already
+        // shows correctly — reused here instead of the stat card's own narrow
+        // "expiring in the next 30 days" count, which silently hid overdue
+        // items whenever any near-term one also existed.
+        $renewalHorizon = \App\Platform\Services\DashboardService::horizon($userId, ['windows' => [30, 60, 90]]);
+
         return view('dashboard.memory', compact(
             'dep',
             'clients', 'contacts', 'assets', 'rules',
             'myDeployments', 'myGroups',
             'incoming', 'outgoing', 'myProfileCode',
             'assetTypes', 'memoryCopy', 'personaKey', 'personaOptions', 'avaDeploymentId',
+            'renewalHorizon',
             'workerCatalog', 'registryRows', 'registryRow', 'profileImg', 'coverImg', 'tokenTotal', 'firstName'
         ));
     }

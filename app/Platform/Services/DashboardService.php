@@ -261,9 +261,11 @@ class DashboardService
     }
 
     // ── horizon ──────────────────────────────────────────────────────────────
-    // Upcoming deadlines bucketed by time window.
+    // Upcoming deadlines bucketed by time window. Public so any page needing
+    // the same overdue/upcoming asset breakdown (e.g. Memory's Assets tab)
+    // reuses this instead of hand-rolling its own renewal_date query.
 
-    private static function horizon(int $userId, array $panel): array
+    public static function horizon(int $userId, array $panel): array
     {
         $windows = $panel['windows'] ?? [30, 60, 90];
         $maxDays = max($windows);
