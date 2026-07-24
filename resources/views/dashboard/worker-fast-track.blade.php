@@ -594,6 +594,11 @@ var STATUS_TO_STAGE = {
   approved:        'push_draft',
   sent:            'push_draft',
   blocked:         'read_email',
+  // Dismissed/rejected happen after classification (a capture rule skipped
+  // it, or a human rejected the draft) — mapping these keeps the bubble
+  // trail where it actually stopped instead of jumping back to stage 1.
+  dismissed:       'classify',
+  rejected:        'push_draft',
 };
 var STATUS_LABELS = {
   reading: 'Reading email…', classifying: 'Classifying…', memory_lookup: 'Looking up memory…',
@@ -796,6 +801,20 @@ function pollFastTrack() {
       if (data.failed) {
         line.textContent = '✕ Pipeline failed — check the Activity Log for details';
         line.style.color = '#ef4444';
+        document.getElementById('ft-run-section').style.display = '';
+        return;
+      }
+
+      // Terminal-but-never-entered-fulfillment states — a capture rule
+      // skipped it, or it was manually dismissed/rejected. These never reach
+      // fulfillment_stage, so without this check the poll loop above would
+      // run forever waiting for a stage transition that will never happen.
+      if (['dismissed', 'rejected'].indexOf(data.status) > -1) {
+        var msg = data.status === 'dismissed'
+          ? '○ Dismissed — this test email didn\'t meet your capture rules'
+          : '○ Rejected — the draft was rejected before fulfillment';
+        line.textContent = msg;
+        line.style.color = 'var(--db-text-muted)';
         document.getElementById('ft-run-section').style.display = '';
         return;
       }
