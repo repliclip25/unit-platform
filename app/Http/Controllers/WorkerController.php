@@ -1367,15 +1367,20 @@ class WorkerController extends Controller
         $tx = DB::table('transactions')->where('tx_id', $txId)->where('user_id', auth()->id())->first();
         if (!$tx) return response()->json(['error' => 'Not found'], 404);
         return response()->json([
-            'tx_id'           => $tx->tx_id,
-            'status'          => $tx->status,
-            'category'        => $tx->category,
-            'priority'        => $tx->priority,
-            'read_output'     => json_decode($tx->read_output),
-            'memory_output'   => json_decode($tx->memory_output),
-            'classify_output' => json_decode($tx->classify_output),
-            'draft_output'    => json_decode($tx->draft_output),
-            'gmail_draft_id'  => $tx->gmail_draft_id,
+            'tx_id'             => $tx->tx_id,
+            'status'            => $tx->status,
+            'category'          => $tx->category,
+            'priority'          => $tx->priority,
+            'read_output'       => json_decode($tx->read_output),
+            'memory_output'     => json_decode($tx->memory_output),
+            'classify_output'   => json_decode($tx->classify_output),
+            'draft_output'      => json_decode($tx->draft_output),
+            'gmail_draft_id'    => $tx->gmail_draft_id,
+            'fulfillment_stage' => $tx->fulfillment_stage,
+            'invoice_output'    => json_decode($tx->invoice_output),
+            'documents_output'  => json_decode($tx->documents_output),
+            'payment_output'    => json_decode($tx->payment_output),
+            'archive_output'    => json_decode($tx->archive_output),
         ]);
     }
 }

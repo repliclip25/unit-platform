@@ -180,6 +180,26 @@ body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-fon
 .sc-btn-approve{background:#0D0D0D;color:#fff;border:none;font-family:inherit}
 .sc-btn-review{background:#fff;color:#374151;border:1.5px solid #E5E7EB;text-decoration:none;display:flex;align-items:center;justify-content:center}
 
+/* ── 9-section live run-through grid — replaces the old static feed.
+   Mirrors the approved onshift_extended_9_sections mockup, but wired to
+   real transaction data via polling (fastTrackStatus), not scripted. ── */
+.ob-9grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;padding:14px 20px 16px}
+.ob-9cell{
+  display:flex;align-items:center;gap:8px;padding:9px 10px;border-radius:10px;
+  background:#F9FAFB;border:1px solid #F0F0F0;transition:background .3s,border-color .3s;
+}
+.ob-9cell.is-active{background:#FFFBEA;border-color:#F5C518}
+.ob-9cell.is-done{background:#F0FDF4;border-color:#BBF7D0}
+.ob-9cell.is-human{background:#FFFBEA;border-color:#F5C518}
+.ob-9dot{width:20px;height:20px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;background:#E5E7EB;color:#9CA3AF;transition:background .3s,color .3s}
+.ob-9cell.is-active .ob-9dot{background:#F5C518;color:#0D0D0D;animation:pdot 1s ease infinite}
+.ob-9cell.is-done .ob-9dot{background:#22c55e;color:#fff}
+.ob-9label{font-size:10.5px;font-weight:700;color:#9CA3AF;line-height:1.25}
+.ob-9cell.is-active .ob-9label,.ob-9cell.is-done .ob-9label{color:#0D0D0D}
+.ob-9sub{font-size:9px;color:#C4C7CC;font-weight:600;margin-top:1px}
+.ob-9cell.is-active .ob-9sub{color:#92400e}
+.ob-9cell.is-done .ob-9sub{color:#16A34A}
+
 /* Mobile dark activity panel */
 @media(max-width:1024px){
   .ob-sc-activity{background:#0D0D0D;border-radius:0}
@@ -729,31 +749,19 @@ body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-fon
     <div class="ob-sc-right">
       <div class="ob-sc-activity">
         <div class="ob-sc-activity-header">
-          <span class="ob-sc-activity-title">Live Activity</span>
+          <span class="ob-sc-activity-title">Live Run-Through</span>
           <span class="ob-sc-onshift"><span class="ob-sc-onshift-dot"></span> On Shift</span>
         </div>
-        <div class="ob-sc-feed" id="scFeed">
-          {{-- Populated by JS from TX data --}}
-          <div class="ob-sc-feed-item">
-            <span class="ob-sc-feed-time" id="scTime1">—</span>
-            <span class="ob-sc-feed-dot" style="background:#6366F1">1</span>
-            <div><div class="ob-sc-feed-text" id="scStep1">New renewal request detected</div><div class="ob-sc-feed-sub" id="scStep1Sub"></div></div>
-          </div>
-          <div class="ob-sc-feed-item">
-            <span class="ob-sc-feed-time" id="scTime2">—</span>
-            <span class="ob-sc-feed-dot" style="background:#F59E0B">2</span>
-            <div><div class="ob-sc-feed-text">Analyzing email...</div></div>
-          </div>
-          <div class="ob-sc-feed-item">
-            <span class="ob-sc-feed-time" id="scTime3">—</span>
-            <span class="ob-sc-feed-dot" style="background:#8B5CF6">3</span>
-            <div><div class="ob-sc-feed-text">Drafting personalized reply...</div></div>
-          </div>
-          <div class="ob-sc-feed-item">
-            <span class="ob-sc-feed-time" id="scTime4">—</span>
-            <span class="ob-sc-feed-dot" style="background:#22c55e">4</span>
-            <div><div class="ob-sc-feed-text" style="font-weight:700">Reply ready for your review</div></div>
-          </div>
+        <div class="ob-9grid" id="nineGrid">
+          <div class="ob-9cell" id="nine-detect"><span class="ob-9dot">1</span><div><div class="ob-9label">Detect</div><div class="ob-9sub" id="nine-detect-sub">—</div></div></div>
+          <div class="ob-9cell" id="nine-understand"><span class="ob-9dot">2</span><div><div class="ob-9label">Understand</div><div class="ob-9sub" id="nine-understand-sub">—</div></div></div>
+          <div class="ob-9cell" id="nine-verify"><span class="ob-9dot">3</span><div><div class="ob-9label">Verify</div><div class="ob-9sub" id="nine-verify-sub">—</div></div></div>
+          <div class="ob-9cell" id="nine-prepare"><span class="ob-9dot">4</span><div><div class="ob-9label">Prepare</div><div class="ob-9sub" id="nine-prepare-sub">—</div></div></div>
+          <div class="ob-9cell" id="nine-draft"><span class="ob-9dot">5</span><div><div class="ob-9label">Draft</div><div class="ob-9sub" id="nine-draft-sub">—</div></div></div>
+          <div class="ob-9cell" id="nine-deliver"><span class="ob-9dot">6</span><div><div class="ob-9label">Deliver</div><div class="ob-9sub" id="nine-deliver-sub">—</div></div></div>
+          <div class="ob-9cell" id="nine-approve"><span class="ob-9dot">7</span><div><div class="ob-9label">You approve</div><div class="ob-9sub" id="nine-approve-sub">Waiting</div></div></div>
+          <div class="ob-9cell" id="nine-fulfill"><span class="ob-9dot">8</span><div><div class="ob-9label">Fulfill</div><div class="ob-9sub" id="nine-fulfill-sub">—</div></div></div>
+          <div class="ob-9cell" id="nine-renew"><span class="ob-9dot">9</span><div><div class="ob-9label">Confirm &amp; renew</div><div class="ob-9sub" id="nine-renew-sub">—</div></div></div>
         </div>
         <a href="/app/transactions" class="ob-sc-view-link">View Live Feed →</a>
       </div>
@@ -875,10 +883,82 @@ function fmtTime(d){
   return dt.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit',hour12:true});
 }
 
+// ── 9-section live run-through — driven entirely by real transaction data,
+// not a scripted animation. Sections 1-6 mirror what the pipeline card
+// already shows; 7-9 are new: the human decision gate and the fulfillment
+// stages (10-16) that used to not exist at all. ──────────────────────────
+const NINE_SECTIONS = ['detect','understand','verify','prepare','draft','deliver','approve','fulfill','renew'];
+function nineState(data){
+  const s = data.status;
+  const st = {};
+  st.detect     = data.read_output ? 'done' : (['reading','received','ingesting'].includes(s) ? 'active' : 'pending');
+  st.understand = data.classify_output ? 'done' : (st.detect === 'done' && s === 'classifying' ? 'active' : (st.detect === 'done' ? 'pending' : 'pending'));
+  st.verify     = data.memory_output ? 'done' : (st.understand === 'done' && s === 'memory_lookup' ? 'active' : 'pending');
+  st.prepare    = data.draft_output ? 'done' : (st.verify === 'done' && ['logging','template_select'].includes(s) ? 'active' : 'pending');
+  st.draft      = data.draft_output ? 'done' : (st.prepare === 'done' && s === 'drafting' ? 'active' : (st.prepare === 'done' ? 'active' : 'pending'));
+  st.deliver    = ['draft_ready','approved','sent'].includes(s) ? 'done' : (st.draft === 'done' && s === 'pushing' ? 'active' : 'pending');
+  st.approve    = ['approved','sent'].includes(s) ? 'done' : (st.deliver === 'done' ? 'active' : 'pending');
+  const fs = data.fulfillment_stage;
+  const fulfillDone = fs && ['update_renewal_date','archive_evidence','notify_stakeholders','schedule_next_watch'].includes(fs);
+  st.fulfill    = fulfillDone ? 'done' : (st.approve === 'done' && fs ? 'active' : 'pending');
+  st.renew      = fs === 'schedule_next_watch' ? 'done' : (st.fulfill === 'done' && fs ? 'active' : 'pending');
+  return st;
+}
+const NINE_SUBS = {
+  detect:     d => d.read_output ? 'Email read' : 'Watching inbox',
+  understand: d => d.classify_output ? (d.classify_output.category || 'Classified') : 'Analyzing',
+  verify:     d => d.memory_output ? (d.memory_output.matched_client || 'Matched') : 'Checking memory',
+  prepare:    d => d.draft_output ? 'Template selected' : 'Preparing',
+  draft:      d => d.draft_output ? 'Draft written' : 'Writing',
+  deliver:    d => ['draft_ready','approved','sent'].includes(d.status) ? 'In Gmail' : 'Sending',
+  approve:    d => ['approved','sent'].includes(d.status) ? 'You approved' : 'Waiting on you',
+  fulfill:    d => {
+    if(!d.fulfillment_stage) return '—';
+    if(d.fulfillment_stage === 'confirm_payment') return 'Waiting on payment';
+    if(d.invoice_output || d.documents_output) return 'Requesting docs';
+    return 'In progress';
+  },
+  renew:      d => d.fulfillment_stage === 'schedule_next_watch' ? 'Cycle complete' : (d.payment_output ? 'Renewing' : '—'),
+};
+function updateNineGrid(data){
+  const states = nineState(data);
+  NINE_SECTIONS.forEach(function(key){
+    const cell = document.getElementById('nine-' + key);
+    if(!cell) return;
+    const s = states[key];
+    cell.classList.toggle('is-active', s === 'active');
+    cell.classList.toggle('is-done', s === 'done');
+    const sub = document.getElementById('nine-' + key + '-sub');
+    if(sub && (s === 'active' || s === 'done')) sub.textContent = NINE_SUBS[key](data);
+  });
+}
+
+let fulfillmentPollTimer = null;
+function startFulfillmentPoll(){
+  clearInterval(fulfillmentPollTimer);
+  fulfillmentPollTimer = setInterval(function(){
+    fetch(STATUS_URL + txId, { credentials: 'same-origin', headers: { 'X-CSRF-TOKEN': CSRF, 'Accept': 'application/json' } })
+      .then(r => r.ok ? r.json() : null)
+      .then(data => {
+        if(!data) return;
+        updateNineGrid(data);
+        if(data.fulfillment_stage === 'schedule_next_watch' || data.status === 'rejected'){
+          clearInterval(fulfillmentPollTimer);
+        }
+      })
+      .catch(() => {});
+  }, 4000);
+  // Stop polling after 10 minutes regardless — a human gate may just sit
+  // unconfirmed for a while, no need to keep hammering the endpoint forever.
+  setTimeout(function(){ clearInterval(fulfillmentPollTimer); }, 600000);
+}
+
 function showDraft(data){
   clearInterval(pollTimer);
   clearTimeout(_pollTimeout);
   stage = 3;
+  updateNineGrid(data);
+  startFulfillmentPoll();
 
   // Swap pipeline card → success card
   document.querySelector('.ob-pipeline-card').style.display = 'none';
