@@ -33,7 +33,9 @@ class RequestDocumentsJob implements ShouldQueue
         $memory      = $input->stage('memory');
         $vendorEmail = $input->raw['from'] ?? null;
 
-        if ($vendorEmail && filter_var($vendorEmail, FILTER_VALIDATE_EMAIL)) {
+        if ($input->isFastTrack()) {
+            $output = ['status' => 'simulated', 'to' => $vendorEmail, 'requested_at' => now()->toISOString()];
+        } elseif ($vendorEmail && filter_var($vendorEmail, FILTER_VALIDATE_EMAIL)) {
             EmailDispatcher::send(
                 'ava_request_documents',
                 $vendorEmail,

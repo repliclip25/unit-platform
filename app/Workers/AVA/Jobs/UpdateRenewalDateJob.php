@@ -35,6 +35,24 @@ class UpdateRenewalDateJob implements ShouldQueue
         $memory = $input->stage('memory');
 
         $assetName = $memory['asset'] ?? null;
+
+        // Fast Track has no real asset behind it — simulate the date math so
+        // the demo shows something real, without ever touching a live row
+        // (which could coincidentally collide with a tenant's actual asset
+        // named the same as the test scenario).
+        if ($input->isFastTrack()) {
+            $cadenceDays = 365;
+            $oldDate     = now()->toDateString();
+            $newDate     = now()->addDays($cadenceDays)->toDateString();
+            $output      = ['asset' => $assetName, 'old_date' => $oldDate, 'new_date' => $newDate, 'cadence_days' => $cadenceDays, 'simulated' => true];
+
+            UnitPlatform::commitOutput($this->txId, new WorkerOutput(stage: 'update_renewal_date', data: $output));
+            UnitPlatform::setFulfillmentStage($this->txId, 'update_renewal_date');
+            UnitPlatform::log('ava', $this->txId, 'renewal_date_updated', $output);
+            UnitPlatform::advance($this->txId, 'update_renewal_date');
+            return;
+        }
+
         $asset = $assetName
             ? DB::table('assets')->where('user_id', $input->userId)->where('name', $assetName)->whereNull('deleted_at')->first()
             : null;
@@ -43,7 +61,8 @@ class UpdateRenewalDateJob implements ShouldQueue
             Log::warning('UpdateRenewalDateJob: no matching asset found — renewal_date not advanced', [
                 'tx_id' => $this->txId, 'asset_name' => $assetName,
             ]);
-            UnitPlatform::log('ava', $this->txId, 'renewal_date_not_updated', ['reason' => 'No matching asset found']);
+            $output = ['asset' => $assetName, 'reason' => 'No matching asset found'];
+            UnitPlatform::commitOutput($this->txId, new WorkerOutput(stage: 'update_renewal_date', data: $output));
             UnitPlatform::setFulfillmentStage($this->txId, 'update_renewal_date');
             UnitPlatform::advance($this->txId, 'update_renewal_date');
             return;
@@ -58,9 +77,9 @@ class UpdateRenewalDateJob implements ShouldQueue
             'updated_at'   => now(),
         ]);
 
-        UnitPlatform::log('ava', $this->txId, 'renewal_date_updated', [
-            'asset_id' => $asset->id, 'old_date' => $oldDate, 'new_date' => $newDate, 'cadence_days' => $cadenceDays,
-        ]);
+        $output = ['asset' => $assetName, 'old_date' => $oldDate, 'new_date' => $newDate, 'cadence_days' => $cadenceDays];
+        UnitPlatform::commitOutput($this->txId, new WorkerOutput(stage: 'update_renewal_date', data: $output));
+        UnitPlatform::log('ava', $this->txId, 'renewal_date_updated', ['asset_id' => $asset->id] + $output);
         UnitPlatform::setFulfillmentStage($this->txId, 'update_renewal_date');
 
         UnitPlatform::advance($this->txId, 'update_renewal_date');

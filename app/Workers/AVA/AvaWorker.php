@@ -214,11 +214,11 @@ class AvaWorker implements WorkerContract
             ['key' => 'confirm_payment',    'label' => 'Confirm Payment',   'sub' => 'You confirm — AVA reminds until you do', 'icon' => 'alert-circle', 'job_class' => null, 'pauses_pipeline' => true,
                 'output_column' => 'payment_output',   'group' => 'confirmed', 'group_label' => 'Confirmed', 'group_color' => '#F5C518', 'image' => '/images/ava-life.png', 'log_stage_key' => 'confirm_payment'],
             ['key' => 'update_renewal_date','label' => 'Update Next Renewal Date', 'sub' => 'Advances the asset to its next cycle', 'icon' => 'calendar', 'job_class' => 'UpdateRenewalDateJob',
-                'output_column' => null,               'group' => 'renewed',   'group_label' => 'Renewed',   'group_color' => '#22c55e', 'image' => '/images/ava-life.png', 'log_stage_key' => 'update_renewal_date'],
+                'output_column' => 'renewal_output',    'group' => 'renewed',   'group_label' => 'Renewed',   'group_color' => '#22c55e', 'image' => '/images/ava-life.png', 'log_stage_key' => 'update_renewal_date'],
             ['key' => 'archive_evidence',   'label' => 'Archive Evidence',  'sub' => 'Combines everything into one PDF', 'icon' => 'archive', 'job_class' => 'ArchiveEvidenceJob',
                 'output_column' => 'archive_output',   'group' => 'renewed',   'group_label' => 'Renewed',   'group_color' => '#22c55e', 'image' => '/images/ava-life.png', 'log_stage_key' => 'archive_evidence'],
             ['key' => 'notify_stakeholders','label' => 'Notify Stakeholders', 'sub' => 'Emails you the renewal is complete', 'icon' => 'bell', 'job_class' => 'NotifyStakeholdersJob',
-                'output_column' => null,               'group' => 'renewed',   'group_label' => 'Renewed',   'group_color' => '#22c55e', 'image' => '/images/ava-life.png', 'log_stage_key' => 'notify_stakeholders'],
+                'output_column' => 'notify_output',     'group' => 'renewed',   'group_label' => 'Renewed',   'group_color' => '#22c55e', 'image' => '/images/ava-life.png', 'log_stage_key' => 'notify_stakeholders'],
             ['key' => 'schedule_next_watch','label' => 'Schedule Next Watch', 'sub' => 'Asset re-enters continuous monitoring', 'icon' => 'refresh', 'job_class' => 'ScheduleNextWatchJob',
                 'output_column' => null,               'group' => 'renewed',   'group_label' => 'Renewed',   'group_color' => '#22c55e', 'image' => '/images/ava-life.png', 'log_stage_key' => 'schedule_next_watch'],
         ];

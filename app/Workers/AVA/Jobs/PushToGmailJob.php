@@ -191,22 +191,23 @@ class PushToGmailJob implements ShouldQueue
         // while they're still engaged, reinforcing what just happened before they close the tab.
         UnitNotifier::maybeFirstRealRenewal($this->txId);
 
-        // Fast Track runs never enter real fulfillment — no real invoice
-        // requests or reminder emails for test data.
-        if (!$input->isFastTrack()) {
-            if ($autoSent) {
-                // Already decided structurally (no approval was required) —
-                // advance FROM the pause stage itself, skipping straight past
-                // it into fulfillment instead of stopping there.
-                UnitPlatform::advance($this->txId, 'human_decide');
-            } else {
-                // draft_ready (Gmail or in-app-only) — advance FROM push_draft
-                // so it correctly stops AT the human_decide pause point,
-                // which marks fulfillment_stage for accurate display without
-                // dispatching anything. TransactionController::decide() is
-                // what actually resumes it once the tenant clicks Approve.
-                UnitPlatform::advance($this->txId, 'push_draft');
-            }
+        // Fast Track now runs the real fulfillment stages too (guarded
+        // per-job against real vendor/tenant emails and real asset writes)
+        // so a tenant can preview the full lifecycle end-to-end, not just
+        // the draft. It always lands here via the draft_ready branch above
+        // (never auto-sent), so this always stops at the human_decide pause
+        // point — TransactionController::decide() resumes it either way.
+        if ($autoSent) {
+            // Already decided structurally (no approval was required) —
+            // advance FROM the pause stage itself, skipping straight past
+            // it into fulfillment instead of stopping there.
+            UnitPlatform::advance($this->txId, 'human_decide');
+        } else {
+            // draft_ready (Gmail, in-app-only, or Fast Track) — advance FROM
+            // push_draft so it correctly stops AT the human_decide pause
+            // point, which marks fulfillment_stage for accurate display
+            // without dispatching anything.
+            UnitPlatform::advance($this->txId, 'push_draft');
         }
     }
 

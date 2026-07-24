@@ -35,7 +35,9 @@ class ScheduleNextWatchJob implements ShouldQueue
         $memory = $input->stage('memory');
 
         $assetName = $memory['asset'] ?? null;
-        $asset = $assetName
+        // Fast Track's asset is synthetic — never touch a real asset's watch
+        // log just because its name happens to match the test scenario.
+        $asset = ($assetName && !$input->isFastTrack())
             ? DB::table('assets')->where('user_id', $input->userId)->where('name', $assetName)->whereNull('deleted_at')->first()
             : null;
 

@@ -1380,7 +1380,9 @@ class WorkerController extends Controller
             'invoice_output'    => json_decode($tx->invoice_output),
             'documents_output'  => json_decode($tx->documents_output),
             'payment_output'    => json_decode($tx->payment_output),
+            'renewal_output'    => json_decode($tx->renewal_output),
             'archive_output'    => json_decode($tx->archive_output),
+            'notify_output'     => json_decode($tx->notify_output),
         ]);
     }
 }

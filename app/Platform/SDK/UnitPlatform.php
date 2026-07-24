@@ -31,7 +31,9 @@ final class UnitPlatform
         'request_invoice'   => 'invoice_output',
         'request_documents' => 'documents_output',
         'confirm_payment'   => 'payment_output',
+        'update_renewal_date' => 'renewal_output',
         'archive_evidence'  => 'archive_output',
+        'notify_stakeholders' => 'notify_output',
     ];
 
     // ── Transaction status → (stage_key, event) for stage log ────────────

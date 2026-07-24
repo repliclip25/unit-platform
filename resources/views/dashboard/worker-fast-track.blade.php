@@ -145,6 +145,30 @@ body{font-family:'Inter',sans-serif;background:var(--db-bg);color:var(--db-text)
 .ft-empty{text-align:center;padding:14px;border-radius:10px;border:1px dashed var(--db-border);font-size:12.5px;color:var(--db-text-muted)}
 .ft-empty a{color:var(--db-text);font-weight:600}
 
+/* ── Human-action gates (Confirm & Send / Confirm Payment) — mirrors the
+   real production flow: only these two stages ever need a click. ── */
+.ft-gate{display:none;margin-top:16px;border-radius:14px;border:1.5px solid #F5C518;background:rgba(245,197,24,.08);padding:16px 18px}
+.ft-gate.is-visible{display:block}
+.ft-gate-title{font-size:13px;font-weight:800;color:var(--db-text);margin-bottom:3px;display:flex;align-items:center;gap:7px}
+.ft-gate-dot{width:7px;height:7px;border-radius:50%;background:#F5C518;animation:ftpulse 1.2s ease infinite;flex-shrink:0}
+@keyframes ftpulse{0%,100%{opacity:1}50%{opacity:.35}}
+.ft-gate-sub{font-size:12px;color:var(--db-text-muted);margin-bottom:12px;line-height:1.5}
+.ft-gate-btns{display:flex;gap:8px;flex-wrap:wrap}
+.ft-gate-btn{padding:10px 16px;border-radius:10px;border:none;font-size:12.5px;font-weight:700;cursor:pointer;font-family:inherit;background:var(--db-invert-bg);color:var(--db-invert-text)}
+.ft-gate-btn:hover{opacity:.9}
+.ft-gate-btn:disabled{opacity:.5;cursor:not-allowed}
+.ft-gate-btn.secondary{background:transparent;border:1.5px solid var(--db-border);color:var(--db-text)}
+
+/* ── Rolling stage-output log — one entry per completed stage, in order,
+   showing exactly what that stage produced. ── */
+.ft-log{margin-top:18px;display:none}
+.ft-log.is-visible{display:block}
+.ft-log-title{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--db-text-muted);margin-bottom:10px}
+.ft-log-item{border:1px solid var(--db-border);border-radius:10px;padding:10px 14px;margin-bottom:8px;font-size:12.5px}
+.ft-log-item-head{display:flex;align-items:center;gap:8px;font-weight:700;color:var(--db-text);margin-bottom:4px}
+.ft-log-item-head svg{width:13px;height:13px;stroke:#22c55e;flex-shrink:0}
+.ft-log-item-body{color:var(--db-text-muted);line-height:1.5;white-space:pre-wrap}
+
 /* Scenario editor */
 .ft-scenario-toggle{width:100%;display:flex;align-items:center;justify-content:space-between;background:none;border:none;cursor:pointer;font-family:inherit;padding:0}
 .ft-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px}
@@ -369,13 +393,29 @@ $sidebarLinks = [
             <div class="ft-result-row"><span class="lbl">Confidence</span><span class="val" id="ft-r-confidence">—</span></div>
             <div class="ft-result-row" style="grid-column:1/-1"><span class="lbl">Draft subject</span><span class="val" id="ft-r-subject">—</span></div>
           </div>
-          <div class="ft-result-actions">
+          <div class="ft-result-actions" id="ft-result-actions">
             <button type="button" class="mem-btn" onclick="var u=new URL(location.href);u.searchParams.delete('watch');location.href=u.toString();">Run again</button>
             <a href="#" id="ft-r-gmail-link" class="mem-btn-secondary" style="display:none" target="_blank" rel="noopener">Open draft in Gmail →</a>
           </div>
         </div>
 
-        <div style="margin-top:18px">
+        {{-- Human gate — swaps content depending on which stage is waiting.
+             Only Confirm & Send (stage 7) and Confirm Payment (stage 12) ever
+             show here — every other stage animates through automatically,
+             matching how AVA actually behaves on a real inbox. --}}
+        <div class="ft-gate" id="ft-gate">
+          <div class="ft-gate-title"><span class="ft-gate-dot"></span><span id="ft-gate-title">—</span></div>
+          <div class="ft-gate-sub" id="ft-gate-sub"></div>
+          <div class="ft-gate-btns" id="ft-gate-btns"></div>
+        </div>
+
+        {{-- Rolling log — one entry per completed stage, in the order it ran --}}
+        <div class="ft-log" id="ft-log">
+          <div class="ft-log-title">What each stage produced</div>
+          <div id="ft-log-items"></div>
+        </div>
+
+        <div style="margin-top:18px" id="ft-run-section">
           @if($ftLeft > 0 || $ftSubscribed)
             @if($ftCanRun)
             <form method="POST" action="{{ route('app.workers.fast-track', $dep->id) }}" id="ft-form">
@@ -542,6 +582,94 @@ function showResult(data) {
   document.getElementById('ft-result').style.display = 'block';
 }
 
+// ── Human gates — only these two stages ever require a click, matching
+// production exactly. Everything else animates through automatically. ────
+var CSRF = document.querySelector('meta[name=csrf-token]').content;
+var GATE_BUSY = false;
+
+function showGate(kind, data) {
+  var gate  = document.getElementById('ft-gate');
+  var title = document.getElementById('ft-gate-title');
+  var sub   = document.getElementById('ft-gate-sub');
+  var btns  = document.getElementById('ft-gate-btns');
+
+  if (kind === 'human_decide') {
+    title.textContent = 'AVA is ready to send';
+    sub.textContent    = 'Approve to send this draft and continue the renewal through invoice, payment, and archiving — exactly like a real renewal.';
+    btns.innerHTML = '<button type="button" class="ft-gate-btn" id="ft-approve-btn">Confirm &amp; send</button>';
+    document.getElementById('ft-approve-btn').addEventListener('click', function () {
+      gateAction(this, '{{ url("/app/transactions") }}/' + WATCH_TX + '/decide', { decision: 'approved' });
+    });
+  } else if (kind === 'confirm_payment') {
+    title.textContent = 'Waiting on payment confirmation';
+    sub.textContent    = 'In a real renewal, AVA emails you reminders on a cadence until you confirm or cancel. Confirm to close out this cycle.';
+    btns.innerHTML = '<button type="button" class="ft-gate-btn" id="ft-pay-confirm-btn">Confirm payment</button>'
+                    + '<button type="button" class="ft-gate-btn secondary" id="ft-pay-cancel-btn">Cancel renewal</button>';
+    document.getElementById('ft-pay-confirm-btn').addEventListener('click', function () {
+      gateAction(this, '{{ url("/app/transactions") }}/' + WATCH_TX + '/confirm-renewal', {});
+    });
+    document.getElementById('ft-pay-cancel-btn').addEventListener('click', function () {
+      gateAction(this, '{{ url("/app/transactions") }}/' + WATCH_TX + '/cancel-renewal', {});
+    });
+  }
+  gate.classList.add('is-visible');
+}
+
+function hideGate() {
+  document.getElementById('ft-gate').classList.remove('is-visible');
+}
+
+function gateAction(btn, url, body) {
+  if (GATE_BUSY) return;
+  GATE_BUSY = true;
+  var btns = document.getElementById('ft-gate-btns').querySelectorAll('button');
+  btns.forEach(function (b) { b.disabled = true; });
+  btn.textContent = 'Working…';
+  fetch(url, {
+    method: 'POST', credentials: 'same-origin',
+    headers: { 'X-CSRF-TOKEN': CSRF, 'Content-Type': 'application/json', 'Accept': 'application/json' },
+    body: JSON.stringify(body),
+  }).then(function () {
+    hideGate();
+    GATE_BUSY = false;
+    setTimeout(pollFastTrack, 600);
+  }).catch(function () {
+    GATE_BUSY = false;
+    btn.disabled = false;
+    btn.textContent = 'Try again';
+  });
+}
+
+// ── Rolling log — one entry per completed stage, appended once each. ─────
+var LOGGED = {};
+function logStage(key, title, body) {
+  if (LOGGED[key] || !body) return;
+  LOGGED[key] = true;
+  var wrap = document.getElementById('ft-log-items');
+  var item = document.createElement('div');
+  item.className = 'ft-log-item';
+  item.innerHTML = '<div class="ft-log-item-head"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>' + title + '</div>'
+    + '<div class="ft-log-item-body"></div>';
+  item.querySelector('.ft-log-item-body').textContent = body; // textContent — never render stage data as HTML
+  wrap.appendChild(item);
+  document.getElementById('ft-log').classList.add('is-visible');
+}
+
+function logAllStages(data) {
+  if (data.category) logStage('classify', 'Understand', 'Category: ' + data.category + ' · Priority: ' + (data.priority || '—'));
+  if (data.matched_client || data.asset) logStage('memory', 'Verify', 'Client: ' + (data.matched_client || '—') + ' · Asset: ' + (data.asset || '—') + (data.confidence != null ? (' · Confidence: ' + data.confidence + '%') : ''));
+  if (data.subject) logStage('draft_email', 'Draft', 'Subject: ' + data.subject + (data.body ? ('\n\n' + data.body) : ''));
+  if (data.gmail_draft_id || ['draft_ready','approved','sent'].indexOf(data.status) > -1) logStage('push_draft', 'Deliver', 'Draft created in Gmail, ready for review.');
+  if (['approved','sent'].indexOf(data.status) > -1 || (data.fulfillment_stage && STAGE_KEYS.indexOf(data.fulfillment_stage) > STAGE_KEYS.indexOf('human_decide'))) logStage('human_decide', 'You approve', 'You approved — AVA is continuing the renewal.');
+  if (data.invoice_output) logStage('request_invoice', 'Request Invoice', data.invoice_output.status === 'simulated' ? 'Simulated — would request an invoice from the vendor on a real renewal.' : (data.invoice_output.status === 'requested' ? 'Requested from ' + data.invoice_output.to : 'No vendor address available — skipped.'));
+  if (data.documents_output) logStage('request_documents', 'Request Documents', data.documents_output.status === 'simulated' ? 'Simulated — would request supporting documents from the vendor on a real renewal.' : (data.documents_output.status === 'requested' ? 'Requested from ' + data.documents_output.to : 'No vendor address available — skipped.'));
+  if (data.payment_output) logStage('confirm_payment', 'Confirm Payment', data.payment_output.confirmed === false ? 'Renewal canceled by you.' : 'You confirmed payment.');
+  if (data.renewal_output) logStage('update_renewal_date', 'Update Next Renewal Date', 'Renewal date moves from ' + (data.renewal_output.old_date || '—') + ' to ' + (data.renewal_output.new_date || '—') + '.');
+  if (data.archive_output) logStage('archive_evidence', 'Archive Evidence', 'A PDF record of this renewal was generated.');
+  if (data.notify_output) logStage('notify_stakeholders', 'Notify Stakeholders', 'Drafted: "' + (data.notify_output.subject || '') + '" (not sent for a test run).');
+  if (data.fulfillment_stage === 'schedule_next_watch') logStage('schedule_next_watch', 'Confirm & Renew', 'Cycle complete — the asset re-enters continuous monitoring.');
+}
+
 var FT_FAIL_STREAK = 0;
 
 function pollFastTrack() {
@@ -553,43 +681,63 @@ function pollFastTrack() {
     })
     .then(function (data) {
       FT_FAIL_STREAK = 0;
-      var currentKey  = STATUS_TO_STAGE[data.status] || 'webhook';
-      var currentIdx  = STAGE_KEYS.indexOf(currentKey);
+
+      var fulfillmentDone = data.fulfillment_stage === 'schedule_next_watch';
+      var currentKey = fulfillmentDone ? 'schedule_next_watch'
+        : (data.fulfillment_stage || STATUS_TO_STAGE[data.status] || 'webhook');
+      var currentIdx = STAGE_KEYS.indexOf(currentKey);
       if (currentIdx < 0) currentIdx = 0;
 
       STAGE_KEYS.forEach(function (key, idx) {
         if (data.failed && idx === currentIdx) setStage(key, 'failed');
-        else if (idx < currentIdx || (data.done && !data.failed && idx <= currentIdx)) setStage(key, 'done');
+        else if (idx < currentIdx || fulfillmentDone) setStage(key, 'done');
         else if (idx === currentIdx) setStage(key, data.failed ? 'failed' : 'active');
-        // idx > currentIdx stays untouched (pending) — Fast Track legitimately
-        // stops at push_draft (stage 8); it never runs the real fulfillment
-        // stages (9-16), so they must not be painted as complete just
-        // because the transaction reached a terminal status.
+        // idx > currentIdx stays pending until reached — Fast Track now runs
+        // the real fulfillment stages too, so this only reflects genuine
+        // progress, not a blanket "done" the moment the draft is ready.
       });
 
-      var btn = document.getElementById('ft-run-btn');
+      logAllStages(data);
 
-      if (data.done && !data.failed) {
-        line.textContent = '✓ Complete — draft ready in Gmail';
+      if (data.fulfillment_stage === 'human_decide') {
+        showGate('human_decide', data);
+      } else if (data.fulfillment_stage === 'confirm_payment') {
+        showGate('confirm_payment', data);
+      } else {
+        hideGate();
+      }
+
+      if (fulfillmentDone) {
+        line.textContent = '✓ Complete — full renewal cycle simulated';
         line.style.color = '#22c55e';
         showResult(data);
-      } else if (data.failed) {
+        return; // stop polling — nothing left to change
+      }
+
+      if (data.payment_output && data.payment_output.confirmed === false) {
+        line.textContent = '○ Canceled — renewal stopped at your request';
+        line.style.color = 'var(--db-text-muted)';
+        showResult(data);
+        return;
+      }
+
+      if (data.failed) {
         line.textContent = '✕ Pipeline failed — check the Activity Log for details';
         line.style.color = '#ef4444';
-        if (btn) { btn.disabled = false; }
-      } else {
-        line.textContent = STATUS_LABELS[data.status] || ('Working — ' + data.status + '…');
-        line.style.color = 'var(--db-text-muted)';
-        setTimeout(pollFastTrack, 2000);
+        document.getElementById('ft-run-section').style.display = '';
+        return;
       }
+
+      line.textContent = STATUS_LABELS[data.status] || (data.fulfillment_stage ? 'Working — ' + data.fulfillment_stage + '…' : ('Working — ' + data.status + '…'));
+      line.style.color = 'var(--db-text-muted)';
+      setTimeout(pollFastTrack, 2000);
     })
     .catch(function () {
       FT_FAIL_STREAK++;
       if (FT_FAIL_STREAK >= 5) {
         line.textContent = 'Lost connection checking status — refresh the page to check manually.';
         line.style.color = '#ef4444';
-        var btn = document.getElementById('ft-run-btn');
-        if (btn) btn.disabled = false;
+        document.getElementById('ft-run-section').style.display = '';
         return;
       }
       line.textContent = 'Checking status…';
@@ -599,8 +747,10 @@ function pollFastTrack() {
 }
 
 if (WATCH_TX) {
-  var runBtn = document.getElementById('ft-run-btn');
-  if (runBtn) runBtn.disabled = true;
+  // Hide Run Fast Track / Subscribe entirely while a run is in progress —
+  // not just disabled. They reappear via "Run again" (which reloads without
+  // ?watch) or automatically if the run fails.
+  document.getElementById('ft-run-section').style.display = 'none';
   var line0 = document.getElementById('ft-status-line');
   if (line0) { line0.style.display = 'block'; line0.textContent = 'Starting…'; }
   setStage(STAGE_KEYS[0], 'active');

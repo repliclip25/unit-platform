@@ -30,22 +30,29 @@ class NotifyStakeholdersJob implements ShouldQueue
         $input  = UnitPlatform::getInput($this->txId);
         $memory = $input->stage('memory');
 
-        if ($input->tenantEmail) {
+        $subject = 'Renewal complete — ' . ($memory['asset'] ?? $this->txId);
+        $body    = "Hi,\n\nThe renewal for " . ($memory['asset'] ?? 'this item')
+            . ($memory['matched_client'] ? " ({$memory['matched_client']})" : '')
+            . " is complete. The next cycle is already being watched.\n\n— AVA";
+
+        // Fast Track runs every stage for real so the tenant can preview the
+        // full lifecycle, but must never actually spam their own inbox every
+        // time they click "Run Fast Track" — draft the message, don't send it.
+        if ($input->tenantEmail && !$input->isFastTrack()) {
             EmailDispatcher::send(
                 'ava_renewal_complete',
                 $input->tenantEmail,
                 'there',
                 $input->userId,
                 ['{asset}' => $memory['asset'] ?? 'your renewal', '{client}' => $memory['matched_client'] ?? ''],
-                [
-                    'subject' => 'Renewal complete — ' . ($memory['asset'] ?? $this->txId),
-                    'body'    => "Hi,\n\nThe renewal for " . ($memory['asset'] ?? 'this item')
-                        . ($memory['matched_client'] ? " ({$memory['matched_client']})" : '')
-                        . " is complete. The next cycle is already being watched.\n\n— AVA",
-                ]
+                ['subject' => $subject, 'body' => $body]
             );
         }
 
+        UnitPlatform::commitOutput($this->txId, new WorkerOutput(
+            stage: 'notify_stakeholders',
+            data:  ['to' => $input->tenantEmail, 'subject' => $subject, 'body' => $body, 'sent' => !$input->isFastTrack()],
+        ));
         UnitPlatform::setFulfillmentStage($this->txId, 'notify_stakeholders');
         UnitPlatform::log('ava', $this->txId, 'stakeholders_notified', ['to' => $input->tenantEmail]);
 

@@ -95,8 +95,17 @@ class TransactionController extends Controller
             'confidence'       => $memory['confidence'] ?? null,
             'ava_rule'         => $memory['ava_rule'] ?? null,
             'subject'          => $draft['subject'] ?? null,
+            'body'             => $draft['body'] ?? null,
             'low_confidence'   => $draft['low_confidence'] ?? false,
             'gmail_draft_id'   => $tx->gmail_draft_id,
+            // Fulfillment (stages 9-16) — used by Fast Track's full lifecycle preview.
+            'fulfillment_stage' => $tx->fulfillment_stage,
+            'invoice_output'    => json_decode($tx->invoice_output   ?? 'null', true),
+            'documents_output'  => json_decode($tx->documents_output ?? 'null', true),
+            'payment_output'    => json_decode($tx->payment_output   ?? 'null', true),
+            'renewal_output'    => json_decode($tx->renewal_output   ?? 'null', true),
+            'archive_output'    => json_decode($tx->archive_output   ?? 'null', true),
+            'notify_output'     => json_decode($tx->notify_output    ?? 'null', true),
         ]);
     }
 
@@ -228,9 +237,11 @@ class TransactionController extends Controller
         // Approval is what unblocks the fulfillment stages (invoice, documents,
         // payment confirmation, reschedule) — advance() stops at the
         // 'human_decide' pause point until this fires. Rejected transactions
-        // never enter fulfillment. Test/Fast Track transactions never do
-        // either — no real invoice requests or reminder emails for test data.
-        if ($decision === 'approved' && !$tx->is_test) {
+        // never enter fulfillment. Fast Track transactions DO enter
+        // fulfillment (so a tenant can preview the full lifecycle) — each
+        // fulfillment job individually guards against real vendor/tenant
+        // emails and real asset writes when the transaction is a test run.
+        if ($decision === 'approved') {
             \App\Platform\SDK\UnitPlatform::advance($txId, 'human_decide');
         }
 
