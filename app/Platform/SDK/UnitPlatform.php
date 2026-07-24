@@ -345,8 +345,14 @@ final class UnitPlatform
                 continue;
             }
 
-            $jobFqn = 'App\\Workers\\' . \Illuminate\Support\Str::studly($input->workerSlug)
-                . '\\Jobs\\' . $stages[$i]['job_class'];
+            // Derive the Jobs namespace from the worker contract's own FQCN
+            // (via WorkerRegistry) rather than re-deriving it from the slug —
+            // Str::studly('ava') produces 'Ava', not 'AVA', which only ever
+            // worked locally because macOS's filesystem is case-insensitive;
+            // Linux (production) is case-sensitive and fails class_exists().
+            $contractClass   = \App\Platform\Services\WorkerRegistry::resolve($input->workerSlug)::class;
+            $workerNamespace = substr($contractClass, 0, strrpos($contractClass, '\\'));
+            $jobFqn = $workerNamespace . '\\Jobs\\' . $stages[$i]['job_class'];
 
             if (!class_exists($jobFqn)) {
                 Log::error('UnitPlatform::advance — job class not found', ['tx_id' => $txId, 'job_class' => $jobFqn]);
