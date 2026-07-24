@@ -38,19 +38,21 @@ class ClassifyEmailJob implements ShouldQueue
 
         $system = $override['system'] ?? 'You are Ava, UNIT\'s Subscription & Renewal Coordinator. Return valid JSON only. No extra text.';
 
+        // Category vocabulary comes from the deployment's active persona, not
+        // a single hardcoded list — an insurance broker's renewals should
+        // never be force-fit into "Domain Renewal." Falls back to the
+        // IT-agency list (AVA's original/default persona) if none is set.
+        $contract      = \App\Platform\Services\WorkerRegistry::resolve($input->workerSlug);
+        $personaDef    = $contract->personas()[$input->persona] ?? $contract->personas()['it_agency'] ?? [];
+        $renewalCategories = $personaDef['categories'] ?? ['Domain Renewal', 'SSL Expiry', 'Hosting Invoice', 'SaaS Renewal', 'Failed Payment'];
+        $categoryList  = implode("\n", array_map(fn($c) => "- {$c}", $renewalCategories))
+            . "\n- Security Alert\n- Meeting Request\n- Client Support\n- Other";
+
         $defaultPrompt = <<<PROMPT
 Classify this transaction using the email understanding below.
 
 Available categories:
-- Domain Renewal
-- SSL Expiry
-- Hosting Invoice
-- SaaS Renewal
-- Failed Payment
-- Security Alert
-- Meeting Request
-- Client Support
-- Other
+{$categoryList}
 
 Return JSON:
 {
@@ -85,10 +87,7 @@ PROMPT;
         UnitPlatform::log('ava', $this->txId, 'email_classified', $output);
 
         // ── Early exit: stop pipeline for non-renewal categories to avoid wasting AI spend
-        $renewalCategories = [
-            'Domain Renewal', 'SSL Expiry', 'Hosting Invoice',
-            'SaaS Renewal', 'Failed Payment',
-        ];
+        // (reuses the persona's own category list resolved above)
         $category = $output['category'] ?? 'Other';
         if (!in_array($category, $renewalCategories)) {
             UnitPlatform::setStatus($this->txId, 'dismissed');

@@ -215,10 +215,13 @@ class AvaWorker implements WorkerContract
                 'output_column' => 'payment_output',   'group' => 'confirmed', 'group_label' => 'Confirmed', 'group_color' => '#F5C518', 'image' => '/images/ava-life.png', 'log_stage_key' => 'confirm_payment'],
             ['key' => 'update_renewal_date','label' => 'Update Next Renewal Date', 'sub' => 'Advances the asset to its next cycle', 'icon' => 'calendar', 'job_class' => 'UpdateRenewalDateJob',
                 'output_column' => 'renewal_output',    'group' => 'renewed',   'group_label' => 'Renewed',   'group_color' => '#22c55e', 'image' => '/images/ava-life.png', 'log_stage_key' => 'update_renewal_date'],
-            ['key' => 'archive_evidence',   'label' => 'Archive Evidence',  'sub' => 'Combines everything into one PDF', 'icon' => 'archive', 'job_class' => 'ArchiveEvidenceJob',
-                'output_column' => 'archive_output',   'group' => 'renewed',   'group_label' => 'Renewed',   'group_color' => '#22c55e', 'image' => '/images/ava-life.png', 'log_stage_key' => 'archive_evidence'],
+            // Notify runs BEFORE archive now — the archive is supposed to be
+            // the complete record of the cycle, including the closing
+            // stakeholder message, so it can't be generated first.
             ['key' => 'notify_stakeholders','label' => 'Notify Stakeholders', 'sub' => 'Emails you the renewal is complete', 'icon' => 'bell', 'job_class' => 'NotifyStakeholdersJob',
                 'output_column' => 'notify_output',     'group' => 'renewed',   'group_label' => 'Renewed',   'group_color' => '#22c55e', 'image' => '/images/ava-life.png', 'log_stage_key' => 'notify_stakeholders'],
+            ['key' => 'archive_evidence',   'label' => 'Archive Evidence',  'sub' => 'Combines everything into one PDF', 'icon' => 'archive', 'job_class' => 'ArchiveEvidenceJob',
+                'output_column' => 'archive_output',   'group' => 'renewed',   'group_label' => 'Renewed',   'group_color' => '#22c55e', 'image' => '/images/ava-life.png', 'log_stage_key' => 'archive_evidence'],
             ['key' => 'schedule_next_watch','label' => 'Schedule Next Watch', 'sub' => 'Asset re-enters continuous monitoring', 'icon' => 'refresh', 'job_class' => 'ScheduleNextWatchJob',
                 'output_column' => null,               'group' => 'renewed',   'group_label' => 'Renewed',   'group_color' => '#22c55e', 'image' => '/images/ava-life.png', 'log_stage_key' => 'schedule_next_watch'],
         ];
@@ -1111,6 +1114,12 @@ class AvaWorker implements WorkerContract
                     'saas'    => 'SaaS Subscription',
                     'other'   => 'Other',
                 ],
+                // Read by ClassifyEmailJob to build its "Available categories"
+                // prompt list — without this, every persona gets force-fit
+                // into IT-agency vocabulary regardless of what they actually
+                // renew, which also tanks confidence (the AI is asked to pick
+                // from options that genuinely don't describe the email).
+                'categories' => ['Domain Renewal', 'SSL Expiry', 'Hosting Invoice', 'SaaS Renewal', 'Failed Payment'],
                 'capture_rules' => [
                     ['rule_id' => 'IT-001', 'condition' => 'SSL certificate expires in <= 15 days',    'priority' => 'High',     'action' => 'Log + draft client approval email + notify account manager',      'approval_required' => true,  'notes' => 'Never auto-send — client must approve renewal cost'],
                     ['rule_id' => 'IT-002', 'condition' => 'Domain expires in <= 30 days',             'priority' => 'Medium',   'action' => 'Log + draft renewal reminder to client contact',                  'approval_required' => true,  'notes' => 'If internal asset, notify owner only — no client email'],
@@ -1157,6 +1166,7 @@ class AvaWorker implements WorkerContract
                     'professional'      => 'Professional Liability',
                     'other'             => 'Other',
                 ],
+                'categories' => ['Policy Renewal', 'Policy Lapse Warning', 'Premium Payment', 'Carrier Non-Renewal', 'Coverage Change'],
                 'capture_rules' => [
                     ['rule_id' => 'IB-001', 'condition' => 'Policy renewal notice — expiry in <= 30 days',   'priority' => 'High',     'action' => 'Log + draft renewal notice to insured with policy details',      'approval_required' => true,  'notes' => 'Confirm premium and coverage have not changed before sending'],
                     ['rule_id' => 'IB-002', 'condition' => 'Policy expiry in <= 7 days',                    'priority' => 'Critical', 'action' => 'Log + draft urgent lapse warning + notify broker immediately',    'approval_required' => true,  'notes' => 'Escalate — uninsured gap risk is critical'],
@@ -1201,6 +1211,7 @@ class AvaWorker implements WorkerContract
                     'registration'     => 'Trade Registration',
                     'other'            => 'Other',
                 ],
+                'categories' => ['License Renewal', 'Permit Renewal', 'Certification Renewal', 'Regulatory Notice', 'Fee Payment'],
                 'capture_rules' => [
                     ['rule_id' => 'CM-001', 'condition' => 'License or permit renewal notice — expiry in <= 60 days', 'priority' => 'Medium',   'action' => 'Log + draft renewal reminder to client',                          'approval_required' => true,  'notes' => 'Some jurisdictions require 60-day lead — adjust threshold per client if needed'],
                     ['rule_id' => 'CM-002', 'condition' => 'License or permit expiry in <= 14 days',                  'priority' => 'Critical', 'action' => 'Log + draft urgent renewal notice + notify compliance manager',    'approval_required' => true,  'notes' => 'Operations may halt on day of expiry — treat as urgent'],
@@ -1245,6 +1256,7 @@ class AvaWorker implements WorkerContract
                     'warranty'         => 'Warranty',
                     'other'            => 'Other',
                 ],
+                'categories' => ['Renewal Notice', 'Payment Overdue', 'Cancellation Notice'],
                 'capture_rules' => [
                     ['rule_id' => 'OT-001', 'condition' => 'Renewal notice — expiry in <= 30 days',     'priority' => 'Medium',   'action' => 'Log + draft renewal reminder using best matching template',        'approval_required' => true,  'notes' => 'Review draft before sending — template may need adjustment for asset type'],
                     ['rule_id' => 'OT-002', 'condition' => 'Expiry in <= 7 days',                       'priority' => 'Critical', 'action' => 'Log + draft urgent renewal notice + notify immediately',           'approval_required' => true,  'notes' => 'Treat any 7-day expiry as critical regardless of asset type'],

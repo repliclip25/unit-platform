@@ -383,8 +383,19 @@ $sidebarLinks = [
         <div class="ft-result" id="ft-result">
           <div class="ft-result-head">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
-            <div class="ft-result-title">Run complete — here's what {{ $dep->name }} decided</div>
+            <div class="ft-result-title" id="ft-result-title">Run complete — here's what {{ $dep->name }} decided</div>
           </div>
+
+          {{-- Shown only once the full cycle actually closes — the message
+               that genuinely represents "run complete": the renewal is done
+               and the next cycle is already being watched, not the original
+               reminder that kicked things off. --}}
+          <div class="ft-result-row" style="display:none;margin-bottom:16px;padding:12px 14px;border-radius:10px;background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.25)" id="ft-r-final-row">
+            <span class="lbl" style="color:#22c55e;font-weight:700">Cycle complete — message sent to stakeholders</span>
+            <span class="val" id="ft-r-final-subject" style="display:block;margin-top:6px"></span>
+            <span class="val" id="ft-r-final-body" style="font-weight:500;white-space:pre-wrap;display:block;margin-top:4px"></span>
+          </div>
+
           <div class="ft-result-grid">
             <div class="ft-result-row"><span class="lbl">Category</span><span class="val" id="ft-r-category">—</span></div>
             <div class="ft-result-row"><span class="lbl">Priority</span><span class="val" id="ft-r-priority">—</span></div>
@@ -392,8 +403,8 @@ $sidebarLinks = [
             <div class="ft-result-row"><span class="lbl">Asset</span><span class="val" id="ft-r-asset">—</span></div>
             <div class="ft-result-row"><span class="lbl">Rule applied</span><span class="val" id="ft-r-rule">—</span></div>
             <div class="ft-result-row"><span class="lbl">Confidence</span><span class="val" id="ft-r-confidence">—</span></div>
-            <div class="ft-result-row" style="grid-column:1/-1"><span class="lbl">Draft subject</span><span class="val" id="ft-r-subject">—</span></div>
-            <div class="ft-result-row" style="grid-column:1/-1;display:none" id="ft-r-body-row"><span class="lbl">Draft body</span><span class="val" id="ft-r-body" style="font-weight:500;white-space:pre-wrap;display:block;margin-top:2px"></span></div>
+            <div class="ft-result-row" style="grid-column:1/-1"><span class="lbl">Original draft subject</span><span class="val" id="ft-r-subject">—</span></div>
+            <div class="ft-result-row" style="grid-column:1/-1;display:none" id="ft-r-body-row"><span class="lbl">Original draft body</span><span class="val" id="ft-r-body" style="font-weight:500;white-space:pre-wrap;display:block;margin-top:2px"></span></div>
             <div class="ft-result-row"><span class="lbl">Invoice</span><span class="val" id="ft-r-invoice">—</span></div>
             <div class="ft-result-row"><span class="lbl">Documents</span><span class="val" id="ft-r-documents">—</span></div>
             <div class="ft-result-row"><span class="lbl">Payment</span><span class="val" id="ft-r-payment">—</span></div>
@@ -626,6 +637,18 @@ function setStage(key, state) {
 }
 
 function showResult(data) {
+  var titleEl = document.getElementById('ft-result-title');
+  if (data.notify_output) {
+    titleEl.textContent = 'Renewal cycle complete — the next cycle is already being watched';
+    document.getElementById('ft-r-final-subject').textContent = data.notify_output.subject || '';
+    document.getElementById('ft-r-final-body').textContent    = data.notify_output.body || '';
+    document.getElementById('ft-r-final-row').style.display   = 'block';
+  } else if (data.payment_output && data.payment_output.confirmed === false) {
+    titleEl.textContent = 'Renewal canceled — here\'s what led up to it';
+  } else {
+    titleEl.textContent = 'Run complete — here\'s what {{ $dep->name }} decided';
+  }
+
   document.getElementById('ft-r-category').textContent   = data.category || '—';
   document.getElementById('ft-r-priority').textContent   = data.priority || '—';
   document.getElementById('ft-r-client').textContent     = data.matched_client || '—';
