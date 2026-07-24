@@ -225,10 +225,60 @@ class TransactionController extends Controller
             'updated_at' => now(),
         ]);
 
+        // Approval is what unblocks the fulfillment stages (invoice, documents,
+        // payment confirmation, reschedule) — advance() stops at the
+        // 'human_decide' pause point until this fires. Rejected transactions
+        // never enter fulfillment. Test/Fast Track transactions never do
+        // either — no real invoice requests or reminder emails for test data.
+        if ($decision === 'approved' && !$tx->is_test) {
+            \App\Platform\SDK\UnitPlatform::advance($txId, 'human_decide');
+        }
+
         $msg = $decision === 'approved'
             ? "✓ {$txId} approved — draft is in your Gmail, ready to review and send."
             : "✗ {$txId} rejected — draft deleted.";
 
         return redirect()->route('app.workers.transactions', $tx->worker_slug)->with('success', $msg);
+    }
+
+    // ── Stage 12 (Confirm Payment) — the second and last human gate in the
+    // renewal lifecycle. AVA reminds the tenant until one of these two fires;
+    // neither is automatic. ─────────────────────────────────────────────────
+
+    public function confirmRenewal(string $txId, Request $request)
+    {
+        $tx = DB::table('transactions')->where('tx_id', $txId)->where('user_id', auth()->id())->firstOrFail();
+
+        \App\Platform\SDK\UnitPlatform::commitOutput($txId, new \App\Platform\SDK\WorkerOutput(
+            stage: 'confirm_payment',
+            data:  ['confirmed' => true, 'confirmed_at' => now()->toISOString(), 'confirmed_by' => auth()->id()],
+        ));
+
+        \App\Platform\SDK\UnitPlatform::log('ava', $txId, 'payment_confirmed', ['confirmed_by' => auth()->id()]);
+
+        // Resume from the pause point — continues into update_renewal_date,
+        // archive_evidence, notify_stakeholders, schedule_next_watch.
+        \App\Platform\SDK\UnitPlatform::advance($txId, 'confirm_payment');
+
+        return back()->with('success', "✓ {$txId} — renewal confirmed. AVA is closing out this cycle.");
+    }
+
+    public function cancelRenewal(string $txId, Request $request)
+    {
+        $tx = DB::table('transactions')->where('tx_id', $txId)->where('user_id', auth()->id())->firstOrFail();
+
+        \App\Platform\SDK\UnitPlatform::commitOutput($txId, new \App\Platform\SDK\WorkerOutput(
+            stage: 'confirm_payment',
+            data:  ['confirmed' => false, 'canceled_at' => now()->toISOString(), 'canceled_by' => auth()->id(), 'reason' => $request->input('reason')],
+        ));
+
+        \App\Platform\SDK\UnitPlatform::setFulfillmentStage($txId, 'canceled');
+        \App\Platform\SDK\UnitPlatform::log('ava', $txId, 'renewal_canceled', ['canceled_by' => auth()->id(), 'reason' => $request->input('reason')]);
+
+        // Terminal — does not advance further. The asset is left as-is;
+        // AssetExpiryWatchJob will naturally pick it up again on its own
+        // schedule if it's still overdue.
+
+        return back()->with('success', "○ {$txId} — renewal canceled.");
     }
 }

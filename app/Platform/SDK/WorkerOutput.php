@@ -8,9 +8,14 @@ namespace App\Platform\SDK;
 final class WorkerOutput
 {
     public function __construct(
-        public readonly string  $stage,          // 'read' | 'classify' | 'memory' | 'template' | 'draft' | 'push'
-        public readonly string  $status,         // transaction status after this stage
-        public readonly array   $data,           // the stage output payload
+        public readonly string  $stage,          // 'read' | 'classify' | 'memory' | 'template' | 'draft' | 'push' | fulfillment stage keys
+        public readonly ?string $status = null,  // transactions.status after this stage — null for
+                                                  // fulfillment stages (request_invoice, request_documents,
+                                                  // confirm_payment, archive_evidence), which track progress
+                                                  // via fulfillment_stage instead. transactions.status is
+                                                  // fixed-enum and stays at 'approved'/'sent' through
+                                                  // fulfillment — it's a different concern, tracked separately.
+        public readonly array   $data = [],      // the stage output payload
         public readonly ?string $category    = null,  // shortcut: also writes transactions.category
         public readonly ?string $priority    = null,  // shortcut: also writes transactions.priority
         public readonly ?string $gmailDraftId = null, // shortcut: also writes transactions.gmail_draft_id

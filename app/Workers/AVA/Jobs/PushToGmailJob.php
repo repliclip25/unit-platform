@@ -41,7 +41,8 @@ class PushToGmailJob implements ShouldQueue
             return;
         }
 
-        $draftId = null;
+        $draftId  = null;
+        $autoSent = false;
 
         // No Gmail inbox connected for this deployment — e.g. a tenant who
         // only maintains their asset registry and never granted inbox access
@@ -100,6 +101,7 @@ class PushToGmailJob implements ShouldQueue
 
             if (!$approvalRequired) {
                 // Auto-send: send immediately and mark as sent — no human review needed
+                $autoSent = true;
                 $gmail->sendDraft($draftId);
                 $gmail->deleteDraft($draftId); // clean up now-sent draft
 
@@ -188,6 +190,24 @@ class PushToGmailJob implements ShouldQueue
         // Fast-track is Ava's first completed job. The email lands in the user's inbox
         // while they're still engaged, reinforcing what just happened before they close the tab.
         UnitNotifier::maybeFirstRealRenewal($this->txId);
+
+        // Fast Track runs never enter real fulfillment — no real invoice
+        // requests or reminder emails for test data.
+        if (!$input->isFastTrack()) {
+            if ($autoSent) {
+                // Already decided structurally (no approval was required) —
+                // advance FROM the pause stage itself, skipping straight past
+                // it into fulfillment instead of stopping there.
+                UnitPlatform::advance($this->txId, 'human_decide');
+            } else {
+                // draft_ready (Gmail or in-app-only) — advance FROM push_draft
+                // so it correctly stops AT the human_decide pause point,
+                // which marks fulfillment_stage for accurate display without
+                // dispatching anything. TransactionController::decide() is
+                // what actually resumes it once the tenant clicks Approve.
+                UnitPlatform::advance($this->txId, 'push_draft');
+            }
+        }
     }
 
     public function failed(\Throwable $e): void

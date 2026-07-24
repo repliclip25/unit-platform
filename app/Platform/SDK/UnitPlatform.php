@@ -23,11 +23,15 @@ final class UnitPlatform
 {
     // ── Stage → DB column map ─────────────────────────────────────────────
     private const STAGE_COLUMNS = [
-        'read'     => 'read_output',
-        'classify' => 'classify_output',
-        'memory'   => 'memory_output',
-        'template' => 'template_output',
-        'draft'    => 'draft_output',
+        'read'              => 'read_output',
+        'classify'          => 'classify_output',
+        'memory'            => 'memory_output',
+        'template'          => 'template_output',
+        'draft'             => 'draft_output',
+        'request_invoice'   => 'invoice_output',
+        'request_documents' => 'documents_output',
+        'confirm_payment'   => 'payment_output',
+        'archive_evidence'  => 'archive_output',
     ];
 
     // ── Transaction status → (stage_key, event) for stage log ────────────
@@ -280,9 +284,12 @@ final class UnitPlatform
 
     public static function commitOutput(string $txId, WorkerOutput $output): void
     {
-        self::maybeIncrementTrialUsage($txId, $output->status);
+        $update = ['updated_at' => now()];
 
-        $update = ['updated_at' => now(), 'status' => $output->status];
+        if ($output->status !== null) {
+            self::maybeIncrementTrialUsage($txId, $output->status);
+            $update['status'] = $output->status;
+        }
 
         if (isset(self::STAGE_COLUMNS[$output->stage])) {
             $col          = self::STAGE_COLUMNS[$output->stage];
@@ -321,9 +328,22 @@ final class UnitPlatform
         }
 
         // Find the next stage in contract order that actually has a job to
-        // run — skips synthetic stages with no job_class (e.g. 'webhook').
+        // run. A stage with no job_class is either a synthetic marker safe to
+        // skip past (e.g. 'webhook') or a genuine pause point
+        // (pauses_pipeline: true, e.g. 'human_decide', 'confirm_payment') —
+        // those stop advance() entirely rather than being skipped, since
+        // nothing should auto-dispatch past a stage that's waiting on a human.
+        // A caller resuming FROM a pause stage (e.g. after the human acts)
+        // starts its own scan past that same stage, so it's never
+        // self-blocking.
         for ($i = $currentIndex + 1; $i < count($stages); $i++) {
-            if (empty($stages[$i]['job_class'])) continue;
+            if (empty($stages[$i]['job_class'])) {
+                if (!empty($stages[$i]['pauses_pipeline'])) {
+                    self::setFulfillmentStage($txId, $stages[$i]['key']);
+                    return; // waiting on a human action to resume from here
+                }
+                continue;
+            }
 
             $jobFqn = 'App\\Workers\\' . \Illuminate\Support\Str::studly($input->workerSlug)
                 . '\\Jobs\\' . $stages[$i]['job_class'];
@@ -367,6 +387,18 @@ final class UnitPlatform
         }
 
         \App\Platform\Services\TransactionService::incrementTrialUsage($tx->deployment_id);
+    }
+
+    // ── FULFILLMENT STAGE — tracks stage 10-16 progress separately from
+    //    transactions.status (a fixed enum that stays at 'approved'/'sent'
+    //    through fulfillment). Free-text, not enum-constrained, so a new
+    //    fulfillment stage never needs another ALTER TABLE migration. ──────
+    public static function setFulfillmentStage(string $txId, string $stage): void
+    {
+        DB::table('transactions')->where('tx_id', $txId)->update([
+            'fulfillment_stage' => $stage,
+            'updated_at'        => now(),
+        ]);
     }
 
     // ─────────────────────────────────────────────────────────────────────

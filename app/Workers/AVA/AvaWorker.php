@@ -194,6 +194,33 @@ class AvaWorker implements WorkerContract
                 'output_column' => 'draft_output',    'group' => 'prepared', 'group_label' => 'Prepared', 'group_color' => '#f97316', 'image' => '/images/ava-desk.png', 'log_stage_key' => 'draft'],
             ['key' => 'push_draft',     'label' => 'Push to Gmail',   'sub' => 'Create draft in inbox',          'icon' => 'send',     'job_class' => 'PushToGmailJob',
                 'output_column' => null,             'group' => 'delivered','group_label' => 'Delivered','group_color' => '#06b6d4', 'image' => '/images/ava-life.png', 'log_stage_key' => 'push'],
+
+            // ── Fulfillment (stages 9-16 of the renewal lifecycle) — a slower,
+            // event-driven continuation of the same transaction, not a fast
+            // synchronous chain like the stages above. `pauses_pipeline` marks
+            // a stage advance() must stop at rather than skip past: nothing
+            // auto-dispatches the next job until a human acts (via
+            // TransactionController::decide()/confirmRenewal()/cancelRenewal()),
+            // which is what actually calls advance() to resume. Not every
+            // transaction needs to reach the end of this list — a rejected
+            // decision or a "no invoice needed" fulfillment still delivered
+            // real value at the stages it did complete.
+            ['key' => 'human_decide',   'label' => 'Approve & Send',  'sub' => 'You decide — AVA never sends without this', 'icon' => 'check', 'job_class' => null, 'pauses_pipeline' => true,
+                'output_column' => null,             'group' => 'approved', 'group_label' => 'Approved', 'group_color' => '#F5C518', 'image' => '/images/ava-life.png', 'log_stage_key' => 'human_decide'],
+            ['key' => 'request_invoice',    'label' => 'Request Invoice',   'sub' => 'Checks memory, requests from vendor if missing', 'icon' => 'receipt', 'job_class' => 'RequestInvoiceJob',
+                'output_column' => 'invoice_output',   'group' => 'fulfilled', 'group_label' => 'Fulfilled', 'group_color' => '#0ea5e9', 'image' => '/images/ava-life.png', 'log_stage_key' => 'request_invoice'],
+            ['key' => 'request_documents',  'label' => 'Request Documents', 'sub' => 'Collects & merges into one file', 'icon' => 'files', 'job_class' => 'RequestDocumentsJob',
+                'output_column' => 'documents_output', 'group' => 'fulfilled', 'group_label' => 'Fulfilled', 'group_color' => '#0ea5e9', 'image' => '/images/ava-life.png', 'log_stage_key' => 'request_documents'],
+            ['key' => 'confirm_payment',    'label' => 'Confirm Payment',   'sub' => 'You confirm — AVA reminds until you do', 'icon' => 'alert-circle', 'job_class' => null, 'pauses_pipeline' => true,
+                'output_column' => 'payment_output',   'group' => 'confirmed', 'group_label' => 'Confirmed', 'group_color' => '#F5C518', 'image' => '/images/ava-life.png', 'log_stage_key' => 'confirm_payment'],
+            ['key' => 'update_renewal_date','label' => 'Update Next Renewal Date', 'sub' => 'Advances the asset to its next cycle', 'icon' => 'calendar', 'job_class' => 'UpdateRenewalDateJob',
+                'output_column' => null,               'group' => 'renewed',   'group_label' => 'Renewed',   'group_color' => '#22c55e', 'image' => '/images/ava-life.png', 'log_stage_key' => 'update_renewal_date'],
+            ['key' => 'archive_evidence',   'label' => 'Archive Evidence',  'sub' => 'Combines everything into one PDF', 'icon' => 'archive', 'job_class' => 'ArchiveEvidenceJob',
+                'output_column' => 'archive_output',   'group' => 'renewed',   'group_label' => 'Renewed',   'group_color' => '#22c55e', 'image' => '/images/ava-life.png', 'log_stage_key' => 'archive_evidence'],
+            ['key' => 'notify_stakeholders','label' => 'Notify Stakeholders', 'sub' => 'Emails you the renewal is complete', 'icon' => 'bell', 'job_class' => 'NotifyStakeholdersJob',
+                'output_column' => null,               'group' => 'renewed',   'group_label' => 'Renewed',   'group_color' => '#22c55e', 'image' => '/images/ava-life.png', 'log_stage_key' => 'notify_stakeholders'],
+            ['key' => 'schedule_next_watch','label' => 'Schedule Next Watch', 'sub' => 'Asset re-enters continuous monitoring', 'icon' => 'refresh', 'job_class' => 'ScheduleNextWatchJob',
+                'output_column' => null,               'group' => 'renewed',   'group_label' => 'Renewed',   'group_color' => '#22c55e', 'image' => '/images/ava-life.png', 'log_stage_key' => 'schedule_next_watch'],
         ];
     }
 
@@ -1003,6 +1030,13 @@ class AvaWorker implements WorkerContract
                 'queue'          => 'ava',
                 'per_deployment' => true,
                 'name'           => 'asset_expiry_watch',
+            ],
+            [
+                'job'            => \App\Workers\AVA\Jobs\PaymentReminderJob::class,
+                'cron'           => '0 9 * * *',  // Daily at 9AM — cadence is checked per-transaction inside the job
+                'queue'          => 'ava',
+                'per_deployment' => true,
+                'name'           => 'payment_reminder',
             ],
         ];
     }

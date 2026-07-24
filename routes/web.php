@@ -156,6 +156,8 @@ Route::middleware(['auth', 'verified', 'onboarded', 'not-pending-del'])->group(f
     Route::post('/transactions/{txId}/dismiss', [TransactionController::class, 'dismiss'])->name('transactions.dismiss');
     Route::delete('/transactions/{txId}',    [TransactionController::class, 'destroy'])->name('transactions.delete');
     Route::post('/transactions/{txId}/decide',  [TransactionController::class, 'decide'])->name('transactions.decide');
+    Route::post('/transactions/{txId}/confirm-renewal', [TransactionController::class, 'confirmRenewal'])->name('transactions.confirm-renewal');
+    Route::post('/transactions/{txId}/cancel-renewal',  [TransactionController::class, 'cancelRenewal'])->name('transactions.cancel-renewal');
 
     // ── Renewal Register ────────────────────────────────────────────────────
     // Named 'renewal-register', not 'register' — that name (and the bare
