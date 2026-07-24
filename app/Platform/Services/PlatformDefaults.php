@@ -8,6 +8,7 @@ class PlatformDefaults
 {
     const TRIAL_TRANSACTIONS = 25;
     const TRIAL_DAYS = 14;
+    const FAST_TRACK_ALLOCATION = 10;
 
     /**
      * Resolve the trial transaction limit for a worker slug.
@@ -29,6 +30,29 @@ class PlatformDefaults
 
         // 3. Platform constant
         return self::TRIAL_TRANSACTIONS;
+    }
+
+    /**
+     * How many of the trial pool's transactions are reserved for Fast Track
+     * testing. A carve-out within the total, not extra on top of it at the
+     * product-copy level — but every call site that computes a deployment's
+     * trial_transactions_limit adds this so real production headroom isn't
+     * reduced by giving tenants a testing allowance.
+     */
+    public static function fastTrackAllocationFor(string $workerSlug): int
+    {
+        return self::FAST_TRACK_ALLOCATION;
+    }
+
+    /**
+     * The real trial_transactions_limit to store on deployment_billing —
+     * free transactions plus the reserved Fast Track allocation, so Fast
+     * Track and real transactions share one pool and one source of truth
+     * (trial_transactions_used) without shrinking the advertised free trial.
+     */
+    public static function totalTrialLimitFor(string $workerSlug): int
+    {
+        return self::freeTransactionsFor($workerSlug) + self::fastTrackAllocationFor($workerSlug);
     }
 
     /**

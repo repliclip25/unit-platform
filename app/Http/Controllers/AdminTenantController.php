@@ -344,9 +344,10 @@ class AdminTenantController extends Controller
             : null;
 
         // Fall back to the real per-worker trial size (not a flat guess) when
-        // the admin leaves these fields blank.
+        // the admin leaves these fields blank. Includes the Fast Track
+        // allocation — Fast Track and real transactions share this one pool.
         $days     = max(1, (int) $request->input('trial_days', PlatformDefaults::trialDays($workerSlug ?? 'ava')));
-        $newLimit = (int) $request->input('trial_limit', PlatformDefaults::freeTransactionsFor($workerSlug ?? 'ava'));
+        $newLimit = (int) $request->input('trial_limit', PlatformDefaults::totalTrialLimitFor($workerSlug ?? 'ava'));
 
         $query = DB::table('deployment_billing')
             ->where('user_id', $id)
@@ -356,6 +357,7 @@ class AdminTenantController extends Controller
             'status'                   => 'trial',
             'trial_transactions_used'  => 0,
             'trial_transactions_limit' => $newLimit,
+            'fast_track_used'          => 0,
             'trial_ends_at'            => now()->addDays($days),
             'past_due_since'           => null,
             'updated_at'               => now(),
@@ -494,7 +496,8 @@ class AdminTenantController extends Controller
             'worker_slug'              => $dep->worker_slug,
             'status'                   => 'trial',
             'trial_transactions_used'  => 0,
-            'trial_transactions_limit' => PlatformDefaults::freeTransactionsFor($dep->worker_slug),
+            'trial_transactions_limit' => PlatformDefaults::totalTrialLimitFor($dep->worker_slug),
+            'fast_track_allocation'    => PlatformDefaults::fastTrackAllocationFor($dep->worker_slug),
             'billing_period_start'     => now()->startOfMonth(),
             'created_at'               => now(),
             'updated_at'               => now(),
@@ -551,14 +554,15 @@ class AdminTenantController extends Controller
 
     public function fastTrackReset(int $id)
     {
-        $dep    = DB::table('worker_deployments')->where('id', $id)->firstOrFail();
-        $config = json_decode($dep->config ?? '{}', true) ?: [];
-        $config['fast_track_uses'] = 0;
-        DB::table('worker_deployments')->where('id', $id)->update([
-            'config'     => json_encode($config),
-            'updated_at' => now(),
+        DB::table('worker_deployments')->where('id', $id)->firstOrFail();
+        // Only resets the Fast Track sub-allocation, not the whole trial
+        // pool — a tenant who's used real trial transactions keeps that
+        // usage; this just gives them their testing allowance back.
+        DB::table('deployment_billing')->where('deployment_id', $id)->update([
+            'fast_track_used' => 0,
+            'updated_at'      => now(),
         ]);
-        return back()->with('success', 'Fast Track counter reset.');
+        return back()->with('success', 'Fast Track allocation reset.');
     }
 
     public function flush(int $id, Request $request)
@@ -609,12 +613,14 @@ class AdminTenantController extends Controller
                 // this QA tool was reset for.
                 $deps = DB::table('worker_deployments')->where('user_id', $id)->get(['id', 'worker_slug']);
                 foreach ($deps as $dep) {
-                    $limit = PlatformDefaults::freeTransactionsFor($dep->worker_slug);
+                    $limit = PlatformDefaults::totalTrialLimitFor($dep->worker_slug);
                     $days  = PlatformDefaults::trialDays($dep->worker_slug);
                     DB::table('deployment_billing')->where('deployment_id', $dep->id)->update([
                         'status'                  => 'trial',
                         'trial_transactions_used' => 0,
                         'trial_transactions_limit'=> $limit,
+                        'fast_track_allocation'   => PlatformDefaults::fastTrackAllocationFor($dep->worker_slug),
+                        'fast_track_used'         => 0,
                         'trial_ends_at'           => now()->addDays($days),
                         'stripe_subscription_id'  => null,
                         'updated_at'              => now(),

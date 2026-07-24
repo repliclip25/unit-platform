@@ -383,18 +383,16 @@ final class UnitPlatform
             return;
         }
 
-        // Test runs (e.g. Fast Track, which has its own separate 10-run cap)
-        // never burn the real trial pool — see WorkerController::fastTrack().
-        if ($tx->is_test) {
-            return;
-        }
-
         // Already counted on an earlier success status (e.g. draft_ready → approved) — skip
         if (in_array($tx->status, \App\Platform\Services\TransactionService::SUCCESS_STATUSES, true)) {
             return;
         }
 
-        \App\Platform\Services\TransactionService::incrementTrialUsage($tx->deployment_id);
+        // Fast Track and real transactions share one trial pool now — Fast
+        // Track additionally counts against its own reserved sub-allocation
+        // within that pool. See PlatformDefaults::fastTrackAllocationFor()
+        // and TransactionService::incrementTrialUsage().
+        \App\Platform\Services\TransactionService::incrementTrialUsage($tx->deployment_id, (bool) $tx->is_test);
     }
 
     // ── FULFILLMENT STAGE — tracks stage 10-16 progress separately from

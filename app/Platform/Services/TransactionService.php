@@ -54,8 +54,12 @@ class TransactionService
 
     // Increments trial_transactions_used for a deployment still on trial.
     // Called exactly once per transaction, the first time it reaches a
-    // success status (see UnitPlatform::maybeIncrementTrialUsage).
-    public static function incrementTrialUsage(int $deploymentId): void
+    // success status (see UnitPlatform::maybeIncrementTrialUsage). Fast
+    // Track and real transactions share this one counter/limit — Fast
+    // Track additionally increments fast_track_used, its sub-allocation
+    // within the same pool, so both draw from one source of truth instead
+    // of two disconnected counters.
+    public static function incrementTrialUsage(int $deploymentId, bool $isFastTrack = false): void
     {
         $billing = DB::table('deployment_billing')
             ->where('deployment_id', $deploymentId)
@@ -68,6 +72,12 @@ class TransactionService
         DB::table('deployment_billing')
             ->where('deployment_id', $deploymentId)
             ->increment('trial_transactions_used');
+
+        if ($isFastTrack) {
+            DB::table('deployment_billing')
+                ->where('deployment_id', $deploymentId)
+                ->increment('fast_track_used');
+        }
 
         // Keep trial ledger in sync so re-deploy credits are accurate
         if ($billing->user_id && $billing->worker_slug) {

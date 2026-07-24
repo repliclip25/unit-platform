@@ -13,12 +13,6 @@ use App\Platform\Services\PlatformDefaults;
 
 class WorkerController extends Controller
 {
-    // Fast Track's own separate testing allowance (distinct from the real
-    // trial_transactions_limit pool — see fastTrack() and fastTrackPage(),
-    // which must both read this same constant so the enforced cap and the
-    // displayed cap never drift apart again).
-    const FAST_TRACK_TRIAL_CAP = 10;
-
     public function index()
     {
         $userId = auth()->id();
@@ -78,7 +72,8 @@ class WorkerController extends Controller
         if ($hasBilling && (int)($existingBilling->trial_transactions_limit ?? 0) === 0) {
             try {
                 DB::table('deployment_billing')->where('deployment_id', $id)->update([
-                    'trial_transactions_limit' => PlatformDefaults::freeTransactionsFor($dep->worker_slug),
+                    'trial_transactions_limit' => PlatformDefaults::totalTrialLimitFor($dep->worker_slug),
+                    'fast_track_allocation'    => PlatformDefaults::fastTrackAllocationFor($dep->worker_slug),
                     'updated_at'               => now(),
                 ]);
             } catch (\Throwable) {}
@@ -91,7 +86,8 @@ class WorkerController extends Controller
                     'worker_slug'              => $dep->worker_slug,
                     'status'                   => 'trial',
                     'trial_transactions_used'  => 0,
-                    'trial_transactions_limit' => PlatformDefaults::freeTransactionsFor($dep->worker_slug),
+                    'trial_transactions_limit' => PlatformDefaults::totalTrialLimitFor($dep->worker_slug),
+                    'fast_track_allocation'    => PlatformDefaults::fastTrackAllocationFor($dep->worker_slug),
                     'trial_ends_at'            => now()->addDays(PlatformDefaults::trialDays()),
                     'created_at'               => now(),
                     'updated_at'               => now(),
@@ -192,7 +188,7 @@ class WorkerController extends Controller
             return ['near' => false, 'left' => null];
         }
 
-        $limit = (int) ($billing->trial_transactions_limit ?: \App\Platform\Services\PlatformDefaults::freeTransactionsFor($workerSlug));
+        $limit = (int) ($billing->trial_transactions_limit ?: \App\Platform\Services\PlatformDefaults::totalTrialLimitFor($workerSlug));
         $used  = (int) $billing->trial_transactions_used;
         $left  = max(0, $limit - $used);
 
@@ -528,7 +524,10 @@ class WorkerController extends Controller
             $userId      = auth()->id();
             $ledger      = DB::table('user_worker_trial_ledger')
                              ->where('user_id', $userId)->where('worker_slug', $workerSlug)->first();
-            $granted     = PlatformDefaults::freeTransactionsFor($workerSlug);
+            // Includes the reserved Fast Track allocation — Fast Track and
+            // real transactions share this one pool end to end, including
+            // across re-deploys via the trial ledger.
+            $granted     = PlatformDefaults::totalTrialLimitFor($workerSlug);
             $trialDays   = PlatformDefaults::trialDays($workerSlug);
 
             if (!$ledger) {
@@ -583,6 +582,7 @@ class WorkerController extends Controller
                 'status'                   => $billingStatus,
                 'trial_transactions_used'  => $trialUsed,
                 'trial_transactions_limit' => $trialLimit,
+                'fast_track_allocation'    => PlatformDefaults::fastTrackAllocationFor($workerSlug),
                 'trial_ends_at'            => $trialEndsAt,
                 'billing_unit'             => PlatformDefaults::billingUnit($workerSlug),
                 'created_at'               => now(),
@@ -1185,18 +1185,21 @@ class WorkerController extends Controller
             return back()->with('error', 'No Gmail account connected to this worker.');
         }
 
-        $config  = json_decode($dep->config ?? '{}', true) ?: [];
         $billing = DB::table('deployment_billing')->where('deployment_id', $id)->first();
 
         // Active subscription: fast track counts as a regular transaction — no separate run limit.
-        // Trial: enforce 10-run cap; contact admin to reset or upgrade to subscription.
+        // Trial: Fast Track draws from the same trial_transactions_used pool as real
+        // transactions (one source of truth), capped at its own reserved sub-allocation
+        // within that pool — see PlatformDefaults::fastTrackAllocationFor(). The
+        // overall pool being exhausted (real usage) blocks Fast Track too, via the
+        // normal UsageGuard/PolicyEngine gate every transaction goes through.
         $isSubscribed = $billing && $billing->status === 'active';
 
-        if (!$isSubscribed) {
-            $usesCount = (int) ($config['fast_track_uses'] ?? 0);
-            if ($usesCount >= self::FAST_TRACK_TRIAL_CAP) {
-                $cap = self::FAST_TRACK_TRIAL_CAP;
-                return back()->with('error', "Fast Track trial limit reached ({$cap}/{$cap}). Upgrade to a subscription for unlimited runs, or contact support to reset.");
+        if (!$isSubscribed && $billing) {
+            $ftUsed  = (int) ($billing->fast_track_used ?? 0);
+            $ftAlloc = (int) ($billing->fast_track_allocation ?? \App\Platform\Services\PlatformDefaults::fastTrackAllocationFor($dep->worker_slug));
+            if ($ftUsed >= $ftAlloc) {
+                return back()->with('error', "Fast Track allocation used up ({$ftUsed}/{$ftAlloc} of your trial). Upgrade to a subscription for unlimited runs, or contact support to reset your trial.");
             }
         }
 
@@ -1292,14 +1295,11 @@ class WorkerController extends Controller
         $fastTrackJob     = $contract->fastTrackJobClass() ?: $contract->ingestJobClass();
         $fastTrackJob::dispatch($tx->tx_id)->onQueue('fast-track');
 
-        // Only count against the trial meter for non-subscribed tenants
-        if (!$isSubscribed) {
-            $config['fast_track_uses'] = ($config['fast_track_uses'] ?? 0) + 1;
-            DB::table('worker_deployments')->where('id', $id)->update([
-                'config'     => json_encode($config),
-                'updated_at' => now(),
-            ]);
-        }
+        // trial_transactions_used / fast_track_used are incremented once the
+        // transaction actually reaches a success status (see
+        // UnitPlatform::maybeIncrementTrialUsage) — not here at dispatch
+        // time. A run that fails or gets dismissed by a capture rule never
+        // reached fulfillment, so it shouldn't count against the allocation.
 
         $returnRoute = $request->input('return') === 'page' ? 'app.workers.fast-track.page' : 'app.workers.show';
 
@@ -1331,12 +1331,12 @@ class WorkerController extends Controller
         $credDef           = $contract ? $contract->credential() : [];
         $isMultiCredential = isset($credDef[0]);
 
-        $config    = json_decode($dep->config ?? '{}', true) ?: [];
-        $ftUses    = (int) ($config['fast_track_uses'] ?? 0);
         $ftBilling = DB::table('deployment_billing')->where('deployment_id', $id)->first();
-        // Must match the cap actually enforced in fastTrack() — not the real
-        // trial_transactions_limit pool, which Fast Track runs are exempt from.
-        $ftMax     = self::FAST_TRACK_TRIAL_CAP;
+        // Fast Track draws from the same trial pool as real transactions —
+        // this shows its reserved sub-allocation within that pool, not a
+        // separate counter. Must match the check in fastTrack().
+        $ftUses    = (int) ($ftBilling->fast_track_used       ?? 0);
+        $ftMax     = (int) ($ftBilling->fast_track_allocation ?? \App\Platform\Services\PlatformDefaults::fastTrackAllocationFor($dep->worker_slug));
         $ftLeft    = max(0, $ftMax - $ftUses);
         $ftSubscribed = $ftBilling && $ftBilling->status === 'active';
 
