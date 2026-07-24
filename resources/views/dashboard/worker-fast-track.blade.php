@@ -559,8 +559,12 @@ function pollFastTrack() {
 
       STAGE_KEYS.forEach(function (key, idx) {
         if (data.failed && idx === currentIdx) setStage(key, 'failed');
-        else if (idx < currentIdx || (data.done && !data.failed)) setStage(key, 'done');
+        else if (idx < currentIdx || (data.done && !data.failed && idx <= currentIdx)) setStage(key, 'done');
         else if (idx === currentIdx) setStage(key, data.failed ? 'failed' : 'active');
+        // idx > currentIdx stays untouched (pending) — Fast Track legitimately
+        // stops at push_draft (stage 8); it never runs the real fulfillment
+        // stages (9-16), so they must not be painted as complete just
+        // because the transaction reached a terminal status.
       });
 
       var btn = document.getElementById('ft-run-btn');
