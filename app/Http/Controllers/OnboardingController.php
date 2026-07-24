@@ -351,7 +351,7 @@ class OnboardingController extends Controller
             DB::table('worker_deployments')->where('id', $depId)->update(['persona' => $persona]);
         }
 
-        $this->seedPersonaRules($depId, $userId, $contract, $persona);
+        \App\Platform\Services\PersonaRuleSeeder::seed($depId, $userId, $contract, $persona);
 
         DB::table('users')->where('id', $userId)->update(['persona' => $persona]);
 
