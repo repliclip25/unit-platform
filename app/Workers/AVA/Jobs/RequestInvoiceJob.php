@@ -37,8 +37,15 @@ class RequestInvoiceJob implements ShouldQueue
         if ($input->isFastTrack()) {
             // Fast Track lets a tenant preview the full lifecycle end-to-end,
             // but it must never email a real vendor address — simulate the
-            // outcome instead of actually sending.
-            $output = ['status' => 'simulated', 'to' => $vendorEmail, 'requested_at' => now()->toISOString()];
+            // outcome instead of actually sending. If the scenario provided a
+            // sample invoice, show that as what the vendor would attach.
+            $sample = $input->raw['fast_track_invoice_sample'] ?? null;
+            $output = [
+                'status'       => 'simulated',
+                'to'           => $vendorEmail,
+                'requested_at' => now()->toISOString(),
+                'sample'       => $sample ?: 'No sample invoice provided in the test scenario — this is what would be requested from the vendor on a real renewal.',
+            ];
         } elseif ($vendorEmail && filter_var($vendorEmail, FILTER_VALIDATE_EMAIL)) {
             EmailDispatcher::send(
                 'ava_request_invoice',

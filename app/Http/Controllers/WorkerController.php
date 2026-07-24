@@ -1219,19 +1219,42 @@ class WorkerController extends Controller
             $scenario = DB::table('fast_track_scenarios')->where('deployment_id', $id)->first();
         }
 
+        // Bind the scenario to a real asset (and its real client) when the
+        // tenant has one picked — the only way Memory Lookup produces a
+        // genuinely earned high-confidence match instead of "no match found"
+        // against a fictional test asset. If they have real assets but
+        // haven't bound one yet, make them do that first rather than quietly
+        // running against a placeholder that can never match.
+        $boundAsset = $scenario->asset_id
+            ? DB::table('assets')->join('clients', 'clients.id', '=', 'assets.client_id')
+                ->where('assets.id', $scenario->asset_id)->where('assets.user_id', auth()->id())->whereNull('assets.deleted_at')
+                ->select('assets.name', 'assets.type', 'assets.vendor', 'assets.cost_per_year', 'clients.name as client_name')
+                ->first()
+            : null;
+
+        $hasRealAssets = DB::table('assets')->where('user_id', auth()->id())->whereNull('deleted_at')->exists();
+        if ($hasRealAssets && !$boundAsset) {
+            return back()->with('error', 'Pick a real asset in the Test Scenario section below before running Fast Track, so AVA can match it against your real memory instead of a placeholder.');
+        }
+
+        $assetName    = $boundAsset->name         ?? $scenario->asset_name;
+        $assetType    = $boundAsset->type         ?? $scenario->asset_type;
+        $contactName  = $boundAsset->client_name  ?? $scenario->contact_name;
+        $renewalPrice = $boundAsset->cost_per_year ? ('$' . number_format($boundAsset->cost_per_year, 2) . '/year') : $scenario->renewal_price;
+
         $expiryDate  = now()->addDays($scenario->days_until_expiry)->format('F j, Y');
         $sampleEmail = implode("\n", [
             "From: {$scenario->sender_name} <{$scenario->sender_email}>",
             "To: {$credential->gmail_address}",
-            "Subject: {$scenario->asset_type} Renewal Notice — {$scenario->asset_name} expires in {$scenario->days_until_expiry} days",
+            "Subject: {$assetType} Renewal Notice — {$assetName} expires in {$scenario->days_until_expiry} days",
             "",
-            "Dear {$scenario->contact_name},",
+            "Dear {$contactName},",
             "",
-            "This is a reminder that your {$scenario->asset_type} {$scenario->asset_name} is due for renewal on {$expiryDate}.",
+            "This is a reminder that your {$assetType} {$assetName} is due for renewal on {$expiryDate}.",
             "",
-            "{$scenario->asset_type}: {$scenario->asset_name}",
+            "{$assetType}: {$assetName}",
             "Renewal Date: {$expiryDate}",
-            "Renewal Price: {$scenario->renewal_price}",
+            "Renewal Price: {$renewalPrice}",
             "Contact Email: " . auth()->user()->email,
             "",
             ($scenario->custom_note ? $scenario->custom_note . "\n\n" : "") . "Please renew before it expires.",
@@ -1253,8 +1276,11 @@ class WorkerController extends Controller
             'credential_id'      => $credential->id,
             // Fast track scenario fields — used by FastTrackIngestJob to build the inbound test email
             'fast_track_from'    => "{$scenario->sender_name} <{$scenario->sender_email}>",
-            'fast_track_subject' => "{$scenario->asset_type} Renewal Notice — {$scenario->asset_name} expires in {$scenario->days_until_expiry} days",
+            'fast_track_subject' => "{$assetType} Renewal Notice — {$assetName} expires in {$scenario->days_until_expiry} days",
             'fast_track_body'    => $sampleEmail,
+            // Used by RequestInvoiceJob/RequestDocumentsJob so the simulated
+            // fulfillment stages show real sample content, not just a status label.
+            'fast_track_invoice_sample' => $scenario->invoice_sample,
             // Routes every stage of this run onto Horizon's dedicated always-on
             // fast-track queue (see UnitPlatform::getInput) instead of the general
             // per-worker queue, so test runs stay fast regardless of production load.
@@ -1316,12 +1342,25 @@ class WorkerController extends Controller
 
         $scenario = DB::table('fast_track_scenarios')->where('deployment_id', $id)->first();
 
+        // Real memory the tenant already has — used so Fast Track can bind
+        // its scenario to a genuine asset instead of a fictional one. Without
+        // this, Memory Lookup has nothing real to match against and every
+        // run reports "no match found," which isn't a bug — it's honest, but
+        // it doesn't demonstrate what AVA does once real memory exists.
+        $ftAssets = DB::table('assets')
+            ->join('clients', 'clients.id', '=', 'assets.client_id')
+            ->where('assets.user_id', auth()->id())
+            ->whereNull('assets.deleted_at')
+            ->select('assets.id', 'assets.name', 'assets.type', 'assets.vendor', 'assets.cost_per_year', 'assets.renewal_date', 'clients.name as client_name')
+            ->orderBy('assets.name')
+            ->get();
+
         $pipelineStages = $contract ? $contract->pipelineStages() : [];
         $watchTxId = request('watch');
 
         return view('dashboard.worker-fast-track', compact(
             'dep', 'contract', 'connectedInboxes', 'isMultiCredential',
-            'ftUses', 'ftMax', 'ftLeft', 'ftSubscribed', 'scenario',
+            'ftUses', 'ftMax', 'ftLeft', 'ftSubscribed', 'scenario', 'ftAssets',
             'pipelineStages', 'watchTxId',
             'workerCatalog', 'registryRows', 'registryRow', 'profileImg', 'coverImg', 'tokenTotal', 'firstName'
         ));
@@ -1335,19 +1374,28 @@ class WorkerController extends Controller
             'scenario_title'     => 'required|string|max:255',
             'sender_name'        => 'required|string|max:255',
             'sender_email'       => 'required|email|max:255',
+            'asset_id'           => 'nullable|integer',
             'asset_name'         => 'required|string|max:255',
             'asset_type'         => 'required|string|max:255',
             'contact_name'       => 'required|string|max:255',
             'renewal_price'      => 'required|string|max:255',
             'days_until_expiry'  => 'required|integer|min:1|max:365',
             'custom_note'        => 'nullable|string|max:1000',
+            'invoice_sample'     => 'nullable|string|max:2000',
         ]);
+
+        // If a real asset was picked, verify it actually belongs to this
+        // tenant before trusting it — never trust a client-submitted asset_id.
+        $assetId = $request->input('asset_id');
+        if ($assetId && !DB::table('assets')->where('id', $assetId)->where('user_id', auth()->id())->whereNull('deleted_at')->exists()) {
+            $assetId = null;
+        }
 
         $data = array_merge($request->only([
             'scenario_title', 'sender_name', 'sender_email',
             'asset_name', 'asset_type', 'contact_name',
-            'renewal_price', 'days_until_expiry', 'custom_note',
-        ]), ['updated_at' => now()]);
+            'renewal_price', 'days_until_expiry', 'custom_note', 'invoice_sample',
+        ]), ['asset_id' => $assetId, 'updated_at' => now()]);
 
         if (DB::table('fast_track_scenarios')->where('deployment_id', $id)->exists()) {
             DB::table('fast_track_scenarios')->where('deployment_id', $id)->update($data);

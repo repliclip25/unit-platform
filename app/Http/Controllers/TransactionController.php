@@ -292,4 +292,18 @@ class TransactionController extends Controller
 
         return back()->with('success', "○ {$txId} — renewal canceled.");
     }
+
+    public function downloadArchive(string $txId)
+    {
+        $tx = DB::table('transactions')->where('tx_id', $txId)->where('user_id', auth()->id())->firstOrFail();
+        $archive = json_decode($tx->archive_output ?? '{}', true) ?: [];
+        $path    = $archive['path'] ?? null;
+
+        $disk = \Illuminate\Support\Facades\Storage::disk(config('filesystems.media_disk', 'public'));
+        if (!$path || !$disk->exists($path)) {
+            abort(404, 'Archive not found');
+        }
+
+        return $disk->download($path, "{$txId}-renewal-archive.pdf");
+    }
 }

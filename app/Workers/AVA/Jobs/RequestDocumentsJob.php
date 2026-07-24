@@ -34,7 +34,13 @@ class RequestDocumentsJob implements ShouldQueue
         $vendorEmail = $input->raw['from'] ?? null;
 
         if ($input->isFastTrack()) {
-            $output = ['status' => 'simulated', 'to' => $vendorEmail, 'requested_at' => now()->toISOString()];
+            $sample = $input->raw['fast_track_invoice_sample'] ?? null;
+            $output = [
+                'status'       => 'simulated',
+                'to'           => $vendorEmail,
+                'requested_at' => now()->toISOString(),
+                'sample'       => $sample ?: 'No sample document provided in the test scenario — this is what would be requested from the vendor on a real renewal.',
+            ];
         } elseif ($vendorEmail && filter_var($vendorEmail, FILTER_VALIDATE_EMAIL)) {
             EmailDispatcher::send(
                 'ava_request_documents',

@@ -217,6 +217,7 @@ $ftDefaults = [
   'renewal_price'     => '$12.98/year',
   'days_until_expiry' => 14,
   'custom_note'       => '',
+  'invoice_sample'    => '',
 ];
 $sv = fn($f) => old($f, $scenario->{$f} ?? $ftDefaults[$f]);
 $ftCanRun = $isMultiCredential || $connectedInboxes->isNotEmpty();
@@ -392,10 +393,16 @@ $sidebarLinks = [
             <div class="ft-result-row"><span class="lbl">Rule applied</span><span class="val" id="ft-r-rule">—</span></div>
             <div class="ft-result-row"><span class="lbl">Confidence</span><span class="val" id="ft-r-confidence">—</span></div>
             <div class="ft-result-row" style="grid-column:1/-1"><span class="lbl">Draft subject</span><span class="val" id="ft-r-subject">—</span></div>
+            <div class="ft-result-row" style="grid-column:1/-1;display:none" id="ft-r-body-row"><span class="lbl">Draft body</span><span class="val" id="ft-r-body" style="font-weight:500;white-space:pre-wrap;display:block;margin-top:2px"></span></div>
+            <div class="ft-result-row"><span class="lbl">Invoice</span><span class="val" id="ft-r-invoice">—</span></div>
+            <div class="ft-result-row"><span class="lbl">Documents</span><span class="val" id="ft-r-documents">—</span></div>
+            <div class="ft-result-row"><span class="lbl">Payment</span><span class="val" id="ft-r-payment">—</span></div>
+            <div class="ft-result-row"><span class="lbl">Next renewal date</span><span class="val" id="ft-r-renewal">—</span></div>
           </div>
           <div class="ft-result-actions" id="ft-result-actions">
             <button type="button" class="mem-btn" onclick="var u=new URL(location.href);u.searchParams.delete('watch');location.href=u.toString();">Run again</button>
             <a href="#" id="ft-r-gmail-link" class="mem-btn-secondary" style="display:none" target="_blank" rel="noopener">Open draft in Gmail →</a>
+            <a href="#" id="ft-r-pdf-link" class="mem-btn-secondary" style="display:none" target="_blank" rel="noopener">Download PDF archive →</a>
           </div>
         </div>
 
@@ -416,7 +423,12 @@ $sidebarLinks = [
         </div>
 
         <div style="margin-top:18px" id="ft-run-section">
-          @if($ftLeft > 0 || $ftSubscribed)
+          @php $ftNeedsAssetBind = $ftAssets->isNotEmpty() && !($scenario->asset_id ?? null); @endphp
+          @if($ftNeedsAssetBind)
+            <div class="ft-empty" style="border-color:#F5C518;color:var(--db-text)">
+              You have real assets in Memory — pick one in the Test Scenario section below before running Fast Track, so AVA matches against real data instead of a placeholder.
+            </div>
+          @elseif($ftLeft > 0 || $ftSubscribed)
             @if($ftCanRun)
             <form method="POST" action="{{ route('app.workers.fast-track', $dep->id) }}" id="ft-form">
               @csrf
@@ -463,20 +475,40 @@ $sidebarLinks = [
         <div id="ft-scenario-form" style="display:none">
           <form method="POST" action="{{ route('app.workers.fast-track.scenario', $dep->id) }}">
             @csrf @method('PATCH')
+
+            @if($ftAssets->isNotEmpty())
+            <div class="ft-form-grid full" style="margin-bottom:4px">
+              <div>
+                <label class="mem-field-label">Real asset (recommended — makes Memory Lookup a genuine match)</label>
+                <select name="asset_id" class="mem-input" id="ft-asset-picker">
+                  <option value="">— Use manual test data below instead —</option>
+                  @foreach($ftAssets as $a)
+                  <option value="{{ $a->id }}" {{ ($scenario->asset_id ?? null) == $a->id ? 'selected' : '' }}
+                    data-name="{{ $a->name }}" data-type="{{ $a->type }}" data-client="{{ $a->client_name }}"
+                    data-price="{{ $a->cost_per_year ? ('$'.number_format($a->cost_per_year,2).'/year') : '' }}">
+                    {{ $a->name }} ({{ $a->type }}) — {{ $a->client_name }}
+                  </option>
+                  @endforeach
+                </select>
+              </div>
+            </div>
+            @endif
+
             <div class="ft-form-grid full">
               <div><label class="mem-field-label">Scenario title</label><input type="text" name="scenario_title" class="mem-input" value="{{ $sv('scenario_title') }}" required></div>
             </div>
             <div class="ft-form-grid">
               <div><label class="mem-field-label">Sender name</label><input type="text" name="sender_name" class="mem-input" value="{{ $sv('sender_name') }}" required></div>
               <div><label class="mem-field-label">Sender email</label><input type="email" name="sender_email" class="mem-input" value="{{ $sv('sender_email') }}" required></div>
-              <div><label class="mem-field-label">Asset name</label><input type="text" name="asset_name" class="mem-input" value="{{ $sv('asset_name') }}" required></div>
-              <div><label class="mem-field-label">Asset type</label><input type="text" name="asset_type" class="mem-input" value="{{ $sv('asset_type') }}" required></div>
-              <div><label class="mem-field-label">Contact name</label><input type="text" name="contact_name" class="mem-input" value="{{ $sv('contact_name') }}" required></div>
-              <div><label class="mem-field-label">Renewal price</label><input type="text" name="renewal_price" class="mem-input" value="{{ $sv('renewal_price') }}" required></div>
+              <div><label class="mem-field-label">Asset name</label><input type="text" name="asset_name" id="ft-asset-name" class="mem-input" value="{{ $sv('asset_name') }}" required {{ ($scenario->asset_id ?? null) ? 'readonly' : '' }}></div>
+              <div><label class="mem-field-label">Asset type</label><input type="text" name="asset_type" id="ft-asset-type" class="mem-input" value="{{ $sv('asset_type') }}" required {{ ($scenario->asset_id ?? null) ? 'readonly' : '' }}></div>
+              <div><label class="mem-field-label">Contact name</label><input type="text" name="contact_name" id="ft-contact-name" class="mem-input" value="{{ $sv('contact_name') }}" required {{ ($scenario->asset_id ?? null) ? 'readonly' : '' }}></div>
+              <div><label class="mem-field-label">Renewal price</label><input type="text" name="renewal_price" id="ft-renewal-price" class="mem-input" value="{{ $sv('renewal_price') }}" required {{ ($scenario->asset_id ?? null) ? 'readonly' : '' }}></div>
               <div><label class="mem-field-label">Days until expiry</label><input type="number" name="days_until_expiry" min="1" max="365" class="mem-input" value="{{ $sv('days_until_expiry') }}" required></div>
             </div>
             <div class="ft-form-grid full">
               <div><label class="mem-field-label">Custom note (optional)</label><textarea name="custom_note" rows="2" class="mem-textarea">{{ $sv('custom_note') }}</textarea></div>
+              <div><label class="mem-field-label">Sample invoice / document text (optional — shown at the Request Invoice / Request Documents stages)</label><textarea name="invoice_sample" rows="3" class="mem-textarea" placeholder="e.g. Invoice #4471 — Domain renewal, yourdomain.com, $12.98, due Aug 7 2026">{{ $sv('invoice_sample') }}</textarea></div>
             </div>
             <div style="margin-top:14px;display:flex;gap:8px">
               <button type="submit" class="mem-btn">Save scenario</button>
@@ -520,6 +552,30 @@ function toggleScenario() {
   var el = document.getElementById('ft-scenario-form');
   el.style.display = el.style.display === 'none' ? 'block' : 'none';
 }
+
+// Picking a real asset overrides the manual asset/contact/price fields with
+// its real data and locks them read-only — the scenario then runs against
+// something that genuinely exists, not a fictional placeholder.
+(function () {
+  var picker = document.getElementById('ft-asset-picker');
+  if (!picker) return;
+  var nameEl  = document.getElementById('ft-asset-name');
+  var typeEl  = document.getElementById('ft-asset-type');
+  var contEl  = document.getElementById('ft-contact-name');
+  var priceEl = document.getElementById('ft-renewal-price');
+
+  picker.addEventListener('change', function () {
+    var opt = picker.options[picker.selectedIndex];
+    var bound = !!opt.value;
+    [nameEl, typeEl, contEl, priceEl].forEach(function (el) { el.readOnly = bound; });
+    if (bound) {
+      nameEl.value  = opt.dataset.name  || '';
+      typeEl.value  = opt.dataset.type  || '';
+      contEl.value  = opt.dataset.client || '';
+      if (opt.dataset.price) priceEl.value = opt.dataset.price;
+    }
+  });
+})();
 
 // ── Live pipeline polling ────────────────────────────────────────────────
 var WATCH_TX = @json($watchTxId);
@@ -573,10 +629,26 @@ function showResult(data) {
   document.getElementById('ft-r-confidence').textContent = data.confidence != null ? (data.confidence + '%' + (data.low_confidence ? ' (low — flagged for review)' : '')) : '—';
   document.getElementById('ft-r-subject').textContent    = data.subject || '—';
 
+  if (data.body) {
+    document.getElementById('ft-r-body').textContent = data.body;
+    document.getElementById('ft-r-body-row').style.display = '';
+  }
+
+  document.getElementById('ft-r-invoice').textContent   = data.invoice_output ? (data.invoice_output.sample ? 'See log below' : (data.invoice_output.status || '—')) : '—';
+  document.getElementById('ft-r-documents').textContent = data.documents_output ? (data.documents_output.sample ? 'See log below' : (data.documents_output.status || '—')) : '—';
+  document.getElementById('ft-r-payment').textContent   = data.payment_output ? (data.payment_output.confirmed === false ? 'Canceled' : (data.payment_output.confirmed ? 'Confirmed' : '—')) : '—';
+  document.getElementById('ft-r-renewal').textContent   = data.renewal_output ? (data.renewal_output.new_date || '—') : '—';
+
   var gmailLink = document.getElementById('ft-r-gmail-link');
   if (data.gmail_draft_id) {
     gmailLink.href = 'https://mail.google.com/mail/u/0/#drafts/' + data.gmail_draft_id;
     gmailLink.style.display = 'inline-block';
+  }
+
+  var pdfLink = document.getElementById('ft-r-pdf-link');
+  if (data.archive_output) {
+    pdfLink.href = '{{ url("/app/transactions") }}/' + WATCH_TX + '/archive.pdf';
+    pdfLink.style.display = 'inline-block';
   }
 
   document.getElementById('ft-result').style.display = 'block';
@@ -661,12 +733,12 @@ function logAllStages(data) {
   if (data.subject) logStage('draft_email', 'Draft', 'Subject: ' + data.subject + (data.body ? ('\n\n' + data.body) : ''));
   if (data.gmail_draft_id || ['draft_ready','approved','sent'].indexOf(data.status) > -1) logStage('push_draft', 'Deliver', 'Draft created in Gmail, ready for review.');
   if (['approved','sent'].indexOf(data.status) > -1 || (data.fulfillment_stage && STAGE_KEYS.indexOf(data.fulfillment_stage) > STAGE_KEYS.indexOf('human_decide'))) logStage('human_decide', 'You approve', 'You approved — AVA is continuing the renewal.');
-  if (data.invoice_output) logStage('request_invoice', 'Request Invoice', data.invoice_output.status === 'simulated' ? 'Simulated — would request an invoice from the vendor on a real renewal.' : (data.invoice_output.status === 'requested' ? 'Requested from ' + data.invoice_output.to : 'No vendor address available — skipped.'));
-  if (data.documents_output) logStage('request_documents', 'Request Documents', data.documents_output.status === 'simulated' ? 'Simulated — would request supporting documents from the vendor on a real renewal.' : (data.documents_output.status === 'requested' ? 'Requested from ' + data.documents_output.to : 'No vendor address available — skipped.'));
+  if (data.invoice_output) logStage('request_invoice', 'Request Invoice', data.invoice_output.sample ? ('Simulated request — sample invoice:\n' + data.invoice_output.sample) : (data.invoice_output.status === 'requested' ? 'Requested from ' + data.invoice_output.to : 'No vendor address available — skipped.'));
+  if (data.documents_output) logStage('request_documents', 'Request Documents', data.documents_output.sample ? ('Simulated request — sample document:\n' + data.documents_output.sample) : (data.documents_output.status === 'requested' ? 'Requested from ' + data.documents_output.to : 'No vendor address available — skipped.'));
   if (data.payment_output) logStage('confirm_payment', 'Confirm Payment', data.payment_output.confirmed === false ? 'Renewal canceled by you.' : 'You confirmed payment.');
   if (data.renewal_output) logStage('update_renewal_date', 'Update Next Renewal Date', 'Renewal date moves from ' + (data.renewal_output.old_date || '—') + ' to ' + (data.renewal_output.new_date || '—') + '.');
-  if (data.archive_output) logStage('archive_evidence', 'Archive Evidence', 'A PDF record of this renewal was generated.');
-  if (data.notify_output) logStage('notify_stakeholders', 'Notify Stakeholders', 'Drafted: "' + (data.notify_output.subject || '') + '" (not sent for a test run).');
+  if (data.archive_output) logStage('archive_evidence', 'Archive Evidence', 'A PDF record of this renewal was generated — download link below once complete.');
+  if (data.notify_output) logStage('notify_stakeholders', 'Notify Stakeholders', 'Drafted message:\nSubject: ' + (data.notify_output.subject || '') + '\n\n' + (data.notify_output.body || '') + '\n\n(not sent for a test run)');
   if (data.fulfillment_stage === 'schedule_next_watch') logStage('schedule_next_watch', 'Confirm & Renew', 'Cycle complete — the asset re-enters continuous monitoring.');
 }
 
