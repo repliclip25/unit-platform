@@ -543,6 +543,7 @@ Route::get('/workers/{slug}', function (string $slug) {
 Route::middleware(['auth', 'verified'])->prefix('hire/ava')->name('hire.ava.')->group(function () {
     Route::get('/welcome',    fn() => view('onboarding.ava.step-1-welcome', [
         'intentMeta' => (new \App\Http\Controllers\OnboardingController)->publicIntentMeta('ava'),
+        'personas'   => \App\Platform\Services\WorkerRegistry::resolve('ava')?->personas() ?? [],
     ]))->name('welcome');
     Route::get('/workspace',    fn() => view('onboarding.ava.step-2-workspace'))->name('workspace');
     Route::get('/orientation',  [\App\Http\Controllers\OnboardingController::class, 'showAvaOrientation'])->name('orientation');

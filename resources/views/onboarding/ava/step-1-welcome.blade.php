@@ -163,13 +163,20 @@ body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-fon
 .ob-bubble{
   background:#fff;border:1px solid #E5E7EB;
   border-radius:16px;border-bottom-left-radius:4px;
-  padding:14px 18px;margin-bottom:20px;max-width:310px;
+  padding:14px 18px;margin-bottom:20px;max-width:340px;
   box-shadow:0 1px 6px rgba(0,0,0,.04);
 }
 .ob-bubble-icon{width:26px;height:26px;border-radius:50%;background:#F5C518;display:flex;align-items:center;justify-content:center;margin-bottom:8px}
 .ob-bubble-icon svg{width:13px;height:13px;stroke:#0D0D0D;stroke-width:2.5}
 .ob-bubble p{font-size:13px;color:#374151;line-height:1.65}
 .ob-bubble p+p{margin-top:5px}
+.ob-bubble-personas-label{font-size:13px;color:#374151;margin-bottom:10px}
+.ob-bubble-personas{display:flex;flex-direction:column;gap:8px}
+.ob-bubble-persona{display:flex;align-items:center;gap:9px}
+.ob-bubble-persona-icon{width:24px;height:24px;border-radius:7px;background:#F4F3F1;border:1px solid #E5E7EB;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.ob-bubble-persona-icon svg{width:12px;height:12px;stroke:#0D0D0D;stroke-width:2}
+.ob-bubble-persona-label{font-size:12.5px;font-weight:700;color:#0D0D0D}
+.ob-bubble-persona-tagline{font-size:11px;color:#9CA3AF}
 
 /* Hire button — primary action, before social proof */
 .btn-hire{
@@ -397,13 +404,32 @@ body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-fon
             and make sure no renewal slips through the cracks.
           </p>
 
+          @php
+            $__iconSvgs = [
+              'computer'  => '<path stroke-linecap="round" stroke-linejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>',
+              'shield'    => '<path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>',
+              'clipboard' => '<path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>',
+              'grid'      => '<path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 10h16M4 14h16M4 18h16"/>',
+            ];
+          @endphp
           <div class="ob-bubble">
             <div class="ob-bubble-icon">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
             </div>
-            <p>Hi {{ $firstName }},</p>
-            <p>I'm excited to join your team.</p>
-            <p>I'll quietly watch your inbox so you never miss another renewal.</p>
+            <p class="ob-bubble-personas-label">Ava adapts to how your business runs:</p>
+            <div class="ob-bubble-personas">
+              @foreach($personas as $p)
+              <div class="ob-bubble-persona">
+                <span class="ob-bubble-persona-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">{!! $__iconSvgs[$p['icon'] ?? 'grid'] ?? $__iconSvgs['grid'] !!}</svg>
+                </span>
+                <span>
+                  <span class="ob-bubble-persona-label">{{ $p['label'] }}</span> —
+                  <span class="ob-bubble-persona-tagline">{{ $p['tagline'] }}</span>
+                </span>
+              </div>
+              @endforeach
+            </div>
           </div>
 
           {{-- Primary action BEFORE social proof --}}
