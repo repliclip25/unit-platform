@@ -83,13 +83,7 @@ body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-fon
 }
 .ob-sc-badge-dot{width:6px;height:6px;border-radius:50%;background:#22c55e;animation:pdot 1.4s ease infinite}
 .ob-sc-h1{font-size:1.75rem;font-weight:900;letter-spacing:-.04em;line-height:1.1;color:#0D0D0D;margin-bottom:10px}
-.ob-sc-sub{font-size:12.5px;color:#6B7280;line-height:1.65;margin-bottom:20px}
-/* Inline stats in left panel */
-.ob-sc-left-stats{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:24px}
-.ob-sc-left-stat{background:#fff;border:1px solid #E8E7E4;border-radius:10px;padding:10px 12px}
-.ob-sc-left-stat-val{font-size:22px;font-weight:900;color:#0D0D0D;line-height:1}
-.ob-sc-left-stat-val.gold{color:#D97706}
-.ob-sc-left-stat-label{font-size:10px;color:#9CA3AF;margin-top:3px;line-height:1.3}
+.ob-sc-sub{font-size:12.5px;color:#6B7280;line-height:1.65;margin-bottom:24px}
 .ob-sc-btns{display:flex;flex-direction:column;gap:10px}
 .btn-dash{
   display:flex;align-items:center;justify-content:center;gap:8px;
@@ -110,54 +104,52 @@ body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-fon
 .btn-watch:hover{border-color:#0D0D0D;color:#0D0D0D}
 .btn-watch svg{width:15px;height:15px;stroke:currentColor;stroke-width:2;fill:none}
 
-/* Success hero */
-.ob-sc-hero{
-  position:relative;overflow:hidden;background:#1a1a2e;
-  min-height:0;
+/* Success canvas — center stage, now the live run-through instead of a
+   static hero photo. The pipeline itself is the main event on this page. */
+.ob-sc-canvas{
+  position:relative;overflow-y:auto;background:#F4F3F1;
+  padding:24px 28px;display:flex;flex-direction:column;
 }
-.ob-sc-hero img{
+
+/* Ava mini-hero — moved into the right rail, above the draft card */
+.ob-sc-hero-mini{
+  position:relative;overflow:hidden;background:#1a1a2e;
+  flex:0 0 240px;
+}
+.ob-sc-hero-mini img{
   width:100%;height:100%;object-fit:cover;object-position:center 20%;
   display:block;
 }
 .ob-sc-bubble{
-  position:absolute;top:24px;left:24px;
-  background:#fff;border-radius:16px 16px 16px 4px;
-  padding:12px 16px;max-width:220px;
+  position:absolute;top:18px;left:18px;
+  background:#fff;border-radius:14px 14px 14px 4px;
+  padding:10px 14px;max-width:190px;
   box-shadow:0 4px 20px rgba(0,0,0,.15);
 }
-.ob-sc-bubble p{font-size:12.5px;font-weight:600;color:#0D0D0D;line-height:1.5}
+.ob-sc-bubble p{font-size:11.5px;font-weight:600;color:#0D0D0D;line-height:1.5}
 .ob-sc-nameplate{
-  position:absolute;bottom:20px;left:24px;
+  position:absolute;bottom:16px;left:18px;
   background:rgba(0,0,0,.65);backdrop-filter:blur(8px);
-  border-radius:10px;padding:8px 14px;
+  border-radius:9px;padding:7px 12px;
 }
-.ob-sc-nameplate-name{font-size:12px;font-weight:800;color:#fff;letter-spacing:.02em}
-.ob-sc-nameplate-title{font-size:10px;color:rgba(255,255,255,.6);font-weight:500;letter-spacing:.05em;text-transform:uppercase}
+.ob-sc-nameplate-name{font-size:11px;font-weight:800;color:#fff;letter-spacing:.02em}
+.ob-sc-nameplate-title{font-size:9.5px;color:rgba(255,255,255,.6);font-weight:500;letter-spacing:.05em;text-transform:uppercase}
 
-/* Success right: live activity + draft */
+/* Success right: Ava mini-hero + draft */
 .ob-sc-right{
   display:flex;flex-direction:column;border-left:1px solid #F0F0F0;overflow:hidden;
 }
-.ob-sc-activity{
-  flex:0 0 auto;padding:18px 20px 14px;border-bottom:1px solid #F0F0F0;
-}
 .ob-sc-activity-header{
-  display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;
+  display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex:0 0 auto;
 }
-.ob-sc-activity-title{font-size:10px;font-weight:800;color:#0D0D0D;letter-spacing:.08em;text-transform:uppercase}
+.ob-sc-activity-title{font-size:11px;font-weight:800;color:#0D0D0D;letter-spacing:.08em;text-transform:uppercase}
 .ob-sc-onshift{
   display:flex;align-items:center;gap:5px;
   font-size:9px;font-weight:700;color:#15803D;letter-spacing:.08em;text-transform:uppercase;
   background:#DCFCE7;border-radius:99px;padding:3px 8px;
 }
 .ob-sc-onshift-dot{width:5px;height:5px;border-radius:50%;background:#22c55e;animation:pdot 1.4s ease infinite}
-.ob-sc-feed{display:flex;flex-direction:column;gap:8px}
-.ob-sc-feed-item{display:flex;gap:10px;align-items:flex-start}
-.ob-sc-feed-time{font-size:10px;color:#9CA3AF;font-weight:600;white-space:nowrap;padding-top:2px;min-width:44px}
-.ob-sc-feed-dot{width:22px;height:22px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;color:#fff}
-.ob-sc-feed-text{font-size:12px;color:#374151;font-weight:600;line-height:1.4}
-.ob-sc-feed-sub{font-size:11px;color:#9CA3AF}
-.ob-sc-view-link{font-size:11px;color:#9CA3AF;font-weight:600;text-decoration:none;display:block;margin-top:10px}
+.ob-sc-view-link{font-size:11px;color:#9CA3AF;font-weight:600;text-decoration:none;display:block;margin-top:14px;flex:0 0 auto}
 .ob-sc-view-link:hover{color:#0D0D0D}
 
 /* Draft card fills the remaining height */
@@ -180,36 +172,41 @@ body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-fon
 .sc-btn-approve{background:#0D0D0D;color:#fff;border:none;font-family:inherit}
 .sc-btn-review{background:#fff;color:#374151;border:1.5px solid #E5E7EB;text-decoration:none;display:flex;align-items:center;justify-content:center}
 
-/* ── 9-section live run-through grid — replaces the old static feed.
-   Mirrors the approved onshift_extended_9_sections mockup, but wired to
-   real transaction data via polling (fastTrackStatus), not scripted. ── */
-.ob-9grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;padding:14px 20px 16px}
+/* ── 9-section live run-through grid — now the main canvas, not a sidebar
+   list. Mirrors the approved onshift_extended_9_sections mockup, but wired
+   to real transaction data via polling (fastTrackStatus), not scripted.
+   Stages 8 (Fulfill) and 9 (Confirm & renew) each bundle several real
+   pipeline stages — sub-items make that bundling visible instead of
+   hiding it behind one vague label. ── */
+.ob-9grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;flex:1}
 .ob-9cell{
-  display:flex;align-items:center;gap:8px;padding:9px 10px;border-radius:10px;
-  background:#F9FAFB;border:1px solid #F0F0F0;transition:background .3s,border-color .3s;
+  display:flex;flex-direction:column;gap:10px;padding:16px 18px;border-radius:14px;
+  background:#fff;border:1.5px solid #E8E7E4;transition:background .3s,border-color .3s;
 }
+.ob-9cell-head{display:flex;align-items:center;gap:10px}
 .ob-9cell.is-active{background:#FFFBEA;border-color:#F5C518}
 .ob-9cell.is-done{background:#F0FDF4;border-color:#BBF7D0}
 .ob-9cell.is-human{background:#FFFBEA;border-color:#F5C518}
-.ob-9dot{width:20px;height:20px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;background:#E5E7EB;color:#9CA3AF;transition:background .3s,color .3s}
+.ob-9dot{width:28px;height:28px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;background:#E5E7EB;color:#9CA3AF;transition:background .3s,color .3s}
 .ob-9cell.is-active .ob-9dot{background:#F5C518;color:#0D0D0D;animation:pdot 1s ease infinite}
 .ob-9cell.is-done .ob-9dot{background:#22c55e;color:#fff}
-.ob-9label{font-size:10.5px;font-weight:700;color:#9CA3AF;line-height:1.25}
+.ob-9label{font-size:13.5px;font-weight:800;color:#9CA3AF;line-height:1.25}
 .ob-9cell.is-active .ob-9label,.ob-9cell.is-done .ob-9label{color:#0D0D0D}
-.ob-9sub{font-size:9px;color:#C4C7CC;font-weight:600;margin-top:1px}
+.ob-9sub{font-size:11px;color:#C4C7CC;font-weight:600;margin-top:1px}
 .ob-9cell.is-active .ob-9sub{color:#92400e}
 .ob-9cell.is-done .ob-9sub{color:#16A34A}
 
-/* Mobile dark activity panel */
-@media(max-width:1024px){
-  .ob-sc-activity{background:#0D0D0D;border-radius:0}
-  .ob-sc-activity-title{color:#fff}
-  .ob-sc-onshift{background:rgba(34,197,94,.15);color:#4ade80}
-  .ob-sc-feed-time{color:#6B7280}
-  .ob-sc-feed-text{color:#F9FAFB}
-  .ob-sc-feed-sub{color:#6B7280}
-  .ob-sc-view-link{color:#6B7280}
-  .ob-sc-view-link:hover{color:#fff}
+/* Sub-items — only present on the Fulfill and Confirm & renew cells */
+.ob-9subitems{display:flex;flex-direction:column;gap:6px;padding-left:38px}
+.ob-9subitem{display:flex;align-items:center;gap:7px;font-size:11px;font-weight:600;color:#C4C7CC}
+.ob-9subitem-dot{width:6px;height:6px;border-radius:50%;background:#E5E7EB;flex-shrink:0}
+.ob-9subitem.is-active{color:#92400e}
+.ob-9subitem.is-active .ob-9subitem-dot{background:#F5C518;animation:pdot 1s ease infinite}
+.ob-9subitem.is-done{color:#16A34A}
+.ob-9subitem.is-done .ob-9subitem-dot{background:#22c55e}
+
+@media(min-width:1025px){
+  .ob-9grid{grid-template-columns:repeat(3,1fr);grid-auto-rows:minmax(96px,auto)}
 }
 
 /* ── LEFT: Intro + input ── */
@@ -447,13 +444,12 @@ body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-fon
 
   /* Success card mobile */
   .ob-success-card{grid-template-columns:1fr!important;border-radius:16px;height:auto}
-  .ob-sc-hero{height:300px}
   #scDraftCard{min-height:320px}
   .ob-sc-left{padding:28px 20px;order:1}
-  .ob-sc-hero{min-height:280px;order:2}
+  .ob-sc-canvas{order:2}
+  .ob-9grid{grid-template-columns:1fr}
   .ob-sc-right{border-left:none;border-top:1px solid #F0F0F0;order:3}
-  .ob-sc-left-stats{grid-template-columns:1fr 1fr}
-  .ob-sc-left-stat-val{font-size:28px}
+  .ob-sc-hero-mini{min-height:220px}
 }
 </style>
 </head>
@@ -698,29 +694,6 @@ body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-fon
       <h1 class="ob-sc-h1">Ava is officially<br>on shift. 🎉</h1>
       <p class="ob-sc-sub">She's monitoring your inbox and will alert you when action is needed.</p>
 
-      {{-- Today's stats --}}
-      <div class="ob-sc-left-stats">
-        <div class="ob-sc-left-stat">
-          <div class="ob-sc-left-stat-val" id="scStatDetected">{{ $todayStats['detected'] }}</div>
-          <div class="ob-sc-left-stat-label">Renewal requests detected</div>
-        </div>
-        <div class="ob-sc-left-stat">
-          <div class="ob-sc-left-stat-val" id="scStatDrafted">{{ $todayStats['drafted'] }}</div>
-          <div class="ob-sc-left-stat-label">Replies drafted</div>
-        </div>
-        <div class="ob-sc-left-stat">
-          <div class="ob-sc-left-stat-val" id="scStatAwaiting">{{ $todayStats['awaiting'] }}</div>
-          <div class="ob-sc-left-stat-label">Awaiting your review</div>
-        </div>
-        <div class="ob-sc-left-stat">
-          <div style="display:flex;align-items:center;gap:5px">
-            <span class="ob-sc-ava-active-dot" style="width:7px;height:7px;border-radius:50%;background:#22c55e;animation:pdot 1.4s ease infinite;display:inline-block;flex-shrink:0"></span>
-            <span class="ob-sc-left-stat-val" style="font-size:14px">Active</span>
-          </div>
-          <div class="ob-sc-left-stat-label">Monitoring inbox 24/7</div>
-        </div>
-      </div>
-
       <div class="ob-sc-btns">
         <a href="{{ route('app.desk.ava') }}" class="btn-dash">
           Go to AVA's Desk
@@ -733,37 +706,52 @@ body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-fon
       </div>
     </div>
 
-    {{-- Center: Ava hero --}}
-    <div class="ob-sc-hero">
-      <img src="/images/ava-desk.png" alt="Ava on shift">
-      <div class="ob-sc-bubble">
-        <p id="scBubble">I've got it from here, {{ $firstName }}. I'll keep you posted!</p>
+    {{-- Center: the live run-through canvas — the main event on this page --}}
+    <div class="ob-sc-canvas">
+      <div class="ob-sc-activity-header">
+        <span class="ob-sc-activity-title">Live Run-Through</span>
+        <span class="ob-sc-onshift"><span class="ob-sc-onshift-dot"></span> On Shift</span>
       </div>
-      <div class="ob-sc-nameplate">
-        <div class="ob-sc-nameplate-name">AVA</div>
-        <div class="ob-sc-nameplate-title">Renewal Specialist</div>
+      <div class="ob-9grid" id="nineGrid">
+        <div class="ob-9cell" id="nine-detect"><div class="ob-9cell-head"><span class="ob-9dot">1</span><div><div class="ob-9label">Detect</div><div class="ob-9sub" id="nine-detect-sub">—</div></div></div></div>
+        <div class="ob-9cell" id="nine-understand"><div class="ob-9cell-head"><span class="ob-9dot">2</span><div><div class="ob-9label">Understand</div><div class="ob-9sub" id="nine-understand-sub">—</div></div></div></div>
+        <div class="ob-9cell" id="nine-verify"><div class="ob-9cell-head"><span class="ob-9dot">3</span><div><div class="ob-9label">Verify</div><div class="ob-9sub" id="nine-verify-sub">—</div></div></div></div>
+        <div class="ob-9cell" id="nine-prepare"><div class="ob-9cell-head"><span class="ob-9dot">4</span><div><div class="ob-9label">Prepare</div><div class="ob-9sub" id="nine-prepare-sub">—</div></div></div></div>
+        <div class="ob-9cell" id="nine-draft"><div class="ob-9cell-head"><span class="ob-9dot">5</span><div><div class="ob-9label">Draft</div><div class="ob-9sub" id="nine-draft-sub">—</div></div></div></div>
+        <div class="ob-9cell" id="nine-deliver"><div class="ob-9cell-head"><span class="ob-9dot">6</span><div><div class="ob-9label">Deliver</div><div class="ob-9sub" id="nine-deliver-sub">—</div></div></div></div>
+        <div class="ob-9cell" id="nine-approve"><div class="ob-9cell-head"><span class="ob-9dot">7</span><div><div class="ob-9label">You approve</div><div class="ob-9sub" id="nine-approve-sub">Waiting</div></div></div></div>
+        <div class="ob-9cell" id="nine-fulfill">
+          <div class="ob-9cell-head"><span class="ob-9dot">8</span><div><div class="ob-9label">Fulfill</div><div class="ob-9sub" id="nine-fulfill-sub">—</div></div></div>
+          <div class="ob-9subitems">
+            <div class="ob-9subitem" id="nine-fulfill-sub-invoice"><span class="ob-9subitem-dot"></span>Request invoice</div>
+            <div class="ob-9subitem" id="nine-fulfill-sub-documents"><span class="ob-9subitem-dot"></span>Request documents</div>
+            <div class="ob-9subitem" id="nine-fulfill-sub-payment"><span class="ob-9subitem-dot"></span>Confirm payment</div>
+          </div>
+        </div>
+        <div class="ob-9cell" id="nine-renew">
+          <div class="ob-9cell-head"><span class="ob-9dot">9</span><div><div class="ob-9label">Confirm &amp; renew</div><div class="ob-9sub" id="nine-renew-sub">—</div></div></div>
+          <div class="ob-9subitems">
+            <div class="ob-9subitem" id="nine-renew-sub-date"><span class="ob-9subitem-dot"></span>Update renewal date</div>
+            <div class="ob-9subitem" id="nine-renew-sub-archive"><span class="ob-9subitem-dot"></span>Archive evidence</div>
+            <div class="ob-9subitem" id="nine-renew-sub-notify"><span class="ob-9subitem-dot"></span>Notify stakeholders</div>
+            <div class="ob-9subitem" id="nine-renew-sub-watch"><span class="ob-9subitem-dot"></span>Schedule next watch</div>
+          </div>
+        </div>
       </div>
+      <a href="/app/transactions" class="ob-sc-view-link">View Live Feed →</a>
     </div>
 
-    {{-- Right: live activity + stats --}}
+    {{-- Right: Ava mini-hero + draft --}}
     <div class="ob-sc-right">
-      <div class="ob-sc-activity">
-        <div class="ob-sc-activity-header">
-          <span class="ob-sc-activity-title">Live Run-Through</span>
-          <span class="ob-sc-onshift"><span class="ob-sc-onshift-dot"></span> On Shift</span>
+      <div class="ob-sc-hero-mini">
+        <img src="/images/ava-desk.png" alt="Ava on shift">
+        <div class="ob-sc-bubble">
+          <p id="scBubble">I've got it from here, {{ $firstName }}. I'll keep you posted!</p>
         </div>
-        <div class="ob-9grid" id="nineGrid">
-          <div class="ob-9cell" id="nine-detect"><span class="ob-9dot">1</span><div><div class="ob-9label">Detect</div><div class="ob-9sub" id="nine-detect-sub">—</div></div></div>
-          <div class="ob-9cell" id="nine-understand"><span class="ob-9dot">2</span><div><div class="ob-9label">Understand</div><div class="ob-9sub" id="nine-understand-sub">—</div></div></div>
-          <div class="ob-9cell" id="nine-verify"><span class="ob-9dot">3</span><div><div class="ob-9label">Verify</div><div class="ob-9sub" id="nine-verify-sub">—</div></div></div>
-          <div class="ob-9cell" id="nine-prepare"><span class="ob-9dot">4</span><div><div class="ob-9label">Prepare</div><div class="ob-9sub" id="nine-prepare-sub">—</div></div></div>
-          <div class="ob-9cell" id="nine-draft"><span class="ob-9dot">5</span><div><div class="ob-9label">Draft</div><div class="ob-9sub" id="nine-draft-sub">—</div></div></div>
-          <div class="ob-9cell" id="nine-deliver"><span class="ob-9dot">6</span><div><div class="ob-9label">Deliver</div><div class="ob-9sub" id="nine-deliver-sub">—</div></div></div>
-          <div class="ob-9cell" id="nine-approve"><span class="ob-9dot">7</span><div><div class="ob-9label">You approve</div><div class="ob-9sub" id="nine-approve-sub">Waiting</div></div></div>
-          <div class="ob-9cell" id="nine-fulfill"><span class="ob-9dot">8</span><div><div class="ob-9label">Fulfill</div><div class="ob-9sub" id="nine-fulfill-sub">—</div></div></div>
-          <div class="ob-9cell" id="nine-renew"><span class="ob-9dot">9</span><div><div class="ob-9label">Confirm &amp; renew</div><div class="ob-9sub" id="nine-renew-sub">—</div></div></div>
+        <div class="ob-sc-nameplate">
+          <div class="ob-sc-nameplate-name">AVA</div>
+          <div class="ob-sc-nameplate-title">Renewal Specialist</div>
         </div>
-        <a href="/app/transactions" class="ob-sc-view-link">View Live Feed →</a>
       </div>
 
       {{-- Draft card: fills remaining height, hidden until draft is ready --}}
@@ -877,12 +865,6 @@ function setStage(n, statusText1, statusText2){
   document.getElementById('stage3').classList.toggle('is-done', n === 3);
 }
 
-function fmtTime(d){
-  if(!d) return '—';
-  const dt = new Date(d);
-  return dt.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit',hour12:true});
-}
-
 // ── 9-section live run-through — driven entirely by real transaction data,
 // not a scripted animation. Sections 1-6 mirror what the pipeline card
 // already shows; 7-9 are new: the human decision gate and the fulfillment
@@ -920,6 +902,23 @@ const NINE_SUBS = {
   },
   renew:      d => d.fulfillment_stage === 'schedule_next_watch' ? 'Cycle complete' : (d.payment_output ? 'Renewing' : '—'),
 };
+// Stages 8 and 9 each bundle several real pipeline stages — these sub-item
+// states make the bundling visible instead of collapsing it into one label.
+function subState(el, isDone, isActive){
+  if(!el) return;
+  el.classList.toggle('is-done', isDone);
+  el.classList.toggle('is-active', !isDone && isActive);
+}
+function updateSubItems(data){
+  const fs = data.fulfillment_stage;
+  subState(document.getElementById('nine-fulfill-sub-invoice'),   !!data.invoice_output,   fs === 'request_invoice');
+  subState(document.getElementById('nine-fulfill-sub-documents'), !!data.documents_output, fs === 'request_documents');
+  subState(document.getElementById('nine-fulfill-sub-payment'),   !!(data.payment_output && data.payment_output.confirmed), fs === 'confirm_payment');
+  subState(document.getElementById('nine-renew-sub-date'),        !!data.renewal_output,   fs === 'update_renewal_date');
+  subState(document.getElementById('nine-renew-sub-archive'),     !!data.archive_output,   fs === 'archive_evidence');
+  subState(document.getElementById('nine-renew-sub-notify'),      !!data.notify_output,    fs === 'notify_stakeholders');
+  subState(document.getElementById('nine-renew-sub-watch'),       fs === 'schedule_next_watch', false);
+}
 function updateNineGrid(data){
   const states = nineState(data);
   NINE_SECTIONS.forEach(function(key){
@@ -931,6 +930,7 @@ function updateNineGrid(data){
     const sub = document.getElementById('nine-' + key + '-sub');
     if(sub && (s === 'active' || s === 'done')) sub.textContent = NINE_SUBS[key](data);
   });
+  updateSubItems(data);
 }
 
 let fulfillmentPollTimer = null;
@@ -966,25 +966,6 @@ function showDraft(data){
   sc.classList.add('is-visible');
 
   window._txId = data.tx_id;
-
-  // Populate live activity timestamps from TX data
-  const now = new Date();
-  const m2  = new Date(now - 3*60000);
-  const m3  = new Date(now - 90000);
-  const m4  = new Date(now - 30000);
-  document.getElementById('scTime1').textContent = fmtTime(m2);
-  document.getElementById('scTime2').textContent = fmtTime(m3);
-  document.getElementById('scTime3').textContent = fmtTime(m4);
-  document.getElementById('scTime4').textContent = fmtTime(now);
-
-  // Populate step 1 sub (client/asset from memory)
-  const clientName = data.memory_output?.client_name || data.classify_output?.client || '';
-  if(clientName) document.getElementById('scStep1Sub').textContent = clientName;
-
-  // Update stats — ensure at least 1 for this TX
-  if(!parseInt(document.getElementById('scStatDetected').textContent)) document.getElementById('scStatDetected').textContent = '1';
-  if(!parseInt(document.getElementById('scStatDrafted').textContent))  document.getElementById('scStatDrafted').textContent  = '1';
-  if(!parseInt(document.getElementById('scStatAwaiting').textContent)) document.getElementById('scStatAwaiting').textContent = '1';
 
   // Populate draft card
   const draft = data.draft_output;

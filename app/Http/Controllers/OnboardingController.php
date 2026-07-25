@@ -74,14 +74,6 @@ class OnboardingController extends Controller
         $user      = auth()->user();
         $firstName = explode(' ', trim($user->name))[0];
 
-        // Today's summary stats for the success card
-        $todayStart = now()->startOfDay()->toDateTimeString();
-        $todayStats = [
-            'detected' => DB::table('transactions')->where('user_id', $userId)->where('created_at', '>=', $todayStart)->count(),
-            'drafted'  => DB::table('transactions')->where('user_id', $userId)->where('created_at', '>=', $todayStart)->whereIn('status', ['draft_ready','approved','sent'])->count(),
-            'awaiting' => DB::table('transactions')->where('user_id', $userId)->where('created_at', '>=', $todayStart)->where('status', 'draft_ready')->count(),
-        ];
-
         // The 3-column visual (Analyzing / Drafting / Reply is ready) is
         // derived from the contract's grouped checkpoints, not hardcoded —
         // adding/renaming a pipeline stage in AvaWorker changes this without
@@ -96,7 +88,7 @@ class OnboardingController extends Controller
             $rawStages
         );
 
-        return view('onboarding.ava.step-5-onshift', compact('deployment', 'credential', 'watchTxId', 'firstName', 'todayStats', 'onshiftColumns'));
+        return view('onboarding.ava.step-5-onshift', compact('deployment', 'credential', 'watchTxId', 'firstName', 'onshiftColumns'));
     }
 
     public function runAvaOnShift(Request $request)
