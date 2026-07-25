@@ -159,17 +159,9 @@ body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-fon
 
 .ob-sub{font-size:14px;color:#374151;line-height:1.72;margin-bottom:20px}
 
-/* AVA bubble */
-.ob-bubble{
-  background:#fff;border:1px solid #E5E7EB;
-  border-radius:16px;
-  padding:14px 18px;margin-bottom:20px;max-width:100%;
-  box-shadow:0 1px 6px rgba(0,0,0,.04);
-}
-.ob-bubble p{font-size:13px;color:#374151;line-height:1.65}
-.ob-bubble p+p{margin-top:5px}
+/* Persona list — sits directly on the page, no card wrapper */
 .ob-bubble-personas-label{font-size:13px;color:#374151;margin-bottom:10px}
-.ob-bubble-personas{display:flex;flex-wrap:wrap;align-items:center;gap:9px 0}
+.ob-bubble-personas{display:flex;flex-wrap:wrap;align-items:center;gap:9px 0;margin-bottom:20px}
 .ob-bubble-persona{font-size:13px;font-weight:700;color:#0D0D0D}
 .ob-bubble-persona-dot{width:5px;height:5px;border-radius:50%;background:#F5C518;margin:0 12px;flex-shrink:0}
 
@@ -399,14 +391,12 @@ body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-fon
             and make sure no renewal slips through the cracks.
           </p>
 
-          <div class="ob-bubble">
-            <p class="ob-bubble-personas-label">Ava adapts to how your business runs:</p>
-            <div class="ob-bubble-personas">
-              @foreach($personas as $i => $p)
-              @if($i > 0)<span class="ob-bubble-persona-dot"></span>@endif
-              <span class="ob-bubble-persona">{{ $p['label'] }}</span>
-              @endforeach
-            </div>
+          <p class="ob-bubble-personas-label">Ava adapts to how your business runs:</p>
+          <div class="ob-bubble-personas">
+            @foreach($personas as $i => $p)
+            @if($i > 0)<span class="ob-bubble-persona-dot"></span>@endif
+            <span class="ob-bubble-persona">{{ $p['label'] }}</span>
+            @endforeach
           </div>
 
           {{-- Primary action BEFORE social proof --}}
