@@ -123,13 +123,6 @@ body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-fon
   width:100%;height:100%;object-fit:cover;object-position:center 20%;
   display:block;
 }
-.ob-sc-bubble{
-  position:absolute;top:18px;left:18px;
-  background:#fff;border-radius:14px 14px 14px 4px;
-  padding:10px 14px;max-width:190px;
-  box-shadow:0 4px 20px rgba(0,0,0,.15);
-}
-.ob-sc-bubble p{font-size:11.5px;font-weight:600;color:#0D0D0D;line-height:1.5}
 .ob-sc-nameplate{
   position:absolute;bottom:16px;left:18px;
   background:rgba(0,0,0,.65);backdrop-filter:blur(8px);
@@ -757,9 +750,6 @@ body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-fon
     <div class="ob-sc-right">
       <div class="ob-sc-hero-mini">
         <img src="/images/ava-desk.png" alt="Ava on shift">
-        <div class="ob-sc-bubble">
-          <p id="scBubble">I've got it from here, {{ $firstName }}. I'll keep you posted!</p>
-        </div>
         <div class="ob-sc-nameplate">
           <div class="ob-sc-nameplate-name">AVA</div>
           <div class="ob-sc-nameplate-title">Renewal Specialist</div>
