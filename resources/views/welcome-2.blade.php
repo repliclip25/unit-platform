@@ -1736,5 +1736,9 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
   });
 });
 </script>
+
+<x-self-learn />
+
+@include('partials.tracking')
 </body>
 </html>

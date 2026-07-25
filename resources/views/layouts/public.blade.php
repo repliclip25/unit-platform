@@ -170,5 +170,7 @@ document.getElementById('mob-close').addEventListener('click', () => mob.classLi
 function closeMob() { mob.classList.remove('open'); }
 </script>
 @yield('scripts')
+
+@include('partials.tracking')
 </body>
 </html>

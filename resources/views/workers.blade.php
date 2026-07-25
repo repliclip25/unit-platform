@@ -756,5 +756,6 @@ tagBtns.forEach(btn => {
 
 <x-self-learn />
 
+@include('partials.tracking')
 </body>
 </html>

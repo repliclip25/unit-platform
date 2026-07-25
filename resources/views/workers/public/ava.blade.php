@@ -1511,5 +1511,6 @@ function closeMob(){ mob.classList.remove('open'); }
 
 <x-self-learn />
 
+@include('partials.tracking')
 </body>
 </html>
