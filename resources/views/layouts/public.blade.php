@@ -6,6 +6,19 @@
 <title>@yield('title', 'UNIT') — Purpose-Built AI Workers</title>
 <meta name="description" content="@yield('description', 'UNIT is a platform for deploying purpose-built AI workers — each one trained for a specific workflow, ready to run on your team.')">
 <link rel="icon" type="image/png" href="/logo.png">
+<link rel="apple-touch-icon" href="/logo.png">
+{{-- Captures the title/description sections above as strings (instead of re-declaring
+     them) so every public page gets OG/Twitter tags for free without duplicating copy. --}}
+@php
+    $__fullTitle = trim($__env->yieldContent('title', 'UNIT')) . ' — Purpose-Built AI Workers';
+    $__fullDesc  = trim($__env->yieldContent('description', 'UNIT is a platform for deploying purpose-built AI workers — each one trained for a specific workflow, ready to run on your team.'));
+@endphp
+@include('partials.seo-meta', [
+    'title'       => $__fullTitle,
+    'description' => $__fullDesc,
+    'image'       => $__env->yieldContent('og_image', asset('images/hero-team-2.png')),
+    'type'        => $__env->yieldContent('og_type', 'website'),
+])
 <script>(function(){var t=localStorage.getItem('unit-theme');if(t)document.getElementById('html-root').setAttribute('data-theme',t)})();</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">

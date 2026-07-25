@@ -1,6 +1,10 @@
 @extends('layouts.public')
 @section('title', $post['title'])
 @section('description', $post['excerpt'])
+@section('og_type', 'article')
+@if(!empty($post['cover_image']))
+@section('og_image', str_starts_with(Storage::url($post['cover_image']), 'http') ? Storage::url($post['cover_image']) : url(Storage::url($post['cover_image'])))
+@endif
 
 @section('head')
 <style>

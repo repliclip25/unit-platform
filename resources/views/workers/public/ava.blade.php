@@ -6,6 +6,12 @@
 <title>{{ $worker['name'] }} — {{ $worker['role'] }} | UNIT</title>
 <meta name="description" content="{{ $worker['meta_desc'] }}">
 <link rel="icon" type="image/png" href="/logo.png">
+<link rel="apple-touch-icon" href="/logo.png">
+@include('partials.seo-meta', [
+    'title'       => $worker['name'] . ' — ' . $worker['role'] . ' | UNIT',
+    'description' => $worker['meta_desc'],
+    'image'       => asset('images/ava-hero.jpg'),
+])
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">

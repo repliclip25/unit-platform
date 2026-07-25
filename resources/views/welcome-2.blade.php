@@ -6,6 +6,12 @@
 <title>UNIT — AI Workers That Never Stop Showing Up</title>
 <meta name="description" content="AVA, DOX, MOX, and NUX are your AI workforce. Each one built for a specific job, running 24/7 while you focus on growth.">
 <link rel="icon" type="image/png" href="/logo.png">
+<link rel="apple-touch-icon" href="/logo.png">
+@include('partials.seo-meta', [
+    'title'       => 'UNIT — AI Workers That Never Stop Showing Up',
+    'description' => 'AVA, DOX, MOX, and NUX are your AI workforce. Each one built for a specific job, running 24/7 while you focus on growth.',
+    'image'       => asset('images/hero-team-2.png'),
+])
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
