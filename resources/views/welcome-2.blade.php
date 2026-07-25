@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>UNIT — AI Workers That Never Stop Showing Up</title>
-<meta name="description" content="AVA, DOX, MOX, and NUX are your AI workforce. Each one built for a specific job, running 24/7 while you focus on growth.">
+<meta name="description" content="AVA is live and taking renewals off your plate today. DOX, MOX, and NUX — your next AI workers — are coming soon.">
 <link rel="icon" type="image/png" href="/logo.png">
 <link rel="apple-touch-icon" href="/logo.png">
 @include('partials.seo-meta', [
     'title'       => 'UNIT — AI Workers That Never Stop Showing Up',
-    'description' => 'AVA, DOX, MOX, and NUX are your AI workforce. Each one built for a specific job, running 24/7 while you focus on growth.',
+    'description' => 'AVA is live and taking renewals off your plate today. DOX, MOX, and NUX — your next AI workers — are coming soon.',
     'image'       => asset('images/hero-team-2.png'),
 ])
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1180,7 +1180,7 @@ body{
             <div class="wk-icon" style="background:rgba(0,0,0,.07)">
               <svg viewBox="0 0 24 24" fill="none" stroke="#0D0D0D" stroke-width="2" stroke-linecap="round"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>
             </div>
-            <div class="wk-name">DOX</div>
+            <div class="wk-name">DOX <span style="display:inline-block;margin-left:6px;padding:2px 8px;border-radius:99px;background:rgba(245,197,24,.15);color:#8a6a06;font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;vertical-align:middle">Coming Soon</span></div>
           </div>
           <div class="wk-role">Document Specialist</div>
           <p class="wk-quote">"I organize the documents nobody wants to touch."</p>
@@ -1191,8 +1191,7 @@ body{
             <div class="wk-bullet"><div class="wk-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>Creates order</div>
           </div>
           <div class="wk-btns">
-            <a href="#" class="btn-wk-outline">Watch Dox's Day <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
-            <a href="{{ route('hire.ava.welcome') }}" class="btn-wk">Hire DOX <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+            <span class="btn-wk" style="opacity:.5;cursor:default;pointer-events:none">Coming Soon</span>
           </div>
         </div>
       </div>
@@ -1207,7 +1206,7 @@ body{
             <div class="wk-icon" style="background:rgba(0,0,0,.07)">
               <svg viewBox="0 0 24 24" fill="none" stroke="#0D0D0D" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
             </div>
-            <div class="wk-name">MOX</div>
+            <div class="wk-name">MOX <span style="display:inline-block;margin-left:6px;padding:2px 8px;border-radius:99px;background:rgba(245,197,24,.15);color:#8a6a06;font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;vertical-align:middle">Coming Soon</span></div>
           </div>
           <div class="wk-role">Brand Moments Hunter</div>
           <p class="wk-quote">"I find the moments your brand shouldn't miss."</p>
@@ -1218,8 +1217,7 @@ body{
             <div class="wk-bullet"><div class="wk-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>Delivers impact</div>
           </div>
           <div class="wk-btns">
-            <a href="#" class="btn-wk-outline">Watch Mox's Day <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
-            <a href="{{ route('hire.ava.welcome') }}" class="btn-wk">Hire MOX <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+            <span class="btn-wk" style="opacity:.5;cursor:default;pointer-events:none">Coming Soon</span>
           </div>
         </div>
       </div>
@@ -1234,7 +1232,7 @@ body{
             <div class="wk-icon" style="background:rgba(0,0,0,.07)">
               <svg viewBox="0 0 24 24" fill="none" stroke="#0D0D0D" stroke-width="2" stroke-linecap="round"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
             </div>
-            <div class="wk-name">NUX</div>
+            <div class="wk-name">NUX <span style="display:inline-block;margin-left:6px;padding:2px 8px;border-radius:99px;background:rgba(245,197,24,.15);color:#8a6a06;font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;vertical-align:middle">Coming Soon</span></div>
           </div>
           <div class="wk-role">Publishing Specialist</div>
           <p class="wk-quote">"I turn one idea into content people actually see."</p>
@@ -1245,8 +1243,7 @@ body{
             <div class="wk-bullet"><div class="wk-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>Grows your reach</div>
           </div>
           <div class="wk-btns">
-            <a href="#" class="btn-wk-outline">Watch Nux's Day <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
-            <a href="{{ route('hire.ava.welcome') }}" class="btn-wk">Hire NUX <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+            <span class="btn-wk" style="opacity:.5;cursor:default;pointer-events:none">Coming Soon</span>
           </div>
         </div>
       </div>

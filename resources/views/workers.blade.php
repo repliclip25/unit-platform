@@ -534,7 +534,7 @@ body{font-family:var(--font-b);color:var(--text);background:var(--bg);-webkit-fo
             <div class="wk-icon" style="background:rgba(0,0,0,.07)">
               <svg viewBox="0 0 24 24" fill="none" stroke="#0D0D0D" stroke-width="2" stroke-linecap="round"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>
             </div>
-            <div class="wk-name" style="color:#0D0D0D">DOX</div>
+            <div class="wk-name" style="color:#0D0D0D">DOX <span style="display:inline-block;margin-left:6px;padding:2px 8px;border-radius:99px;background:rgba(245,197,24,.15);color:#8a6a06;font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;vertical-align:middle">Coming Soon</span></div>
           </div>
           <div class="wk-role">Document Specialist</div>
           <p class="wk-quote">"I organize the documents nobody wants to touch."</p>
@@ -545,8 +545,7 @@ body{font-family:var(--font-b);color:var(--text);background:var(--bg);-webkit-fo
             <div class="wk-bullet"><div class="wk-check" style="background:#0D0D0D"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>Creates order</div>
           </div>
           <div class="wk-btns">
-            <a href="{{ route('hire.ava.welcome') }}" class="btn-hire-wk" style="background:#0D0D0D">Hire DOX <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
-            <a href="#" class="btn-watch-wk" style="color:#0D0D0D;border-color:#E5E7EB">Watch Dox's Day <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+            <span class="btn-hire-wk" style="background:#0D0D0D;opacity:.5;cursor:default;pointer-events:none">Coming Soon</span>
           </div>
         </div>
       </div>
@@ -561,7 +560,7 @@ body{font-family:var(--font-b);color:var(--text);background:var(--bg);-webkit-fo
             <div class="wk-icon" style="background:rgba(0,0,0,.07)">
               <svg viewBox="0 0 24 24" fill="none" stroke="#0D0D0D" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
             </div>
-            <div class="wk-name" style="color:#0D0D0D">MOX</div>
+            <div class="wk-name" style="color:#0D0D0D">MOX <span style="display:inline-block;margin-left:6px;padding:2px 8px;border-radius:99px;background:rgba(245,197,24,.15);color:#8a6a06;font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;vertical-align:middle">Coming Soon</span></div>
           </div>
           <div class="wk-role">Brand Moments Hunter</div>
           <p class="wk-quote">"I search the world for moments your brand shouldn't miss."</p>
@@ -572,8 +571,7 @@ body{font-family:var(--font-b);color:var(--text);background:var(--bg);-webkit-fo
             <div class="wk-bullet"><div class="wk-check" style="background:#0D0D0D"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>Delivers impact</div>
           </div>
           <div class="wk-btns">
-            <a href="{{ route('hire.ava.welcome') }}" class="btn-hire-wk" style="background:#0D0D0D">Hire MOX <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
-            <a href="#" class="btn-watch-wk" style="color:#0D0D0D;border-color:#E5E7EB">Watch Mox's Day <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+            <span class="btn-hire-wk" style="background:#0D0D0D;opacity:.5;cursor:default;pointer-events:none">Coming Soon</span>
           </div>
         </div>
       </div>
@@ -588,7 +586,7 @@ body{font-family:var(--font-b);color:var(--text);background:var(--bg);-webkit-fo
             <div class="wk-icon" style="background:rgba(0,0,0,.07)">
               <svg viewBox="0 0 24 24" fill="none" stroke="#0D0D0D" stroke-width="2" stroke-linecap="round"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
             </div>
-            <div class="wk-name" style="color:#0D0D0D">NUX</div>
+            <div class="wk-name" style="color:#0D0D0D">NUX <span style="display:inline-block;margin-left:6px;padding:2px 8px;border-radius:99px;background:rgba(245,197,24,.15);color:#8a6a06;font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;vertical-align:middle">Coming Soon</span></div>
           </div>
           <div class="wk-role">Publishing Specialist</div>
           <p class="wk-quote">"I turn one idea into content people actually see."</p>
@@ -599,8 +597,7 @@ body{font-family:var(--font-b);color:var(--text);background:var(--bg);-webkit-fo
             <div class="wk-bullet"><div class="wk-check" style="background:#0D0D0D"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>Grows your reach</div>
           </div>
           <div class="wk-btns">
-            <a href="{{ route('hire.ava.welcome') }}" class="btn-hire-wk" style="background:#0D0D0D">Hire NUX <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
-            <a href="#" class="btn-watch-wk" style="color:#0D0D0D;border-color:#E5E7EB">Watch Nux's Day <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+            <span class="btn-hire-wk" style="background:#0D0D0D;opacity:.5;cursor:default;pointer-events:none">Coming Soon</span>
           </div>
         </div>
       </div>
