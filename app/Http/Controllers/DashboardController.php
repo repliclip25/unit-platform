@@ -141,11 +141,17 @@ class DashboardController extends Controller
         extract($shell); // workerCatalog, registryRows, registryRow, profileImg, coverImg, tokenTotal
         $firstName = explode(' ', trim(auth()->user()->name))[0];
 
+        // Silent-failure banner — same source as the per-worker desk page's
+        // banner, flattened across every deployment. A tenant may land here
+        // first (never on a specific worker's desk), so this can't only
+        // live on the desk page.
+        $policyViolations = collect(\App\Platform\Services\PolicyEngine::evaluateAll($userId))->flatten(1)->all();
+
         return view('dashboard.index', compact(
             'workerCards', 'notifications', 'referralCode', 'referralUrl', 'referralEligible',
             'clockValue', 'deskCards', 'deskAllCards',
             'ovProcessed', 'ovDrafts', 'ovUrgent', 'ovFailed', 'ovStuck',
-            'workerCatalog', 'tokenTotal', 'firstName'
+            'workerCatalog', 'tokenTotal', 'firstName', 'policyViolations'
         ));
     }
 

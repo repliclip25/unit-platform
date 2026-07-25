@@ -186,6 +186,26 @@ class PolicyEngine
             'cta_route'    => 'app.ava.gmail.watch',
             'color'        => 'amber',
         ],
+
+        'NO_INBOX_CONNECTED' => [
+            'level'        => 'worker',
+            'severity'     => 'soft',
+            'title'        => 'No Inbox Connected',
+            'description'  => "This worker is deployed but can't see your inbox yet — nothing will be processed until Gmail is connected.",
+            // Purely informational — Fast Track and Gmail ingestion already
+            // have their own dedicated credential checks; this doesn't add
+            // a new block path, just makes the missing setup visible.
+            'blocks'       => [],
+            'self_service' => true,
+            'resolution'   => [
+                'Click "Connect Gmail" to finish setup.',
+                'Your worker will start monitoring as soon as it\'s connected.',
+            ],
+            'cta_label'    => 'Connect Gmail',
+            'cta_url'      => null,
+            'cta_route'    => 'app.workers.connect',
+            'color'        => 'amber',
+        ],
     ];
 
     // ── Evaluate active violations ────────────────────────────────────────────
@@ -340,13 +360,26 @@ class PolicyEngine
                 ->select('user_gmail_credentials.*')
                 ->get();
 
-            foreach ($inboxes as $inbox) {
-                if (!$inbox->watch_active) {
-                    $violations[] = self::violation('GMAIL_WATCH_EXPIRED', [
-                        'deployment_id' => $deploymentId,
-                        'gmail'         => $inbox->gmail_address,
-                    ]);
-                    break; // one violation per deployment is enough
+            // Deployed but never connected an inbox at all — distinct from a
+            // watch expiring on a previously-working connection. A deployment
+            // stuck here (e.g. from an onboarding crash, or an admin-created
+            // billing row with no credential) can otherwise sit on the desk
+            // looking "on shift" with nothing actually happening and no
+            // visible path back to finish setup. Scoped to AVA specifically —
+            // other workers may not be inbox-based at all.
+            if ($inboxes->isEmpty() && $billing?->worker_slug === 'ava') {
+                $violations[] = self::violation('NO_INBOX_CONNECTED', [
+                    'deployment_id' => $deploymentId,
+                ]);
+            } else {
+                foreach ($inboxes as $inbox) {
+                    if (!$inbox->watch_active) {
+                        $violations[] = self::violation('GMAIL_WATCH_EXPIRED', [
+                            'deployment_id' => $deploymentId,
+                            'gmail'         => $inbox->gmail_address,
+                        ]);
+                        break; // one violation per deployment is enough
+                    }
                 }
             }
         }

@@ -577,8 +577,12 @@
 
             @if(auth()->check())
             @php
-                $__platformViolations = \App\Platform\Services\PolicyEngine::evaluate(auth()->id());
-                $__topViolation       = \App\Platform\Services\PolicyEngine::mostSevere($__platformViolations);
+                // Flattened across platform + every deployment — a worker-level
+                // issue (e.g. no inbox connected) needs to surface here too,
+                // not just on that worker's own desk page, since a tenant may
+                // land on the dashboard first with no other cue anything's wrong.
+                $__allViolations      = collect(\App\Platform\Services\PolicyEngine::evaluateAll(auth()->id()))->flatten(1)->all();
+                $__topViolation       = \App\Platform\Services\PolicyEngine::mostSevere($__allViolations);
             @endphp
             @if($__topViolation)
             @php

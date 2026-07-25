@@ -325,6 +325,33 @@ $notifTextColors = ['error'=>'#f87171','warning'=>'#fbbf24','info'=>'var(--db-te
   <main class="mem-main">
     <div class="mem-wrap">
 
+      {{-- Silent-failure banner — billing/trial/connection issues that would
+           otherwise go unnoticed. Same pattern as the per-worker desk page:
+           compact inline summary, full detail + resolution in a modal. --}}
+      @if(!empty($policyViolations))
+      @php
+        $__hasHard = collect($policyViolations)->contains('severity', 'hard');
+        $__firstV  = $policyViolations[0];
+      @endphp
+      <button type="button" onclick="document.getElementById('dc-violation-modal').style.display='flex'"
+              style="display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:{{ $__hasHard ? 'rgba(239,68,68,.1)' : 'rgba(245,158,11,.1)' }};border:1px solid {{ $__hasHard ? 'rgba(239,68,68,.35)' : 'rgba(245,158,11,.35)' }};border-radius:10px;padding:10px 13px;margin-bottom:16px;cursor:pointer;font-family:inherit">
+        <span style="font-size:16px;flex-shrink:0">{{ $__hasHard ? '⛔' : '⚠️' }}</span>
+        <span style="flex:1;min-width:0">
+          <span style="display:block;font-size:12.5px;font-weight:700;color:var(--db-text)">{{ $__firstV['title'] }}{{ count($policyViolations) > 1 ? ' (+'.(count($policyViolations)-1).' more)' : '' }}</span>
+        </span>
+        <span style="font-size:11px;font-weight:600;color:var(--db-text-muted);flex-shrink:0">Details →</span>
+      </button>
+
+      <div id="dc-violation-modal" style="display:none;position:fixed;inset:0;z-index:100;align-items:center;justify-content:center;background:rgba(0,0,0,.5);padding:20px" onclick="if(event.target===this)this.style.display='none'">
+        <div style="--db-text:#0D0D0D;--db-text-muted:#6B7280;--db-chip:#ECEAE6;--db-border:#E5E7EB;background:#fff;border-radius:16px;max-width:480px;width:100%;max-height:85vh;overflow-y:auto;padding:20px">
+          <div style="display:flex;justify-content:flex-end;margin-bottom:4px">
+            <button type="button" onclick="document.getElementById('dc-violation-modal').style.display='none'" style="background:none;border:none;cursor:pointer;font-size:14px;color:#6B7280">✕ Close</button>
+          </div>
+          @include('partials.policy-violations', ['violations' => $policyViolations])
+        </div>
+      </div>
+      @endif
+
       {{-- Referral chip / banner --}}
       @if($referralEligible)
       <div class="dc-referral-banner">

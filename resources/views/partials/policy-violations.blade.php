@@ -96,6 +96,8 @@
                                         => route('app.billing') . '?pick=' . $deploymentId,
                                     $v['cta_route'] === 'app.workers.show' && $deploymentId
                                         => route('app.workers.show', $deploymentId),
+                                    $v['cta_route'] === 'app.workers.connect' && $deploymentId
+                                        => route('app.workers.connect', $deploymentId),
                                     default => route($v['cta_route']),
                                 }
                                 : '#');
