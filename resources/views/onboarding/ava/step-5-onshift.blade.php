@@ -56,53 +56,56 @@ body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-fon
   background:#fff;
 }
 
-/* ── SUCCESS CARD ── */
+/* ── SUCCESS CARD — header bar on top (badge/message/CTAs), canvas +
+   Ava rail below getting the full width instead of sharing it with a
+   dedicated left column. ── */
 .ob-success-card{
-  display:none;width:100%;
+  display:none;width:100%;flex-direction:column;
   border-radius:20px;overflow:hidden;
   box-shadow:0 2px 12px rgba(0,0,0,.06),0 1px 3px rgba(0,0,0,.03);
   border:1px solid rgba(0,0,0,.07);
   background:#fff;
-  grid-template-columns:260px minmax(0,1fr) 360px;
-  grid-template-rows:1fr;
   height:calc(100vh - 40px);
 }
-.ob-success-card.is-visible{display:grid}
+.ob-success-card.is-visible{display:flex}
 
-/* Success left */
-.ob-sc-left{
-  background:#F4F3F1;border-right:1px solid #E8E7E4;
-  padding:28px 22px;display:flex;flex-direction:column;justify-content:center;
-  overflow-y:auto;
+/* Header bar */
+.ob-sc-header{
+  flex:0 0 auto;background:#F4F3F1;border-bottom:1px solid #E8E7E4;
+  padding:18px 24px;display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;
 }
+.ob-sc-header-text{display:flex;align-items:center;gap:16px;flex-wrap:wrap;min-width:0}
 .ob-sc-badge{
   display:inline-flex;align-items:center;gap:6px;
   background:#0D0D0D;color:#fff;border-radius:99px;
   font-size:9.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
-  padding:5px 12px;margin-bottom:20px;width:fit-content;
+  padding:5px 12px;width:fit-content;flex-shrink:0;
 }
 .ob-sc-badge-dot{width:6px;height:6px;border-radius:50%;background:#22c55e;animation:pdot 1.4s ease infinite}
-.ob-sc-h1{font-size:1.75rem;font-weight:900;letter-spacing:-.04em;line-height:1.1;color:#0D0D0D;margin-bottom:10px}
-.ob-sc-sub{font-size:12.5px;color:#6B7280;line-height:1.65;margin-bottom:24px}
-.ob-sc-btns{display:flex;flex-direction:column;gap:10px}
+.ob-sc-h1{font-size:1.2rem;font-weight:900;letter-spacing:-.03em;line-height:1.15;color:#0D0D0D}
+.ob-sc-sub{font-size:12px;color:#6B7280;line-height:1.5;max-width:340px}
+.ob-sc-btns{display:flex;align-items:center;gap:10px;flex-shrink:0}
 .btn-dash{
   display:flex;align-items:center;justify-content:center;gap:8px;
-  padding:13px 16px;border-radius:12px;
+  padding:10px 16px;border-radius:11px;white-space:nowrap;
   background:#0D0D0D;color:#fff;border:none;cursor:pointer;
-  font-size:13px;font-weight:800;font-family:inherit;text-decoration:none;
+  font-size:12.5px;font-weight:800;font-family:inherit;text-decoration:none;
   transition:opacity .15s;
 }
 .btn-dash:hover{opacity:.88}
-.btn-dash svg{width:15px;height:15px;stroke:#fff;stroke-width:2.5;fill:none}
+.btn-dash svg{width:14px;height:14px;stroke:#fff;stroke-width:2.5;fill:none}
 .btn-watch{
   display:flex;align-items:center;justify-content:center;gap:8px;
-  padding:12px 16px;border-radius:12px;
+  padding:9px 16px;border-radius:11px;white-space:nowrap;
   background:#fff;color:#374151;border:1.5px solid #E5E7EB;cursor:pointer;
-  font-size:13px;font-weight:700;font-family:inherit;text-decoration:none;
+  font-size:12.5px;font-weight:700;font-family:inherit;text-decoration:none;
   transition:border-color .15s;
 }
 .btn-watch:hover{border-color:#0D0D0D;color:#0D0D0D}
-.btn-watch svg{width:15px;height:15px;stroke:currentColor;stroke-width:2;fill:none}
+.btn-watch svg{width:14px;height:14px;stroke:currentColor;stroke-width:2;fill:none}
+
+/* Content row: canvas + right rail, below the header */
+.ob-sc-content{flex:1;display:grid;grid-template-columns:minmax(0,1fr) 360px;min-height:0}
 
 /* Success canvas — center stage, now the live run-through instead of a
    static hero photo. The pipeline itself is the main event on this page. */
@@ -443,12 +446,14 @@ body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-fon
   .ob-arrow{display:none}
 
   /* Success card mobile */
-  .ob-success-card{grid-template-columns:1fr!important;border-radius:16px;height:auto}
+  .ob-success-card{border-radius:16px;height:auto}
+  .ob-sc-header{padding:20px;flex-direction:column;align-items:flex-start}
+  .ob-sc-btns{width:100%}
+  .btn-dash,.btn-watch{flex:1}
+  .ob-sc-content{grid-template-columns:1fr}
   #scDraftCard{min-height:320px}
-  .ob-sc-left{padding:28px 20px;order:1}
-  .ob-sc-canvas{order:2}
   .ob-9grid{grid-template-columns:1fr}
-  .ob-sc-right{border-left:none;border-top:1px solid #F0F0F0;order:3}
+  .ob-sc-right{border-left:none;border-top:1px solid #F0F0F0}
   .ob-sc-hero-mini{min-height:220px}
 }
 </style>
@@ -685,14 +690,19 @@ body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-fon
   {{-- ══ SUCCESS CARD (swaps in after pipeline completes) ══ --}}
   <div class="ob-success-card" id="successCard">
 
-    {{-- Left: message + CTAs --}}
-    <div class="ob-sc-left">
-      <div class="ob-sc-badge">
-        <span class="ob-sc-badge-dot"></span>
-        On Shift
+    {{-- Header: badge + message + CTAs, full width — the live run-through
+         below gets the space this used to take up as a side column. --}}
+    <div class="ob-sc-header">
+      <div class="ob-sc-header-text">
+        <div class="ob-sc-badge">
+          <span class="ob-sc-badge-dot"></span>
+          On Shift
+        </div>
+        <div>
+          <h1 class="ob-sc-h1">Ava is officially on shift. 🎉</h1>
+          <p class="ob-sc-sub">She's monitoring your inbox and will alert you when action is needed.</p>
+        </div>
       </div>
-      <h1 class="ob-sc-h1">Ava is officially<br>on shift. 🎉</h1>
-      <p class="ob-sc-sub">She's monitoring your inbox and will alert you when action is needed.</p>
 
       <div class="ob-sc-btns">
         <a href="{{ route('app.desk.ava') }}" class="btn-dash">
@@ -705,6 +715,8 @@ body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-fon
         </a>
       </div>
     </div>
+
+    <div class="ob-sc-content">
 
     {{-- Center: the live run-through canvas — the main event on this page --}}
     <div class="ob-sc-canvas">
@@ -794,6 +806,8 @@ body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-fon
       </div>
 
     </div>
+
+    </div>{{-- /ob-sc-content --}}
 
   </div>
 
