@@ -12,6 +12,20 @@
     'description' => $worker['meta_desc'],
     'image'       => asset('images/ava-hero.jpg'),
 ])
+<script type="application/ld+json">{!! json_encode([
+    '@@context'    => 'https://schema.org',
+    '@type'       => 'Service',
+    'name'        => $worker['name'],
+    'serviceType' => $worker['category'] ?? $worker['role'],
+    'description' => $worker['meta_desc'],
+    'image'       => asset('images/ava-hero.jpg'),
+    'url'         => url()->current(),
+    'provider'    => [
+        '@type' => 'Organization',
+        'name'  => 'UNIT',
+        'url'   => url('/'),
+    ],
+], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">

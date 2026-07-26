@@ -1,6 +1,22 @@
 {{-- Single source of truth for the public-site footer — included by every
      public page (home, /ai-workers, /ai-workers/{slug}, about, pricing,
      blog, terms, privacy, influencer/apply). Edit here, not per-page. --}}
+{{-- Sitewide Organization + WebSite JSON-LD lives here since this partial
+     already renders on every public page — one edit point, not nine. --}}
+<script type="application/ld+json">{!! json_encode([
+    '@@context'    => 'https://schema.org',
+    '@type'       => 'Organization',
+    'name'        => 'UNIT',
+    'url'         => url('/'),
+    'logo'        => asset('logo.png'),
+    'description' => 'UNIT is a platform for deploying purpose-built AI workers — each one trained for a specific workflow, ready to run on your team.',
+], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}</script>
+<script type="application/ld+json">{!! json_encode([
+    '@@context' => 'https://schema.org',
+    '@type'    => 'WebSite',
+    'name'     => 'UNIT',
+    'url'      => url('/'),
+], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}</script>
 <footer class="footer">
   <div class="w">
     <div class="ft-grid">

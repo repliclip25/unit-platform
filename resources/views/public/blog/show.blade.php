@@ -1,12 +1,31 @@
 @extends('layouts.public')
+@php
+    $__postImage = !empty($post['cover_image'])
+        ? (str_starts_with(Storage::url($post['cover_image']), 'http') ? Storage::url($post['cover_image']) : url(Storage::url($post['cover_image'])))
+        : asset('images/hero-team-2.png');
+@endphp
 @section('title', $post['title'])
 @section('description', $post['excerpt'])
 @section('og_type', 'article')
-@if(!empty($post['cover_image']))
-@section('og_image', str_starts_with(Storage::url($post['cover_image']), 'http') ? Storage::url($post['cover_image']) : url(Storage::url($post['cover_image'])))
-@endif
+@section('og_image', $__postImage)
 
 @section('head')
+<script type="application/ld+json">{!! json_encode(array_filter([
+    '@@context'         => 'https://schema.org',
+    '@type'            => 'BlogPosting',
+    'headline'         => $post['title'],
+    'description'      => $post['excerpt'],
+    'image'            => $__postImage,
+    'datePublished'    => $post['published_iso'] ?? null,
+    'dateModified'     => $post['modified_iso'] ?? $post['published_iso'] ?? null,
+    'author'           => ['@type' => 'Organization', 'name' => $post['author'] ?? 'UNIT'],
+    'publisher'        => [
+        '@type' => 'Organization',
+        'name'  => 'UNIT',
+        'logo'  => ['@type' => 'ImageObject', 'url' => asset('logo.png')],
+    ],
+    'mainEntityOfPage' => url()->current(),
+]), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}</script>
 <style>
 .blog-article-wrap{display:grid;grid-template-columns:1fr 280px;gap:56px;align-items:start;padding:56px 0 80px}
 .blog-article{min-width:0}

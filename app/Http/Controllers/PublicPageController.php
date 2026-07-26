@@ -118,13 +118,16 @@ class PublicPageController extends Controller
         }
 
         return [
-            'title'       => $row->title,
-            'tag'         => $row->tag,
-            'excerpt'     => $row->excerpt,
-            'date'        => \Carbon\Carbon::parse($row->created_at)->format('F Y'),
-            'read'        => ceil(str_word_count(strip_tags($rawBody)) / 200) . ' min',
-            'body'        => $body,
-            'cover_image' => $row->cover_image ?? null,
+            'title'         => $row->title,
+            'tag'           => $row->tag,
+            'excerpt'       => $row->excerpt,
+            'date'          => \Carbon\Carbon::parse($row->created_at)->format('F Y'),
+            'published_iso' => \Carbon\Carbon::parse($row->created_at)->toIso8601String(),
+            'modified_iso'  => \Carbon\Carbon::parse($row->updated_at)->toIso8601String(),
+            'author'        => $row->author ?? 'UNIT',
+            'read'          => ceil(str_word_count(strip_tags($rawBody)) / 200) . ' min',
+            'body'          => $body,
+            'cover_image'   => $row->cover_image ?? null,
         ];
     }
 
@@ -134,9 +137,12 @@ class PublicPageController extends Controller
             'how-ava-processes-nycsca-renewal' => [
                 'slug'    => 'how-ava-processes-nycsca-renewal',
                 'tag'     => 'Automation · AVA',
-                'title'   => 'How AVA processes a NYCSCA renewal from inbox to draft in under 5 minutes',
-                'excerpt' => 'A step-by-step walkthrough of AVA\'s 8-stage pipeline — what each job does, how memory lookup works, and why the human-review gate matters.',
-                'date'    => 'June 2026',
+                'title'         => 'How AVA processes a NYCSCA renewal from inbox to draft in under 5 minutes',
+                'excerpt'       => 'A step-by-step walkthrough of AVA\'s 8-stage pipeline — what each job does, how memory lookup works, and why the human-review gate matters.',
+                'date'          => 'June 2026',
+                'published_iso' => '2026-06-01T00:00:00+00:00',
+                'modified_iso'  => '2026-06-01T00:00:00+00:00',
+                'author'        => 'UNIT',
                 'read'    => '8 min',
                 'body'    => [
                     ['h2', 'The problem with renewal inboxes'],
