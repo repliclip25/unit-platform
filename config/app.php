@@ -54,6 +54,11 @@ return [
 
     'url' => env('APP_URL', 'http://localhost'),
 
+    // The one host all production traffic should resolve to — see
+    // App\Http\Middleware\EnsureCanonicalHost. Matches robots.txt's sitemap
+    // URL and the hello@unit.report mail sender, both already apex/no-www.
+    'canonical_host' => env('CANONICAL_HOST', 'unit.report'),
+
     /*
     |--------------------------------------------------------------------------
     | Application Timezone

@@ -31,6 +31,9 @@ return Application::configure(basePath: dirname(__DIR__))
             'not-pending-del'  => \App\Http\Middleware\EnsureNotPendingDeletion::class,
         ]);
 
+        // Runs first so a redirect-bound request (wrong host/scheme) never
+        // pays for session/CSRF boot it won't use.
+        $middleware->prependToGroup('web', \App\Http\Middleware\EnsureCanonicalHost::class);
         $middleware->appendToGroup('web', \App\Http\Middleware\CaptureReferralCode::class);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
