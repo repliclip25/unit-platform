@@ -56,6 +56,7 @@ Route::get('/health', function () {
 Route::get('/', fn() => view('welcome-2'))->name('home');
 
 Route::get('/sitemap.xml', [\App\Http\Controllers\SitemapController::class, 'index'])->name('sitemap');
+Route::get('/llms.txt', [\App\Http\Controllers\SitemapController::class, 'llmsTxt'])->name('llms-txt');
 
 // Account deletion confirmation (token-authenticated, no login required)
 Route::get('/account/delete-confirm/{token}',  [\App\Http\Controllers\AccountDeletionController::class, 'confirm'])->name('account.delete-confirm');

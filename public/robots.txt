@@ -2,3 +2,5 @@ User-agent: *
 Disallow:
 
 Sitemap: https://unit.report/sitemap.xml
+
+# LLMs: https://unit.report/llms.txt
