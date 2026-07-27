@@ -17,15 +17,15 @@ UNIT workers don't just answer questions—they execute work from start to finis
 ## AI Workers
 
 @foreach ($workers as $worker)
-### {{ $worker['name'] }} — {{ $worker['role'] }} ({{ $worker['status'] }})
+### {!! $worker['name'] !!} — {!! $worker['role'] !!} ({!! $worker['status'] !!})
 
 {!! $worker['description'] !!}
 
 @if (!empty($worker['testedWith']))
-Today, {{ $worker['name'] }} is being tested and refined with organizations such as:
+Today, {!! $worker['name'] !!} is being tested and refined with organizations such as:
 
 @foreach ($worker['testedWith'] as $segment)
-- {{ $segment }}
+- {!! $segment !!}
 @endforeach
 
 Additional industries and renewal workflows will be supported as the platform evolves.
@@ -35,7 +35,7 @@ Additional industries and renewal workflows will be supported as the platform ev
 ### Coming Soon
 
 @foreach ($upcomingWorkers as $name => $role)
-- {{ $name }} — {{ $role }}
+- {!! $name !!} — {!! $role !!}
 @endforeach
 
 ## Platform
@@ -62,7 +62,7 @@ UNIT is built around specialized AI workers rather than general-purpose assistan
 ## Current Worker
 
 @foreach ($workers as $worker)
-- {{ $worker['name'] }} — {{ $worker['url'] }}
+- {!! $worker['name'] !!} — {{ $worker['url'] }}
 @endforeach
 
 ## Legal
