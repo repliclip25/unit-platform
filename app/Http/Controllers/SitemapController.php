@@ -10,10 +10,16 @@ class SitemapController extends Controller
     // which only defines a $workers entry for 'ava' and 404s on anything else.
     private const PUBLIC_WORKER_SLUGS = ['ava'];
 
-    // One-line descriptions for llms.txt, keyed the same as PUBLIC_WORKER_SLUGS
-    // so a worker can't show up in one list without the other.
-    private const WORKER_SUMMARIES = [
-        'ava' => 'Renewal Coordinator — live today. Monitors Gmail inboxes, classifies renewal emails, looks up client history, and drafts submission responses for human review. Trained on NYC agency renewal workflows (NYCSCA, DOB, FDNY, MTA).',
+    // Worker detail for llms.txt, keyed the same as PUBLIC_WORKER_SLUGS so a
+    // worker can't show up in one list without the other.
+    private const WORKER_DETAILS = [
+        'ava' => [
+            'name'        => 'AVA',
+            'role'        => 'Renewal Coordinator',
+            'status'      => 'Live',
+            'description' => "AVA helps businesses manage renewal workflows from a shared inbox.\n\nAVA monitors incoming renewal emails, identifies actionable requests, gathers the information needed to process them, and prepares responses for human review before sending.",
+            'testedWith'  => ['IT & Digital Agencies', 'Insurance Brokers', 'Compliance & Licensing Firms'],
+        ],
     ];
 
     // Workers that exist in the product but don't have a public page yet —
@@ -63,26 +69,15 @@ class SitemapController extends Controller
     {
         $workers = [];
         foreach (self::PUBLIC_WORKER_SLUGS as $slug) {
-            $workers[] = [
-                'name'    => strtoupper($slug),
-                'url'     => route('public.workers.show', $slug),
-                'summary' => self::WORKER_SUMMARIES[$slug] ?? '',
-            ];
+            $detail = self::WORKER_DETAILS[$slug] ?? null;
+            if (!$detail) continue;
+            $workers[] = $detail + ['url' => route('public.workers.show', $slug)];
         }
-
-        $posts = DB::table('blog_posts')->where('status', 'published')->orderByDesc('created_at')->get(['slug', 'title']);
-        $postLinks = $posts->map(fn ($p) => ['title' => $p->title, 'url' => route('blog.show', $p->slug)])->all();
-        // Hardcoded fallback post (not in the DB) — see PublicPageController::blogPostData()
-        $postLinks[] = [
-            'title' => 'How AVA processes a NYCSCA renewal from inbox to draft in under 5 minutes',
-            'url'   => route('blog.show', 'how-ava-processes-nycsca-renewal'),
-        ];
 
         return response()
             ->view('llms.index', [
                 'workers'         => $workers,
                 'upcomingWorkers' => self::UPCOMING_WORKERS,
-                'posts'           => $postLinks,
             ])
             ->header('Content-Type', 'text/plain; charset=UTF-8');
     }
