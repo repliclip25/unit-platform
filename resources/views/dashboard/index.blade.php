@@ -520,7 +520,7 @@ $notifTextColors = ['error'=>'#f87171','warning'=>'#fbbf24','info'=>'var(--db-te
                   <span class="dc-wc-last">
                       @if($card['lastTx'])
                           Last shift: {{ \Carbon\Carbon::parse($card['lastTx']->created_at)->diffForHumans(null, true, true, 1) }} ago
-                          · <a href="{{ route('app.transactions.show', $card['lastTx']->tx_id) }}" class="dc-wc-last-tx">{{ $card['lastTx']->tx_id }}</a>
+                          · <a href="{{ route('app.transactions.show', ['slug' => $card['lastTx']->worker_slug, 'txId' => $card['lastTx']->tx_id]) }}" class="dc-wc-last-tx">{{ $card['lastTx']->tx_id }}</a>
                       @else
                           Never run
                       @endif

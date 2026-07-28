@@ -154,6 +154,36 @@ body{font-family:'Inter',sans-serif;background:var(--db-bg);color:var(--db-text)
 .td-footer{margin-top:22px;padding-top:16px;border-top:1px solid var(--db-border);display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px}
 .td-footer-note{font-size:11.5px;color:var(--db-text-muted)}
 
+/* ── Transaction Center — standardized, contract-driven stage list.
+   Every stage renders the same way regardless of worker: done (checked,
+   full opacity), active (highlighted — gold border + buttons if it's a
+   hard gate, a lighter tag otherwise), pending (dimmed, no content). ── */
+.tc-list{display:flex;flex-direction:column;gap:8px;margin-bottom:16px}
+.tc-stage{border:1px solid var(--db-border);border-radius:12px;padding:13px 16px;opacity:.4;transition:opacity .2s}
+.tc-stage.is-done,.tc-stage.is-active{opacity:1}
+.tc-stage.is-active.gate-hard{border-color:#F5C518;background:rgba(245,197,24,.08)}
+.tc-stage-head{display:flex;align-items:center;gap:10px}
+.tc-stage-icon{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10.5px;font-weight:800;flex-shrink:0;background:var(--db-chip);color:var(--db-text-muted)}
+.tc-stage.is-done .tc-stage-icon{background:#22c55e;color:#fff}
+.tc-stage.is-active.gate-hard .tc-stage-icon{background:#F5C518;color:#412402}
+.tc-stage-label{font-size:13px;font-weight:700;color:var(--db-text)}
+.tc-stage-sub{font-size:11px;color:var(--db-text-muted);margin-top:1px}
+.tc-stage-tag{font-size:9px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:3px 9px;border-radius:99px;margin-left:auto;flex-shrink:0;white-space:nowrap}
+.tc-stage-tag.blocks{background:rgba(239,159,39,.15);color:#EF9F27}
+.tc-stage-tag.soft,.tc-stage-tag.skippable{background:var(--db-chip);color:var(--db-text-muted)}
+.tc-stage-body{margin-top:10px;padding-left:32px}
+.tc-msg{background:var(--db-chip);border-radius:8px;padding:9px 11px;font-size:11.5px;color:var(--db-text-muted);line-height:1.6;margin-top:6px;white-space:pre-wrap}
+.tc-msg-meta{font-size:10.5px;color:var(--db-text-muted);margin-bottom:3px;display:flex;align-items:center;gap:6px}
+.tc-msg-meta strong{color:var(--db-text);font-weight:600}
+.tc-field-row{display:flex;flex-wrap:wrap;gap:16px;margin-top:4px}
+.tc-field{font-size:11.5px}
+.tc-field .lbl{color:var(--db-text-muted);display:block;font-size:10px;margin-bottom:2px}
+.tc-btn-row{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.tc-btn{flex:1;min-width:120px;padding:9px 12px;border-radius:9px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;text-align:center;border:none;text-decoration:none;display:block}
+.tc-btn-primary{background:#F5C518;color:#412402}
+.tc-btn-ghost{background:transparent;border:1px solid var(--db-border);color:var(--db-text-muted)}
+.tc-file-input{font-size:11.5px;color:var(--db-text-muted);margin-bottom:8px}
+
 /* ══ MOBILE ══ */
 @media(max-width:1024px){
   html,body{overflow-x:hidden;overflow-y:auto;height:auto;width:100%}
@@ -436,152 +466,219 @@ $statusColor = $statusColors[$tx->status] ?? ['bg'=>'var(--db-chip)','color'=>'v
       </div>
       @endif
 
-      <div class="td-grid">
-
-        {{-- Left column --}}
-        <div>
-
-          {{-- Read output --}}
-          @if($read)
-          <div class="td-card">
-            <div class="td-card-head">
-              <span class="td-card-num" style="background:rgba(99,102,241,.15);color:#818cf8">1</span>
-              <span class="td-card-title">{{ $stagesByKey['read_email']['label'] ?? 'Read' }}</span>
-            </div>
-            <div class="td-field">
-              <div class="td-field-label">Summary</div>
-              <div class="td-field-val">{{ $read->plain_english_summary }}</div>
-            </div>
-            <div class="td-field-row">
-              <div><div class="td-field-label">Due Date</div><div class="td-field-val">{{ $read->due_date_or_deadline ?? '—' }}</div></div>
-              <div><div class="td-field-label">Urgency</div><div class="td-field-val" style="color:#fbbf24">{{ $read->urgency }}</div></div>
-            </div>
-            <div class="td-field">
-              <div class="td-field-label">Risk if ignored</div>
-              <div class="td-field-val" style="color:var(--db-text-muted)">{{ $read->risk_if_ignored }}</div>
-            </div>
-          </div>
-          @endif
-
-          {{-- Memory output --}}
-          @if($memory)
-          <div class="td-card">
-            <div class="td-card-head">
-              <span class="td-card-num" style="background:rgba(var(--accent-rgb,241,211,98),.15);color:var(--accent-text,var(--db-text))">2</span>
-              <span class="td-card-title">{{ $stagesByKey['memory']['label'] ?? 'Memory Lookup' }}</span>
-              <span class="td-conf-badge">{{ $memory->confidence }}% confidence</span>
-            </div>
-            <div class="td-field-row">
-              <div><div class="td-field-label">Client</div><div class="td-field-val">{{ $memory->matched_client }}</div></div>
-              <div><div class="td-field-label">Asset</div><div class="td-field-val">{{ $memory->asset }}</div></div>
-              <div><div class="td-field-label">Contact</div><div class="td-field-val">{{ $memory->primary_contact_name }}</div></div>
-              <div><div class="td-field-label">Email</div><div class="td-field-val" style="color:var(--db-text-muted)">{{ $memory->primary_contact_email }}</div></div>
-            </div>
-            @if(!empty($memory->ava_rule))
-            <div class="td-field">
-              <div class="td-field-label">Rule Applied</div>
-              <div class="td-field-val" style="font-size:11.5px;color:var(--accent-text,var(--db-text))">{{ $memory->ava_rule }}</div>
-            </div>
-            @endif
-          </div>
-          @endif
-
-          {{-- NUX: repurposed copies --}}
-          @if($tx->worker_slug === 'nux' && $nuxRegister)
-          @php
-            $nuxCopies = json_decode($nuxRegister->repurposed_copies ?? '[]', true) ?: [];
-            $nuxChannels = json_decode($nuxRegister->target_channels ?? '[]', true) ?: [];
-          @endphp
-          <div class="td-card">
-            <div class="td-card-head">
-              <span class="td-card-num" style="background:rgba(94,234,212,.15);color:#5eead4">⇄</span>
-              <span class="td-card-title">Repurposed Content</span>
-            </div>
-            @forelse($nuxCopies as $copy)
-            <div class="td-field">
-              <div class="td-field-label" style="color:#5eead4;text-transform:uppercase;letter-spacing:.05em;font-weight:700">{{ strtoupper($copy['channel'] ?? '') }}</div>
-              <div class="td-pre">{{ $copy['copy'] ?? '' }}</div>
-              <div class="td-field-label" style="margin-top:4px">{{ $copy['char_count'] ?? 0 }} characters</div>
-            </div>
-            @empty
-            <p style="font-size:13px;color:var(--db-text-muted)">No copies available.</p>
-            @endforelse
-
-            @if($nuxRegister->image_url)
-            <div class="td-field" style="border-top:1px solid var(--db-border);padding-top:14px">
-              <div class="td-field-label" style="color:#5eead4;text-transform:uppercase;letter-spacing:.05em;font-weight:700;margin-bottom:8px">Generated Image</div>
-              <img src="{{ $nuxRegister->image_url }}" alt="NUX generated image" style="max-width:100%;border-radius:8px;border:1px solid var(--db-border)">
-            </div>
-            @endif
-
-            @if($nuxRegister->draft_summary)
-            <div class="td-field" style="border-top:1px solid var(--db-border);padding-top:10px;color:var(--db-text-muted);font-size:12px">{{ $nuxRegister->draft_summary }}</div>
-            @endif
-          </div>
-          @endif
-
+      {{-- NUX: repurposed copies — not AVA's gate-driven pipeline, kept as its own card --}}
+      @if($tx->worker_slug === 'nux' && $nuxRegister)
+      @php
+        $nuxCopies = json_decode($nuxRegister->repurposed_copies ?? '[]', true) ?: [];
+      @endphp
+      <div class="td-card">
+        <div class="td-card-head">
+          <span class="td-card-num" style="background:rgba(94,234,212,.15);color:#5eead4">⇄</span>
+          <span class="td-card-title">Repurposed Content</span>
         </div>
+        @forelse($nuxCopies as $copy)
+        <div class="td-field">
+          <div class="td-field-label" style="color:#5eead4;text-transform:uppercase;letter-spacing:.05em;font-weight:700">{{ strtoupper($copy['channel'] ?? '') }}</div>
+          <div class="td-pre">{{ $copy['copy'] ?? '' }}</div>
+          <div class="td-field-label" style="margin-top:4px">{{ $copy['char_count'] ?? 0 }} characters</div>
+        </div>
+        @empty
+        <p style="font-size:13px;color:var(--db-text-muted)">No copies available.</p>
+        @endforelse
 
-        {{-- Right column --}}
-        <div>
+        @if($nuxRegister->image_url)
+        <div class="td-field" style="border-top:1px solid var(--db-border);padding-top:14px">
+          <div class="td-field-label" style="color:#5eead4;text-transform:uppercase;letter-spacing:.05em;font-weight:700;margin-bottom:8px">Generated Image</div>
+          <img src="{{ $nuxRegister->image_url }}" alt="NUX generated image" style="max-width:100%;border-radius:8px;border:1px solid var(--db-border)">
+        </div>
+        @endif
 
-          {{-- Classify --}}
-          @if($classify)
-          <div class="td-card">
-            <div class="td-card-head">
-              <span class="td-card-num" style="background:rgba(245,158,11,.15);color:#fbbf24">3</span>
-              <span class="td-card-title">{{ $stagesByKey['classify']['label'] ?? 'Classification' }}</span>
+        @if($nuxRegister->draft_summary)
+        <div class="td-field" style="border-top:1px solid var(--db-border);padding-top:10px;color:var(--db-text-muted);font-size:12px">{{ $nuxRegister->draft_summary }}</div>
+        @endif
+      </div>
+      @endif
+
+      {{-- ══ TRANSACTION CENTER — the standardized, contract-driven stage list.
+           Done stages in order, the active gate (if any) highlighted, pending
+           stages dimmed. Same rendering for any worker's own gate_type stages. ══ --}}
+      <div class="tc-list">
+        @foreach($stages as $stage)
+        @php
+          $isGate = !empty($stage['gate_type']);
+          $classes = 'tc-stage is-' . $stage['state'] . ($isGate ? ' gate-' . $stage['gate_type'] : '');
+        @endphp
+        <div class="{{ $classes }}">
+          <div class="tc-stage-head">
+            <span class="tc-stage-icon">
+              @if($stage['state'] === 'done')✓@else{{ $stage['i'] + 1 }}@endif
+            </span>
+            <div style="min-width:0">
+              <div class="tc-stage-label">{{ $stage['label'] }}</div>
+              @if($stage['state'] !== 'done')<div class="tc-stage-sub">{{ $stage['sub'] }}</div>@endif
             </div>
-            <div class="td-field-row">
-              <div><div class="td-field-label">Category</div><div class="td-field-val">{{ $classify->category }}</div></div>
-              <div><div class="td-field-label">Priority</div><div class="td-field-val" style="color:#fbbf24">{{ $classify->priority }}</div></div>
-              <div style="grid-column:1/-1"><div class="td-field-label">Required Action</div><div class="td-field-val" style="color:var(--db-text-muted)">{{ $classify->required_action }}</div></div>
-            </div>
+            @if($stage['gate_type'] === 'hard')<span class="tc-stage-tag blocks">blocks renewal</span>@endif
+            @if($stage['gate_type'] === 'soft')<span class="tc-stage-tag soft">optional · won't block</span>@endif
+            @if($stage['gate_type'] === 'skippable')<span class="tc-stage-tag skippable">skippable</span>@endif
           </div>
-          @endif
 
-          {{-- Draft --}}
-          @if($draft)
-          <div class="td-card">
-            <div class="td-card-head">
-              <span class="td-card-num" style="background:rgba(34,197,94,.15);color:#86efac">4</span>
-              <span class="td-card-title">{{ $stagesByKey['draft_email']['label'] ?? 'Draft Email' }}</span>
-            </div>
-            <div class="td-field"><div class="td-field-label">To</div><div class="td-field-val">{{ $draft->to }}</div></div>
-            <div class="td-field"><div class="td-field-label">Subject</div><div class="td-field-val">{{ $draft->subject }}</div></div>
-            <div class="td-field">
-              <div class="td-field-label">Body</div>
-              <div class="td-pre">{{ $draft->body }}</div>
-            </div>
-            @if(!empty($draft->human_review_note))
-            <div class="td-review-note">
-              <div class="td-review-note-title">Review Note</div>
-              <div class="td-review-note-body">{{ $draft->human_review_note }}</div>
-            </div>
-            @endif
-          </div>
+          @if($stage['state'] !== 'pending')
+          <div class="tc-stage-body">
 
-          {{-- Human decision --}}
-          <div class="td-card">
-            <div class="td-card-title" style="margin-bottom:4px">Review &amp; Decide</div>
-            @if($tx->gmail_draft_id)
-              <div class="td-decision-hint"><span style="color:#4ade80">●</span> Draft saved in your Gmail Drafts folder — open Gmail to edit and send it yourself.</div>
-              <div class="td-decision-hint"><strong>Approve</strong> marks it as reviewed · <strong>Reject</strong> deletes the draft from Gmail.</div>
-            @else
-              <div class="td-decision-hint">No Gmail draft — decision recorded for learning only.</div>
-            @endif
-            <form method="POST" action="{{ route('app.transactions.decide', $tx->tx_id) }}">
-              @csrf
-              <textarea name="notes" rows="2" placeholder="Optional notes — why approved or rejected? Helps AVA improve." class="td-textarea"></textarea>
-              <div class="td-decision-row">
-                <button name="decision" value="approved" class="td-decision-btn" style="background:#15803d">✓ Approve</button>
-                <button name="decision" value="rejected" onclick="return confirm('Reject and delete the Gmail draft?')" class="td-decision-btn" style="background:#7f1d1d">✗ Reject &amp; Discard</button>
+            {{-- Approve & Send — up to 3 client reminder drafts --}}
+            @if($stage['key'] === 'human_decide')
+              @forelse($stage['client_drafts'] as $cd)
+              <div class="tc-msg-meta">
+                <strong>{{ ['1st','2nd','3rd'][($cd['reminder_number'] ?? 1) - 1] ?? $cd['reminder_number'] . 'th' }} reminder</strong>
+                @if(!empty($cd['days_before_expiry']))· {{ $cd['days_before_expiry'] }} days before expiry @endif
+                @if(!empty($cd['approved_at']))· approved {{ \Carbon\Carbon::parse($cd['approved_at'])->format('M j, g:i A') }} @else · awaiting your approval @endif
               </div>
-            </form>
+              <div class="tc-msg"><strong>{{ $cd['subject'] ?? '' }}</strong>{{ "\n\n" }}{{ $cd['body'] ?? '' }}</div>
+              @empty
+              <p style="font-size:12px;color:var(--db-text-muted)">No draft yet.</p>
+              @endforelse
+
+              @foreach($stage['reminders'] as $r)
+              <div class="tc-msg-meta" style="margin-top:8px"><strong>Nudge — attempt {{ $r['attempt_number'] }}</strong> · {{ \Carbon\Carbon::parse($r['sent_at'])->format('M j, g:i A') }}</div>
+              <div class="tc-msg">{{ $r['subject'] }}{{ "\n\n" }}{{ $r['body'] }}</div>
+              @endforeach
+
+              @if($stage['state'] === 'active' && $tx->status !== 'rejected')
+              @if($tx->nudging_paused_at)
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin:8px 0">
+                <p style="font-size:12px;color:var(--db-text-muted)">Paused — no response after several reminders.</p>
+                <form method="POST" action="{{ route('app.transactions.resume-nudging', $tx->tx_id) }}">
+                  @csrf<button type="submit" class="tc-btn tc-btn-ghost">Resume</button>
+                </form>
+              </div>
+              @endif
+              <div class="tc-btn-row">
+                <form method="POST" action="{{ route('app.transactions.decide', $tx->tx_id) }}" style="flex:1">
+                  @csrf<input type="hidden" name="decision" value="approved">
+                  <button type="submit" class="tc-btn tc-btn-primary" style="width:100%">Approve &amp; send</button>
+                </form>
+                <form method="POST" action="{{ route('app.transactions.decide', $tx->tx_id) }}" style="flex:1" onclick="return confirm('Reject and delete the Gmail draft?')">
+                  @csrf<input type="hidden" name="decision" value="rejected">
+                  <button type="submit" class="tc-btn tc-btn-ghost" style="width:100%">Reject</button>
+                </form>
+              </div>
+              @endif
+            @endif
+
+            {{-- Request Invoice — soft nudge with OCR --}}
+            @if($stage['key'] === 'request_invoice')
+              @php $inv = $stage['content'] ?? []; @endphp
+              @if(($inv['status'] ?? null) === 'attached')
+                <div class="tc-field-row">
+                  <div class="tc-field"><span class="lbl">Amount</span>{{ $inv['ocr']['amount'] ?? '—' }} {{ $inv['ocr']['currency'] ?? '' }}</div>
+                  <div class="tc-field"><span class="lbl">Issued</span>{{ $inv['ocr']['issued_date'] ?? '—' }}</div>
+                  <div class="tc-field"><span class="lbl">Due</span>{{ $inv['ocr']['due_date'] ?? '—' }}</div>
+                </div>
+                @foreach($inv['client_messages'] ?? [] as $m)
+                <div class="tc-msg-meta"><strong>Message {{ $m['sequence'] ?? 1 }}</strong> · {{ \Carbon\Carbon::parse($m['sent_at'])->format('M j, g:i A') }}</div>
+                <div class="tc-msg">{{ $m['subject'] ?? '' }}{{ "\n\n" }}{{ $m['body'] ?? '' }}</div>
+                @endforeach
+              @elseif(($inv['status'] ?? null) === 'simulated')
+                <div class="tc-msg">{{ $inv['sample'] ?? '' }}</div>
+              @else
+                <p style="font-size:12px;color:var(--db-text-muted);margin-bottom:8px">Not attached yet — this won't block the renewal either way.</p>
+                <form method="POST" action="{{ route('app.transactions.attach-invoice', $tx->tx_id) }}" enctype="multipart/form-data">
+                  @csrf
+                  <input type="file" name="invoice_file" accept="application/pdf" class="tc-file-input" required>
+                  <button type="submit" class="tc-btn tc-btn-ghost">Attach invoice</button>
+                </form>
+              @endif
+              @foreach($stage['reminders'] as $r)
+              <div class="tc-msg-meta" style="margin-top:8px"><strong>Nudge — attempt {{ $r['attempt_number'] }}</strong> · {{ \Carbon\Carbon::parse($r['sent_at'])->format('M j, g:i A') }}</div>
+              <div class="tc-msg">{{ $r['subject'] }}{{ "\n\n" }}{{ $r['body'] }}</div>
+              @endforeach
+            @endif
+
+            {{-- Request Documents — skippable yes/no --}}
+            @if($stage['key'] === 'request_documents')
+              @php $docs = $stage['content'] ?? []; @endphp
+              @if(($docs['status'] ?? null) === 'skipped')
+                <p style="font-size:12px;color:var(--db-text-muted)">No documents needed for this renewal.</p>
+              @elseif(($docs['status'] ?? null) === 'attached')
+                @foreach($docs['client_messages'] ?? [] as $m)
+                <div class="tc-msg-meta"><strong>Message {{ $m['sequence'] ?? 1 }}</strong> · {{ \Carbon\Carbon::parse($m['sent_at'])->format('M j, g:i A') }}</div>
+                <div class="tc-msg">{{ $m['subject'] ?? '' }}{{ "\n\n" }}{{ $m['body'] ?? '' }}</div>
+                @endforeach
+              @else
+                <p style="font-size:12px;color:var(--db-text-muted);margin-bottom:8px">Any documents to send the client?</p>
+                <div class="tc-btn-row">
+                  <form method="POST" action="{{ route('app.transactions.attach-documents', $tx->tx_id) }}" enctype="multipart/form-data" style="flex:1">
+                    @csrf
+                    <input type="file" name="document_file" class="tc-file-input" required>
+                    <button type="submit" class="tc-btn tc-btn-ghost" style="width:100%">Yes, attach one</button>
+                  </form>
+                  <form method="POST" action="{{ route('app.transactions.skip-documents', $tx->tx_id) }}" style="flex:1">
+                    @csrf
+                    <button type="submit" class="tc-btn tc-btn-ghost" style="width:100%">No, skip</button>
+                  </form>
+                </div>
+              @endif
+            @endif
+
+            {{-- Confirm Payment — the one hard gate downstream of Approve & Send --}}
+            @if($stage['key'] === 'confirm_payment')
+              @php $pay = $stage['content'] ?? []; @endphp
+              @foreach($stage['reminders'] as $r)
+              <div class="tc-msg-meta"><strong>Reminder — attempt {{ $r['attempt_number'] }}</strong> · {{ \Carbon\Carbon::parse($r['sent_at'])->format('M j, g:i A') }}</div>
+              <div class="tc-msg">{{ $r['subject'] }}{{ "\n\n" }}{{ $r['body'] }}</div>
+              @endforeach
+
+              @if(($pay['confirmed'] ?? null) === true)
+                <p style="font-size:12px;color:var(--db-text-muted)">Confirmed {{ !empty($pay['confirmed_at']) ? \Carbon\Carbon::parse($pay['confirmed_at'])->format('M j, g:i A') : '' }}.</p>
+              @elseif(($pay['confirmed'] ?? null) === false)
+                <p style="font-size:12px;color:var(--db-text-muted)">Canceled {{ !empty($pay['canceled_at']) ? \Carbon\Carbon::parse($pay['canceled_at'])->format('M j, g:i A') : '' }}.</p>
+              @elseif($stage['state'] === 'active')
+                @if($tx->nudging_paused_at)
+                <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px">
+                  <p style="font-size:12px;color:var(--db-text-muted)">Paused — no response after several reminders.</p>
+                  <form method="POST" action="{{ route('app.transactions.resume-nudging', $tx->tx_id) }}">
+                    @csrf<button type="submit" class="tc-btn tc-btn-ghost">Resume</button>
+                  </form>
+                </div>
+                @endif
+                <div class="tc-btn-row">
+                  <form method="POST" action="{{ route('app.transactions.confirm-renewal', $tx->tx_id) }}" style="flex:1">
+                    @csrf<button type="submit" class="tc-btn tc-btn-primary" style="width:100%">Confirm payment</button>
+                  </form>
+                  <form method="POST" action="{{ route('app.transactions.cancel-renewal', $tx->tx_id) }}" style="flex:1" onclick="return confirm('Cancel this renewal?')">
+                    @csrf<button type="submit" class="tc-btn tc-btn-ghost" style="width:100%">Cancel renewal</button>
+                  </form>
+                </div>
+              @endif
+            @endif
+
+            {{-- Everything else — generic content dump from the contract's output_column --}}
+            @if(!in_array($stage['key'], ['human_decide','request_invoice','request_documents','confirm_payment']) && $stage['content'])
+              @php $c = $stage['content']; @endphp
+              @if($stage['key'] === 'draft_email')
+                <div class="tc-field-row">
+                  <div class="tc-field"><span class="lbl">To</span>{{ $c['to'] ?? '—' }}</div>
+                </div>
+                <div class="tc-msg"><strong>{{ $c['subject'] ?? '' }}</strong>{{ "\n\n" }}{{ $c['body'] ?? '' }}</div>
+              @elseif($stage['key'] === 'notify_stakeholders')
+                <div class="tc-msg">{{ $c['subject'] ?? '' }}{{ "\n\n" }}{{ $c['body'] ?? '' }}</div>
+              @elseif($stage['key'] === 'archive_evidence' && !empty($c['path']))
+                <a href="{{ route('app.transactions.archive-download', $tx->tx_id) }}" class="tc-btn tc-btn-ghost" style="display:inline-block;width:auto">Download PDF archive →</a>
+              @else
+                <div class="tc-field-row">
+                  @foreach($c as $k => $v)
+                    @if(is_scalar($v) && $v !== null && $v !== '')
+                    <div class="tc-field"><span class="lbl">{{ ucwords(str_replace('_',' ',$k)) }}</span>{{ $v }}</div>
+                    @endif
+                  @endforeach
+                </div>
+              @endif
+            @endif
+
           </div>
           @endif
-
         </div>
+        @endforeach
       </div>
 
       {{-- Footer actions --}}

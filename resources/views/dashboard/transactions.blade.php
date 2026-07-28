@@ -364,7 +364,7 @@ $priorityColors = ['Critical'=>'#ef4444','High'=>'#f59e0b','Medium'=>'#9ca3af','
               </td>
               <td><span class="tx-age">{{ \Carbon\Carbon::parse($tx->created_at)->diffForHumans(null, true) }}</span></td>
               <td>
-                <a href="{{ route('app.transactions.show', $tx->tx_id) }}" class="tx-view-btn {{ $isReview ? 'review' : 'view' }}">
+                <a href="{{ route('app.transactions.show', ['slug' => $tx->worker_slug, 'txId' => $tx->tx_id]) }}" class="tx-view-btn {{ $isReview ? 'review' : 'view' }}">
                   {{ $isReview ? 'Review →' : 'View →' }}
                 </a>
               </td>

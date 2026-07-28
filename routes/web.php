@@ -85,6 +85,13 @@ Route::get('/nux/x/callback',        [NuxController::class, 'xCallback'])->name(
 Route::post('/stripe/webhook', [\App\Http\Controllers\StripeWebhookController::class, 'handle'])
     ->name('stripe.webhook');
 
+// Archive PDF — the QR code printed on the archive itself points here. Public
+// and unauthenticated on purpose (anyone with the physical/PDF page should be
+// able to pull the record up), gated only by Laravel's signed-URL expiry.
+Route::get('/archive/{txId}/download', [TransactionController::class, 'downloadArchivePublic'])
+    ->middleware('signed')
+    ->name('archive.public-download');
+
 // Gmail Pub/Sub webhook (Google pushes here — must be public)
 Route::post('/workers/ava/gmail/webhook', [GmailController::class, 'webhook'])->name('ava.gmail.webhook');
 
@@ -152,7 +159,10 @@ Route::middleware(['auth', 'verified', 'onboarded', 'not-pending-del'])->group(f
             ? redirect()->route('app.workers.transactions', array_merge(['slug' => $slug], request()->query()))
             : redirect()->route('app.workers.index');
     })->name('transactions');
-    Route::get('/transactions/{txId}',       [TransactionController::class, 'show'])->name('transactions.show');
+    // Transaction Center is the page any worker's transaction opens into —
+    // worker-scoped in the URL (/app/{slug}/transaction/{txId}) since the
+    // stage list, gates, and content are entirely contract-driven per worker.
+    Route::get('/{slug}/transaction/{txId}', [TransactionController::class, 'show'])->name('transactions.show');
     Route::post('/transactions/{txId}/refire',  [TransactionController::class, 'refire'])->name('transactions.refire');
     Route::post('/transactions/{txId}/dismiss', [TransactionController::class, 'dismiss'])->name('transactions.dismiss');
     Route::delete('/transactions/{txId}',    [TransactionController::class, 'destroy'])->name('transactions.delete');

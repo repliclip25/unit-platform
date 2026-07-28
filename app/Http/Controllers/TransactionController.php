@@ -39,9 +39,13 @@ class TransactionController extends Controller
         ));
     }
 
-    public function show(string $txId)
+    public function show(string $slug, string $txId)
     {
         $tx = DB::table('transactions')->where('tx_id', $txId)->where('user_id', auth()->id())->firstOrFail();
+
+        if ($tx->worker_slug !== $slug) {
+            return redirect()->route('app.transactions.show', ['slug' => $tx->worker_slug, 'txId' => $txId]);
+        }
 
         $nuxRegister = null;
         if ($tx->worker_slug === 'nux') {
@@ -54,16 +58,68 @@ class TransactionController extends Controller
         // (e.g. "ava-renewal-coordinator") instead of the clean slug.
         $dep         = DB::table('worker_deployments')->where('id', $tx->deployment_id)->first();
         $contract    = \App\Platform\Services\WorkerRegistry::resolve($dep->worker_slug ?? 'ava');
-        $stagesByKey = collect($contract->pipelineStages())->keyBy('key');
+        $rawStages   = $contract->pipelineStages();
+        $stagesByKey = collect($rawStages)->keyBy('key');
+
+        // Transaction Center — the standardized, contract-driven stage list.
+        // Any worker declaring gate_type on its own stages renders here the
+        // same way, no new UI code required.
+        $stages = $this->buildStageList($tx, $rawStages);
 
         $shell = \App\Platform\Services\WorkerShellService::build(auth()->id(), '');
         extract($shell); // workerCatalog, registryRows, registryRow, profileImg, coverImg, tokenTotal
         $firstName = explode(' ', trim(auth()->user()->name))[0];
 
         return view('dashboard.transaction-detail', compact(
-            'tx', 'nuxRegister', 'stagesByKey', 'dep',
+            'tx', 'nuxRegister', 'stagesByKey', 'stages', 'dep',
             'workerCatalog', 'tokenTotal', 'firstName'
         ));
+    }
+
+    // ── Transaction Center stage assembly ────────────────────────────────
+    // For each contract stage, in order: is it done/active/pending, and
+    // what does it actually have to show? Driven entirely by output_column
+    // + gate_type from the contract — adding a stage to a worker's
+    // pipelineStages() shows up here automatically.
+    private function buildStageList(object $tx, array $rawStages): array
+    {
+        $currentKey = $tx->fulfillment_stage ?: $this->legacyCurrentStageKey($tx->status);
+        $currentIdx = collect($rawStages)->search(fn($s) => $s['key'] === $currentKey);
+        if ($currentIdx === false) $currentIdx = 0;
+
+        $reminders    = json_decode($tx->reminders ?? '[]', true) ?: [];
+        $clientDrafts = json_decode($tx->client_drafts ?? '[]', true) ?: [];
+
+        return collect($rawStages)->map(function ($stage, $i) use ($tx, $currentIdx, $reminders, $clientDrafts) {
+            $state = $i < $currentIdx ? 'done' : ($i === $currentIdx ? 'active' : 'pending');
+
+            $content = $stage['output_column'] && $tx->{$stage['output_column']}
+                ? json_decode($tx->{$stage['output_column']}, true)
+                : null;
+
+            $stageReminders = array_values(array_filter($reminders, fn($r) => ($r['stage_key'] ?? null) === $stage['key']));
+
+            return array_merge(['gate_type' => null], $stage, [
+                'i'         => $i,
+                'state'     => $state,
+                'content'   => $content,
+                'reminders' => $stageReminders,
+                // human_decide's real content is the up-to-3 client drafts,
+                // not a single output_column value.
+                'client_drafts' => $stage['key'] === 'human_decide' ? $clientDrafts : [],
+            ]);
+        })->all();
+    }
+
+    // Transactions created before fulfillment_stage existed (or that never
+    // left the fast synchronous chain) fall back to the old status-driven
+    // mapping so they still render sensibly here.
+    private function legacyCurrentStageKey(string $status): string
+    {
+        return match ($status) {
+            'draft_ready', 'approved', 'sent' => 'human_decide',
+            default => 'webhook',
+        };
     }
 
     public function status(string $txId)
@@ -432,6 +488,25 @@ class TransactionController extends Controller
     public function downloadArchive(string $txId)
     {
         $tx = DB::table('transactions')->where('tx_id', $txId)->where('user_id', auth()->id())->firstOrFail();
+        $archive = json_decode($tx->archive_output ?? '{}', true) ?: [];
+        $path    = $archive['path'] ?? null;
+
+        $disk = \Illuminate\Support\Facades\Storage::disk(config('filesystems.media_disk', 'public'));
+        if (!$path || !$disk->exists($path)) {
+            abort(404, 'Archive not found');
+        }
+
+        return $disk->download($path, "{$txId}-renewal-archive.pdf");
+    }
+
+    // Unauthenticated counterpart for the QR code printed on the archive —
+    // validity comes entirely from the request's signature/expiry, not a
+    // logged-in session.
+    public function downloadArchivePublic(string $txId)
+    {
+        $tx = DB::table('transactions')->where('tx_id', $txId)->first();
+        if (!$tx) abort(404);
+
         $archive = json_decode($tx->archive_output ?? '{}', true) ?: [];
         $path    = $archive['path'] ?? null;
 

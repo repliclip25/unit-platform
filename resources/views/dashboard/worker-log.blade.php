@@ -288,7 +288,7 @@ $statusColors = [
         <div class="lg-row">
           <div style="flex:1;min-width:0">
             <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
-              <a href="{{ route('app.transactions.show', $entry->tx_id) }}" class="lg-tx-id">{{ $entry->tx_id }}</a>
+              <a href="{{ route('app.transactions.show', ['slug' => $dep->worker_slug, 'txId' => $entry->tx_id]) }}" class="lg-tx-id">{{ $entry->tx_id }}</a>
               <span class="lg-badge" style="background:{{ $sc['bg'] }};color:{{ $sc['text'] }}">{{ $entry->status }}</span>
               @if($entry->priority)<span class="lg-priority">{{ $entry->priority }}</span>@endif
             </div>
