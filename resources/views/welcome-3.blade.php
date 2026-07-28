@@ -945,7 +945,12 @@ body{
   gap:clamp(32px,4vw,56px);align-items:center;
 }
 .industries-photo{display:flex;justify-content:center}
-.industries-photo img{max-width:240px;width:100%}
+.industries-photo img{
+  max-width:240px;width:100%;aspect-ratio:4/5;
+  object-fit:cover;object-position:top center;
+  border-radius:20px;border:1px solid var(--border);
+  box-shadow:0 8px 24px rgba(0,0,0,.08);
+}
 .industries-tags{display:flex;flex-wrap:wrap;gap:10px;margin-top:clamp(24px,3vw,32px)}
 
 /* ── WHY AI AGENTS COMPARISON ── */
