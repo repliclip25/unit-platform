@@ -862,7 +862,7 @@ body{
   display:grid;grid-template-columns:1.5fr 1fr;
   gap:clamp(24px,3vw,40px);
   margin-top:clamp(32px,4vw,48px);
-  align-items:stretch;
+  align-items:start;
 }
 .problems-grid{
   display:grid;grid-template-columns:repeat(2,1fr);
@@ -879,10 +879,13 @@ body{
 .problem-text h4{font-size:1.05rem;font-weight:700;color:var(--text);margin-bottom:8px}
 .problem-text p{font-size:13.5px;color:var(--t3);line-height:1.65}
 
-/* ── PROBLEMS VIDEO CAROUSEL ── */
-.problems-video{position:relative;min-height:100%}
+/* ── PROBLEMS VIDEO CAROUSEL ──
+   Clips are shot reel-size (9:16 portrait) — size the frame to match
+   instead of a wide landscape box, so object-fit:cover doesn't crop
+   into a zoomed-in mess. */
+.problems-video{position:relative;max-width:320px;margin:0 auto}
 .pv-slides{
-  display:flex;height:100%;min-height:380px;overflow-x:auto;
+  display:flex;aspect-ratio:9/16;overflow-x:auto;
   scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;
   scrollbar-width:none;-ms-overflow-style:none;
   border-radius:20px;background:#0D0D0D;
@@ -1065,7 +1068,7 @@ body{
   .problems-grid{grid-template-columns:1fr}
   .problem-col{border-left:none;border-top:1px solid var(--border)}
   .problem-col:first-child{border-top:none}
-  .pv-slides{min-height:280px}
+  .problems-video{max-width:260px;margin-top:8px}
   .pv-prev{left:8px}
   .pv-next{right:8px}
 }
