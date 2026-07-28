@@ -1358,13 +1358,14 @@ body{
         </button>
         <div class="pv-slides">
           <div class="pv-slide">
+            <video class="pv-media" src="{{ asset('videos/AVA.MP4') }}" playsinline preload="metadata"></video>
+            <div class="pv-play"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+            <div class="pv-caption"><span class="pv-caption-txt">Meet AVA</span></div>
+          </div>
+          <div class="pv-slide">
             <video class="pv-media" src="{{ asset('videos/DOX.mp4') }}" playsinline preload="metadata"></video>
             <div class="pv-play"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
             <div class="pv-caption"><span class="pv-caption-txt">Meet DOX <span class="pv-soon">Coming Soon</span></span></div>
-          </div>
-          <div class="pv-slide">
-            <div class="pv-play"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
-            <div class="pv-caption"><span class="pv-caption-txt">Meet AVA</span></div>
           </div>
           <div class="pv-slide">
             <div class="pv-play"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
