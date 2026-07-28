@@ -895,8 +895,9 @@ body{
   padding:24px 16px 18px;font-family:var(--font-h);font-size:14.5px;font-weight:800;
   border-bottom:1px solid var(--border);text-align:center;color:var(--text);
 }
-.compare-icon{width:26px;height:26px;margin:0 auto 12px;color:var(--text)}
+.compare-icon{width:26px;height:26px;margin:0 auto 12px;color:var(--text);flex-shrink:0}
 .compare-icon svg{width:100%;height:100%}
+.compare-hint{display:none}
 .compare-col.hl .compare-head{color:#fff;border-bottom-color:rgba(255,255,255,.15)}
 .compare-col.hl .compare-icon{color:#fff}
 .compare-row{
@@ -977,6 +978,13 @@ body{
   .lc-row{flex-wrap:wrap;gap:8px}
   .lc-photo{min-width:calc(50% - 5px);flex:1}
   .lc-photo img{height:200px}
+  .compare-wrap{position:relative}
+  .compare-wrap::after{
+    content:'';position:absolute;right:0;top:0;bottom:0;width:36px;
+    background:linear-gradient(to left,var(--soft),transparent);
+    pointer-events:none;
+  }
+  [data-theme="dark"] .compare-wrap::after{background:linear-gradient(to left,#0D0D0D,transparent)}
   .compare-grid{
     display:flex;overflow-x:auto;
     scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;
@@ -984,11 +992,19 @@ body{
   }
   .compare-grid::-webkit-scrollbar{display:none}
   .compare-col{
-    flex:0 0 78%;min-width:230px;
+    flex:0 0 66%;min-width:210px;
     border-right:1px solid var(--border);
     scroll-snap-align:start;
   }
   .compare-col:last-child{border-right:none}
+  .compare-head{text-align:left;display:flex;align-items:center;gap:12px}
+  .compare-icon{margin:0}
+  .compare-row{text-align:left}
+  .compare-hint{
+    display:flex!important;align-items:center;gap:6px;justify-content:center;
+    font-size:12px;color:var(--t3);margin-top:14px;
+  }
+  .compare-hint svg{width:13px;height:13px}
   .problems-grid{grid-template-columns:1fr}
   .problem-col{border-left:none;border-top:1px solid var(--border)}
   .problem-col:first-child{border-top:none}
@@ -1412,37 +1428,43 @@ body{
       <div class="sec-eye">Why AI agents</div>
       <h2 class="sec-h">Why Businesses Are Replacing<br>Repetitive Work with <em class="hl">AI Agents</em></h2>
     </div>
-    <div class="compare-grid">
-      <div class="compare-col">
-        <div class="compare-head">
-          <div class="compare-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg></div>
-          Traditional Software
+    <div class="compare-wrap">
+      <div class="compare-grid">
+        <div class="compare-col">
+          <div class="compare-head">
+            <div class="compare-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg></div>
+            Traditional Software
+          </div>
+          <div class="compare-row">Waits for you to click</div>
+          <div class="compare-row">One feature</div>
+          <div class="compare-row">Doesn't follow up</div>
+          <div class="compare-row">Tool</div>
         </div>
-        <div class="compare-row">Waits for you to click</div>
-        <div class="compare-row">One feature</div>
-        <div class="compare-row">Doesn't follow up</div>
-        <div class="compare-row">Tool</div>
-      </div>
-      <div class="compare-col">
-        <div class="compare-head">
-          <div class="compare-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg></div>
-          AI Chatbots
+        <div class="compare-col">
+          <div class="compare-head">
+            <div class="compare-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg></div>
+            AI Chatbots
+          </div>
+          <div class="compare-row">Waits for prompts</div>
+          <div class="compare-row">One conversation</div>
+          <div class="compare-row">Doesn't remember</div>
+          <div class="compare-row">Assistant</div>
         </div>
-        <div class="compare-row">Waits for prompts</div>
-        <div class="compare-row">One conversation</div>
-        <div class="compare-row">Doesn't remember</div>
-        <div class="compare-row">Assistant</div>
-      </div>
-      <div class="compare-col hl">
-        <div class="compare-head">
-          <div class="compare-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M13 2L4.09 12.11a1 1 0 00.76 1.65h5.91l-1 8.24 8.91-10.11a1 1 0 00-.76-1.65h-5.91z"/></svg></div>
-          UNIT AI Agents
+        <div class="compare-col hl">
+          <div class="compare-head">
+            <div class="compare-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M13 2L4.09 12.11a1 1 0 00.76 1.65h5.91l-1 8.24 8.91-10.11a1 1 0 00-.76-1.65h-5.91z"/></svg></div>
+            UNIT AI Agents
+          </div>
+          <div class="compare-row">Owns work proactively</div>
+          <div class="compare-row">One workflow</div>
+          <div class="compare-row">Tracks work until completion</div>
+          <div class="compare-row">Worker</div>
         </div>
-        <div class="compare-row">Owns work proactively</div>
-        <div class="compare-row">One workflow</div>
-        <div class="compare-row">Tracks work until completion</div>
-        <div class="compare-row">Worker</div>
       </div>
+    </div>
+    <div class="compare-hint">
+      Swipe to compare
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
     </div>
   </div>
 </section>
