@@ -343,7 +343,7 @@ body{
 /* ── WORKER CARDS ── */
 .workers{background:var(--soft)}
 .wk-grid{
-  display:grid;grid-template-columns:repeat(4,1fr);
+  display:grid;grid-template-columns:repeat(2,1fr);
   gap:16px;
 }
 .wk-card{
@@ -1274,48 +1274,6 @@ body{
   </div>
 </section>
 
-<!-- WHY AI AGENTS -->
-<section class="compare-sec sec">
-  <div class="w">
-    <div class="center" style="margin-bottom:0">
-      <div class="sec-eye">Why AI agents</div>
-      <h2 class="sec-h">Why Businesses Are Replacing<br>Repetitive Work with <em class="hl">AI Agents</em></h2>
-    </div>
-    <div class="compare-grid">
-      <div class="compare-col">
-        <div class="compare-head">
-          <div class="compare-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg></div>
-          Traditional Software
-        </div>
-        <div class="compare-row">Waits for you to click</div>
-        <div class="compare-row">One feature</div>
-        <div class="compare-row">Doesn't follow up</div>
-        <div class="compare-row">Tool</div>
-      </div>
-      <div class="compare-col">
-        <div class="compare-head">
-          <div class="compare-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg></div>
-          AI Chatbots
-        </div>
-        <div class="compare-row">Waits for prompts</div>
-        <div class="compare-row">One conversation</div>
-        <div class="compare-row">Doesn't remember</div>
-        <div class="compare-row">Assistant</div>
-      </div>
-      <div class="compare-col hl">
-        <div class="compare-head">
-          <div class="compare-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M13 2L4.09 12.11a1 1 0 00.76 1.65h5.91l-1 8.24 8.91-10.11a1 1 0 00-.76-1.65h-5.91z"/></svg></div>
-          UNIT AI Agents
-        </div>
-        <div class="compare-row">Owns work proactively</div>
-        <div class="compare-row">One workflow</div>
-        <div class="compare-row">Tracks work until completion</div>
-        <div class="compare-row">Worker</div>
-      </div>
-    </div>
-  </div>
-</section>
-
 <!-- WORKERS -->
 <section class="workers sec" id="workers">
   <div class="w">
@@ -1443,6 +1401,48 @@ body{
         </div>
       </div>
 
+    </div>
+  </div>
+</section>
+
+<!-- WHY AI AGENTS -->
+<section class="compare-sec sec">
+  <div class="w">
+    <div class="center" style="margin-bottom:0">
+      <div class="sec-eye">Why AI agents</div>
+      <h2 class="sec-h">Why Businesses Are Replacing<br>Repetitive Work with <em class="hl">AI Agents</em></h2>
+    </div>
+    <div class="compare-grid">
+      <div class="compare-col">
+        <div class="compare-head">
+          <div class="compare-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg></div>
+          Traditional Software
+        </div>
+        <div class="compare-row">Waits for you to click</div>
+        <div class="compare-row">One feature</div>
+        <div class="compare-row">Doesn't follow up</div>
+        <div class="compare-row">Tool</div>
+      </div>
+      <div class="compare-col">
+        <div class="compare-head">
+          <div class="compare-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg></div>
+          AI Chatbots
+        </div>
+        <div class="compare-row">Waits for prompts</div>
+        <div class="compare-row">One conversation</div>
+        <div class="compare-row">Doesn't remember</div>
+        <div class="compare-row">Assistant</div>
+      </div>
+      <div class="compare-col hl">
+        <div class="compare-head">
+          <div class="compare-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M13 2L4.09 12.11a1 1 0 00.76 1.65h5.91l-1 8.24 8.91-10.11a1 1 0 00-.76-1.65h-5.91z"/></svg></div>
+          UNIT AI Agents
+        </div>
+        <div class="compare-row">Owns work proactively</div>
+        <div class="compare-row">One workflow</div>
+        <div class="compare-row">Tracks work until completion</div>
+        <div class="compare-row">Worker</div>
+      </div>
     </div>
   </div>
 </section>
