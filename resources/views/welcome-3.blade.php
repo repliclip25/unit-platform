@@ -880,12 +880,13 @@ body{
 .problem-text p{font-size:13.5px;color:var(--t3);line-height:1.65}
 
 /* ── PROBLEMS VIDEO CAROUSEL ──
-   Clips are shot reel-size (9:16 portrait) — size the frame to match
-   instead of a wide landscape box, so object-fit:cover doesn't crop
-   into a zoomed-in mess. */
-.problems-video{position:relative}
+   Clips are shot reel-size (9:16 portrait). Cap the height (not the
+   width) so the whole clip fits in one screen with room to spare —
+   width is then derived from the aspect ratio, not stretched to fill
+   the column, so the frame stays centered instead of edge-to-edge. */
+.problems-video{position:relative;width:fit-content;margin:0 auto}
 .pv-slides{
-  display:flex;aspect-ratio:9/16;overflow-x:auto;
+  display:flex;height:min(65vh,620px);aspect-ratio:9/16;overflow-x:auto;
   scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;
   scrollbar-width:none;-ms-overflow-style:none;
   border-radius:20px;background:#0D0D0D;
