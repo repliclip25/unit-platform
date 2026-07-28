@@ -698,6 +698,15 @@ $statusColor = $statusColors[$tx->status] ?? ['bg'=>'var(--db-chip)','color'=>'v
             @if(!in_array($stage['key'], ['human_decide','request_invoice','request_documents','confirm_payment']) && $stage['content'])
               @php $c = $stage['content']; @endphp
               @if($stage['key'] === 'draft_email')
+                @php
+                  $roundNum   = max((int) ($tx->client_reminder_number ?? 0), 1);
+                  $roundLabel = ['1st','2nd','3rd'][$roundNum - 1] ?? ($roundNum . 'th');
+                  $roundDays  = [1 => 30, 2 => 15, 3 => 0][$roundNum] ?? null;
+                @endphp
+                <div class="tc-msg-meta">
+                  {{ $roundLabel }} reminder draft
+                  @if(!$tx->is_test && $roundDays !== null)· {{ $roundDays }} days before expiry cadence @endif
+                </div>
                 <div class="tc-field-row">
                   <div class="tc-field"><span class="lbl">To</span>{{ $c['to'] ?? '—' }}</div>
                 </div>
