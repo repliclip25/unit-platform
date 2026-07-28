@@ -934,10 +934,19 @@ body{
 .pv-prev{left:-16px}
 .pv-next{right:-16px}
 
-/* ── INDUSTRIES ── */
+/* ── INDUSTRIES ── — a worker's card: photo of the specific worker
+   on the left, their info on the right. Industries are what AVA
+   serves today; once other workers are live, they get their own
+   card with their own capabilities here, not a shared UNIT-wide claim. */
 .industries-sec{background:#fff}
 [data-theme="dark"] .industries-sec{background:#0D0D0D}
-.industries-tags{display:flex;flex-wrap:wrap;gap:10px;margin-top:clamp(24px,3vw,36px)}
+.industries-card{
+  display:grid;grid-template-columns:260px 1fr;
+  gap:clamp(32px,4vw,56px);align-items:center;
+}
+.industries-photo{display:flex;justify-content:center}
+.industries-photo img{max-width:240px;width:100%}
+.industries-tags{display:flex;flex-wrap:wrap;gap:10px;margin-top:clamp(24px,3vw,32px)}
 
 /* ── WHY AI AGENTS COMPARISON ── */
 .compare-sec{background:var(--soft)}
@@ -1070,6 +1079,8 @@ body{
   .problem-col{border-left:none;border-top:1px solid var(--border)}
   .problem-col:first-child{border-top:none}
   .problems-video{margin-top:8px}
+  .industries-card{grid-template-columns:1fr;text-align:center;justify-items:center}
+  .industries-tags{justify-content:center}
 }
 @media(max-width:480px){
   .wk-grid{grid-template-columns:1fr}
@@ -1621,22 +1632,29 @@ body{
 </section>
 
 <!-- INDUSTRIES -->
+{{-- Worker's card: AVA's photo + her info, not a generic UNIT-wide
+     claim. Other workers get their own card here once they're live. --}}
 <section class="industries-sec sec">
   <div class="w">
-    <div class="center" style="margin-bottom:0">
-      <div class="sec-eye">Industries</div>
-      <h2 class="sec-h">Built for Teams With Recurring,<br>Deadline-Driven Work</h2>
-      <p class="sec-p">UNIT AI Workers are built for organizations where a missed deadline has a real cost — not generic office work.</p>
-    </div>
-    <div class="industries-tags" style="justify-content:center">
-      <span class="what-pill">Insurance</span>
-      <span class="what-pill">IT Services</span>
-      <span class="what-pill">Digital Agencies</span>
-      <span class="what-pill">Compliance</span>
-      <span class="what-pill">Professional Services</span>
-      <span class="what-pill">Accounting</span>
-      <span class="what-pill">Law Firms</span>
-      <span class="what-pill">Consultancies</span>
+    <div class="industries-card">
+      <div class="industries-photo">
+        <img src="/images/ava-stand.png" alt="AVA">
+      </div>
+      <div class="industries-info">
+        <div class="sec-eye">AVA · Industries served</div>
+        <h2 class="sec-h">Built for Teams With Recurring,<br>Deadline-Driven Work</h2>
+        <p class="sec-p">AVA is built for organizations where a missed renewal deadline has a real cost — not generic office work.</p>
+        <div class="industries-tags">
+          <span class="what-pill">Insurance</span>
+          <span class="what-pill">IT Services</span>
+          <span class="what-pill">Digital Agencies</span>
+          <span class="what-pill">Compliance</span>
+          <span class="what-pill">Professional Services</span>
+          <span class="what-pill">Accounting</span>
+          <span class="what-pill">Law Firms</span>
+          <span class="what-pill">Consultancies</span>
+        </div>
+      </div>
     </div>
   </div>
 </section>
