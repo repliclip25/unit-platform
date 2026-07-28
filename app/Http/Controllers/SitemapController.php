@@ -14,11 +14,13 @@ class SitemapController extends Controller
     // worker can't show up in one list without the other.
     private const WORKER_DETAILS = [
         'ava' => [
-            'name'        => 'AVA',
-            'role'        => 'Renewal Coordinator',
-            'status'      => 'Live',
-            'description' => "AVA helps businesses manage renewal workflows from a shared inbox.\n\nAVA monitors incoming renewal emails, identifies actionable requests, gathers the information needed to process them, and prepares responses for human review before sending.",
-            'testedWith'  => ['IT & Digital Agencies', 'Insurance Brokers', 'Compliance & Licensing Firms'],
+            'name'          => 'AVA',
+            'role'          => 'AI Renewal Coordinator',
+            'status'        => 'Live',
+            'description'   => "AVA helps businesses manage renewal workflows from a shared inbox.\n\nAVA monitors incoming renewal emails, identifies actionable requests, gathers the information needed to process them, and prepares responses for human review before sending.",
+            'audienceIntro' => 'AVA is being tested and refined today with organizations such as:',
+            'audienceList'  => ['IT & Digital Agencies', 'Insurance Brokers', 'Compliance & Licensing Firms'],
+            'audienceOutro' => 'Additional industries and renewal workflows will be supported as the platform evolves.',
         ],
     ];
 

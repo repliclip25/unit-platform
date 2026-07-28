@@ -21,14 +21,14 @@ UNIT workers don't just answer questions—they execute work from start to finis
 
 {!! $worker['description'] !!}
 
-@if (!empty($worker['testedWith']))
-Today, {!! $worker['name'] !!} is being tested and refined with organizations such as:
+@if (!empty($worker['audienceList']))
+{!! $worker['audienceIntro'] ?? '' !!}
 
-@foreach ($worker['testedWith'] as $segment)
-- {!! $segment !!}
+@foreach ($worker['audienceList'] as $item)
+- {!! $item !!}
 @endforeach
 
-Additional industries and renewal workflows will be supported as the platform evolves.
+{!! $worker['audienceOutro'] ?? '' !!}
 
 @endif
 @endforeach
