@@ -106,6 +106,11 @@ class TransactionController extends Controller
             'renewal_output'    => json_decode($tx->renewal_output   ?? 'null', true),
             'archive_output'    => json_decode($tx->archive_output   ?? 'null', true),
             'notify_output'     => json_decode($tx->notify_output    ?? 'null', true),
+            // Every reminder sent so far at any gate, in order — the
+            // Transaction Center renders these under whichever stage they
+            // belong to (stage_key on each entry).
+            'reminders'         => json_decode($tx->reminders ?? '[]', true) ?: [],
+            'nudging_paused_at' => $tx->nudging_paused_at,
         ]);
     }
 
@@ -291,6 +296,21 @@ class TransactionController extends Controller
         // schedule if it's still overdue.
 
         return back()->with('success', "○ {$txId} — renewal canceled.");
+    }
+
+    // Nudging stopped after ReminderCopy::MAX_ATTEMPTS with no response —
+    // nothing was lost, the gate is exactly where it was. This just clears
+    // the pause so the reminder jobs pick it back up on their next run.
+    public function resumeNudging(string $txId)
+    {
+        DB::table('transactions')->where('tx_id', $txId)->where('user_id', auth()->id())->firstOrFail();
+        DB::table('transactions')->where('tx_id', $txId)->update([
+            'nudging_paused_at' => null,
+            'updated_at'        => now(),
+        ]);
+        \App\Platform\SDK\UnitPlatform::log('ava', $txId, 'nudging_resumed', ['resumed_by' => auth()->id()]);
+
+        return back()->with('success', "▶ {$txId} — reminders resumed.");
     }
 
     public function downloadArchive(string $txId)

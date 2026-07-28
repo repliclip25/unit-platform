@@ -160,6 +160,7 @@ Route::middleware(['auth', 'verified', 'onboarded', 'not-pending-del'])->group(f
     Route::post('/transactions/{txId}/confirm-renewal', [TransactionController::class, 'confirmRenewal'])->name('transactions.confirm-renewal');
     Route::post('/transactions/{txId}/cancel-renewal',  [TransactionController::class, 'cancelRenewal'])->name('transactions.cancel-renewal');
     Route::get('/transactions/{txId}/archive.pdf', [TransactionController::class, 'downloadArchive'])->name('transactions.archive-download');
+    Route::post('/transactions/{txId}/resume-nudging', [TransactionController::class, 'resumeNudging'])->name('transactions.resume-nudging');
 
     // ── Renewal Register ────────────────────────────────────────────────────
     // Named 'renewal-register', not 'register' — that name (and the bare

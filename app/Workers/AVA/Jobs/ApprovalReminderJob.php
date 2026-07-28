@@ -14,21 +14,18 @@ use Illuminate\Support\Facades\DB;
 
 /**
  * Runs daily per active AVA deployment. Finds transactions stuck at the
- * 'confirm_payment' hard gate and re-nudges the tenant — AVA "hunts for
- * user actions via email reminders on various cadence based on priority"
- * rather than silently waiting forever for a click. Tone escalates by
- * attempt number; after ReminderCopy::MAX_ATTEMPTS with no response,
- * nudging pauses rather than nagging forever — see nudging_paused_at.
+ * 'human_decide' hard gate — a draft sitting unapproved in Gmail — and
+ * nudges the tenant. This gate previously had no reminder mechanism at
+ * all; a draft could sit forever with nothing chasing it. Mirrors
+ * PaymentReminderJob's cadence, tone escalation, and pause-after-N-attempts.
  */
-class PaymentReminderJob implements ShouldQueue
+class ApprovalReminderJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public int $tries   = 2;
     public int $timeout = 60;
 
-    // Days between reminders, by classify_output.priority — more urgent
-    // renewals get chased more often.
     private const CADENCE_DAYS = [
         'Critical' => 1,
         'High'     => 2,
@@ -45,7 +42,7 @@ class PaymentReminderJob implements ShouldQueue
 
         $stuck = DB::table('transactions')
             ->where('deployment_id', $this->deploymentId)
-            ->where('fulfillment_stage', 'confirm_payment')
+            ->where('fulfillment_stage', 'human_decide')
             ->whereNull('nudging_paused_at')
             ->get();
 
@@ -56,40 +53,40 @@ class PaymentReminderJob implements ShouldQueue
             // Carbon::diffInDays() returns a signed value whose sign depends
             // on call order/version — comparing against an explicit cutoff
             // instant avoids that ambiguity entirely.
-            $lastSent = $tx->payment_reminder_sent_at ?? $tx->updated_at;
+            $lastSent = $tx->approval_reminder_sent_at ?? $tx->updated_at;
             if (\Carbon\Carbon::parse($lastSent)->gt(now()->subDays($cadence))) continue;
 
             $tenantEmail = DB::table('users')->where('id', $tx->user_id)->value('email');
             if (!$tenantEmail) continue;
 
-            $memory     = json_decode($tx->memory_output ?? '{}', true) ?: [];
-            $asset      = $memory['asset'] ?? 'this item';
-            $reminders  = json_decode($tx->reminders ?? '[]', true) ?: [];
-            $attempt    = count(array_filter($reminders, fn($r) => ($r['stage_key'] ?? null) === 'confirm_payment')) + 1;
+            $memory    = json_decode($tx->memory_output ?? '{}', true) ?: [];
+            $asset     = $memory['asset'] ?? 'this item';
+            $reminders = json_decode($tx->reminders ?? '[]', true) ?: [];
+            $attempt   = count(array_filter($reminders, fn($r) => ($r['stage_key'] ?? null) === 'human_decide')) + 1;
 
             if ($attempt > ReminderCopy::MAX_ATTEMPTS) {
                 DB::table('transactions')->where('id', $tx->id)->update(['nudging_paused_at' => now()]);
-                UnitPlatform::log('ava', $tx->tx_id, 'nudging_paused', ['stage_key' => 'confirm_payment', 'attempts' => $attempt - 1], 'warning');
+                UnitPlatform::log('ava', $tx->tx_id, 'nudging_paused', ['stage_key' => 'human_decide', 'attempts' => $attempt - 1], 'warning');
                 continue;
             }
 
             [$subject, $body] = match (ReminderCopy::tone($attempt)) {
                 'gentle' => [
-                    "Confirm payment for {$asset}?",
-                    "Hi,\n\nJust checking in — has payment for the {$asset} renewal gone through? No rush, just let me know when it's done so I can close this out.\n\n— AVA",
+                    "A draft is waiting on you — {$asset}",
+                    "Hi,\n\nI drafted a renewal reply for {$asset} and it's sitting in your Gmail drafts, ready to review. No rush — just approve it when you get a chance.\n\n— AVA",
                 ],
                 'direct' => [
-                    "Following up — confirm payment for {$asset}",
-                    "Hi,\n\nFollowing up again — this renewal is still waiting on payment confirmation. {$asset} will lapse if this isn't confirmed soon. Please confirm in UNIT when it's done.\n\n— AVA",
+                    "Still waiting — approve the {$asset} draft",
+                    "Hi,\n\nFollowing up — the draft for {$asset} is still unapproved. It won't send until you review it in UNIT or Gmail.\n\n— AVA",
                 ],
                 default => [
-                    "URGENT — confirm payment for {$asset}",
-                    "URGENT — {$asset} renewal is still unconfirmed after multiple reminders. This needs your attention today to avoid a lapse. Confirm payment or cancel the renewal in UNIT.\n\n— AVA",
+                    "URGENT — {$asset} draft still needs your approval",
+                    "URGENT — the renewal draft for {$asset} has been waiting several days with no response. Please review and approve it in UNIT today.\n\n— AVA",
                 ],
             };
 
             EmailDispatcher::send(
-                'ava_payment_reminder',
+                'ava_approval_reminder',
                 $tenantEmail,
                 'there',
                 $tx->user_id,
@@ -97,10 +94,10 @@ class PaymentReminderJob implements ShouldQueue
                 ['subject' => $subject, 'body' => $body]
             );
 
-            UnitPlatform::recordReminder($tx->tx_id, 'confirm_payment', $subject, $body);
-            DB::table('transactions')->where('id', $tx->id)->update(['payment_reminder_sent_at' => now()]);
+            UnitPlatform::recordReminder($tx->tx_id, 'human_decide', $subject, $body);
+            DB::table('transactions')->where('id', $tx->id)->update(['approval_reminder_sent_at' => now()]);
 
-            UnitPlatform::log('ava', $tx->tx_id, 'payment_reminder_sent', ['priority' => $priority, 'cadence_days' => $cadence, 'attempt' => $attempt]);
+            UnitPlatform::log('ava', $tx->tx_id, 'approval_reminder_sent', ['priority' => $priority, 'cadence_days' => $cadence, 'attempt' => $attempt]);
         }
     }
 }

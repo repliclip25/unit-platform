@@ -1051,6 +1051,13 @@ class AvaWorker implements WorkerContract
                 'per_deployment' => true,
                 'name'           => 'payment_reminder',
             ],
+            [
+                'job'            => \App\Workers\AVA\Jobs\ApprovalReminderJob::class,
+                'cron'           => '0 9 * * *',  // Daily at 9AM — cadence is checked per-transaction inside the job
+                'queue'          => 'ava',
+                'per_deployment' => true,
+                'name'           => 'approval_reminder',
+            ],
         ];
     }
 

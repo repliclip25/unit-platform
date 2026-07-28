@@ -409,6 +409,34 @@ final class UnitPlatform
         ]);
     }
 
+    // ── REMINDERS — every reminder actually sent while a transaction waits
+    //    at a gate, packaged as one JSON array per transaction rather than a
+    //    dedicated table. Shared by any gate on any worker (Approve & Send,
+    //    Confirm Payment today) — callers only need a stage key and the
+    //    message content; attempt numbering and storage are handled here. ──
+    public static function recordReminder(string $txId, string $stageKey, string $subject, string $body): int
+    {
+        $tx        = DB::table('transactions')->where('tx_id', $txId)->first(['reminders']);
+        $reminders = json_decode($tx->reminders ?? '[]', true) ?: [];
+
+        $attempt = count(array_filter($reminders, fn($r) => ($r['stage_key'] ?? null) === $stageKey)) + 1;
+
+        $reminders[] = [
+            'stage_key'      => $stageKey,
+            'attempt_number' => $attempt,
+            'subject'        => $subject,
+            'body'           => $body,
+            'sent_at'        => now()->toISOString(),
+        ];
+
+        DB::table('transactions')->where('tx_id', $txId)->update([
+            'reminders'  => json_encode($reminders, JSON_INVALID_UTF8_SUBSTITUTE),
+            'updated_at' => now(),
+        ]);
+
+        return $attempt;
+    }
+
     // ─────────────────────────────────────────────────────────────────────
     // STATUS — lightweight status-only update (also drives stage log)
     // ─────────────────────────────────────────────────────────────────────
