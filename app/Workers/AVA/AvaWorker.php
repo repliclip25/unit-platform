@@ -34,10 +34,10 @@ class AvaWorker implements WorkerContract
         return [
             'name'        => 'AVA',
             'pronoun'     => 'she',
-            'title'       => 'Renewal Coordinator',
+            'title'       => 'AI Renewal Coordinator',
             'department'  => 'Customer Success',
             'employer'    => 'Freelancers, Solo Founders, Startup CEOs, Agency Owners',
-            'mission'     => 'Never let a subscription, contract, invoice, or renewal request go unanswered.',
+            'mission'     => "AVA is UNIT's AI renewal coordinator — renewal management software that monitors your inbox and manages the full renewal lifecycle, with human approval built in.",
             'statement'   => 'I monitor your inbox and make sure no renewal, subscription, or contract ever slips through the cracks — so you never lose a client to an overlooked email.',
             'connects_to' => ['Gmail', 'Clients', 'Contacts', 'Assets'],
             'introduction'=> "Hi, I'm AVA. I make sure you never miss an important renewal. I watch your inbox, understand each renewal request, use what I know about your customers and business, prepare the reply, and leave it in Gmail for your approval.",

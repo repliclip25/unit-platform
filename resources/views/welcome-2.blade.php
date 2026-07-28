@@ -3,13 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>UNIT — AI Workers That Never Stop Showing Up</title>
-<meta name="description" content="AVA is live and taking renewals off your plate today. DOX, MOX, and NUX — your next AI workers — are coming soon.">
+<title>UNIT — AI Agents That Never Stop Showing Up</title>
+<meta name="description" content="UNIT deploys specialized AI agents — AI workers trained for one job, not generic chat. AVA, our AI renewal coordinator, is live today.">
 <link rel="icon" type="image/png" href="/logo.png">
 <link rel="apple-touch-icon" href="/logo.png">
 @include('partials.seo-meta', [
-    'title'       => 'UNIT — AI Workers That Never Stop Showing Up',
-    'description' => 'AVA is live and taking renewals off your plate today. DOX, MOX, and NUX — your next AI workers — are coming soon.',
+    'title'       => 'UNIT — AI Agents That Never Stop Showing Up',
+    'description' => 'UNIT deploys specialized AI agents — AI workers trained for one job, not generic chat. AVA, our AI renewal coordinator, is live today.',
     'image'       => asset('images/hero-team-2.png'),
 ])
 <link rel="preconnect" href="https://fonts.googleapis.com">

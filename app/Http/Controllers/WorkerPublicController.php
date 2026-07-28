@@ -19,9 +19,9 @@ class WorkerPublicController extends Controller
                 'name'       => 'AVA',
                 'slug'       => 'ava',
                 'youtube_id' => 'dQw4w9WgXcQ', // Replace with real video ID when available
-                'role'       => $employee['title']        ?? 'Renewal Coordinator',
+                'role'       => $employee['title']        ?? 'AI Renewal Coordinator',
                 'category'   => 'Renewal Automation',
-                'meta_desc'  => $employee['mission']      ?? 'AVA monitors renewal inboxes, classifies renewals, pulls applicant history, drafts submissions and queues them for review — end to end.',
+                'meta_desc'  => $employee['mission']      ?? "AVA is UNIT's AI renewal coordinator — renewal management software that monitors your inbox and manages the full renewal lifecycle, with human approval built in.",
                 'headline'   => 'License renewals, handled before the deadline ever gets close.',
                 'sub'        => $employee['introduction'] ?? 'AVA monitors your renewal inbox, classifies incoming renewals, looks up applicant history, generates submission drafts, and queues them for your review — end to end, on autopilot.',
                 'orgs'       => ['NYCSCA', 'DOB', 'FDNY', 'MTA'],
