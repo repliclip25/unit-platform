@@ -1453,7 +1453,7 @@ body{
         <div class="compare-col hl">
           <div class="compare-head">
             <div class="compare-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M13 2L4.09 12.11a1 1 0 00.76 1.65h5.91l-1 8.24 8.91-10.11a1 1 0 00-.76-1.65h-5.91z"/></svg></div>
-            UNIT AI Agents
+            UNIT AI Workers
           </div>
           <div class="compare-row">Owns work proactively</div>
           <div class="compare-row">One workflow</div>
