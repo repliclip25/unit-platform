@@ -184,6 +184,13 @@ body{font-family:'Inter',sans-serif;background:var(--db-bg);color:var(--db-text)
 .tc-btn-ghost{background:transparent;border:1px solid var(--db-border);color:var(--db-text-muted)}
 .tc-file-input{font-size:11.5px;color:var(--db-text-muted);margin-bottom:8px}
 
+/* Client draft round tabs — blue = actually approved/consumed, gray = drafted but never acted on */
+.tc-draft-tabs{display:flex;gap:6px;margin-bottom:8px}
+.tc-draft-tab{font-size:11px;font-weight:700;padding:5px 12px;border-radius:99px;cursor:pointer;font-family:inherit;border:1px solid var(--db-border);background:var(--db-chip);color:var(--db-text-muted);display:flex;align-items:center;gap:6px}
+.tc-draft-tab.consumed{background:rgba(59,130,246,.15);border-color:rgba(59,130,246,.4);color:#60a5fa}
+.tc-draft-tab.active{box-shadow:0 0 0 1.5px var(--db-text) inset}
+.tc-draft-dot{width:6px;height:6px;border-radius:50%;background:#60a5fa;flex-shrink:0}
+
 /* ══ MOBILE ══ */
 @media(max-width:1024px){
   html,body{overflow-x:hidden;overflow-y:auto;height:auto;width:100%}
@@ -525,18 +532,44 @@ $statusColor = $statusColors[$tx->status] ?? ['bg'=>'var(--db-chip)','color'=>'v
           @if($stage['state'] !== 'pending')
           <div class="tc-stage-body">
 
-            {{-- Approve & Send — up to 3 client reminder drafts --}}
+            {{-- Approve & Send — up to 3 client reminder drafts. A tab per
+                 round: blue = the user actually approved/consumed that draft,
+                 gray = it was drafted but superseded (never acted on). --}}
             @if($stage['key'] === 'human_decide')
-              @forelse($stage['client_drafts'] as $cd)
-              <div class="tc-msg-meta">
-                <strong>{{ ['1st','2nd','3rd'][($cd['reminder_number'] ?? 1) - 1] ?? $cd['reminder_number'] . 'th' }} reminder</strong>
-                @if(!empty($cd['days_before_expiry']))· {{ $cd['days_before_expiry'] }} days before expiry @endif
-                @if(!empty($cd['approved_at']))· approved {{ \Carbon\Carbon::parse($cd['approved_at'])->format('M j, g:i A') }} @else · awaiting your approval @endif
+              @if(count($stage['client_drafts']))
+              @php
+                $cdWrapId = 'cd-' . $tx->tx_id;
+                $defaultIdx = collect($stage['client_drafts'])->search(fn($c) => empty($c['approved_at']));
+                if ($defaultIdx === false) $defaultIdx = count($stage['client_drafts']) - 1;
+              @endphp
+              <div class="tc-draft-tabs">
+                @foreach($stage['client_drafts'] as $idx => $cd)
+                <button type="button"
+                  class="tc-draft-tab {{ !empty($cd['approved_at']) ? 'consumed' : '' }} {{ $idx === $defaultIdx ? 'active' : '' }}"
+                  onclick="document.querySelectorAll('#{{ $cdWrapId }} .tc-draft-pane').forEach(function(el){el.style.display='none'});
+                           document.getElementById('{{ $cdWrapId }}-{{ $idx }}').style.display='block';
+                           this.parentElement.querySelectorAll('.tc-draft-tab').forEach(function(el){el.classList.remove('active')});
+                           this.classList.add('active')">
+                  {{ ['1st','2nd','3rd'][($cd['reminder_number'] ?? 1) - 1] ?? ($cd['reminder_number'] . 'th') }}
+                  @if(!empty($cd['approved_at']))<span class="tc-draft-dot"></span>@endif
+                </button>
+                @endforeach
               </div>
-              <div class="tc-msg"><strong>{{ $cd['subject'] ?? '' }}</strong>{{ "\n\n" }}{{ $cd['body'] ?? '' }}</div>
-              @empty
+              <div id="{{ $cdWrapId }}">
+                @foreach($stage['client_drafts'] as $idx => $cd)
+                <div id="{{ $cdWrapId }}-{{ $idx }}" class="tc-draft-pane" style="display:{{ $idx === $defaultIdx ? 'block' : 'none' }}">
+                  <div class="tc-msg-meta">
+                    <strong>{{ ['1st','2nd','3rd'][($cd['reminder_number'] ?? 1) - 1] ?? ($cd['reminder_number'] . 'th') }} reminder</strong>
+                    @if(!empty($cd['days_before_expiry']))· {{ $cd['days_before_expiry'] }} days before expiry @endif
+                    @if(!empty($cd['approved_at']))· approved {{ \Carbon\Carbon::parse($cd['approved_at'])->format('M j, g:i A') }} — consumed @else · drafted, not yet approved @endif
+                  </div>
+                  <div class="tc-msg"><strong>{{ $cd['subject'] ?? '' }}</strong>{{ "\n\n" }}{{ $cd['body'] ?? '' }}</div>
+                </div>
+                @endforeach
+              </div>
+              @else
               <p style="font-size:12px;color:var(--db-text-muted)">No draft yet.</p>
-              @endforelse
+              @endif
 
               @foreach($stage['reminders'] as $r)
               <div class="tc-msg-meta" style="margin-top:8px"><strong>Nudge — attempt {{ $r['attempt_number'] }}</strong> · {{ \Carbon\Carbon::parse($r['sent_at'])->format('M j, g:i A') }}</div>
