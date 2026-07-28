@@ -883,7 +883,7 @@ body{
    Clips are shot reel-size (9:16 portrait) — size the frame to match
    instead of a wide landscape box, so object-fit:cover doesn't crop
    into a zoomed-in mess. */
-.problems-video{position:relative;max-width:320px;margin:0 auto}
+.problems-video{position:relative}
 .pv-slides{
   display:flex;aspect-ratio:9/16;overflow-x:auto;
   scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;
@@ -1068,9 +1068,7 @@ body{
   .problems-grid{grid-template-columns:1fr}
   .problem-col{border-left:none;border-top:1px solid var(--border)}
   .problem-col:first-child{border-top:none}
-  .problems-video{max-width:260px;margin-top:8px}
-  .pv-prev{left:8px}
-  .pv-next{right:8px}
+  .problems-video{margin-top:8px}
 }
 @media(max-width:480px){
   .wk-grid{grid-template-columns:1fr}
