@@ -892,10 +892,13 @@ body{
 .compare-col:last-child{border-right:none}
 .compare-col.hl{background:#0D0D0D}
 .compare-head{
-  padding:18px 16px;font-family:var(--font-h);font-size:14.5px;font-weight:800;
+  padding:24px 16px 18px;font-family:var(--font-h);font-size:14.5px;font-weight:800;
   border-bottom:1px solid var(--border);text-align:center;color:var(--text);
 }
+.compare-icon{width:26px;height:26px;margin:0 auto 12px;color:var(--text)}
+.compare-icon svg{width:100%;height:100%}
 .compare-col.hl .compare-head{color:#fff;border-bottom-color:rgba(255,255,255,.15)}
+.compare-col.hl .compare-icon{color:#fff}
 .compare-row{
   padding:16px;font-size:13px;color:var(--t2);
   border-bottom:1px solid var(--border);text-align:center;
@@ -974,9 +977,18 @@ body{
   .lc-row{flex-wrap:wrap;gap:8px}
   .lc-photo{min-width:calc(50% - 5px);flex:1}
   .lc-photo img{height:200px}
-  .compare-grid{grid-template-columns:1fr}
-  .compare-col{border-right:none;border-bottom:1px solid var(--border)}
-  .compare-col:last-child{border-bottom:none}
+  .compare-grid{
+    display:flex;overflow-x:auto;
+    scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;
+    scrollbar-width:none;-ms-overflow-style:none;
+  }
+  .compare-grid::-webkit-scrollbar{display:none}
+  .compare-col{
+    flex:0 0 78%;min-width:230px;
+    border-right:1px solid var(--border);
+    scroll-snap-align:start;
+  }
+  .compare-col:last-child{border-right:none}
   .problems-grid{grid-template-columns:1fr}
   .problem-col{border-left:none;border-top:1px solid var(--border)}
   .problem-col:first-child{border-top:none}
@@ -1271,21 +1283,30 @@ body{
     </div>
     <div class="compare-grid">
       <div class="compare-col">
-        <div class="compare-head">Traditional Software</div>
+        <div class="compare-head">
+          <div class="compare-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg></div>
+          Traditional Software
+        </div>
         <div class="compare-row">Waits for you to click</div>
         <div class="compare-row">One feature</div>
         <div class="compare-row">Doesn't follow up</div>
         <div class="compare-row">Tool</div>
       </div>
       <div class="compare-col">
-        <div class="compare-head">AI Chatbots</div>
+        <div class="compare-head">
+          <div class="compare-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg></div>
+          AI Chatbots
+        </div>
         <div class="compare-row">Waits for prompts</div>
         <div class="compare-row">One conversation</div>
         <div class="compare-row">Doesn't remember</div>
         <div class="compare-row">Assistant</div>
       </div>
       <div class="compare-col hl">
-        <div class="compare-head">UNIT AI Agents</div>
+        <div class="compare-head">
+          <div class="compare-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M13 2L4.09 12.11a1 1 0 00.76 1.65h5.91l-1 8.24 8.91-10.11a1 1 0 00-.76-1.65h-5.91z"/></svg></div>
+          UNIT AI Agents
+        </div>
         <div class="compare-row">Owns work proactively</div>
         <div class="compare-row">One workflow</div>
         <div class="compare-row">Tracks work until completion</div>
