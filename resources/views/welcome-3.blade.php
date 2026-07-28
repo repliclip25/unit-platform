@@ -891,17 +891,28 @@ body{
 .pv-slide{
   flex:0 0 100%;scroll-snap-align:start;position:relative;
   display:flex;align-items:center;justify-content:center;
+  overflow:hidden;
 }
+.pv-media{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .pv-play{
+  position:relative;z-index:2;
   width:56px;height:56px;border-radius:50%;
   background:rgba(255,255,255,.15);border:2px solid rgba(255,255,255,.4);
   display:flex;align-items:center;justify-content:center;
+  transition:opacity .2s;cursor:pointer;
 }
 .pv-play svg{width:20px;height:20px;fill:#fff;margin-left:3px}
-.pv-caption{position:absolute;left:18px;bottom:18px}
+.pv-slide.playing .pv-play{opacity:0;pointer-events:none}
+.pv-caption{position:absolute;left:18px;bottom:18px;z-index:2;transition:opacity .2s}
+.pv-slide.playing .pv-caption{opacity:0;pointer-events:none}
 .pv-caption-txt{
   background:#fff;color:#0D0D0D;font-size:12.5px;font-weight:700;
   padding:9px 15px;border-radius:99px;white-space:nowrap;
+  display:inline-flex;align-items:center;gap:6px;
+}
+.pv-soon{
+  font-size:9.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;
+  background:rgba(245,197,24,.2);color:#8a6a06;padding:2px 7px;border-radius:99px;
 }
 .pv-dots{position:absolute;bottom:18px;right:18px;display:flex;gap:5px;z-index:4}
 .pv-dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.35)}
@@ -1336,24 +1347,28 @@ body{
         </div>
       </div>
 
-      {{-- AVA is the only live worker, so every clip is a real AVA task —
-           no placeholder footage implying DOX/MOX/NUX are already working. --}}
+      {{-- Worker introduction videos. Only DOX.mp4 exists in public/videos/
+           today — DOX is still Coming Soon as a product, so its slide is
+           tagged accordingly. Other slides stay as placeholders until their
+           videos are filmed; swap in a <video class="pv-media"> the same
+           way once ready. --}}
       <div class="problems-video">
         <button class="pv-arrow pv-prev" aria-label="Previous video">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg>
         </button>
         <div class="pv-slides">
           <div class="pv-slide">
+            <video class="pv-media" src="{{ asset('videos/DOX.mp4') }}" playsinline preload="metadata"></video>
             <div class="pv-play"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
-            <div class="pv-caption"><span class="pv-caption-txt">How AVA handles a renewal</span></div>
+            <div class="pv-caption"><span class="pv-caption-txt">Meet DOX <span class="pv-soon">Coming Soon</span></span></div>
           </div>
           <div class="pv-slide">
             <div class="pv-play"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
-            <div class="pv-caption"><span class="pv-caption-txt">How AVA follows up with a client</span></div>
+            <div class="pv-caption"><span class="pv-caption-txt">Meet AVA</span></div>
           </div>
           <div class="pv-slide">
             <div class="pv-play"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
-            <div class="pv-caption"><span class="pv-caption-txt">How AVA confirms a payment</span></div>
+            <div class="pv-caption"><span class="pv-caption-txt">Meet MOX <span class="pv-soon">Coming Soon</span></span></div>
           </div>
         </div>
         <button class="pv-arrow pv-next" aria-label="Next video">
@@ -2204,6 +2219,18 @@ document.querySelectorAll('.problems-video').forEach(wrap => {
   track.addEventListener('scroll', () => {
     const i = Math.round(track.scrollLeft / track.clientWidth);
     dots.forEach((dot, idx) => dot.classList.toggle('active', idx === i));
+    // pause any playing video when it scrolls out of view
+    wrap.querySelectorAll('.pv-media').forEach((v, idx) => { if(idx !== i && !v.paused) v.pause() });
+  });
+
+  wrap.querySelectorAll('.pv-slide').forEach(slide => {
+    const video = slide.querySelector('.pv-media');
+    const playBtn = slide.querySelector('.pv-play');
+    if(!video || !playBtn) return;
+    playBtn.addEventListener('click', () => video.paused ? video.play() : video.pause());
+    video.addEventListener('play',  () => slide.classList.add('playing'));
+    video.addEventListener('pause', () => slide.classList.remove('playing'));
+    video.addEventListener('ended', () => slide.classList.remove('playing'));
   });
 });
 </script>
