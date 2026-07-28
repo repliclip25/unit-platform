@@ -55,6 +55,10 @@ Route::get('/health', function () {
 
 Route::get('/', fn() => view('welcome-2'))->name('home');
 
+// TEMPORARY — internal preview only, not linked anywhere. Remove once
+// welcome-3 review is done / swapped in as the live homepage.
+Route::get('/preview/welcome-3', fn() => view('welcome-3'));
+
 Route::get('/sitemap.xml', [\App\Http\Controllers\SitemapController::class, 'index'])->name('sitemap');
 Route::get('/llms.txt', [\App\Http\Controllers\SitemapController::class, 'llmsTxt'])->name('llms-txt');
 

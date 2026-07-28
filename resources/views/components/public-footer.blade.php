@@ -9,7 +9,7 @@
     'name'        => 'UNIT',
     'url'         => url('/'),
     'logo'        => asset('logo.png'),
-    'description' => 'UNIT is a platform for deploying purpose-built AI workers — each one trained for a specific workflow, ready to run on your team.',
+    'description' => 'UNIT is an AI agent platform that helps businesses deploy specialized AI Workers to manage recurring business workflows, automate operations, and complete real work.',
 ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}</script>
 <script type="application/ld+json">{!! json_encode([
     '@@context' => 'https://schema.org',
@@ -22,7 +22,7 @@
     <div class="ft-grid">
       <div>
         <div class="ft-name">UNIT</div>
-        <p class="ft-desc">AI workers that show up every day, handle the work that slows you down, and help your business grow.</p>
+        <p class="ft-desc">UNIT is an AI agent platform that helps businesses deploy specialized AI Workers to manage recurring business workflows, automate operations, and complete real work.</p>
       </div>
       <div>
         <div class="ft-col-h">Workers</div>
