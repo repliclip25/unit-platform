@@ -858,22 +858,21 @@ body{
 /* ── PROBLEMS WE SOLVE ── */
 .problems-sec{background:#fff}
 [data-theme="dark"] .problems-sec{background:#0D0D0D}
-.problems-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin-top:clamp(32px,4vw,48px)}
-.problem-card{
-  display:flex;gap:14px;align-items:flex-start;
-  padding:20px;border-radius:16px;
-  background:var(--soft);border:1px solid var(--border);
+.problems-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  border-top:1px solid var(--border);
+  margin-top:clamp(32px,4vw,48px);
 }
-[data-theme="dark"] .problem-card{background:#161616}
-.problem-icon{
-  width:40px;height:40px;border-radius:11px;flex-shrink:0;
-  background:rgba(0,0,0,.06);color:#0D0D0D;
-  display:flex;align-items:center;justify-content:center;
-}
-[data-theme="dark"] .problem-icon{background:rgba(255,255,255,.08);color:#F3F4F6}
-.problem-icon svg{width:20px;height:20px}
-.problem-body h4{font-size:14.5px;font-weight:700;color:var(--text);margin-bottom:4px}
-.problem-body p{font-size:12.5px;color:var(--t3);line-height:1.6}
+.problem-col{padding:32px 28px;border-left:1px solid var(--border)}
+.problem-col:first-child{border-left:none}
+.problem-item + .problem-item{margin-top:36px}
+.problem-icon{width:26px;height:26px;margin-bottom:18px;color:#0D0D0D}
+[data-theme="dark"] .problem-icon{color:#F3F4F6}
+.problem-icon svg{width:100%;height:100%}
+.problem-text{border-left:2px solid #0D0D0D;padding-left:14px}
+[data-theme="dark"] .problem-text{border-left-color:#F3F4F6}
+.problem-text h4{font-size:1.05rem;font-weight:700;color:var(--text);margin-bottom:8px}
+.problem-text p{font-size:13.5px;color:var(--t3);line-height:1.65}
 
 /* ── INDUSTRIES ── */
 .industries-sec{background:#fff}
@@ -903,25 +902,6 @@ body{
 }
 .compare-col.hl .compare-row{color:#fff;border-bottom-color:rgba(255,255,255,.1)}
 .compare-row:last-child{border-bottom:none}
-
-/* ── INTEGRATIONS ── */
-.integrations-sec{background:var(--soft)}
-[data-theme="dark"] .integrations-sec{background:#161616}
-.integrations-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin-top:clamp(32px,4vw,48px)}
-.integration-card{
-  display:flex;align-items:center;justify-content:space-between;gap:12px;
-  padding:18px 20px;border-radius:14px;
-  background:#fff;border:1px solid var(--border);
-}
-[data-theme="dark"] .integration-card{background:#111}
-.integration-name{font-size:14px;font-weight:700;color:var(--text)}
-.integration-badge{
-  font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
-  padding:3px 9px;border-radius:99px;flex-shrink:0;
-}
-.integration-badge.live{background:rgba(34,197,94,.12);color:#15803D}
-[data-theme="dark"] .integration-badge.live{background:rgba(34,197,94,.2);color:#4ADE80}
-.integration-badge.soon{background:rgba(245,197,24,.15);color:#8a6a06}
 
 /* ── SECURITY ── */
 .security-sec{background:#fff}
@@ -997,6 +977,9 @@ body{
   .compare-grid{grid-template-columns:1fr}
   .compare-col{border-right:none;border-bottom:1px solid var(--border)}
   .compare-col:last-child{border-bottom:none}
+  .problems-grid{grid-template-columns:1fr}
+  .problem-col{border-left:none;border-top:1px solid var(--border)}
+  .problem-col:first-child{border-top:none}
 }
 @media(max-width:480px){
   .wk-grid{grid-template-columns:1fr}
@@ -1209,64 +1192,70 @@ body{
 <!-- PROBLEMS WE SOLVE -->
 <section class="problems-sec sec">
   <div class="w">
-    <div class="center" style="margin-bottom:0">
+    <div style="margin-bottom:0;max-width:640px">
       <div class="sec-eye">Problems we solve</div>
       <h2 class="sec-h">The Problems UNIT AI Agents Solve</h2>
       <p class="sec-p">Before you evaluate a product, you're trying to name a problem. These are the ones UNIT AI Workers are built to own.</p>
     </div>
     <div class="problems-grid">
-      <div class="problem-card">
-        <div class="problem-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18M9 16l2 2 4-4" stroke-dasharray="0" /></svg>
+      <div class="problem-col">
+        <div class="problem-item">
+          <div class="problem-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+          </div>
+          <div class="problem-text">
+            <h4>Missed Renewals</h4>
+            <p>Expirations slip through the cracks when tracking lives in someone's inbox.</p>
+          </div>
         </div>
-        <div class="problem-body">
-          <h4>Missed Renewals</h4>
-          <p>Expirations slip through the cracks when tracking lives in someone's inbox.</p>
-        </div>
-      </div>
-      <div class="problem-card">
-        <div class="problem-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M18 8a6 6 0 00-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
-        </div>
-        <div class="problem-body">
-          <h4>Manual Follow-ups</h4>
-          <p>Reminders get sent late — or not at all — when they depend on someone remembering.</p>
-        </div>
-      </div>
-      <div class="problem-card">
-        <div class="problem-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 014-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 01-4 4H3"/></svg>
-        </div>
-        <div class="problem-body">
-          <h4>Repetitive Operations</h4>
-          <p>The same task, done the same way, hundreds of times a month.</p>
+        <div class="problem-item">
+          <div class="problem-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>
+          </div>
+          <div class="problem-text">
+            <h4>Document Bottlenecks</h4>
+            <p>Files pile up faster than anyone has time to organize them.</p>
+          </div>
         </div>
       </div>
-      <div class="problem-card">
-        <div class="problem-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>
+      <div class="problem-col">
+        <div class="problem-item">
+          <div class="problem-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M18 8a6 6 0 00-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+          </div>
+          <div class="problem-text">
+            <h4>Manual Follow-ups</h4>
+            <p>Reminders get sent late — or not at all — when they depend on someone remembering.</p>
+          </div>
         </div>
-        <div class="problem-body">
-          <h4>Document Bottlenecks</h4>
-          <p>Files pile up faster than anyone has time to organize them.</p>
+        <div class="problem-item">
+          <div class="problem-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+          </div>
+          <div class="problem-text">
+            <h4>Publishing Delays</h4>
+            <p>Content sits in drafts because there's no one to push it live.</p>
+          </div>
         </div>
       </div>
-      <div class="problem-card">
-        <div class="problem-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+      <div class="problem-col">
+        <div class="problem-item">
+          <div class="problem-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 014-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 01-4 4H3"/></svg>
+          </div>
+          <div class="problem-text">
+            <h4>Repetitive Operations</h4>
+            <p>The same task, done the same way, hundreds of times a month.</p>
+          </div>
         </div>
-        <div class="problem-body">
-          <h4>Publishing Delays</h4>
-          <p>Content sits in drafts because there's no one to push it live.</p>
-        </div>
-      </div>
-      <div class="problem-card">
-        <div class="problem-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 12l2 2 4-4"/><path d="M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9c1.5 0 2.9.37 4.14 1.02"/></svg>
-        </div>
-        <div class="problem-body">
-          <h4>Compliance Tracking</h4>
-          <p>Deadlines and filings are easy to lose track of under deadline pressure.</p>
+        <div class="problem-item">
+          <div class="problem-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 12l2 2 4-4"/><path d="M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9c1.5 0 2.9.37 4.14 1.02"/></svg>
+          </div>
+          <div class="problem-text">
+            <h4>Compliance Tracking</h4>
+            <p>Deadlines and filings are easy to lose track of under deadline pressure.</p>
+          </div>
         </div>
       </div>
     </div>
@@ -1689,43 +1678,6 @@ body{
             <div class="lc-photo-txt">Reflect, learn, get better tomorrow.</div>
           </div>
         </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- INTEGRATIONS -->
-<section class="integrations-sec sec">
-  <div class="w">
-    <div class="center" style="margin-bottom:0">
-      <div class="sec-eye">Integrations</div>
-      <h2 class="sec-h">Connects Where Your<br>Work Already Happens</h2>
-      <p class="sec-p">Gmail is live today. The rest of UNIT's connections are rolling out as new AI Workers launch.</p>
-    </div>
-    <div class="integrations-grid">
-      <div class="integration-card">
-        <span class="integration-name">Gmail</span>
-        <span class="integration-badge live">Live</span>
-      </div>
-      <div class="integration-card">
-        <span class="integration-name">Google Workspace</span>
-        <span class="integration-badge soon">Coming Soon</span>
-      </div>
-      <div class="integration-card">
-        <span class="integration-name">Microsoft 365</span>
-        <span class="integration-badge soon">Coming Soon</span>
-      </div>
-      <div class="integration-card">
-        <span class="integration-name">Google Drive</span>
-        <span class="integration-badge soon">Coming Soon</span>
-      </div>
-      <div class="integration-card">
-        <span class="integration-name">Calendar</span>
-        <span class="integration-badge soon">Coming Soon</span>
-      </div>
-      <div class="integration-card">
-        <span class="integration-name">Future APIs</span>
-        <span class="integration-badge soon">Roadmap</span>
       </div>
     </div>
   </div>
