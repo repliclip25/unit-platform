@@ -331,16 +331,18 @@ final class UnitPlatform
 
         // Find the next stage in contract order that actually has a job to
         // run. A stage with no job_class is either a synthetic marker safe to
-        // skip past (e.g. 'webhook') or a genuine pause point
-        // (pauses_pipeline: true, e.g. 'human_decide', 'confirm_payment') —
-        // those stop advance() entirely rather than being skipped, since
-        // nothing should auto-dispatch past a stage that's waiting on a human.
-        // A caller resuming FROM a pause stage (e.g. after the human acts)
-        // starts its own scan past that same stage, so it's never
-        // self-blocking.
+        // skip past (e.g. 'webhook') or a genuine hard gate
+        // (gate_type: 'hard', e.g. 'human_decide', 'confirm_payment') — those
+        // stop advance() entirely rather than being skipped, since nothing
+        // should auto-dispatch past a stage that's waiting on a human. Soft
+        // and skippable gates never halt advance() — they either have their
+        // own job_class (dispatched normally below) or, if job-less, are
+        // just skipped past like any other marker. A caller resuming FROM a
+        // hard-gate stage (e.g. after the human acts) starts its own scan
+        // past that same stage, so it's never self-blocking.
         for ($i = $currentIndex + 1; $i < count($stages); $i++) {
             if (empty($stages[$i]['job_class'])) {
-                if (!empty($stages[$i]['pauses_pipeline'])) {
+                if (($stages[$i]['gate_type'] ?? null) === 'hard') {
                     self::setFulfillmentStage($txId, $stages[$i]['key']);
                     return; // waiting on a human action to resume from here
                 }

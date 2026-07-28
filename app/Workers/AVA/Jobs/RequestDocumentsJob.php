@@ -65,7 +65,7 @@ class RequestDocumentsJob implements ShouldQueue
         UnitPlatform::log('ava', $this->txId, 'documents_requested', $output);
 
         // This is where the pipeline pauses — the next stage in the contract,
-        // 'confirm_payment', is a pauses_pipeline stage. advance() will stop
+        // 'confirm_payment', is a hard gate_type. advance() will stop
         // there on its own; TransactionController::confirmRenewal()/
         // cancelRenewal() is what resumes it.
         UnitPlatform::advance($this->txId, 'request_documents');

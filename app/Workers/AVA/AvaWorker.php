@@ -197,21 +197,31 @@ class AvaWorker implements WorkerContract
 
             // ── Fulfillment (stages 9-16 of the renewal lifecycle) — a slower,
             // event-driven continuation of the same transaction, not a fast
-            // synchronous chain like the stages above. `pauses_pipeline` marks
-            // a stage advance() must stop at rather than skip past: nothing
-            // auto-dispatches the next job until a human acts (via
-            // TransactionController::decide()/confirmRenewal()/cancelRenewal()),
-            // which is what actually calls advance() to resume. Not every
-            // transaction needs to reach the end of this list — a rejected
-            // decision or a "no invoice needed" fulfillment still delivered
-            // real value at the stages it did complete.
-            ['key' => 'human_decide',   'label' => 'Approve & Send',  'sub' => 'You decide — AVA never sends without this', 'icon' => 'check', 'job_class' => null, 'pauses_pipeline' => true,
+            // synchronous chain like the stages above. `gate_type` classifies
+            // how each stage relates to human action, generically enough that
+            // any future worker can declare its own gates and get the same
+            // Transaction Center UI with no new UI code:
+            //   'hard'      — advance() halts here entirely. Nothing auto-
+            //                 dispatches the next job until a human acts (via
+            //                 TransactionController::decide()/confirmRenewal()/
+            //                 cancelRenewal()), which is what calls advance()
+            //                 again to resume. Only real gate that blocks.
+            //   'soft'      — a human action is offered (e.g. attach a file)
+            //                 but the pipeline keeps moving regardless; AVA
+            //                 nudges separately if it's ignored.
+            //   'skippable' — a yes/no decision point that never blocks either
+            //                 way, it just branches.
+            //   null        — fully automated, no human involvement.
+            // Not every transaction needs to reach the end of this list — a
+            // rejected decision or a "no invoice needed" fulfillment still
+            // delivered real value at the stages it did complete.
+            ['key' => 'human_decide',   'label' => 'Approve & Send',  'sub' => 'You decide — AVA never sends without this', 'icon' => 'check', 'job_class' => null, 'gate_type' => 'hard',
                 'output_column' => null,             'group' => 'approved', 'group_label' => 'Approved', 'group_color' => '#F5C518', 'image' => '/images/ava-life.png', 'log_stage_key' => 'human_decide'],
-            ['key' => 'request_invoice',    'label' => 'Request Invoice',   'sub' => 'Checks memory, requests from vendor if missing', 'icon' => 'receipt', 'job_class' => 'RequestInvoiceJob',
+            ['key' => 'request_invoice',    'label' => 'Request Invoice',   'sub' => 'Attach one if you have it — never blocks the renewal', 'icon' => 'receipt', 'job_class' => 'RequestInvoiceJob', 'gate_type' => 'soft',
                 'output_column' => 'invoice_output',   'group' => 'fulfilled', 'group_label' => 'Fulfilled', 'group_color' => '#0ea5e9', 'image' => '/images/ava-life.png', 'log_stage_key' => 'request_invoice'],
-            ['key' => 'request_documents',  'label' => 'Request Documents', 'sub' => 'Collects & merges into one file', 'icon' => 'files', 'job_class' => 'RequestDocumentsJob',
+            ['key' => 'request_documents',  'label' => 'Request Documents', 'sub' => 'Any documents to send the client? Skip if not.', 'icon' => 'files', 'job_class' => 'RequestDocumentsJob', 'gate_type' => 'skippable',
                 'output_column' => 'documents_output', 'group' => 'fulfilled', 'group_label' => 'Fulfilled', 'group_color' => '#0ea5e9', 'image' => '/images/ava-life.png', 'log_stage_key' => 'request_documents'],
-            ['key' => 'confirm_payment',    'label' => 'Confirm Payment',   'sub' => 'You confirm — AVA reminds until you do', 'icon' => 'alert-circle', 'job_class' => null, 'pauses_pipeline' => true,
+            ['key' => 'confirm_payment',    'label' => 'Confirm Payment',   'sub' => 'You confirm — AVA reminds until you do', 'icon' => 'alert-circle', 'job_class' => null, 'gate_type' => 'hard',
                 'output_column' => 'payment_output',   'group' => 'confirmed', 'group_label' => 'Confirmed', 'group_color' => '#F5C518', 'image' => '/images/ava-life.png', 'log_stage_key' => 'confirm_payment'],
             ['key' => 'update_renewal_date','label' => 'Update Next Renewal Date', 'sub' => 'Advances the asset to its next cycle', 'icon' => 'calendar', 'job_class' => 'UpdateRenewalDateJob',
                 'output_column' => 'renewal_output',    'group' => 'renewed',   'group_label' => 'Renewed',   'group_color' => '#22c55e', 'image' => '/images/ava-life.png', 'log_stage_key' => 'update_renewal_date'],
