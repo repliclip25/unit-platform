@@ -40,9 +40,17 @@ class ApprovalReminderJob implements ShouldQueue
         $dep = DB::table('worker_deployments')->where('id', $this->deploymentId)->first();
         if (!$dep || $dep->status !== 'active') return;
 
+        // human_decision IS NULL — a real transaction's client draft is
+        // approved/rejected once per round (up to 3, on the 30/15/0-day
+        // cadence, see ClientReminderCycleJob); fulfillment_stage stays
+        // 'human_decide' across all of them, but between rounds the
+        // previous round is already approved and there's genuinely nothing
+        // pending — nudging then would be nagging about a decision that's
+        // already been made.
         $stuck = DB::table('transactions')
             ->where('deployment_id', $this->deploymentId)
             ->where('fulfillment_stage', 'human_decide')
+            ->whereNull('human_decision')
             ->whereNull('nudging_paused_at')
             ->get();
 

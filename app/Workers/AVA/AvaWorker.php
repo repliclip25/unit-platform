@@ -1058,6 +1058,13 @@ class AvaWorker implements WorkerContract
                 'per_deployment' => true,
                 'name'           => 'approval_reminder',
             ],
+            [
+                'job'            => \App\Workers\AVA\Jobs\ClientReminderCycleJob::class,
+                'cron'           => '0 8 * * *',  // Daily at 8AM — ahead of the 9AM nudge jobs so a fresh draft exists before anyone gets reminded about it
+                'queue'          => 'ava',
+                'per_deployment' => true,
+                'name'           => 'client_reminder_cycle',
+            ],
         ];
     }
 

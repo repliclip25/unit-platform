@@ -111,6 +111,10 @@ class TransactionController extends Controller
             // belong to (stage_key on each entry).
             'reminders'         => json_decode($tx->reminders ?? '[]', true) ?: [],
             'nudging_paused_at' => $tx->nudging_paused_at,
+            // Client-facing draft history — up to 3 on the 30/15/0-day
+            // cadence, each with its own approval timestamp.
+            'client_drafts'          => json_decode($tx->client_drafts ?? '[]', true) ?: [],
+            'client_reminder_number' => (int) $tx->client_reminder_number,
         ]);
     }
 
@@ -246,8 +250,24 @@ class TransactionController extends Controller
         // fulfillment (so a tenant can preview the full lifecycle) — each
         // fulfillment job individually guards against real vendor/tenant
         // emails and real asset writes when the transaction is a test run.
+        //
+        // A real transaction's client draft is sent up to 3 times on the
+        // 30/15/0-day cadence (see ClientReminderCycleJob) — approving
+        // reminder 1 or 2 just sends that reminder and waits for the next
+        // scheduled one; only approving the 3rd (final) reminder actually
+        // unblocks fulfillment. Fast Track never simulates real calendar
+        // days, so it always treats its one draft as final.
         if ($decision === 'approved') {
-            \App\Platform\SDK\UnitPlatform::advance($txId, 'human_decide');
+            \App\Platform\SDK\UnitPlatform::markLatestClientDraftApproved($txId);
+
+            $reminderNumber  = (int) $tx->client_reminder_number;
+            $isFinalReminder = $tx->is_test || $reminderNumber === 0 || $reminderNumber >= 3;
+
+            if ($isFinalReminder) {
+                \App\Platform\SDK\UnitPlatform::advance($txId, 'human_decide');
+            } else {
+                \App\Platform\SDK\UnitPlatform::log('ava', $txId, 'client_reminder_approved', ['reminder_number' => $reminderNumber]);
+            }
         }
 
         $msg = $decision === 'approved'

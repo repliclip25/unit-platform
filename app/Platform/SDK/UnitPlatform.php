@@ -437,6 +437,56 @@ final class UnitPlatform
         return $attempt;
     }
 
+    // ── CLIENT DRAFTS — the client-facing renewal draft, now sent up to 3
+    //    times on a real calendar cadence (30/15/0 days before expiry)
+    //    instead of once. Each occurrence's full content is preserved here;
+    //    draft_output stays as "most recent" for backward compatibility with
+    //    anything still reading it directly. ────────────────────────────────
+    public static function recordClientDraft(string $txId, string $to, string $subject, string $body, ?int $daysBeforeExpiry = null): int
+    {
+        $tx     = DB::table('transactions')->where('tx_id', $txId)->first(['client_drafts']);
+        $drafts = json_decode($tx->client_drafts ?? '[]', true) ?: [];
+
+        $reminderNumber = count($drafts) + 1;
+
+        $drafts[] = [
+            'reminder_number'    => $reminderNumber,
+            'days_before_expiry' => $daysBeforeExpiry,
+            'to'                 => $to,
+            'subject'            => $subject,
+            'body'               => $body,
+            'drafted_at'         => now()->toISOString(),
+            'approved_at'        => null,
+        ];
+
+        DB::table('transactions')->where('tx_id', $txId)->update([
+            'client_drafts'           => json_encode($drafts, JSON_INVALID_UTF8_SUBSTITUTE),
+            'client_reminder_number'  => $reminderNumber,
+            'updated_at'              => now(),
+        ]);
+
+        return $reminderNumber;
+    }
+
+    // Marks the most recent client draft as approved — called from
+    // TransactionController::decide() so the Transaction Center can show
+    // exactly when each of the (up to 3) reminders was approved, not just
+    // the latest decision.
+    public static function markLatestClientDraftApproved(string $txId): void
+    {
+        $tx     = DB::table('transactions')->where('tx_id', $txId)->first(['client_drafts']);
+        $drafts = json_decode($tx->client_drafts ?? '[]', true) ?: [];
+        if (empty($drafts)) return;
+
+        $last               = count($drafts) - 1;
+        $drafts[$last]['approved_at'] = now()->toISOString();
+
+        DB::table('transactions')->where('tx_id', $txId)->update([
+            'client_drafts' => json_encode($drafts, JSON_INVALID_UTF8_SUBSTITUTE),
+            'updated_at'    => now(),
+        ]);
+    }
+
     // ─────────────────────────────────────────────────────────────────────
     // STATUS — lightweight status-only update (also drives stage log)
     // ─────────────────────────────────────────────────────────────────────

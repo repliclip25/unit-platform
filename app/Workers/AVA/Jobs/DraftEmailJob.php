@@ -23,7 +23,10 @@ class DraftEmailJob implements ShouldQueue
         return [30, 60, 120];
     }
 
-    public function __construct(public string $txId) {}
+    // Set by ClientReminderCycleJob when re-drafting the 15/0-day reminder —
+    // null on the initial run, where the actual day count is whatever
+    // triggered detection in the first place.
+    public function __construct(public string $txId, public ?int $daysBeforeExpiry = null) {}
 
     public function handle(ClaudeService $claude): void
     {
@@ -67,10 +70,18 @@ class DraftEmailJob implements ShouldQueue
             data:   $output,
         ));
 
+        // Full history of every client-facing reminder drafted for this
+        // transaction — up to 3, on the 30/15/0-day cadence. draft_output
+        // above stays as "most recent" for anything still reading it directly.
+        $reminderNumber = UnitPlatform::recordClientDraft(
+            $this->txId, $output['to'], $output['subject'], $output['body'], $this->daysBeforeExpiry
+        );
+
         UnitPlatform::log('ava', $this->txId, 'draft_created', [
-            'to'             => $output['to'],
-            'subject'        => $output['subject'],
-            'low_confidence' => $lowConfidence,
+            'to'              => $output['to'],
+            'subject'         => $output['subject'],
+            'low_confidence'  => $lowConfidence,
+            'reminder_number' => $reminderNumber,
         ]);
 
         UnitPlatform::advance($this->txId, 'draft_email');
