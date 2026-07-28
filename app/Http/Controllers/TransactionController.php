@@ -318,6 +318,102 @@ class TransactionController extends Controller
         return back()->with('success', "○ {$txId} — renewal canceled.");
     }
 
+    // ── Stage 10 (Request Invoice, soft gate) ────────────────────────────
+    // Never blocks the pipeline — this just resolves the "attach invoice"
+    // nudge whenever the tenant gets to it, real invoices assumed PDF-only.
+    public function attachInvoice(string $txId, Request $request)
+    {
+        $tx = DB::table('transactions')->where('tx_id', $txId)->where('user_id', auth()->id())->firstOrFail();
+        $request->validate(['invoice_file' => 'required|file|mimes:pdf|max:10240']);
+
+        $disk = \Illuminate\Support\Facades\Storage::disk(config('filesystems.media_disk', 'public'));
+        $path = $request->file('invoice_file')->storeAs(
+            "invoices/{$txId}", 'invoice-' . now()->timestamp . '.pdf', config('filesystems.media_disk', 'public')
+        );
+
+        $ocr = \App\Platform\Services\InvoiceOcrService::extract($disk->path($path), auth()->id(), $tx->worker_slug, $txId);
+
+        $memory  = json_decode($tx->memory_output ?? '{}', true) ?: [];
+        $asset   = $memory['asset'] ?? 'this renewal';
+        $subject = "Invoice received — {$asset}";
+        $body    = "Hi,\n\nAttaching the invoice for {$asset}"
+            . (!empty($ocr['amount']) ? " — {$ocr['amount']}" . (!empty($ocr['currency']) ? " {$ocr['currency']}" : '') : '')
+            . (!empty($ocr['due_date']) ? ", due {$ocr['due_date']}" : '') . ".\n\nBest regards,\nFranklin";
+
+        $clientEmail = $memory['primary_contact_email'] ?? null;
+        if ($clientEmail && !$tx->is_test) {
+            \App\Platform\Services\EmailDispatcher::send(
+                'ava_invoice_client_message', $clientEmail, $memory['matched_client'] ?? 'there', null,
+                ['{asset}' => $asset], ['subject' => $subject, 'body' => $body]
+            );
+        }
+
+        $output = [
+            'status'         => 'attached',
+            'file_path'      => $path,
+            'ocr'            => $ocr,
+            'attached_at'    => now()->toISOString(),
+            'client_messages' => [[
+                'sequence' => 1, 'to' => $clientEmail, 'subject' => $subject, 'body' => $body,
+                'sent_at'  => now()->toISOString(),
+            ]],
+        ];
+
+        \App\Platform\SDK\UnitPlatform::commitOutput($txId, new \App\Platform\SDK\WorkerOutput(stage: 'request_invoice', data: $output));
+        \App\Platform\SDK\UnitPlatform::log('ava', $txId, 'invoice_attached', ['ocr' => $ocr]);
+
+        return back()->with('success', "✓ Invoice attached for {$txId}.");
+    }
+
+    // ── Stage 11 (Request Documents, skippable) ──────────────────────────
+    public function skipDocuments(string $txId)
+    {
+        DB::table('transactions')->where('tx_id', $txId)->where('user_id', auth()->id())->firstOrFail();
+
+        \App\Platform\SDK\UnitPlatform::commitOutput($txId, new \App\Platform\SDK\WorkerOutput(
+            stage: 'request_documents',
+            data:  ['status' => 'skipped', 'skipped_at' => now()->toISOString(), 'skipped_by' => auth()->id()],
+        ));
+        \App\Platform\SDK\UnitPlatform::log('ava', $txId, 'documents_skipped', ['skipped_by' => auth()->id()]);
+
+        return back()->with('success', "○ {$txId} — no documents needed.");
+    }
+
+    public function attachDocuments(string $txId, Request $request)
+    {
+        $tx = DB::table('transactions')->where('tx_id', $txId)->where('user_id', auth()->id())->firstOrFail();
+        $request->validate(['document_file' => 'required|file|max:10240']);
+
+        $path = $request->file('document_file')->storeAs(
+            "documents/{$txId}", 'document-' . now()->timestamp . '.' . $request->file('document_file')->extension(),
+            config('filesystems.media_disk', 'public')
+        );
+
+        $memory  = json_decode($tx->memory_output ?? '{}', true) ?: [];
+        $asset   = $memory['asset'] ?? 'this renewal';
+        $subject = "Supporting document — {$asset}";
+        $body    = "Hi,\n\nAttaching a supporting document for {$asset}.\n\nBest regards,\nFranklin";
+
+        $clientEmail = $memory['primary_contact_email'] ?? null;
+        if ($clientEmail && !$tx->is_test) {
+            \App\Platform\Services\EmailDispatcher::send(
+                'ava_documents_client_message', $clientEmail, $memory['matched_client'] ?? 'there', null,
+                ['{asset}' => $asset], ['subject' => $subject, 'body' => $body]
+            );
+        }
+
+        \App\Platform\SDK\UnitPlatform::commitOutput($txId, new \App\Platform\SDK\WorkerOutput(
+            stage: 'request_documents',
+            data:  [
+                'status' => 'attached', 'file_path' => $path, 'attached_at' => now()->toISOString(),
+                'client_messages' => [['sequence' => 1, 'to' => $clientEmail, 'subject' => $subject, 'body' => $body, 'sent_at' => now()->toISOString()]],
+            ],
+        ));
+        \App\Platform\SDK\UnitPlatform::log('ava', $txId, 'documents_attached', []);
+
+        return back()->with('success', "✓ Document attached for {$txId}.");
+    }
+
     // Nudging stopped after ReminderCopy::MAX_ATTEMPTS with no response —
     // nothing was lost, the gate is exactly where it was. This just clears
     // the pause so the reminder jobs pick it back up on their next run.

@@ -4,7 +4,6 @@ namespace App\Workers\AVA\Jobs;
 
 use App\Platform\SDK\UnitPlatform;
 use App\Platform\SDK\WorkerOutput;
-use App\Platform\Services\EmailDispatcher;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -12,11 +11,10 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
 /**
- * Stage 11 — Request/Attach Supporting Documents. Same best-effort pattern
- * as RequestInvoiceJob — never blocks the pipeline. Actual document
- * collection (merging whatever came in, invoice included, into one PDF) is
- * ArchiveEvidenceJob's job at stage 14, not here — this stage only sends the
- * request.
+ * Stage 11 — Request Documents (gate_type: skippable). A yes/no moment, not
+ * a vendor request: "any documents to send the client?" Never blocks the
+ * pipeline either way — TransactionController::skipDocuments()/
+ * attachDocuments() resolve it whenever the tenant gets to it.
  */
 class RequestDocumentsJob implements ShouldQueue
 {
@@ -29,45 +27,16 @@ class RequestDocumentsJob implements ShouldQueue
 
     public function handle(): void
     {
-        $input       = UnitPlatform::getInput($this->txId);
-        $memory      = $input->stage('memory');
-        $vendorEmail = $input->raw['from'] ?? null;
+        $input = UnitPlatform::getInput($this->txId);
 
-        if ($input->isFastTrack()) {
-            $sample = $input->raw['fast_track_invoice_sample'] ?? null;
-            $output = [
-                'status'       => 'simulated',
-                'to'           => $vendorEmail,
-                'requested_at' => now()->toISOString(),
-                'sample'       => $sample ?: 'No sample document provided in the test scenario — this is what would be requested from the vendor on a real renewal.',
-            ];
-        } elseif ($vendorEmail && filter_var($vendorEmail, FILTER_VALIDATE_EMAIL)) {
-            EmailDispatcher::send(
-                'ava_request_documents',
-                $vendorEmail,
-                $memory['matched_client'] ?? 'there',
-                null,
-                ['{asset}' => $memory['asset'] ?? 'this renewal', '{sender}' => 'Franklin'],
-                [
-                    'subject' => 'Supporting documents — ' . ($memory['asset'] ?? 'renewal'),
-                    'body'    => "Hi,\n\nCould you send any supporting documents needed for the renewal of "
-                        . ($memory['asset'] ?? 'this item') . " (certificate, contract, or similar)?\n\nThanks,\nFranklin",
-                ]
-            );
-
-            $output = ['status' => 'requested', 'to' => $vendorEmail, 'requested_at' => now()->toISOString()];
-        } else {
-            $output = ['status' => 'not_applicable', 'reason' => 'No vendor address available for this transaction'];
-        }
+        $output = $input->isFastTrack()
+            ? ['status' => 'skipped', 'reason' => 'Fast Track always skips — no real document flow in a test run.']
+            : ['status' => 'pending_decision'];
 
         UnitPlatform::commitOutput($this->txId, new WorkerOutput(stage: 'request_documents', data: $output));
         UnitPlatform::setFulfillmentStage($this->txId, 'request_documents');
-        UnitPlatform::log('ava', $this->txId, 'documents_requested', $output);
+        UnitPlatform::log('ava', $this->txId, 'documents_stage_opened', $output);
 
-        // This is where the pipeline pauses — the next stage in the contract,
-        // 'confirm_payment', is a hard gate_type. advance() will stop
-        // there on its own; TransactionController::confirmRenewal()/
-        // cancelRenewal() is what resumes it.
         UnitPlatform::advance($this->txId, 'request_documents');
     }
 

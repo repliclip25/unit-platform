@@ -18,6 +18,7 @@
         "maatwebsite/excel": "^3.1",
         "predis/predis": "^3.5",
         "resend/resend-laravel": "^1.4",
+        "smalot/pdfparser": "^2.12",
         "socialiteproviders/apple": "^5.10"
     },
     "require-dev": {

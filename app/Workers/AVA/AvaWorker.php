@@ -1065,6 +1065,20 @@ class AvaWorker implements WorkerContract
                 'per_deployment' => true,
                 'name'           => 'client_reminder_cycle',
             ],
+            [
+                'job'            => \App\Workers\AVA\Jobs\InvoiceNudgeJob::class,
+                'cron'           => '0 9 * * *',
+                'queue'          => 'ava',
+                'per_deployment' => true,
+                'name'           => 'invoice_nudge',
+            ],
+            [
+                'job'            => \App\Workers\AVA\Jobs\InvoiceFollowUpJob::class,
+                'cron'           => '0 10 * * *',
+                'queue'          => 'ava',
+                'per_deployment' => true,
+                'name'           => 'invoice_client_followup',
+            ],
         ];
     }
 
