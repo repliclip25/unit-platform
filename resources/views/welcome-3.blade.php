@@ -858,10 +858,15 @@ body{
 /* ── PROBLEMS WE SOLVE ── */
 .problems-sec{background:#fff}
 [data-theme="dark"] .problems-sec{background:#0D0D0D}
-.problems-grid{
-  display:grid;grid-template-columns:repeat(3,1fr);
-  border-top:1px solid var(--border);
+.problems-layout{
+  display:grid;grid-template-columns:1.5fr 1fr;
+  gap:clamp(24px,3vw,40px);
   margin-top:clamp(32px,4vw,48px);
+  align-items:stretch;
+}
+.problems-grid{
+  display:grid;grid-template-columns:repeat(2,1fr);
+  border-top:1px solid var(--border);
 }
 .problem-col{padding:32px 28px;border-left:1px solid var(--border)}
 .problem-col:first-child{border-left:none}
@@ -873,6 +878,46 @@ body{
 [data-theme="dark"] .problem-text{border-left-color:#F3F4F6}
 .problem-text h4{font-size:1.05rem;font-weight:700;color:var(--text);margin-bottom:8px}
 .problem-text p{font-size:13.5px;color:var(--t3);line-height:1.65}
+
+/* ── PROBLEMS VIDEO CAROUSEL ── */
+.problems-video{position:relative;min-height:100%}
+.pv-slides{
+  display:flex;height:100%;min-height:380px;overflow-x:auto;
+  scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;
+  scrollbar-width:none;-ms-overflow-style:none;
+  border-radius:20px;background:#0D0D0D;
+}
+.pv-slides::-webkit-scrollbar{display:none}
+.pv-slide{
+  flex:0 0 100%;scroll-snap-align:start;position:relative;
+  display:flex;align-items:center;justify-content:center;
+}
+.pv-play{
+  width:56px;height:56px;border-radius:50%;
+  background:rgba(255,255,255,.15);border:2px solid rgba(255,255,255,.4);
+  display:flex;align-items:center;justify-content:center;
+}
+.pv-play svg{width:20px;height:20px;fill:#fff;margin-left:3px}
+.pv-caption{position:absolute;left:18px;bottom:18px}
+.pv-caption-txt{
+  background:#fff;color:#0D0D0D;font-size:12.5px;font-weight:700;
+  padding:9px 15px;border-radius:99px;white-space:nowrap;
+}
+.pv-dots{position:absolute;bottom:18px;right:18px;display:flex;gap:5px;z-index:4}
+.pv-dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.35)}
+.pv-dot.active{background:#fff}
+.pv-arrow{
+  position:absolute;top:50%;transform:translateY(-50%);
+  width:36px;height:36px;border-radius:50%;
+  background:#fff;border:1.5px solid var(--border);
+  box-shadow:0 2px 10px rgba(0,0,0,.15);
+  display:flex;align-items:center;justify-content:center;
+  z-index:5;color:#0D0D0D;
+}
+.pv-arrow:hover{border-color:#999}
+.pv-arrow svg{width:15px;height:15px}
+.pv-prev{left:-16px}
+.pv-next{right:-16px}
 
 /* ── INDUSTRIES ── */
 .industries-sec{background:#fff}
@@ -1005,9 +1050,13 @@ body{
     font-size:12px;color:var(--t3);margin-top:14px;
   }
   .compare-hint svg{width:13px;height:13px}
+  .problems-layout{grid-template-columns:1fr}
   .problems-grid{grid-template-columns:1fr}
   .problem-col{border-left:none;border-top:1px solid var(--border)}
   .problem-col:first-child{border-top:none}
+  .pv-slides{min-height:280px}
+  .pv-prev{left:8px}
+  .pv-next{right:8px}
 }
 @media(max-width:480px){
   .wk-grid{grid-template-columns:1fr}
@@ -1225,65 +1274,95 @@ body{
       <h2 class="sec-h">The Problems UNIT AI Agents Solve</h2>
       <p class="sec-p">Before you evaluate a product, you're trying to name a problem. These are the ones UNIT AI Workers are built to own.</p>
     </div>
-    <div class="problems-grid">
-      <div class="problem-col">
-        <div class="problem-item">
-          <div class="problem-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+    <div class="problems-layout">
+      <div class="problems-grid">
+        <div class="problem-col">
+          <div class="problem-item">
+            <div class="problem-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+            </div>
+            <div class="problem-text">
+              <h4>Missed Renewals</h4>
+              <p>Expirations slip through the cracks when tracking lives in someone's inbox.</p>
+            </div>
           </div>
-          <div class="problem-text">
-            <h4>Missed Renewals</h4>
-            <p>Expirations slip through the cracks when tracking lives in someone's inbox.</p>
+          <div class="problem-item">
+            <div class="problem-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M18 8a6 6 0 00-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+            </div>
+            <div class="problem-text">
+              <h4>Manual Follow-ups</h4>
+              <p>Reminders get sent late — or not at all — when they depend on someone remembering.</p>
+            </div>
+          </div>
+          <div class="problem-item">
+            <div class="problem-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 014-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 01-4 4H3"/></svg>
+            </div>
+            <div class="problem-text">
+              <h4>Repetitive Operations</h4>
+              <p>The same task, done the same way, hundreds of times a month.</p>
+            </div>
           </div>
         </div>
-        <div class="problem-item">
-          <div class="problem-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>
+        <div class="problem-col">
+          <div class="problem-item">
+            <div class="problem-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>
+            </div>
+            <div class="problem-text">
+              <h4>Document Bottlenecks</h4>
+              <p>Files pile up faster than anyone has time to organize them.</p>
+            </div>
           </div>
-          <div class="problem-text">
-            <h4>Document Bottlenecks</h4>
-            <p>Files pile up faster than anyone has time to organize them.</p>
+          <div class="problem-item">
+            <div class="problem-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+            </div>
+            <div class="problem-text">
+              <h4>Publishing Delays</h4>
+              <p>Content sits in drafts because there's no one to push it live.</p>
+            </div>
+          </div>
+          <div class="problem-item">
+            <div class="problem-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 12l2 2 4-4"/><path d="M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9c1.5 0 2.9.37 4.14 1.02"/></svg>
+            </div>
+            <div class="problem-text">
+              <h4>Compliance Tracking</h4>
+              <p>Deadlines and filings are easy to lose track of under deadline pressure.</p>
+            </div>
           </div>
         </div>
       </div>
-      <div class="problem-col">
-        <div class="problem-item">
-          <div class="problem-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M18 8a6 6 0 00-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+
+      {{-- AVA is the only live worker, so every clip is a real AVA task —
+           no placeholder footage implying DOX/MOX/NUX are already working. --}}
+      <div class="problems-video">
+        <button class="pv-arrow pv-prev" aria-label="Previous video">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg>
+        </button>
+        <div class="pv-slides">
+          <div class="pv-slide">
+            <div class="pv-play"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+            <div class="pv-caption"><span class="pv-caption-txt">How AVA handles a renewal</span></div>
           </div>
-          <div class="problem-text">
-            <h4>Manual Follow-ups</h4>
-            <p>Reminders get sent late — or not at all — when they depend on someone remembering.</p>
+          <div class="pv-slide">
+            <div class="pv-play"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+            <div class="pv-caption"><span class="pv-caption-txt">How AVA follows up with a client</span></div>
           </div>
-        </div>
-        <div class="problem-item">
-          <div class="problem-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
-          </div>
-          <div class="problem-text">
-            <h4>Publishing Delays</h4>
-            <p>Content sits in drafts because there's no one to push it live.</p>
-          </div>
-        </div>
-      </div>
-      <div class="problem-col">
-        <div class="problem-item">
-          <div class="problem-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 014-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 01-4 4H3"/></svg>
-          </div>
-          <div class="problem-text">
-            <h4>Repetitive Operations</h4>
-            <p>The same task, done the same way, hundreds of times a month.</p>
+          <div class="pv-slide">
+            <div class="pv-play"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+            <div class="pv-caption"><span class="pv-caption-txt">How AVA confirms a payment</span></div>
           </div>
         </div>
-        <div class="problem-item">
-          <div class="problem-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 12l2 2 4-4"/><path d="M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9c1.5 0 2.9.37 4.14 1.02"/></svg>
-          </div>
-          <div class="problem-text">
-            <h4>Compliance Tracking</h4>
-            <p>Deadlines and filings are easy to lose track of under deadline pressure.</p>
-          </div>
+        <button class="pv-arrow pv-next" aria-label="Next video">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>
+        </button>
+        <div class="pv-dots">
+          <span class="pv-dot active"></span>
+          <span class="pv-dot"></span>
+          <span class="pv-dot"></span>
         </div>
       </div>
     </div>
@@ -2107,6 +2186,24 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
   a.addEventListener('click', e => {
     const t = document.querySelector(a.getAttribute('href'));
     if(t){ e.preventDefault(); t.scrollIntoView({behavior:'smooth',block:'start'}) }
+  });
+});
+
+// Problems-section video carousel
+document.querySelectorAll('.problems-video').forEach(wrap => {
+  const track = wrap.querySelector('.pv-slides');
+  const dots  = wrap.querySelectorAll('.pv-dot');
+  const prev  = wrap.querySelector('.pv-prev');
+  const next  = wrap.querySelector('.pv-next');
+
+  function goTo(i){ track.scrollTo({left: track.clientWidth * i, behavior:'smooth'}) }
+  prev.addEventListener('click', () => track.scrollBy({left: -track.clientWidth, behavior:'smooth'}));
+  next.addEventListener('click', () => track.scrollBy({left: track.clientWidth, behavior:'smooth'}));
+  dots.forEach((dot, i) => dot.addEventListener('click', () => goTo(i)));
+
+  track.addEventListener('scroll', () => {
+    const i = Math.round(track.scrollLeft / track.clientWidth);
+    dots.forEach((dot, idx) => dot.classList.toggle('active', idx === i));
   });
 });
 </script>
