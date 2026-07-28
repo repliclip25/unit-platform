@@ -1638,7 +1638,7 @@ body{
   <div class="w">
     <div class="industries-card">
       <div class="industries-photo">
-        <img src="/images/ava-stand.png" alt="AVA">
+        <img src="/images/ava-selfie.png" alt="AVA">
       </div>
       <div class="industries-info">
         <div class="sec-eye">AVA · Industries served</div>
