@@ -90,6 +90,26 @@ class TransactionController extends Controller
         $reminders    = json_decode($tx->reminders ?? '[]', true) ?: [];
         $clientDrafts = json_decode($tx->client_drafts ?? '[]', true) ?: [];
 
+        // Show the full cadence up front, not just what's happened so far —
+        // real (non-Fast-Track) transactions get up to 3 rounds, so a
+        // not-yet-drafted 2nd/3rd round renders as an upcoming placeholder
+        // tab instead of silently not existing. Fast Track is exempt from
+        // the cadence entirely (its one draft is always final), so it only
+        // ever shows the one real round.
+        $daysBeforeExpiryByRound = [1 => 30, 2 => 15, 3 => 0];
+        if (!$tx->is_test) {
+            $presentRounds = collect($clientDrafts)->pluck('reminder_number')->all();
+            for ($n = 1; $n <= 3; $n++) {
+                if (in_array($n, $presentRounds, true)) continue;
+                $clientDrafts[] = [
+                    'reminder_number'    => $n,
+                    'days_before_expiry' => $daysBeforeExpiryByRound[$n],
+                    'placeholder'        => true,
+                ];
+            }
+            usort($clientDrafts, fn($a, $b) => ($a['reminder_number'] ?? 0) <=> ($b['reminder_number'] ?? 0));
+        }
+
         return collect($rawStages)->map(function ($stage, $i) use ($tx, $currentIdx, $reminders, $clientDrafts) {
             $state = $i < $currentIdx ? 'done' : ($i === $currentIdx ? 'active' : 'pending');
 

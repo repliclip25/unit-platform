@@ -188,6 +188,7 @@ body{font-family:'Inter',sans-serif;background:var(--db-bg);color:var(--db-text)
 .tc-draft-tabs{display:flex;gap:6px;margin-bottom:8px}
 .tc-draft-tab{font-size:11px;font-weight:700;padding:5px 12px;border-radius:99px;cursor:pointer;font-family:inherit;border:1px solid var(--db-border);background:var(--db-chip);color:var(--db-text-muted);display:flex;align-items:center;gap:6px}
 .tc-draft-tab.consumed{background:rgba(59,130,246,.15);border-color:rgba(59,130,246,.4);color:#60a5fa}
+.tc-draft-tab.upcoming{opacity:.5;border-style:dashed}
 .tc-draft-tab.active{box-shadow:0 0 0 1.5px var(--db-text) inset}
 .tc-draft-dot{width:6px;height:6px;border-radius:50%;background:#60a5fa;flex-shrink:0}
 
@@ -545,7 +546,7 @@ $statusColor = $statusColors[$tx->status] ?? ['bg'=>'var(--db-chip)','color'=>'v
               <div class="tc-draft-tabs">
                 @foreach($stage['client_drafts'] as $idx => $cd)
                 <button type="button"
-                  class="tc-draft-tab {{ !empty($cd['approved_at']) ? 'consumed' : '' }} {{ $idx === $defaultIdx ? 'active' : '' }}"
+                  class="tc-draft-tab {{ !empty($cd['approved_at']) ? 'consumed' : '' }} {{ !empty($cd['placeholder']) ? 'upcoming' : '' }} {{ $idx === $defaultIdx ? 'active' : '' }}"
                   onclick="document.querySelectorAll('#{{ $cdWrapId }} .tc-draft-pane').forEach(function(el){el.style.display='none'});
                            document.getElementById('{{ $cdWrapId }}-{{ $idx }}').style.display='block';
                            this.parentElement.querySelectorAll('.tc-draft-tab').forEach(function(el){el.classList.remove('active')});
@@ -558,12 +559,20 @@ $statusColor = $statusColors[$tx->status] ?? ['bg'=>'var(--db-chip)','color'=>'v
               <div id="{{ $cdWrapId }}">
                 @foreach($stage['client_drafts'] as $idx => $cd)
                 <div id="{{ $cdWrapId }}-{{ $idx }}" class="tc-draft-pane" style="display:{{ $idx === $defaultIdx ? 'block' : 'none' }}">
+                  @if(!empty($cd['placeholder']))
+                  <div class="tc-msg-meta">
+                    <strong>{{ ['1st','2nd','3rd'][($cd['reminder_number'] ?? 1) - 1] ?? ($cd['reminder_number'] . 'th') }} reminder</strong>
+                    · not drafted yet — fires {{ $cd['days_before_expiry'] }} days before expiry, if the renewal is still open then
+                  </div>
+                  <p style="font-size:12px;color:var(--db-text-muted);font-style:italic">Nothing consumed here yet.</p>
+                  @else
                   <div class="tc-msg-meta">
                     <strong>{{ ['1st','2nd','3rd'][($cd['reminder_number'] ?? 1) - 1] ?? ($cd['reminder_number'] . 'th') }} reminder</strong>
                     @if(!empty($cd['days_before_expiry']))· {{ $cd['days_before_expiry'] }} days before expiry @endif
                     @if(!empty($cd['approved_at']))· approved {{ \Carbon\Carbon::parse($cd['approved_at'])->format('M j, g:i A') }} — consumed @else · drafted, not yet approved @endif
                   </div>
                   <div class="tc-msg"><strong>{{ $cd['subject'] ?? '' }}</strong>{{ "\n\n" }}{{ $cd['body'] ?? '' }}</div>
+                  @endif
                 </div>
                 @endforeach
               </div>
