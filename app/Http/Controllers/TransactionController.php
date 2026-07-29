@@ -124,9 +124,10 @@ class TransactionController extends Controller
                 'state'     => $state,
                 'content'   => $content,
                 'reminders' => $stageReminders,
-                // human_decide's real content is the up-to-3 client drafts,
-                // not a single output_column value.
-                'client_drafts' => $stage['key'] === 'human_decide' ? $clientDrafts : [],
+                // Draft Email and human_decide both show the same up-to-3
+                // client drafts — one tenant reviews every cadence message
+                // once, instead of hunting across two stage cards for it.
+                'client_drafts' => in_array($stage['key'], ['draft_email', 'human_decide'], true) ? $clientDrafts : [],
             ]);
         })->all();
     }
