@@ -7,7 +7,15 @@ use Illuminate\Support\Facades\DB;
 
 class PublicPageController extends Controller
 {
-    public function about()       { return view('public.about'); }
+    public function about()
+    {
+        // Real numbers, not invented ones — see MEMORY/session notes on
+        // removing fabricated stats from public pages.
+        return view('public.about', [
+            'totalTx'         => DB::table('transactions')->count(),
+            'liveDeployments' => DB::table('worker_deployments')->whereIn('status', ['active', 'paused'])->count(),
+        ]);
+    }
     public function privacy()     { return view('public.privacy'); }
     public function terms()       { return view('public.terms'); }
 

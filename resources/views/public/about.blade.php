@@ -1,6 +1,6 @@
 @extends('layouts.public')
 @section('title', 'About UNIT')
-@section('description', 'UNIT is a platform for deploying purpose-built AI workers — each one trained for a specific workflow, ready to run on your team.')
+@section('description', 'UNIT is an AI agent platform built by operators who ran these workflows themselves before automating them. Meet the team and the mission behind AVA and UNIT\'s AI Workers.')
 
 @section('body')
 <div class="w pub-hero">
@@ -25,21 +25,20 @@
 
   <div class="pub-divider"></div>
 
-  <h2>Our workers</h2>
-  <p>UNIT's first deployed worker is <strong>AVA</strong> — a Renewal &amp; Subscription Coordinator trained on NYC agency workflows. AVA monitors inboxes, classifies renewals, pulls client history, drafts responses, and queues them for human review.</p>
-  <p>More workers are in development — NOVA (Filing Specialist) and REX (Compliance Monitor). Each is purpose-built for a specific org and workflow, not a general-purpose assistant. The lineup will grow over time as new workers are built and validated.</p>
-  <p><a href="{{ route('public.workers.index') }}">Browse all workers →</a></p>
+  <h2>Our AI agents</h2>
+  <p>UNIT's first live AI Worker is <strong>AVA</strong>, an AI Renewal Coordinator built for IT &amp; Digital Agencies, Insurance Brokers, and Compliance &amp; Licensing Firms. AVA monitors inboxes, classifies renewals, pulls client history, drafts responses, and queues them for human review.</p>
+  <p>More AI Workers are in development — <strong>DOX</strong> (AI Document Agent), <strong>MOX</strong> (AI Brand Intelligence Agent), and <strong>NUX</strong> (AI Publishing Agent). Each is purpose-built for a specific workflow, not a general-purpose assistant. The lineup will grow as new AI Workers are built and validated.</p>
+  <p><a href="{{ route('public.workers.index') }}">Browse all AI Workers →</a></p>
 
   <div class="pub-divider"></div>
 
-  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:8px">
+  <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:24px;margin-top:8px">
     @foreach([
-      ['3+', 'Years building workflow automation'],
-      ['4', 'Org-specific workflows live'],
-      ['25k+', 'Transactions run by AI workers'],
+      [number_format($totalTx), 'Renewals processed by AVA'],
+      [number_format($liveDeployments), 'Businesses running UNIT'],
     ] as [$n,$l])
     <div style="background:var(--card);border:1px solid var(--line);border-radius:14px;padding:28px 24px">
-      <div style="font-family:var(--fd);font-size:36px;font-weight:800;color:var(--gold-text);margin-bottom:6px">{{ $n }}</div>
+      <div style="font-family:var(--fd);font-size:36px;font-weight:800;color:var(--text);margin-bottom:6px">{{ $n }}</div>
       <div style="font-size:13.5px;color:var(--t3)">{{ $l }}</div>
     </div>
     @endforeach
