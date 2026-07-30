@@ -307,26 +307,42 @@
     <div style="text-align:center;padding:72px 0"><p style="color:var(--t3)">Pricing coming soon.</p></div>
     @endif
 
-    {{-- FAQ --}}
+    {{-- FAQ — single source of truth for both the visible accordion and
+         the FAQPage schema below, so they can't drift out of sync. --}}
+    @php
+        $__pricingFaqs = [
+            ['q' => 'What counts as a transaction?', 'a' => 'It depends on the worker — each card above defines exactly what "1 transaction" means for that specific worker. For AVA it\'s one renewal email processed through the full pipeline: read, classified, drafted, and pushed to your Gmail drafts.'],
+            ['q' => 'What happens when I run out of transactions?', 'a' => 'Processing continues at the overage rate shown on the card. You can set a monthly spend cap from billing to prevent unexpected charges.'],
+            ['q' => 'Can I run multiple workers?', 'a' => 'Yes. Each worker you deploy is billed independently. They don\'t share transaction pools or billing — each meters separately.'],
+            ['q' => 'Can I cancel anytime?', 'a' => 'Yes. Cancel from billing at any time. Your worker runs through the end of the period. Data is preserved for 30 days after.'],
+            ['q' => 'Do you use my email content to train AI?', 'a' => 'No. Content is processed in memory to generate drafts and stored only in your account audit trail. We never use your data to train AI models.'],
+            ['q' => 'Is there a long-term contract?', 'a' => 'No. All plans are month-to-month. Enterprise includes annual pricing options.'],
+        ];
+    @endphp
     <div class="faq-wrap">
         <h2 style="font-family:'Space Grotesk',sans-serif;font-size:24px;font-weight:800;color:var(--text);text-align:center;margin-bottom:6px">Common questions</h2>
         <p style="text-align:center;color:var(--t3);font-size:13px;margin-bottom:32px">Anything else? <a href="mailto:hello@unit.report" style="color:var(--text);font-weight:600;text-decoration:underline">hello@unit.report</a></p>
-        @foreach([
-            ['What counts as a transaction?','It depends on the worker — each card above defines exactly what "1 transaction" means for that specific worker. For AVA it\'s one renewal email processed through the full pipeline: read, classified, drafted, and pushed to your Gmail drafts.'],
-            ['What happens when I run out of transactions?','Processing continues at the overage rate shown on the card. You can set a monthly spend cap from billing to prevent unexpected charges.'],
-            ['Can I run multiple workers?','Yes. Each worker you deploy is billed independently. They don\'t share transaction pools or billing — each meters separately.'],
-            ['Can I cancel anytime?','Yes. Cancel from billing at any time. Your worker runs through the end of the period. Data is preserved for 30 days after.'],
-            ['Do you use my email content to train AI?','No. Content is processed in memory to generate drafts and stored only in your account audit trail. We never use your data to train AI models.'],
-            ['Is there a long-term contract?','No. All plans are month-to-month. Enterprise includes annual pricing options.'],
-        ] as [$q,$a])
+        @foreach($__pricingFaqs as $faq)
         <details class="faq-item">
-            <summary>{{ $q }}<svg class="faq-chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></summary>
-            <p>{{ $a }}</p>
+            <summary>{{ $faq['q'] }}<svg class="faq-chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></summary>
+            <p>{{ $faq['a'] }}</p>
         </details>
         @endforeach
     </div>
 
 </div>
+
+@section('head')
+<script type="application/ld+json">{!! json_encode([
+    '@@context' => 'https://schema.org',
+    '@type'    => 'FAQPage',
+    'mainEntity' => array_map(fn($f) => [
+        '@type' => 'Question',
+        'name' => $f['q'],
+        'acceptedAnswer' => ['@type' => 'Answer', 'text' => $f['a']],
+    ], $__pricingFaqs),
+], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}</script>
+@endsection
 
 <script>
 document.querySelectorAll('.faq-item').forEach(function(d){

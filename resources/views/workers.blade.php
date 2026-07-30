@@ -12,6 +12,17 @@
     'description' => "Meet UNIT's AI agents — each an AI worker trained for one job. AVA, our AI renewal coordinator, is live; more AI agents are coming soon.",
     'image'       => asset('images/hero-team-2.png'),
 ])
+<script type="application/ld+json">{!! json_encode([
+    '@@context' => 'https://schema.org',
+    '@type'    => 'ItemList',
+    'name'     => 'UNIT AI Agents',
+    'itemListElement' => [
+        ['@type' => 'ListItem', 'position' => 1, 'item' => ['@type' => 'Service', 'name' => 'AVA', 'serviceType' => 'AI Renewal Agent', 'url' => route('public.workers.show', 'ava')]],
+        ['@type' => 'ListItem', 'position' => 2, 'item' => ['@type' => 'Service', 'name' => 'DOX', 'serviceType' => 'AI Document Agent']],
+        ['@type' => 'ListItem', 'position' => 3, 'item' => ['@type' => 'Service', 'name' => 'MOX', 'serviceType' => 'AI Brand Intelligence Agent']],
+        ['@type' => 'ListItem', 'position' => 4, 'item' => ['@type' => 'Service', 'name' => 'NUX', 'serviceType' => 'AI Publishing Agent']],
+    ],
+], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
