@@ -1,6 +1,6 @@
 @extends('layouts.public')
-@section('title', 'Pricing — UNIT')
-@section('description', 'Each UNIT worker is priced for the specific work it does. Start free on any worker, no card required.')
+@section('title', 'Pricing')
+@section('description', 'Each UNIT AI agent is priced for the specific workflow it owns. Start free on any AI Worker, no card required.')
 
 @section('body')
 
@@ -108,14 +108,14 @@
 
 <div class="w pub-hero" style="text-align:center">
     <div class="eyebrow">Pricing</div>
-    <h1>A worker for every workflow.</h1>
-    <p style="font-size:16px;color:var(--t3);max-width:480px;margin:0 auto;line-height:1.7">Each UNIT worker is priced for what it automates — and what that's worth to your team. Start free, no card required.</p>
+    <h1>An AI agent for every workflow.</h1>
+    <p style="font-size:16px;color:var(--t3);max-width:480px;margin:0 auto;line-height:1.7">Each UNIT AI agent is priced for what it automates — and what that's worth to your team. Start free, no card required.</p>
 </div>
 
 <div class="w" style="max-width:1040px;margin:0 auto;padding:0 24px 96px">
 
     <div class="pc-note">
-        <svg style="width:16px;height:16px;color:var(--gold);flex-shrink:0;margin-top:2px" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        <svg style="width:16px;height:16px;color:var(--text);flex-shrink:0;margin-top:2px" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
         <p><strong style="color:var(--text)">You only pay for the worker you deploy.</strong> Each worker has a monthly rate covering a set number of transactions, then a low overage rate after that. What counts as a "transaction" depends on the worker — defined on each card.</p>
     </div>
 
@@ -310,7 +310,7 @@
     {{-- FAQ --}}
     <div class="faq-wrap">
         <h2 style="font-family:'Space Grotesk',sans-serif;font-size:24px;font-weight:800;color:var(--text);text-align:center;margin-bottom:6px">Common questions</h2>
-        <p style="text-align:center;color:var(--t3);font-size:13px;margin-bottom:32px">Anything else? <a href="mailto:hello@unit.report" style="color:var(--gold-text);text-decoration:underline">hello@unit.report</a></p>
+        <p style="text-align:center;color:var(--t3);font-size:13px;margin-bottom:32px">Anything else? <a href="mailto:hello@unit.report" style="color:var(--text);font-weight:600;text-decoration:underline">hello@unit.report</a></p>
         @foreach([
             ['What counts as a transaction?','It depends on the worker — each card above defines exactly what "1 transaction" means for that specific worker. For AVA it\'s one renewal email processed through the full pipeline: read, classified, drafted, and pushed to your Gmail drafts.'],
             ['What happens when I run out of transactions?','Processing continues at the overage rate shown on the card. You can set a monthly spend cap from billing to prevent unexpected charges.'],
