@@ -53,6 +53,7 @@ ul{list-style:none}
 [data-theme="dark"] .behind-bar{background:#0D0D0D;border-color:#2D2D2D}
 [data-theme="dark"] .behind-item{border-color:#2D2D2D}
 [data-theme="dark"] .behind-icon{background:#1a1a1a}
+[data-theme="dark"] .icon-diary{stroke:#F3F4F6}
 [data-theme="dark"] .behind-h{color:#F3F4F6}
 [data-theme="dark"] .behind-p{color:#9CA3AF}
 [data-theme="dark"] .cta-foot{background:#0D0D0D}
@@ -405,9 +406,9 @@ body{font-family:var(--font-b);color:var(--text);background:var(--bg);-webkit-fo
 <section class="hero-page">
   <div class="hero-page-left">
     <div class="hero-page-inner">
-      <div class="page-eye">Meet the Team</div>
-      <h1 class="hero-page-h">Four workers.<br>Four specialties.<br><em>One goal: Your success.</em></h1>
-      <p class="hero-page-p">Each UNIT worker has one job — and does it exceptionally well. They work 24/7, improve over time, and show up every day ready to help your business grow.</p>
+      <div class="page-eye">Meet the AI Agents</div>
+      <h1 class="hero-page-h">Specialized AI Agents.<br>Complete Business<br><em>Workflows.</em></h1>
+      <p class="hero-page-p">Every UNIT AI Worker owns one operational responsibility from start to finish. Instead of doing a little of everything, each worker becomes exceptional at one business workflow.</p>
       <div class="hero-proof">
         <div class="proof-avs">
           <img src="/images/ava.png" alt="AVA">
@@ -431,29 +432,29 @@ body{font-family:var(--font-b);color:var(--text);background:var(--bg);-webkit-fo
 </section>
 
 <!-- ACTIVITY FEED -->
+{{-- AVA-only: DOX/MOX/NUX are not live yet (see roster below), so the
+     ticker only shows real workflow stages the live AVA pipeline
+     performs — no fabricated activity for Coming Soon workers. Matches
+     the homepage ticker for consistency. --}}
 <div class="activity-feed">
   <div class="feed-track">
     <div class="feed-item"><span class="feed-dot green"></span><span class="feed-worker" style="color:#0D0D0D">AVA</span><span class="feed-action">Renewal drafted for Apex Property Group</span><span class="feed-time">3s ago</span></div>
-    <div class="feed-item"><span class="feed-dot green"></span><span class="feed-worker" style="color:#fff">DOX</span><span class="feed-action">1,247 lease files sorted and tagged</span><span class="feed-time">14m ago</span></div>
-    <div class="feed-item"><span class="feed-dot amber"></span><span class="feed-worker" style="color:#F59E0B">MOX</span><span class="feed-action">Brand mention found on LinkedIn — flagged for review</span><span class="feed-time">1m ago</span></div>
-    <div class="feed-item"><span class="feed-dot blue"></span><span class="feed-worker" style="color:#0D0D0D">NUX</span><span class="feed-action">Campaign published across 3 channels</span><span class="feed-time">22m ago</span></div>
     <div class="feed-item"><span class="feed-dot green"></span><span class="feed-worker" style="color:#0D0D0D">AVA</span><span class="feed-action">Follow-up sent to Sunrise LLC · renewal confirmed</span><span class="feed-time">8m ago</span></div>
-    <div class="feed-item"><span class="feed-dot blue"></span><span class="feed-worker" style="color:#fff">DOX</span><span class="feed-action">Contract uploaded · client folder updated automatically</span><span class="feed-time">31m ago</span></div>
-    <div class="feed-item"><span class="feed-dot amber"></span><span class="feed-worker" style="color:#F59E0B">MOX</span><span class="feed-action">National Coffee Day opportunity surfaced</span><span class="feed-time">2h ago</span></div>
+    <div class="feed-item"><span class="feed-dot blue"></span><span class="feed-worker" style="color:#0D0D0D">AVA</span><span class="feed-action">Gmail inbox synced · 2 new renewals detected</span><span class="feed-time">12m ago</span></div>
+    <div class="feed-item"><span class="feed-dot green"></span><span class="feed-worker" style="color:#0D0D0D">AVA</span><span class="feed-action">Invoice prepared for Meridian Realty</span><span class="feed-time">19m ago</span></div>
+    <div class="feed-item"><span class="feed-dot green"></span><span class="feed-worker" style="color:#0D0D0D">AVA</span><span class="feed-action">Payment confirmed · Lakeside Partners</span><span class="feed-time">27m ago</span></div>
+    <div class="feed-item"><span class="feed-dot amber"></span><span class="feed-worker" style="color:#0D0D0D">AVA</span><span class="feed-action">Renewal flagged for review · unusual terms detected</span><span class="feed-time">34m ago</span></div>
+    <div class="feed-item"><span class="feed-dot green"></span><span class="feed-worker" style="color:#0D0D0D">AVA</span><span class="feed-action">Renewal record updated · Crestview Holdings</span><span class="feed-time">41m ago</span></div>
     <div class="feed-item"><span class="feed-dot green"></span><span class="feed-worker" style="color:#0D0D0D">AVA</span><span class="feed-action">3 renewals processed before 9 AM · zero missed</span><span class="feed-time">today</span></div>
-    <div class="feed-item"><span class="feed-dot blue"></span><span class="feed-worker" style="color:#0D0D0D">NUX</span><span class="feed-action">6 posts repurposed from last week's report</span><span class="feed-time">45m ago</span></div>
-    <div class="feed-item"><span class="feed-dot blue"></span><span class="feed-worker" style="color:#fff">DOX</span><span class="feed-action">Duplicate files removed · 340 MB recovered</span><span class="feed-time">1h ago</span></div>
     <!-- clone set -->
     <div class="feed-item"><span class="feed-dot green"></span><span class="feed-worker" style="color:#0D0D0D">AVA</span><span class="feed-action">Renewal drafted for Apex Property Group</span><span class="feed-time">3s ago</span></div>
-    <div class="feed-item"><span class="feed-dot green"></span><span class="feed-worker" style="color:#fff">DOX</span><span class="feed-action">1,247 lease files sorted and tagged</span><span class="feed-time">14m ago</span></div>
-    <div class="feed-item"><span class="feed-dot amber"></span><span class="feed-worker" style="color:#F59E0B">MOX</span><span class="feed-action">Brand mention found on LinkedIn — flagged for review</span><span class="feed-time">1m ago</span></div>
-    <div class="feed-item"><span class="feed-dot blue"></span><span class="feed-worker" style="color:#0D0D0D">NUX</span><span class="feed-action">Campaign published across 3 channels</span><span class="feed-time">22m ago</span></div>
     <div class="feed-item"><span class="feed-dot green"></span><span class="feed-worker" style="color:#0D0D0D">AVA</span><span class="feed-action">Follow-up sent to Sunrise LLC · renewal confirmed</span><span class="feed-time">8m ago</span></div>
-    <div class="feed-item"><span class="feed-dot blue"></span><span class="feed-worker" style="color:#fff">DOX</span><span class="feed-action">Contract uploaded · client folder updated automatically</span><span class="feed-time">31m ago</span></div>
-    <div class="feed-item"><span class="feed-dot amber"></span><span class="feed-worker" style="color:#F59E0B">MOX</span><span class="feed-action">National Coffee Day opportunity surfaced</span><span class="feed-time">2h ago</span></div>
+    <div class="feed-item"><span class="feed-dot blue"></span><span class="feed-worker" style="color:#0D0D0D">AVA</span><span class="feed-action">Gmail inbox synced · 2 new renewals detected</span><span class="feed-time">12m ago</span></div>
+    <div class="feed-item"><span class="feed-dot green"></span><span class="feed-worker" style="color:#0D0D0D">AVA</span><span class="feed-action">Invoice prepared for Meridian Realty</span><span class="feed-time">19m ago</span></div>
+    <div class="feed-item"><span class="feed-dot green"></span><span class="feed-worker" style="color:#0D0D0D">AVA</span><span class="feed-action">Payment confirmed · Lakeside Partners</span><span class="feed-time">27m ago</span></div>
+    <div class="feed-item"><span class="feed-dot amber"></span><span class="feed-worker" style="color:#0D0D0D">AVA</span><span class="feed-action">Renewal flagged for review · unusual terms detected</span><span class="feed-time">34m ago</span></div>
+    <div class="feed-item"><span class="feed-dot green"></span><span class="feed-worker" style="color:#0D0D0D">AVA</span><span class="feed-action">Renewal record updated · Crestview Holdings</span><span class="feed-time">41m ago</span></div>
     <div class="feed-item"><span class="feed-dot green"></span><span class="feed-worker" style="color:#0D0D0D">AVA</span><span class="feed-action">3 renewals processed before 9 AM · zero missed</span><span class="feed-time">today</span></div>
-    <div class="feed-item"><span class="feed-dot blue"></span><span class="feed-worker" style="color:#0D0D0D">NUX</span><span class="feed-action">6 posts repurposed from last week's report</span><span class="feed-time">45m ago</span></div>
-    <div class="feed-item"><span class="feed-dot blue"></span><span class="feed-worker" style="color:#fff">DOX</span><span class="feed-action">Duplicate files removed · 340 MB recovered</span><span class="feed-time">1h ago</span></div>
   </div>
 </div>
 
@@ -466,7 +467,7 @@ body{font-family:var(--font-b);color:var(--text);background:var(--bg);-webkit-fo
       <div class="toolbar-top">
         <div class="toolbar-top-left">
           <div class="sec-eye">The Roster</div>
-          <h2 class="sec-h">Your AI workforce, ready to hire.</h2>
+          <h2 class="sec-h">AVA is live. The rest of the roster is coming.</h2>
         </div>
         <div class="search-wrap">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
@@ -495,18 +496,20 @@ body{font-family:var(--font-b);color:var(--text);background:var(--bg);-webkit-fo
         </div>
         <div class="wk-content">
           <div class="wk-head">
-            <div class="wk-icon" style="background:rgba(245,197,24,.12)">
+            <div class="wk-icon" style="background:rgba(0,0,0,.07)">
               <svg viewBox="0 0 24 24" fill="none" stroke="#0D0D0D" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
             </div>
             <div class="wk-name" style="color:#0D0D0D">AVA</div>
           </div>
-          <div class="wk-role">Renewals Specialist</div>
-          <p class="wk-quote">"I remember the renewals everyone else forgets."</p>
+          <div class="wk-role">AI Renewal Agent</div>
+          <p class="wk-quote">Owns your complete renewal lifecycle.</p>
           <div class="wk-bullets">
-            <div class="wk-bullet"><div class="wk-check" style="background:#0D0D0D"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>Tracks every renewal</div>
-            <div class="wk-bullet"><div class="wk-check" style="background:#0D0D0D"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>Sends reminders</div>
-            <div class="wk-bullet"><div class="wk-check" style="background:#0D0D0D"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>Reduces churn</div>
-            <div class="wk-bullet"><div class="wk-check" style="background:#0D0D0D"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>Protects revenue</div>
+            <div class="wk-bullet"><div class="wk-check" style="background:#0D0D0D"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>Tracks upcoming expirations</div>
+            <div class="wk-bullet"><div class="wk-check" style="background:#0D0D0D"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>Starts renewal campaigns</div>
+            <div class="wk-bullet"><div class="wk-check" style="background:#0D0D0D"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>Follows up automatically</div>
+            <div class="wk-bullet"><div class="wk-check" style="background:#0D0D0D"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>Supports invoicing</div>
+            <div class="wk-bullet"><div class="wk-check" style="background:#0D0D0D"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>Tracks payment confirmation</div>
+            <div class="wk-bullet"><div class="wk-check" style="background:#0D0D0D"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>Updates renewal records</div>
           </div>
           @php
             $avaHasDesk = auth()->check() && DB::table('worker_deployments')
@@ -517,7 +520,7 @@ body{font-family:var(--font-b);color:var(--text);background:var(--bg);-webkit-fo
             @if($avaHasDesk)
               <a href="{{ route('app.desk.ava') }}" class="btn-hire-wk" style="background:#0D0D0D">AVA's Desk <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
             @else
-              <a href="{{ route('hire.ava.welcome') }}" class="btn-hire-wk" style="background:#0D0D0D">Hire AVA <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+              <a href="{{ route('hire.ava.welcome') }}" class="btn-hire-wk" style="background:#0D0D0D">Deploy AVA <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
             @endif
             <a href="{{ route('public.workers.show', 'ava') }}" class="btn-watch-wk" style="color:#0D0D0D;border-color:#E5E7EB">Watch Ava's Day <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
           </div>
@@ -536,8 +539,8 @@ body{font-family:var(--font-b);color:var(--text);background:var(--bg);-webkit-fo
             </div>
             <div class="wk-name" style="color:#0D0D0D">DOX <span style="display:inline-block;margin-left:6px;padding:2px 8px;border-radius:99px;background:rgba(245,197,24,.15);color:#8a6a06;font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;vertical-align:middle">Coming Soon</span></div>
           </div>
-          <div class="wk-role">Document Specialist</div>
-          <p class="wk-quote">"I organize the documents nobody wants to touch."</p>
+          <div class="wk-role">AI Document Agent</div>
+          <p class="wk-quote">Owns document organization, retrieval, and structured workflows.</p>
           <div class="wk-bullets">
             <div class="wk-bullet"><div class="wk-check" style="background:#0D0D0D"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>Organizes files</div>
             <div class="wk-bullet"><div class="wk-check" style="background:#0D0D0D"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>Finds what's lost</div>
@@ -562,8 +565,8 @@ body{font-family:var(--font-b);color:var(--text);background:var(--bg);-webkit-fo
             </div>
             <div class="wk-name" style="color:#0D0D0D">MOX <span style="display:inline-block;margin-left:6px;padding:2px 8px;border-radius:99px;background:rgba(245,197,24,.15);color:#8a6a06;font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;vertical-align:middle">Coming Soon</span></div>
           </div>
-          <div class="wk-role">Brand Moments Hunter</div>
-          <p class="wk-quote">"I search the world for moments your brand shouldn't miss."</p>
+          <div class="wk-role">AI Brand Intelligence Agent</div>
+          <p class="wk-quote">Finds high-value brand opportunities worth acting on.</p>
           <div class="wk-bullets">
             <div class="wk-bullet"><div class="wk-check" style="background:#0D0D0D"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>Finds brand moments</div>
             <div class="wk-bullet"><div class="wk-check" style="background:#0D0D0D"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>Tracks opportunities</div>
@@ -588,8 +591,8 @@ body{font-family:var(--font-b);color:var(--text);background:var(--bg);-webkit-fo
             </div>
             <div class="wk-name" style="color:#0D0D0D">NUX <span style="display:inline-block;margin-left:6px;padding:2px 8px;border-radius:99px;background:rgba(245,197,24,.15);color:#8a6a06;font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;vertical-align:middle">Coming Soon</span></div>
           </div>
-          <div class="wk-role">Publishing Specialist</div>
-          <p class="wk-quote">"I turn one idea into content people actually see."</p>
+          <div class="wk-role">AI Publishing Agent</div>
+          <p class="wk-quote">Owns your publishing workflow from draft to distribution.</p>
           <div class="wk-bullets">
             <div class="wk-bullet"><div class="wk-check" style="background:#0D0D0D"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>Creates content</div>
             <div class="wk-bullet"><div class="wk-check" style="background:#0D0D0D"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>Repurposes ideas</div>
@@ -616,7 +619,7 @@ body{font-family:var(--font-b);color:var(--text);background:var(--bg);-webkit-fo
     </div>
     <div class="behind-grid">
       <div class="behind-item">
-        <div class="behind-icon"><svg viewBox="0 0 24 24" fill="none" stroke="var(--brand)" stroke-width="2" stroke-linecap="round"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4z"/></svg></div>
+        <div class="behind-icon"><svg class="icon-diary" viewBox="0 0 24 24" fill="none" stroke="#0D0D0D" stroke-width="2" stroke-linecap="round"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4z"/></svg></div>
         <div>
           <div class="behind-h">They keep a diary.</div>
           <p class="behind-p">Every worker writes about their day — what they did, what they learned, and what's next. You always know what happened.</p>
