@@ -64,11 +64,6 @@ class WorkerPublicController extends Controller
                         'detail' => '→ Status: awaiting review\n→ Action required: approve or edit draft\n→ Deadline: 14 days remaining',
                     ],
                 ],
-                'testimonials' => [
-                    ['quote' => 'We used to spend two days a week just managing renewals. AVA handles it before we even see it. Now it\'s a five-minute review.', 'name' => 'Maria T.', 'company' => 'BuildCo Operations'],
-                    ['quote' => 'The draft quality is shockingly good. It pulled the right contact, the right license number, flagged an expiry we missed. Exactly what a good coordinator does.', 'name' => 'James R.', 'company' => 'Northline Services'],
-                    ['quote' => 'We were skeptical of AI for compliance work. But UNIT gives us full visibility into every step. We\'re more confident in our filings now, not less.', 'name' => 'Sandra L.', 'company' => 'Vertex Solutions'],
-                ],
                 'faq' => [
                     ['q' => 'What agencies does AVA support?', 'a' => 'AVA currently handles renewals for NYCSCA, DOB, FDNY, and MTA. We add new agencies regularly — contact us if yours isn\'t listed.'],
                     ['q' => 'Does AVA submit renewals automatically?', 'a' => 'No. AVA prepares and drafts the renewal, then queues it for your review. Nothing submits without your explicit approval. You stay in control of every filing.'],
@@ -98,9 +93,9 @@ class WorkerPublicController extends Controller
 
         return view($view, [
             'worker'          => $w,
-            'deploymentCount' => $deploymentCount ?: 12,   // fallback for fresh installs
-            'tokensToday'     => $tokensToday     ?: 48200,
-            'totalTx'         => $totalTx         ?: 3840,
+            'deploymentCount' => $deploymentCount,
+            'tokensToday'     => $tokensToday,
+            'totalTx'         => $totalTx,
         ]);
     }
 

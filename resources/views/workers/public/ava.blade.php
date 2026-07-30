@@ -205,7 +205,7 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
 .vidbar-play svg{width:16px;height:16px;fill:#fff;margin-left:2px}
 .vidbar-time{font-size:12px;color:rgba(255,255,255,.6);font-variant-numeric:tabular-nums;white-space:nowrap}
 .vidbar-track{flex:1;height:3px;background:rgba(255,255,255,.18);border-radius:99px;position:relative;cursor:pointer}
-.vidbar-fill{height:100%;background:var(--brand);border-radius:99px;width:19%}
+.vidbar-fill{height:100%;background:#fff;border-radius:99px;width:19%}
 .vidbar-thumb{
   position:absolute;top:50%;left:19%;transform:translate(-50%,-50%);
   width:13px;height:13px;border-radius:50%;
@@ -402,20 +402,21 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
 [data-theme="dark"] .sol-panel{background:#111;border-color:#2D2D2D}
 .sol-pill{
   display:inline-flex;align-items:center;gap:7px;
-  background:var(--brand);color:#fff;
+  background:#0D0D0D;color:#fff;
   font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
   padding:6px 14px;border-radius:99px;margin-bottom:18px;
 }
 .sol-meet{font-size:26px;font-weight:800;color:#0D0D0D;margin-bottom:3px;line-height:1.1}
 [data-theme="dark"] .sol-meet{color:#F3F4F6}
-.sol-meet span{color:var(--brand)}
+.sol-meet span{position:relative}
+.sol-meet span::after{content:'';position:absolute;left:0;right:0;bottom:-2px;height:3px;background:var(--brand);border-radius:2px}
 .sol-role{font-size:14px;color:var(--t3);margin-bottom:20px}
 .sol-checks{display:flex;flex-direction:column;gap:10px;margin-bottom:20px}
 .sol-check{display:flex;align-items:center;gap:10px;font-size:14px;color:#0D0D0D}
 [data-theme="dark"] .sol-check{color:#F3F4F6}
 .sol-chk{
   width:22px;height:22px;border-radius:50%;flex-shrink:0;
-  background:var(--brand);
+  background:#0D0D0D;
   display:flex;align-items:center;justify-content:center;
 }
 .sol-chk svg{width:11px;height:11px;stroke:#fff;stroke-width:2.5;fill:none;stroke-linecap:round}
@@ -425,10 +426,12 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
   border-radius:14px;padding:16px;
 }
 [data-theme="dark"] .sol-peace{background:#1a1a1a;border-color:#3D3D3D}
-.sol-peace-icon{width:36px;height:36px;border-radius:10px;flex-shrink:0;background:#E9E9FF;display:flex;align-items:center;justify-content:center}
-[data-theme="dark"] .sol-peace-icon{background:rgba(var(--brand-rgb),.15)}
-.sol-peace-icon svg{width:18px;height:18px;stroke:var(--brand);fill:none;stroke-width:2;stroke-linecap:round}
-.sol-peace-h{font-size:14px;font-weight:700;color:var(--brand);margin-bottom:4px}
+.sol-peace-icon{width:36px;height:36px;border-radius:10px;flex-shrink:0;background:rgba(0,0,0,.05);display:flex;align-items:center;justify-content:center}
+[data-theme="dark"] .sol-peace-icon{background:rgba(255,255,255,.08)}
+.sol-peace-icon svg{width:18px;height:18px;stroke:#0D0D0D;fill:none;stroke-width:2;stroke-linecap:round}
+[data-theme="dark"] .sol-peace-icon svg{stroke:#F3F4F6}
+.sol-peace-h{font-size:14px;font-weight:700;color:#0D0D0D;margin-bottom:4px}
+[data-theme="dark"] .sol-peace-h{color:#F3F4F6}
 .sol-peace-p{font-size:12.5px;color:var(--t3);line-height:1.55}
 /* bottom CTA strip — full width */
 .prob-cta-strip{
@@ -519,7 +522,7 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
   line-height:1;z-index:1;pointer-events:none;
 }
 [data-theme="dark"] .pipe-step:not(:last-child)::after{color:#3D3D3D}
-.pipe-step.ps-active:not(:last-child)::after{color:var(--brand);opacity:.5}
+.pipe-step.ps-active:not(:last-child)::after{color:#0D0D0D;opacity:.5}
 /* node */
 .pipe-node{
   width:68px;height:68px;border-radius:16px;
@@ -729,6 +732,9 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
 .testi-name{font-size:13px;font-weight:700;color:var(--text)}
 .testi-co{font-size:11px;color:var(--t4)}
 .testi-rev{font-size:13px;font-weight:700;color:var(--t3);margin-top:6px}
+.testi-skel{height:10px;border-radius:99px;background:var(--border);margin-bottom:8px}
+[data-theme="dark"] .testi-skel{background:#2D2D2D}
+.testi-skel:last-child{margin-bottom:0}
 
 /* integrations */
 .integrations-sec{background:#fff;border-top:1px solid var(--border);padding:clamp(56px,7vw,80px) 0}
@@ -925,31 +931,23 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
 
   </div>{{-- end .hero-video-col --}}
 
-  {{-- RIGHT: status panel (separate column) --}}
+  {{-- RIGHT: status panel (separate column) —
+       Real numbers only: $totalTx / $deploymentCount come straight from
+       the DB in WorkerPublicController (no invented fallback numbers, no
+       fabricated multiplier formulas for "revenue protected" or "streak"
+       that used to render here regardless of actual usage. --}}
   <div class="hero-panel">
     <div class="hc-status">
       <div class="hc-dot"></div>
-      <span class="hc-status-txt">{{ $worker['name'] }} IS ON SHIFT</span>
+      <span class="hc-status-txt">{{ $worker['name'] }} IS LIVE</span>
     </div>
-    <div class="hc-time" id="live-clock">09:42 AM</div>
-    <div class="hc-task-label">Current Task</div>
-    <div class="hc-task-name">Checking 14 contracts expiring this week…</div>
-    <div class="hc-task-icon">
-      <svg viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2M12 12h.01M12 16h.01" stroke-linecap="round"/></svg>
-    </div>
+    <div class="hc-revenue-label">Renewals processed</div>
+    <div class="hc-revenue-amount">{{ number_format($totalTx) }}</div>
     <div class="hc-divider"></div>
-    <div class="hc-completed-label">Completed Today</div>
-    @foreach(['42 renewals reviewed','18 reminders sent','6 customers retained'] as $item)
-    <div class="hc-done-item">
-      <div class="hc-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
-      {{ $item }}
-    </div>
-    @endforeach
-    <div class="hc-revenue-label">Revenue Protected</div>
-    <div class="hc-revenue-amount">${{ number_format($totalTx * 3.85, 0) }}</div>
-    <div class="hc-revenue-streak">{{ $deploymentCount * 18 }}-day streak 🔥</div>
+    <div class="hc-revenue-label">Businesses running AVA</div>
+    <div class="hc-revenue-amount">{{ number_format($deploymentCount) }}</div>
     <a href="{{ route('hire.ava.welcome') }}" class="hc-feed-btn">
-      View Live Feed →
+      Deploy AVA →
     </a>
   </div>
 
@@ -1261,34 +1259,26 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
       </div>
       <div>
         <div class="sec-eye" style="color:rgba(255,255,255,.4)">Live Performance</div>
+        {{-- Real numbers only — dropped the fabricated "Reminders Sent",
+             "Revenue Protected" (was $totalTx*3.85), "Accuracy Rate", and
+             "Day Streak" (was $deploymentCount*18) tiles that used to
+             render here regardless of actual usage. --}}
         <div class="perf-card">
           <div class="perf-grid">
             <div class="perf-stat">
               <div class="perf-n">{{ number_format($totalTx) }}</div>
-              <div class="perf-l">Renewals Monitored Today</div>
+              <div class="perf-l">Renewals Processed</div>
             </div>
             <div class="perf-stat">
-              <div class="perf-n">18</div>
-              <div class="perf-l">Reminders Sent</div>
-            </div>
-            <div class="perf-stat">
-              <div class="perf-n">${{ number_format($totalTx * 3.85, 0) }}</div>
-              <div class="perf-l">Revenue Protected</div>
-            </div>
-            <div class="perf-stat">
-              <div class="perf-n">99.8%</div>
-              <div class="perf-l">Accuracy Rate</div>
-            </div>
-            <div class="perf-stat">
-              <div class="perf-n">{{ $deploymentCount * 18 }}</div>
-              <div class="perf-l">Day Streak</div>
+              <div class="perf-n">{{ number_format($deploymentCount) }}</div>
+              <div class="perf-l">Businesses Running AVA</div>
             </div>
             <div class="perf-stat" style="background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.2)">
               <div class="perf-n" style="color:#22C55E">Live</div>
               <div class="perf-l" style="color:rgba(34,197,94,.6)">Right now</div>
             </div>
           </div>
-          <div class="perf-note">Always on. Always working. Always protecting your revenue.</div>
+          <div class="perf-note">Always on. Always working. Every draft reviewed by a human before it's sent.</div>
         </div>
       </div>
     </div>
@@ -1325,21 +1315,25 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
       </div>
       <div class="testi-col">
         <div class="sec-eye">What business owners say</div>
-        {{-- Cards visible but blurred — real reviews coming --}}
+        {{-- Skeleton placeholders, not fake quotes — no invented names,
+             companies, or star ratings sitting in the DOM for crawlers to
+             read as real content. Real reviews replace these as they come in. --}}
         <div class="testi-grid testi-blurred">
-          @foreach($worker['testimonials'] as $t)
+          @for ($i = 0; $i < 3; $i++)
           <div class="testi-card">
-            <div class="testi-stars">★★★★★</div>
-            <p class="testi-q">"{{ $t['quote'] }}"</p>
+            <div class="testi-skel" style="width:30%"></div>
+            <div class="testi-skel" style="width:100%;margin-top:10px"></div>
+            <div class="testi-skel" style="width:90%"></div>
+            <div class="testi-skel" style="width:60%;margin-bottom:14px"></div>
             <div class="testi-auth">
-              <div class="testi-av">{{ strtoupper(substr($t['name'],0,1)) }}</div>
-              <div>
-                <div class="testi-name">{{ $t['name'] }}</div>
-                <div class="testi-co">{{ $t['company'] }}</div>
+              <div class="testi-av">?</div>
+              <div style="flex:1">
+                <div class="testi-skel" style="width:70px"></div>
+                <div class="testi-skel" style="width:50px;height:8px"></div>
               </div>
             </div>
           </div>
-          @endforeach
+          @endfor
         </div>
         {{-- Overlay soliciting real testimonials --}}
         <div class="testi-overlay">
@@ -1495,22 +1489,6 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
 <x-public-footer />
 
 <script>
-// Live clock
-(function(){
-  function updateClock(){
-    var el = document.getElementById('live-clock');
-    if(!el) return;
-    var now = new Date();
-    var h = now.getHours();
-    var m = now.getMinutes();
-    var ampm = h >= 12 ? 'PM' : 'AM';
-    h = h % 12 || 12;
-    el.textContent = h + ':' + (m < 10 ? '0'+m : m) + ' ' + ampm;
-  }
-  updateClock();
-  setInterval(updateClock, 60000);
-})();
-
 // ── Theme — identical key/logic to / and /ai-workers ──
 const root = document.documentElement;
 const saved = localStorage.getItem('unit-theme');
