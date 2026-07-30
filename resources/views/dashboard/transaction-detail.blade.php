@@ -544,25 +544,39 @@ $statusColor = $statusColors[$tx->status] ?? ['bg'=>'var(--db-chip)','color'=>'v
               <div class="tc-msg">{{ $r['subject'] }}{{ "\n\n" }}{{ $r['body'] }}</div>
               @endforeach
 
+              @php
+                // A round is only "awaiting decision" if it's drafted and
+                // not yet approved — once the current round is approved,
+                // the pipeline is correctly waiting on the next scheduled
+                // cadence date (see ClientReminderCycleJob), not stuck.
+                $awaitingDecision = collect($stage['client_drafts'])
+                    ->contains(fn($c) => empty($c['placeholder']) && empty($c['approved_at']));
+              @endphp
               @if($stage['state'] === 'active' && $tx->status !== 'rejected')
-              @if($tx->nudging_paused_at)
-              <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin:8px 0">
-                <p style="font-size:12px;color:var(--db-text-muted)">Paused — no response after several reminders.</p>
-                <form method="POST" action="{{ route('app.transactions.resume-nudging', $tx->tx_id) }}">
-                  @csrf<button type="submit" class="tc-btn tc-btn-ghost">Resume</button>
-                </form>
-              </div>
-              @endif
-              <div class="tc-btn-row">
-                <form method="POST" action="{{ route('app.transactions.decide', $tx->tx_id) }}" style="flex:1">
-                  @csrf<input type="hidden" name="decision" value="approved">
-                  <button type="submit" class="tc-btn tc-btn-primary" style="width:100%">Approve &amp; send</button>
-                </form>
-                <form method="POST" action="{{ route('app.transactions.decide', $tx->tx_id) }}" style="flex:1" onclick="return confirm('Reject and delete the Gmail draft?')">
-                  @csrf<input type="hidden" name="decision" value="rejected">
-                  <button type="submit" class="tc-btn tc-btn-ghost" style="width:100%">Reject</button>
-                </form>
-              </div>
+                @if($awaitingDecision)
+                @if($tx->nudging_paused_at)
+                <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin:8px 0">
+                  <p style="font-size:12px;color:var(--db-text-muted)">Paused — no response after several reminders.</p>
+                  <form method="POST" action="{{ route('app.transactions.resume-nudging', $tx->tx_id) }}">
+                    @csrf<button type="submit" class="tc-btn tc-btn-ghost">Resume</button>
+                  </form>
+                </div>
+                @endif
+                <div class="tc-btn-row">
+                  <form method="POST" action="{{ route('app.transactions.decide', $tx->tx_id) }}" style="flex:1">
+                    @csrf<input type="hidden" name="decision" value="approved">
+                    <button type="submit" class="tc-btn tc-btn-primary" style="width:100%">Approve &amp; send</button>
+                  </form>
+                  <form method="POST" action="{{ route('app.transactions.decide', $tx->tx_id) }}" style="flex:1" onclick="return confirm('Reject and delete the Gmail draft?')">
+                    @csrf<input type="hidden" name="decision" value="rejected">
+                    <button type="submit" class="tc-btn tc-btn-ghost" style="width:100%">Reject</button>
+                  </form>
+                </div>
+                @else
+                <p style="font-size:12px;color:var(--db-text-muted);margin-top:8px">
+                  ✓ Approved — waiting for the next scheduled reminder before this can advance further.
+                </p>
+                @endif
               @endif
             @endif
 
