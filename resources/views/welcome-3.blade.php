@@ -1738,7 +1738,7 @@ body{
         </div>
 
         <!-- Card 4: Case Study -->
-        <div class="res-card">
+        <a href="{{ route('blog.show', 'inside-a-real-renewal-workflow') }}" class="res-card">
           <div class="res-thumb" style="background:linear-gradient(135deg,#78350F,#B45309)">
             <div class="res-thumb-icon">
               <svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 12l2 2 4-4"/></svg>
@@ -1753,10 +1753,10 @@ body{
             <div class="res-meta">6 min read · Renewal management</div>
             <span class="res-link">Read case study <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
           </div>
-        </div>
+        </a>
 
         <!-- Card 5: Workflow Breakdown -->
-        <div class="res-card">
+        <a href="{{ route('blog.show', 'avas-renewal-workflow-step-by-step') }}" class="res-card">
           <div class="res-thumb" style="background:linear-gradient(135deg,#134E4A,#0F766E)">
             <div class="res-thumb-icon">
               <svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round"><path d="M9 6h11M9 12h11M9 18h11M4 6h.01M4 12h.01M4 18h.01"/></svg>
@@ -1771,10 +1771,10 @@ body{
             <div class="res-meta">5 min read · AVA</div>
             <span class="res-link">See the breakdown <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
           </div>
-        </div>
+        </a>
 
         <!-- Card 6: Customer Story -->
-        <div class="res-card">
+        <a href="{{ route('blog.show', 'what-changes-when-ava-owns-your-renewal-inbox') }}" class="res-card">
           <div class="res-thumb" style="background:linear-gradient(135deg,#1F2937,#374151)">
             <div class="res-thumb-icon">
               <svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
@@ -1789,7 +1789,7 @@ body{
             <div class="res-meta">6 min read · Customer story</div>
             <span class="res-link">Read the story <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
           </div>
-        </div>
+        </a>
 
       </div>
     </div>

@@ -29,7 +29,7 @@
 <style>
 .blog-article-wrap{display:grid;grid-template-columns:1fr 280px;gap:56px;align-items:start;padding:56px 0 80px}
 .blog-article{min-width:0}
-.blog-article-tag{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold-text);margin-bottom:14px}
+.blog-article-tag{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--text);margin-bottom:14px}
 .blog-article h1{font-family:var(--fd);font-size:clamp(24px,3.5vw,40px);font-weight:800;letter-spacing:-1px;line-height:1.15;margin-bottom:16px}
 .blog-article-meta{font-size:13px;color:var(--t4);margin-bottom:40px;display:flex;align-items:center;gap:12px}
 .blog-article-meta span{display:flex;align-items:center;gap:5px}
@@ -38,9 +38,9 @@
 .article-body p{font-size:16px;color:var(--t2);line-height:1.82;margin-bottom:20px}
 .article-body ul{padding-left:20px;margin-bottom:20px}
 .article-body li{font-size:16px;color:var(--t2);line-height:1.8;margin-bottom:8px}
-.article-body a{color:var(--gold-text);text-decoration:underline;text-underline-offset:3px}
+.article-body a{color:var(--text);font-weight:600;text-decoration:underline;text-underline-offset:3px}
 .article-body strong{color:var(--text)}
-.article-body blockquote{border-left:3px solid var(--gold-text);padding:14px 20px;margin:28px 0;background:rgba(241,211,98,0.04);border-radius:0 8px 8px 0;font-style:italic;color:var(--t2)}
+.article-body blockquote{border-left:3px solid var(--text);padding:14px 20px;margin:28px 0;background:var(--surf);border-radius:0 8px 8px 0;font-style:italic;color:var(--t2)}
 .article-divider{height:1px;background:var(--line);margin:40px 0}
 
 /* Sidebar */
@@ -61,7 +61,7 @@
 
 /* Progress bar */
 .read-progress{position:fixed;top:60px;left:0;right:0;height:2px;background:var(--line);z-index:200}
-.read-progress-bar{height:100%;background:var(--gold);width:0%;transition:width .1s}
+.read-progress-bar{height:100%;background:var(--text);width:0%;transition:width .1s}
 
 @media(max-width:900px){
   .blog-article-wrap{grid-template-columns:1fr}
@@ -129,13 +129,14 @@
         @endforeach
       </div>
 
-      {{-- Article footer --}}
+      {{-- Article footer — reflects the post's real author field, not a
+           hardcoded byline. --}}
       <div style="margin-top:56px;padding-top:32px;border-top:1px solid var(--line)">
         <div style="display:flex;align-items:center;gap:16px">
-          <div style="width:46px;height:46px;border-radius:50%;background:rgba(241,211,98,0.12);border:1px solid rgba(241,211,98,0.2);display:flex;align-items:center;justify-content:center;font-family:var(--fd);font-weight:800;font-size:18px;color:var(--gold-text);flex-shrink:0">F</div>
+          <div style="width:46px;height:46px;border-radius:50%;background:rgba(0,0,0,.06);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-family:var(--fd);font-weight:800;font-size:18px;color:var(--text);flex-shrink:0">{{ strtoupper(substr($post['author'] ?? 'UNIT', 0, 1)) }}</div>
           <div>
-            <div style="font-size:14px;font-weight:700;color:var(--text)">Franklin</div>
-            <div style="font-size:13px;color:var(--t4)">UNIT · Compliance Operations</div>
+            <div style="font-size:14px;font-weight:700;color:var(--text)">{{ $post['author'] ?? 'UNIT' }}</div>
+            <div style="font-size:13px;color:var(--t4)">UNIT</div>
           </div>
         </div>
       </div>
@@ -167,26 +168,24 @@
         </a>
       </div>
 
-      {{-- More articles --}}
+      {{-- More articles — real posts, not a hardcoded list linking nowhere --}}
+      @if($related->isNotEmpty())
       <div class="sidebar-card">
         <div class="sidebar-label">More from the blog</div>
-        @foreach([
-          ['Automation', 'Why license renewal agencies are still running on spreadsheets'],
-          ['AI & Compliance', 'The right way to use AI in compliance work: guardrails, not guesses'],
-          ['Product', 'What it means for a worker to be "trained on an org\'s workflow"'],
-        ] as [$tag, $title])
-        <a href="{{ route('blog') }}" class="sidebar-post">
-          <span class="sidebar-tag">{{ $tag }}</span>
-          {{ $title }}
+        @foreach($related as $r)
+        <a href="{{ route('blog.show', $r->slug) }}" class="sidebar-post">
+          <span class="sidebar-tag">{{ $r->tag }}</span>
+          {{ $r->title }}
         </a>
         @endforeach
       </div>
+      @endif
 
       {{-- Deploy CTA --}}
       <div class="sidebar-cta">
-        <h3>Deploy a worker free</h3>
-        <p>Browse UNIT workers and run a live test — first 25 transactions free, no card required.</p>
-        <a href="{{ route('public.workers.index') }}" class="btn-g" style="display:block;text-align:center;font-size:13px">Browse Workers →</a>
+        <h3>Deploy an AI Worker free</h3>
+        <p>Browse UNIT's AI Workers and run a live test — start free, no card required.</p>
+        <a href="{{ route('public.workers.index') }}" class="btn-g" style="display:block;text-align:center;font-size:13px">Browse AI Workers →</a>
       </div>
 
       {{-- Partner program CTA --}}

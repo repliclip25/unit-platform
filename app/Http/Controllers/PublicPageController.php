@@ -67,8 +67,10 @@ class PublicPageController extends Controller
     }
     public function blog()
     {
-        $dbPosts = DB::table('blog_posts')->where('status', 'published')->orderByDesc('created_at')->get();
-        return view('public.blog.index', compact('dbPosts'));
+        $allPosts = DB::table('blog_posts')->where('status', 'published')->orderByDesc('created_at')->get();
+        $featured = $allPosts->first();
+        $dbPosts  = $allPosts->skip(1)->values();
+        return view('public.blog.index', compact('dbPosts', 'featured'));
     }
 
     public function blogPost(string $slug)
@@ -76,15 +78,22 @@ class PublicPageController extends Controller
         // Check DB first
         $dbPost = DB::table('blog_posts')->where('slug', $slug)->where('status', 'published')->first();
         if ($dbPost) {
-            $post = $this->dbPostToArray($dbPost);
-            return view('public.blog.show', compact('post'));
+            $post    = $this->dbPostToArray($dbPost);
+            $related = DB::table('blog_posts')
+                ->where('status', 'published')
+                ->where('slug', '!=', $slug)
+                ->orderByDesc('created_at')
+                ->limit(3)
+                ->get(['tag', 'title', 'slug']);
+            return view('public.blog.show', compact('post', 'related'));
         }
 
         // Fall back to hardcoded posts
         $posts = $this->blogPostData();
         $post  = $posts[$slug] ?? null;
         if (!$post) abort(404);
-        return view('public.blog.show', compact('post'));
+        $related = collect();
+        return view('public.blog.show', compact('post', 'related'));
     }
 
     private function dbPostToArray(object $row): array
