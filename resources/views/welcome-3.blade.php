@@ -1979,6 +1979,38 @@ body{
   </div>
 </section>
 
+@php
+  // Single source of truth for the FAQ accordion — also drives the
+  // FAQPage JSON-LD below so schema can't drift out of sync with the
+  // visible copy.
+  $__faqs = [
+    ['q' => 'What is an AI agent?', 'a' => 'An AI agent is software that takes real actions toward a goal — not just answers questions. Instead of waiting for a prompt, it monitors a workflow, makes decisions inside defined rules, and completes tasks end-to-end.'],
+    ['q' => 'What is an AI Worker?', 'a' => "AI Worker is UNIT's name for the AI agents we build. Each AI Worker is a specialized agent trained for one job — like managing renewals — not a general-purpose assistant. It owns that workflow completely, from detection to completion."],
+    ['q' => "What's the difference between an AI agent and ChatGPT?", 'a' => "ChatGPT waits for you to type a prompt and answers inside a conversation. A UNIT AI agent doesn't wait — it monitors your systems continuously, decides when action is needed, and executes a workflow on its own, only stopping to ask you for approval on the parts that matter."],
+    ['q' => 'How do AI Workers work?', 'a' => "Each AI Worker runs a defined pipeline — read the input, classify it, check memory and history, take action, and route the result to you for approval. AVA's renewal pipeline, for example, reads Gmail, classifies emails, drafts a response, and waits for your sign-off before anything goes out."],
+    ['q' => 'Can AI agents send emails?', 'a' => "Not without you. AVA drafts renewal emails and prepares them in Gmail, but UNIT never sends, submits, or transmits anything on your behalf. You review the draft and send it yourself — that's a deliberate design choice, not a limitation."],
+    ['q' => 'Can AI agents monitor Gmail?', 'a' => "Yes. AVA connects to your Gmail inbox through Google's official OAuth and watch APIs, reads incoming mail, and classifies renewal-related messages automatically — without you needing to forward or flag anything."],
+    ['q' => 'Can AI agents work together?', 'a' => 'Yes — UNIT\'s AI Workers are built to hand off context to each other, like AVA closing a renewal and passing the related documents to a document-management worker. AVA is live today; the other workers in that handoff chain are in development.'],
+    ['q' => 'What business workflows can UNIT automate?', 'a' => 'AVA, live today, owns the full renewal workflow — tracking expirations, starting campaigns, following up, supporting invoicing, and updating records. Document management, brand monitoring, and content publishing workflows are in active development.'],
+    ['q' => 'Which industries use UNIT?', 'a' => 'UNIT is built for organizations with recurring, deadline-driven workflows — including insurance, IT services, digital agencies, compliance-heavy operations, professional services, accounting, law firms, and consultancies.'],
+    ['q' => 'Can I deploy multiple AI Workers?', 'a' => 'Yes. A single account can deploy multiple worker instances — even multiple deployments of the same worker across different inboxes or clients. Start with one and add more as your operation grows.'],
+    ['q' => 'Do AI agents replace employees?', 'a' => "No. UNIT's AI Workers are built to own the repetitive parts of a workflow — tracking, drafting, following up — while every meaningful decision routes back to a human for approval. The goal is to remove busywork, not decision-making authority."],
+    ['q' => 'How do approvals work?', 'a' => 'When a worker finishes a task, the result is routed to a review queue in your dashboard. You approve or reject each item — approving keeps the draft in place for you to act on, rejecting removes it. Nothing is sent or finalized without that step.'],
+    ['q' => 'How does AVA manage renewals?', 'a' => 'AVA reads your inbox, classifies renewal-related emails, checks your client and contract history, drafts a response using your templates, and puts it in your review queue. Once you approve, the draft is ready in Gmail for you to send.'],
+    ['q' => 'Does UNIT integrate with Gmail?', 'a' => "Yes — Gmail is UNIT's first live integration. AVA connects via OAuth2 and Google's Pub/Sub webhook to watch your inbox and process renewal emails in real time."],
+    ['q' => 'Can UNIT integrate with other systems?', 'a' => "Gmail is live today. Google Workspace, Microsoft 365, Google Drive, Calendar, and additional APIs are on the roadmap as UNIT's worker library grows."],
+  ];
+@endphp
+<script type="application/ld+json">{!! json_encode([
+    '@@context' => 'https://schema.org',
+    '@type'    => 'FAQPage',
+    'mainEntity' => array_map(fn($f) => [
+        '@type' => 'Question',
+        'name' => $f['q'],
+        'acceptedAnswer' => ['@type' => 'Answer', 'text' => $f['a']],
+    ], $__faqs),
+], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}</script>
+
 <!-- FAQ -->
 <section class="faq-sec" id="faq">
   <div class="w">
@@ -1993,111 +2025,15 @@ body{
         </a>
       </div>
       <div class="faq-list">
-        <div class="faq-item open">
+        @foreach($__faqs as $i => $faq)
+        <div class="faq-item @if($i === 0) open @endif">
           <button class="faq-q">
-            What is an AI agent?
+            {{ $faq['q'] }}
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
           </button>
-          <div class="faq-a">An AI agent is software that takes real actions toward a goal — not just answers questions. Instead of waiting for a prompt, it monitors a workflow, makes decisions inside defined rules, and completes tasks end-to-end.</div>
+          <div class="faq-a">{{ $faq['a'] }}</div>
         </div>
-        <div class="faq-item">
-          <button class="faq-q">
-            What is an AI Worker?
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          </button>
-          <div class="faq-a">AI Worker is UNIT's name for the AI agents we build. Each AI Worker is a specialized agent trained for one job — like managing renewals — not a general-purpose assistant. It owns that workflow completely, from detection to completion.</div>
-        </div>
-        <div class="faq-item">
-          <button class="faq-q">
-            What's the difference between an AI agent and ChatGPT?
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          </button>
-          <div class="faq-a">ChatGPT waits for you to type a prompt and answers inside a conversation. A UNIT AI agent doesn't wait — it monitors your systems continuously, decides when action is needed, and executes a workflow on its own, only stopping to ask you for approval on the parts that matter.</div>
-        </div>
-        <div class="faq-item">
-          <button class="faq-q">
-            How do AI Workers work?
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          </button>
-          <div class="faq-a">Each AI Worker runs a defined pipeline — read the input, classify it, check memory and history, take action, and route the result to you for approval. AVA's renewal pipeline, for example, reads Gmail, classifies emails, drafts a response, and waits for your sign-off before anything goes out.</div>
-        </div>
-        <div class="faq-item">
-          <button class="faq-q">
-            Can AI agents send emails?
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          </button>
-          <div class="faq-a">Not without you. AVA drafts renewal emails and prepares them in Gmail, but UNIT never sends, submits, or transmits anything on your behalf. You review the draft and send it yourself — that's a deliberate design choice, not a limitation.</div>
-        </div>
-        <div class="faq-item">
-          <button class="faq-q">
-            Can AI agents monitor Gmail?
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          </button>
-          <div class="faq-a">Yes. AVA connects to your Gmail inbox through Google's official OAuth and watch APIs, reads incoming mail, and classifies renewal-related messages automatically — without you needing to forward or flag anything.</div>
-        </div>
-        <div class="faq-item">
-          <button class="faq-q">
-            Can AI agents work together?
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          </button>
-          <div class="faq-a">Yes — UNIT's AI Workers are built to hand off context to each other, like AVA closing a renewal and passing the related documents to a document-management worker. AVA is live today; the other workers in that handoff chain are in development.</div>
-        </div>
-        <div class="faq-item">
-          <button class="faq-q">
-            What business workflows can UNIT automate?
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          </button>
-          <div class="faq-a">AVA, live today, owns the full renewal workflow — tracking expirations, starting campaigns, following up, supporting invoicing, and updating records. Document management, brand monitoring, and content publishing workflows are in active development.</div>
-        </div>
-        <div class="faq-item">
-          <button class="faq-q">
-            Which industries use UNIT?
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          </button>
-          <div class="faq-a">UNIT is built for organizations with recurring, deadline-driven workflows — including insurance, IT services, digital agencies, compliance-heavy operations, professional services, accounting, law firms, and consultancies.</div>
-        </div>
-        <div class="faq-item">
-          <button class="faq-q">
-            Can I deploy multiple AI Workers?
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          </button>
-          <div class="faq-a">Yes. A single account can deploy multiple worker instances — even multiple deployments of the same worker across different inboxes or clients. Start with one and add more as your operation grows.</div>
-        </div>
-        <div class="faq-item">
-          <button class="faq-q">
-            Do AI agents replace employees?
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          </button>
-          <div class="faq-a">No. UNIT's AI Workers are built to own the repetitive parts of a workflow — tracking, drafting, following up — while every meaningful decision routes back to a human for approval. The goal is to remove busywork, not decision-making authority.</div>
-        </div>
-        <div class="faq-item">
-          <button class="faq-q">
-            How do approvals work?
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          </button>
-          <div class="faq-a">When a worker finishes a task, the result is routed to a review queue in your dashboard. You approve or reject each item — approving keeps the draft in place for you to act on, rejecting removes it. Nothing is sent or finalized without that step.</div>
-        </div>
-        <div class="faq-item">
-          <button class="faq-q">
-            How does AVA manage renewals?
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          </button>
-          <div class="faq-a">AVA reads your inbox, classifies renewal-related emails, checks your client and contract history, drafts a response using your templates, and puts it in your review queue. Once you approve, the draft is ready in Gmail for you to send.</div>
-        </div>
-        <div class="faq-item">
-          <button class="faq-q">
-            Does UNIT integrate with Gmail?
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          </button>
-          <div class="faq-a">Yes — Gmail is UNIT's first live integration. AVA connects via OAuth2 and Google's Pub/Sub webhook to watch your inbox and process renewal emails in real time.</div>
-        </div>
-        <div class="faq-item">
-          <button class="faq-q">
-            Can UNIT integrate with other systems?
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          </button>
-          <div class="faq-a">Gmail is live today. Google Workspace, Microsoft 365, Google Drive, Calendar, and additional APIs are on the roadmap as UNIT's worker library grows.</div>
-        </div>
+        @endforeach
       </div>
     </div>
   </div>
