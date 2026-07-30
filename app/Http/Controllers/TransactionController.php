@@ -262,7 +262,10 @@ class TransactionController extends Controller
             'triggered_by'    => auth()->id(),
         ]);
 
-        return redirect()->route('app.workers.transactions', $tx->worker_slug)->with('success', 'Transaction dismissed — removed from active queues.');
+        // Dismissing still leaves the record readable — stay on the
+        // Transaction Center, don't bounce back to the list.
+        return redirect()->route('app.transactions.show', ['slug' => $tx->worker_slug, 'txId' => $txId])
+            ->with('success', 'Transaction dismissed — removed from active queues.');
     }
 
     public function destroy(string $txId)
@@ -351,7 +354,10 @@ class TransactionController extends Controller
             ? "✓ {$txId} approved — draft is in your Gmail, ready to review and send."
             : "✗ {$txId} rejected — draft deleted.";
 
-        return redirect()->route('app.workers.transactions', $tx->worker_slug)->with('success', $msg);
+        // Approving/rejecting doesn't end the transaction's story — more
+        // gates and cadence rounds can still follow. Stay on the Transaction
+        // Center rather than bouncing to the list.
+        return redirect()->route('app.transactions.show', ['slug' => $tx->worker_slug, 'txId' => $txId])->with('success', $msg);
     }
 
     // ── Stage 12 (Confirm Payment) — the second and last human gate in the
