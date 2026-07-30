@@ -889,7 +889,7 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
     </a>
     @else
     <a href="{{ route('hire.ava.welcome') }}" class="btn-cta">
-      Hire Your First Worker
+      Deploy AVA
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
     </a>
     @endif
@@ -898,7 +898,7 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
     @if($avaHasDesk)
     <a href="{{ route('app.desk.ava') }}" class="btn-cta" style="justify-content:center">Go to AVA's Desk →</a>
     @else
-    <a href="{{ route('hire.ava.welcome') }}" class="btn-cta" style="justify-content:center">Hire Your First Worker →</a>
+    <a href="{{ route('hire.ava.welcome') }}" class="btn-cta" style="justify-content:center">Deploy AVA →</a>
     @endif
   </x-slot>
 </x-public-nav>
@@ -1168,7 +1168,7 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
         </a>
       @else
         <a href="{{ route('hire.ava.welcome') }}" class="btn-pipe-hire">
-          Hire AVA
+          Deploy AVA
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
         </a>
       @endif
@@ -1481,7 +1481,7 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
         </a>
         @else
         <a href="{{ route('hire.ava.welcome') }}" class="btn-cta-final">
-          Hire {{ $worker['name'] }} Today
+          Deploy {{ $worker['name'] }} Today
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
         </a>
         <div class="cta-note">No credit card required.</div>

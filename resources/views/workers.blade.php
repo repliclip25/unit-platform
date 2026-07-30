@@ -384,7 +384,7 @@ body{font-family:var(--font-b);color:var(--text);background:var(--bg);-webkit-fo
 
 @php
   // Nav CTA should never tell an already-onboarded, logged-in user to
-  // "Hire Your First Worker" or "Log in" — both are wrong once they have
+  // "Deploy AVA" or "Log in" — both are wrong once they have
   // an account and/or a deployed worker.
   $__navAvaHasDesk = auth()->check() && \Illuminate\Support\Facades\DB::table('worker_deployments')
     ->where('user_id', auth()->id())->where('worker_slug', 'ava')
@@ -401,14 +401,14 @@ body{font-family:var(--font-b);color:var(--text);background:var(--bg);-webkit-fo
     @if($__navAvaHasDesk)
     <a href="{{ route('app.desk.ava') }}" class="btn-cta">Go to AVA's Desk <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
     @else
-    <a href="{{ route('hire.ava.welcome') }}" class="btn-cta">Hire Your First Worker <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+    <a href="{{ route('hire.ava.welcome') }}" class="btn-cta">Deploy AVA <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
     @endif
   </x-slot>
   <x-slot:mobileCta>
     @if($__navAvaHasDesk)
     <a href="{{ route('app.desk.ava') }}" class="btn-cta" style="justify-content:center">Go to AVA's Desk →</a>
     @else
-    <a href="{{ route('hire.ava.welcome') }}" class="btn-cta" style="justify-content:center">Hire Your First Worker →</a>
+    <a href="{{ route('hire.ava.welcome') }}" class="btn-cta" style="justify-content:center">Deploy AVA →</a>
     @endif
   </x-slot>
 </x-public-nav>
@@ -667,8 +667,8 @@ body{font-family:var(--font-b);color:var(--text);background:var(--bg);-webkit-fo
     <div class="cta-foot-inner">
       <div class="cta-foot-left">
         <div class="cta-eyebrow">Ready to grow?</div>
-        <h2 class="cta-foot-h">Hire your first worker today.</h2>
-        <p class="cta-foot-sub">Start with one. Add more as you grow.</p>
+        <h2 class="cta-foot-h">Ready to deploy your first AI Agent?</h2>
+        <p class="cta-foot-sub">Start with one specialized AI Worker. Add more as your business grows.</p>
       </div>
       <div class="cta-foot-right">
         @if($__navAvaHasDesk)
@@ -678,7 +678,7 @@ body{font-family:var(--font-b);color:var(--text);background:var(--bg);-webkit-fo
         </a>
         @else
         <a href="{{ route('hire.ava.welcome') }}" class="btn-cta-main">
-          Hire Your First Worker
+          Deploy AVA
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
         </a>
         <span class="cta-note">No credit card required.</span>

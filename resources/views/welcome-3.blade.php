@@ -1101,7 +1101,7 @@ body{
 
 @php
   // Nav CTA should never tell an already-onboarded, logged-in user to
-  // "Hire Your First Worker" or "Log in" — both are wrong once they have
+  // "Deploy AVA" or "Log in" — both are wrong once they have
   // an account and/or a deployed worker.
   $__navAvaHasDesk = auth()->check() && \Illuminate\Support\Facades\DB::table('worker_deployments')
     ->where('user_id', auth()->id())->where('worker_slug', 'ava')
