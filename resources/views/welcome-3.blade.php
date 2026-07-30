@@ -1702,7 +1702,7 @@ body{
         </div>
 
         <!-- Card 2: Blog -->
-        <div class="res-card">
+        <a href="{{ route('blog.show', '5-signs-your-team-needs-an-ai-agent') }}" class="res-card">
           <div class="res-thumb" style="background:linear-gradient(135deg,#064E3B,#065F46)">
             <div class="res-thumb-icon">
               <svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>
@@ -1717,7 +1717,7 @@ body{
             <div class="res-meta">6 min read · Operations</div>
             <span class="res-link">Read post <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
           </div>
-        </div>
+        </a>
 
         <!-- Card 3: Whitepaper -->
         <div class="res-card">
