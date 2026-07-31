@@ -647,6 +647,17 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
 [data-theme="dark"] .split-sec{background:#0D0D0D;border-color:#2D2D2D}
 .split-grid{display:grid;grid-template-columns:1fr 1fr;gap:clamp(40px,6vw,72px);align-items:start}
 
+/* ── MEET AVA — first-person narrative ── */
+.meet-sec{background:var(--bg);border-top:1px solid var(--border);padding:clamp(56px,7vw,88px) 0}
+[data-theme="dark"] .meet-sec{background:#0D0D0D;border-color:#2D2D2D}
+.meet-grid{display:grid;grid-template-columns:.85fr 1.15fr;gap:clamp(36px,5vw,64px);align-items:center}
+.meet-img-wrap{border-radius:20px;overflow:hidden;border:1px solid var(--border)}
+.meet-img-wrap img{width:100%;height:100%;object-fit:cover;object-position:center 20%;max-height:520px}
+.meet-quote{font-size:clamp(1.5rem,2.6vw,2.1rem);font-weight:700;line-height:1.32;letter-spacing:-.02em;color:var(--text);margin-bottom:20px}
+.meet-body p{font-size:15px;color:var(--t2);line-height:1.8;margin-bottom:16px}
+.meet-sig{font-size:13px;color:var(--t4);margin-top:20px;font-style:italic}
+@media(max-width:860px){.meet-grid{grid-template-columns:1fr}.meet-img-wrap img{max-height:360px}}
+
 /* tools grid */
 .tools-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-top:20px}
 .tool-item{display:flex;flex-direction:column;align-items:center;gap:6px}
@@ -1051,6 +1062,27 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
     </a>
   </div>
 
+</section>
+
+{{-- MEET AVA — first-person, in her own words --}}
+<section class="meet-sec">
+  <div class="w">
+    <div class="meet-grid">
+      <div class="meet-img-wrap">
+        <img src="/images/ava-selfie.png" alt="AVA">
+      </div>
+      <div>
+        <div class="sec-eye">In her own words</div>
+        <div class="meet-quote">"I don't wait to be <span class="hl">asked.</span>"</div>
+        <div class="meet-body">
+          <p>I watch two things: your inbox, and the calendar. If a renewal email lands, I read it. If no email ever comes but a deadline in your records is approaching, I catch that too. Either way, I match it to what I already know about the account and draft a response — not sent, just ready in your Gmail drafts.</p>
+          <p>Then I wait. Nothing goes to your client until you say so. But I won't let it sit forgotten — if you go quiet, I'll remind you, a little more each time, until you act.</p>
+          <p>When it's done, I move the renewal date forward, write up a signed record of everything that happened, and start watching for the next one. That's the job. I don't get tired of it.</p>
+        </div>
+        <div class="meet-sig">— AVA, UNIT's AI Renewal Agent</div>
+      </div>
+    </div>
+  </div>
 </section>
 
 {{-- A DAY IN AVA'S LIFE — AVA's real pipeline, animated --}}
