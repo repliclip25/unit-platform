@@ -638,7 +638,7 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
 .edge-sec{background:var(--soft);border-top:1px solid var(--border);padding:clamp(56px,7vw,88px) 0}
 [data-theme="dark"] .edge-sec{background:#141414;border-color:#2D2D2D}
 .edge-head{text-align:center;max-width:680px;margin:0 auto 44px}
-.edge-grid{display:grid;grid-template-columns:1fr 1fr;gap:clamp(20px,2.5vw,28px)}
+.edge-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(20px,2.5vw,28px)}
 .edge-card{background:var(--bg);border:1px solid var(--border);border-radius:20px;overflow:hidden}
 [data-theme="dark"] .edge-card{background:#0D0D0D;border-color:#2D2D2D}
 .edge-img{aspect-ratio:16/10;overflow:hidden}
@@ -647,6 +647,7 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
 .edge-eye{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--t3);margin-bottom:10px}
 .edge-h3{font-size:1.15rem;font-weight:800;letter-spacing:-.02em;color:var(--text);margin-bottom:10px;line-height:1.25}
 .edge-p{font-size:14px;color:var(--t2);line-height:1.68}
+@media(max-width:1024px){.edge-grid{grid-template-columns:1fr 1fr}}
 @media(max-width:760px){.edge-grid{grid-template-columns:1fr}}
 
 /* ── MEET AVA - first-person narrative ── */
@@ -1245,6 +1246,14 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
       <h2 class="sec-h" style="margin-bottom:0">The parts of the job everyone forgets to build.</h2>
     </div>
     <div class="edge-grid">
+      <div class="edge-card">
+        <div class="edge-img"><img src="/images/ava-boss.png" alt="AVA" style="object-position:center 20%"></div>
+        <div class="edge-body">
+          <div class="edge-eye">Her memory, your data</div>
+          <h3 class="edge-h3">She only knows what you teach her.</h3>
+          <p class="edge-p">AVA's memory, your clients, your contacts, your renewal history, your templates, lives inside your account. You decide what she remembers and how she responds. Nothing is shared across tenants, and nothing gets assumed. A worker that doesn't know your business first can't actually produce value for it.</p>
+        </div>
+      </div>
       <div class="edge-card">
         <div class="edge-img"><img src="/images/ava-active.png" alt="AVA" style="object-position:center 15%"></div>
         <div class="edge-body">
