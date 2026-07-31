@@ -96,6 +96,19 @@ class TransactionController extends Controller
         // tab instead of silently not existing. Fast Track is exempt from
         // the cadence entirely (its one draft is always final), so it only
         // ever shows the one real round.
+        // Two genuinely different entry routes exist — a real inbound Gmail
+        // email, or AssetExpiryWatchJob detecting a renewal date directly
+        // from the asset registry (no email at all; see that job's own
+        // docblock for why 'read'/'classify' are synthesized rather than
+        // run). The tenant should be able to tell which one fired without
+        // reading a raw source string.
+        $source          = json_decode($tx->raw_input ?? '{}', true)['source'] ?? null;
+        $isDetectRoute   = $source === 'asset_watch';
+        $routeOverrides  = $isDetectRoute ? [
+            'webhook'    => ['label' => 'Detected — Asset Watch', 'sub' => 'Renewal date crossed a watch threshold in your asset registry'],
+            'read_email' => ['label' => 'Asset Data',             'sub' => 'No inbound email — pulled directly from the asset registry'],
+        ] : [];
+
         $daysBeforeExpiryByRound = [1 => 30, 2 => 15, 3 => 0];
         if (!$tx->is_test) {
             $presentRounds = collect($clientDrafts)->pluck('reminder_number')->all();
@@ -110,7 +123,7 @@ class TransactionController extends Controller
             usort($clientDrafts, fn($a, $b) => ($a['reminder_number'] ?? 0) <=> ($b['reminder_number'] ?? 0));
         }
 
-        return collect($rawStages)->map(function ($stage, $i) use ($tx, $currentIdx, $reminders, $clientDrafts) {
+        return collect($rawStages)->map(function ($stage, $i) use ($tx, $currentIdx, $reminders, $clientDrafts, $routeOverrides) {
             $state = $i < $currentIdx ? 'done' : ($i === $currentIdx ? 'active' : 'pending');
 
             $content = $stage['output_column'] && $tx->{$stage['output_column']}
@@ -119,7 +132,7 @@ class TransactionController extends Controller
 
             $stageReminders = array_values(array_filter($reminders, fn($r) => ($r['stage_key'] ?? null) === $stage['key']));
 
-            return array_merge(['gate_type' => null], $stage, [
+            return array_merge(['gate_type' => null], $stage, $routeOverrides[$stage['key']] ?? [], [
                 'i'         => $i,
                 'state'     => $state,
                 'content'   => $content,

@@ -237,6 +237,13 @@ $classify = $tx->classify_output ? json_decode($tx->classify_output) : null;
 $draft    = $tx->draft_output    ? json_decode($tx->draft_output)    : null;
 $rawInput = json_decode($tx->raw_input ?? '{}', true);
 $source   = $rawInput['source'] ?? 'unknown';
+$sourceLabels = [
+    'gmail_webhook'    => 'Fetched from Gmail',
+    'asset_watch'      => 'Detected from asset registry',
+    'fast_track_test'  => 'Fast Track test run',
+    'public_demo'      => 'Public demo run',
+];
+$sourceLabel = $sourceLabels[$source] ?? $source;
 $isFastTrack    = $source === 'fast_track_test';
 $isFailed       = $tx->status === 'failed';
 $isDismissed    = $tx->status === 'dismissed';
@@ -396,7 +403,7 @@ $statusColor = $statusColors[$tx->status] ?? ['bg'=>'var(--db-chip)','color'=>'v
             @elseif($memory)
             <div class="td-meta">{{ $memory->matched_client ?? '—' }} · {{ $memory->asset ?? '—' }} · {{ $memory->primary_contact_name ?? '—' }}</div>
             @endif
-            <div class="td-meta-sm">{{ \Carbon\Carbon::parse($tx->created_at)->format('M j, Y · g:i A') }} · {{ $source }}</div>
+            <div class="td-meta-sm">{{ \Carbon\Carbon::parse($tx->created_at)->format('M j, Y · g:i A') }} · {{ $sourceLabel }}</div>
           </div>
           @if($tx->gmail_draft_id)
           <div style="text-align:right;flex-shrink:0">
