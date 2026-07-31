@@ -47,6 +47,13 @@ class InvoiceNudgeJob implements ShouldQueue
             ->whereRaw("JSON_UNQUOTE(JSON_EXTRACT(invoice_output, '$.status')) = 'not_attached'")
             ->get();
 
+        $userTemplates = DB::table('email_templates')
+            ->where('user_id', $dep->user_id)->where('worker_slug', 'ava')
+            ->where('stage_key', 'request_invoice_nudge')->where('active', true)->get()->all();
+        $defaultTemplates = DB::table('email_templates')
+            ->whereNull('user_id')->where('worker_slug', 'ava')
+            ->where('stage_key', 'request_invoice_nudge')->get()->all();
+
         foreach ($notAttached as $tx) {
             $priority = $tx->priority ?? 'Medium';
             $cadence  = self::CADENCE_DAYS[$priority] ?? self::CADENCE_DAYS['Medium'];
@@ -70,20 +77,10 @@ class InvoiceNudgeJob implements ShouldQueue
                 continue;
             }
 
-            [$subject, $body] = match (ReminderCopy::tone($attempt)) {
-                'gentle' => [
-                    "Got an invoice for {$asset}?",
-                    "Hi,\n\nIf you have an invoice for the {$asset} renewal, attach it in UNIT whenever it's convenient — no rush, this won't hold anything up.\n\n— AVA",
-                ],
-                'direct' => [
-                    "Still no invoice attached — {$asset}",
-                    "Hi,\n\nFollowing up — still no invoice attached for {$asset}. If one exists, attach it in UNIT so it's on file with the renewal.\n\n— AVA",
-                ],
-                default => [
-                    "Last check — invoice for {$asset}?",
-                    "Hi,\n\nOne more check-in — if there's an invoice for {$asset}, attach it in UNIT. If not, no action needed.\n\n— AVA",
-                ],
-            };
+            $tone     = ReminderCopy::tone($attempt);
+            $template = \App\Platform\Services\TemplateResolver::resolveByStage($userTemplates, $defaultTemplates, $tone);
+            $subject  = str_replace('{{asset}}', $asset, $template['subject_template'] ?? "Got an invoice for {$asset}?");
+            $body     = str_replace('{{asset}}', $asset, $template['body_template']    ?? "Hi,\n\nIf you have an invoice for {$asset}, attach it in UNIT.\n\n— AVA");
 
             EmailDispatcher::send(
                 'ava_invoice_nudge', $tenantEmail, 'there', $tx->user_id,

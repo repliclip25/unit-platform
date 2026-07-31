@@ -5,7 +5,9 @@ namespace App\Workers\AVA\Jobs;
 use App\Platform\SDK\UnitPlatform;
 use App\Platform\SDK\WorkerOutput;
 use App\Platform\Services\EmailDispatcher;
+use App\Platform\Services\TemplateResolver;
 use Illuminate\Bus\Queueable;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
@@ -30,10 +32,23 @@ class NotifyStakeholdersJob implements ShouldQueue
         $input  = UnitPlatform::getInput($this->txId);
         $memory = $input->stage('memory');
 
-        $subject = 'Renewal complete — ' . ($memory['asset'] ?? $this->txId);
-        $body    = "Hi,\n\nThe renewal for " . ($memory['asset'] ?? 'this item')
-            . ($memory['matched_client'] ? " ({$memory['matched_client']})" : '')
-            . " is complete. The next cycle is already being watched.\n\n— AVA";
+        $asset        = $memory['asset'] ?? $this->txId;
+        $clientSuffix = $memory['matched_client'] ? " ({$memory['matched_client']})" : '';
+
+        $userTemplates = DB::table('email_templates')
+            ->where('user_id', $input->userId)->where('worker_slug', $input->workerSlug)
+            ->where('stage_key', 'notify_stakeholders')->where('active', true)->get()->all();
+        $defaultTemplates = DB::table('email_templates')
+            ->whereNull('user_id')->where('worker_slug', $input->workerSlug)
+            ->where('stage_key', 'notify_stakeholders')->get()->all();
+        $template = TemplateResolver::resolveByStage($userTemplates, $defaultTemplates);
+
+        $subject = str_replace('{{asset}}', $asset, $template['subject_template'] ?? "Renewal complete — {$asset}");
+        $body    = str_replace(
+            ['{{asset}}', '{{client_suffix}}'],
+            [$asset, $clientSuffix],
+            $template['body_template'] ?? "Hi,\n\nThe renewal for {$asset}{$clientSuffix} is complete. The next cycle is already being watched.\n\n— AVA"
+        );
 
         // Fast Track runs every stage for real so the tenant can preview the
         // full lifecycle, but must never actually spam their own inbox every

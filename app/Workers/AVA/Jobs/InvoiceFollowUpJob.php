@@ -42,6 +42,14 @@ class InvoiceFollowUpJob implements ShouldQueue
             ->whereRaw("JSON_UNQUOTE(JSON_EXTRACT(invoice_output, '$.status')) = 'attached'")
             ->get();
 
+        $userTemplates = DB::table('email_templates')
+            ->where('user_id', $dep->user_id)->where('worker_slug', 'ava')
+            ->where('stage_key', 'request_invoice_followup')->where('active', true)->get()->all();
+        $defaultTemplates = DB::table('email_templates')
+            ->whereNull('user_id')->where('worker_slug', 'ava')
+            ->where('stage_key', 'request_invoice_followup')->get()->all();
+        $template = \App\Platform\Services\TemplateResolver::resolveByStage($userTemplates, $defaultTemplates);
+
         foreach ($attached as $tx) {
             $invoiceOutput = json_decode($tx->invoice_output ?? '{}', true) ?: [];
             $messages      = $invoiceOutput['client_messages'] ?? [];
@@ -56,8 +64,8 @@ class InvoiceFollowUpJob implements ShouldQueue
             $memory  = json_decode($tx->memory_output ?? '{}', true) ?: [];
             $asset   = $memory['asset'] ?? 'this renewal';
             $seq     = count($messages) + 1;
-            $subject = "Following up — invoice for {$asset}";
-            $body    = "Hi,\n\nFollowing up on the invoice sent for {$asset}. Let us know if you need anything further.\n\nBest regards,\nFranklin";
+            $subject = str_replace('{{asset}}', $asset, $template['subject_template'] ?? "Following up — invoice for {$asset}");
+            $body    = str_replace(['{{asset}}', '{{sender_name}}'], [$asset, 'Franklin'], $template['body_template'] ?? "Hi,\n\nFollowing up on the invoice sent for {$asset}.\n\nBest regards,\nFranklin");
 
             EmailDispatcher::send(
                 'ava_invoice_client_followup', $clientEmail, $memory['matched_client'] ?? 'there', null,

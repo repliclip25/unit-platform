@@ -54,6 +54,13 @@ class ApprovalReminderJob implements ShouldQueue
             ->whereNull('nudging_paused_at')
             ->get();
 
+        $userTemplates = DB::table('email_templates')
+            ->where('user_id', $dep->user_id)->where('worker_slug', 'ava')
+            ->where('stage_key', 'human_decide')->where('active', true)->get()->all();
+        $defaultTemplates = DB::table('email_templates')
+            ->whereNull('user_id')->where('worker_slug', 'ava')
+            ->where('stage_key', 'human_decide')->get()->all();
+
         foreach ($stuck as $tx) {
             $priority = $tx->priority ?? 'Medium';
             $cadence  = self::CADENCE_DAYS[$priority] ?? self::CADENCE_DAYS['Medium'];
@@ -78,20 +85,10 @@ class ApprovalReminderJob implements ShouldQueue
                 continue;
             }
 
-            [$subject, $body] = match (ReminderCopy::tone($attempt)) {
-                'gentle' => [
-                    "A draft is waiting on you — {$asset}",
-                    "Hi,\n\nI drafted a renewal reply for {$asset} and it's sitting in your Gmail drafts, ready to review. No rush — just approve it when you get a chance.\n\n— AVA",
-                ],
-                'direct' => [
-                    "Still waiting — approve the {$asset} draft",
-                    "Hi,\n\nFollowing up — the draft for {$asset} is still unapproved. It won't send until you review it in UNIT or Gmail.\n\n— AVA",
-                ],
-                default => [
-                    "URGENT — {$asset} draft still needs your approval",
-                    "URGENT — the renewal draft for {$asset} has been waiting several days with no response. Please review and approve it in UNIT today.\n\n— AVA",
-                ],
-            };
+            $tone     = ReminderCopy::tone($attempt);
+            $template = \App\Platform\Services\TemplateResolver::resolveByStage($userTemplates, $defaultTemplates, $tone);
+            $subject  = str_replace('{{asset}}', $asset, $template['subject_template'] ?? "A draft is waiting on you — {$asset}");
+            $body     = str_replace('{{asset}}', $asset, $template['body_template']    ?? "Hi,\n\nA renewal draft for {$asset} is waiting on your approval.\n\n— AVA");
 
             EmailDispatcher::send(
                 'ava_approval_reminder',

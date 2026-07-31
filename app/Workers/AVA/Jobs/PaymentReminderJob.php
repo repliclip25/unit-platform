@@ -49,6 +49,13 @@ class PaymentReminderJob implements ShouldQueue
             ->whereNull('nudging_paused_at')
             ->get();
 
+        $userTemplates = DB::table('email_templates')
+            ->where('user_id', $dep->user_id)->where('worker_slug', 'ava')
+            ->where('stage_key', 'confirm_payment')->where('active', true)->get()->all();
+        $defaultTemplates = DB::table('email_templates')
+            ->whereNull('user_id')->where('worker_slug', 'ava')
+            ->where('stage_key', 'confirm_payment')->get()->all();
+
         foreach ($stuck as $tx) {
             $priority = $tx->priority ?? 'Medium';
             $cadence  = self::CADENCE_DAYS[$priority] ?? self::CADENCE_DAYS['Medium'];
@@ -73,20 +80,10 @@ class PaymentReminderJob implements ShouldQueue
                 continue;
             }
 
-            [$subject, $body] = match (ReminderCopy::tone($attempt)) {
-                'gentle' => [
-                    "Confirm payment for {$asset}?",
-                    "Hi,\n\nJust checking in — has payment for the {$asset} renewal gone through? No rush, just let me know when it's done so I can close this out.\n\n— AVA",
-                ],
-                'direct' => [
-                    "Following up — confirm payment for {$asset}",
-                    "Hi,\n\nFollowing up again — this renewal is still waiting on payment confirmation. {$asset} will lapse if this isn't confirmed soon. Please confirm in UNIT when it's done.\n\n— AVA",
-                ],
-                default => [
-                    "URGENT — confirm payment for {$asset}",
-                    "URGENT — {$asset} renewal is still unconfirmed after multiple reminders. This needs your attention today to avoid a lapse. Confirm payment or cancel the renewal in UNIT.\n\n— AVA",
-                ],
-            };
+            $tone     = ReminderCopy::tone($attempt);
+            $template = \App\Platform\Services\TemplateResolver::resolveByStage($userTemplates, $defaultTemplates, $tone);
+            $subject  = str_replace('{{asset}}', $asset, $template['subject_template'] ?? "Confirm payment for {$asset}?");
+            $body     = str_replace('{{asset}}', $asset, $template['body_template']    ?? "Hi,\n\nJust checking in on payment for the {$asset} renewal.\n\n— AVA");
 
             EmailDispatcher::send(
                 'ava_payment_reminder',
