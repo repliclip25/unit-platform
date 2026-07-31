@@ -647,8 +647,47 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
 .edge-eye{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--t3);margin-bottom:10px}
 .edge-h3{font-size:1.15rem;font-weight:800;letter-spacing:-.02em;color:var(--text);margin-bottom:10px;line-height:1.25}
 .edge-p{font-size:14px;color:var(--t2);line-height:1.68}
+.edge-btns{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.btn-edge-proof,.btn-edge-watch{
+  display:inline-flex;align-items:center;gap:6px;
+  font-size:12.5px;font-weight:700;
+  padding:9px 14px;border-radius:8px;
+  border:1px solid var(--border);background:transparent;color:var(--text);
+  cursor:pointer;transition:background .15s,border-color .15s;
+}
+.btn-edge-proof:hover,.btn-edge-watch:hover{background:var(--soft);border-color:var(--t4)}
+[data-theme="dark"] .btn-edge-proof,[data-theme="dark"] .btn-edge-watch{border-color:#2D2D2D}
 @media(max-width:1024px){.edge-grid{grid-template-columns:1fr 1fr}}
 @media(max-width:760px){.edge-grid{grid-template-columns:1fr}}
+
+/* ── EDGE STATEMENT MODAL (proof screenshots + worker-explainer video) ── */
+.edge-modal{
+  position:fixed;inset:0;z-index:500;
+  display:none;align-items:center;justify-content:center;
+  padding:24px;
+}
+.edge-modal.open{display:flex}
+.edge-modal-backdrop{position:absolute;inset:0;background:rgba(13,13,13,.7);backdrop-filter:blur(4px)}
+.edge-modal-box{
+  position:relative;background:var(--bg);border-radius:20px;
+  max-width:720px;width:100%;max-height:85vh;overflow-y:auto;
+  padding:20px;box-shadow:0 24px 64px rgba(0,0,0,.35);
+}
+[data-theme="dark"] .edge-modal-box{background:#161616;border:1px solid #2D2D2D}
+.edge-modal-close{
+  position:absolute;top:14px;right:14px;z-index:2;
+  width:32px;height:32px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  background:var(--soft);border:1px solid var(--border);color:var(--text);
+  cursor:pointer;
+}
+[data-theme="dark"] .edge-modal-close{background:#1a1a1a;border-color:#2D2D2D}
+.edge-modal-label{font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--t3);margin-bottom:12px;padding-right:36px}
+.edge-modal-img{width:100%;border-radius:12px;border:1px solid var(--border);display:block}
+.edge-modal-video{width:100%;border-radius:12px;display:block;background:#000}
+.edge-modal-novideo{text-align:center;padding:32px 16px;color:var(--t3)}
+.edge-modal-novideo-h{font-size:16px;font-weight:800;color:var(--text);margin-top:14px;margin-bottom:8px}
+.edge-modal-novideo-p{font-size:13.5px;line-height:1.6;max-width:420px;margin:0 auto}
 
 /* ── MEET AVA - first-person narrative ── */
 .meet-sec{background:var(--bg);border-top:1px solid var(--border);padding:clamp(56px,7vw,88px) 0}
@@ -1238,7 +1277,11 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
   </div>
 </section>
 
-{{-- THE PARTS EVERYONE SKIPS - escalation cadence + the archive --}}
+{{-- EDGE STATEMENTS - the differentiators most renewal tools skip.
+     Each one is backed by a real screenshot of the actual feature (not a
+     mockup) via "See Proof", plus a "Watch AVA Explain" slot that's real
+     infrastructure for UNIT Studio's worker-explainer videos - wired now,
+     showing an honest "coming soon" state until those videos exist. --}}
 <section class="edge-sec">
   <div class="w">
     <div class="edge-head">
@@ -1246,33 +1289,118 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
       <h2 class="sec-h" style="margin-bottom:0">The parts of the job everyone forgets to build.</h2>
     </div>
     <div class="edge-grid">
+      @php
+        $edgeStatements = [
+          [
+            'img'   => '/images/ava-boss.png',
+            'img_pos' => 'center 20%',
+            'eye'   => 'Her memory, your data',
+            'h3'    => 'She only knows what you teach her.',
+            'p'     => "AVA's memory, your clients, your contacts, your renewal history, your templates, lives inside your account. You decide what she remembers and how she responds. Nothing is shared across tenants, and nothing gets assumed. A worker that doesn't know your business first can't actually produce value for it.",
+            'proof' => '/images/proof/memory-dashboard.png',
+            'proof_label' => 'The actual Memory dashboard',
+            'video' => null,
+          ],
+          [
+            'img'   => '/images/ava-active.png',
+            'img_pos' => 'center 15%',
+            'eye'   => 'Escalation, not silence',
+            'h3'    => "She won't let a renewal die quietly.",
+            'p'     => "If a draft sits unapproved, AVA doesn't wait forever, and she doesn't nag every five minutes either. Reminders escalate on a schedule matched to urgency: gentle first, then direct, then urgent as the deadline nears. After a few unanswered attempts, she pauses and waits for you. She won't spam you, but she won't let it disappear either.",
+            'proof' => '/images/proof/escalation-reminders.png',
+            'proof_label' => 'A real reminder thread, gentle to urgent',
+            'video' => null,
+          ],
+          [
+            'img'   => '/images/ava-in-office.png',
+            'img_pos' => null,
+            'eye'   => 'The Archive',
+            'h3'    => 'Every renewal, provable.',
+            'p'     => 'When a renewal closes, AVA builds a complete record: every draft, every reminder, every approval, every payment confirmation, into a downloadable PDF with a QR code. Hand it to a client, an auditor, or your own team and prove exactly what happened, and when.',
+            'proof' => '/images/proof/archive-record.png',
+            'proof_label' => 'A real generated archive PDF',
+            'video' => null,
+          ],
+        ];
+      @endphp
+      @foreach($edgeStatements as $i => $edge)
       <div class="edge-card">
-        <div class="edge-img"><img src="/images/ava-boss.png" alt="AVA" style="object-position:center 20%"></div>
+        <div class="edge-img"><img src="{{ $edge['img'] }}" alt="AVA" @if($edge['img_pos']) style="object-position:{{ $edge['img_pos'] }}" @endif></div>
         <div class="edge-body">
-          <div class="edge-eye">Her memory, your data</div>
-          <h3 class="edge-h3">She only knows what you teach her.</h3>
-          <p class="edge-p">AVA's memory, your clients, your contacts, your renewal history, your templates, lives inside your account. You decide what she remembers and how she responds. Nothing is shared across tenants, and nothing gets assumed. A worker that doesn't know your business first can't actually produce value for it.</p>
+          <div class="edge-eye">{{ $edge['eye'] }}</div>
+          <h3 class="edge-h3">{{ $edge['h3'] }}</h3>
+          <p class="edge-p">{{ $edge['p'] }}</p>
+          <div class="edge-btns">
+            <button type="button" class="btn-edge-proof" data-edge-proof="{{ $i }}">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+              See Proof
+            </button>
+            <button type="button" class="btn-edge-watch" data-edge-watch="{{ $i }}">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              Watch AVA Explain
+            </button>
+          </div>
         </div>
       </div>
-      <div class="edge-card">
-        <div class="edge-img"><img src="/images/ava-active.png" alt="AVA" style="object-position:center 15%"></div>
-        <div class="edge-body">
-          <div class="edge-eye">Escalation, not silence</div>
-          <h3 class="edge-h3">She won't let a renewal die quietly.</h3>
-          <p class="edge-p">If a draft sits unapproved, AVA doesn't wait forever, and she doesn't nag every five minutes either. Reminders escalate on a schedule matched to urgency: gentle first, then direct, then urgent as the deadline nears. After a few unanswered attempts, she pauses and waits for you. She won't spam you, but she won't let it disappear either.</p>
-        </div>
-      </div>
-      <div class="edge-card">
-        <div class="edge-img"><img src="/images/ava-in-office.png" alt="AVA"></div>
-        <div class="edge-body">
-          <div class="edge-eye">The Archive</div>
-          <h3 class="edge-h3">Every renewal, provable.</h3>
-          <p class="edge-p">When a renewal closes, AVA builds a complete record: every draft, every reminder, every approval, every payment confirmation, into a downloadable PDF with a QR code. Hand it to a client, an auditor, or your own team and prove exactly what happened, and when.</p>
-        </div>
-      </div>
+      @endforeach
     </div>
   </div>
 </section>
+
+{{-- Edge statement proof/video modal - shared by all cards above --}}
+<div class="edge-modal" id="edgeModal">
+  <div class="edge-modal-backdrop" data-edge-close></div>
+  <div class="edge-modal-box">
+    <button type="button" class="edge-modal-close" data-edge-close>
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <div class="edge-modal-body" id="edgeModalBody"></div>
+  </div>
+</div>
+
+@php
+  $edgeProofData = collect($edgeStatements)->map(fn($e) => ['proof' => $e['proof'], 'label' => $e['proof_label'], 'video' => $e['video']]);
+@endphp
+<script>
+(function(){
+  var data  = @json($edgeProofData);
+  var modal = document.getElementById('edgeModal');
+  var body  = document.getElementById('edgeModalBody');
+  if(!modal || !body) return;
+
+  function openProof(i){
+    var d = data[i];
+    body.innerHTML = '<div class="edge-modal-label">' + d.label + '</div>'
+      + '<img src="' + d.proof + '" alt="Proof" class="edge-modal-img">';
+    modal.classList.add('open');
+  }
+  function openVideo(i){
+    var d = data[i];
+    if(d.video){
+      body.innerHTML = '<video class="edge-modal-video" controls autoplay src="' + d.video + '"></video>';
+    } else {
+      body.innerHTML = '<div class="edge-modal-novideo">'
+        + '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>'
+        + '<div class="edge-modal-novideo-h">Video coming soon</div>'
+        + '<p class="edge-modal-novideo-p">AVA hasn\'t recorded this one yet. Every UNIT worker will eventually explain their own edge statements on camera, this is one of the first spots that video will go.</p>'
+        + '</div>';
+    }
+    modal.classList.add('open');
+  }
+  function close(){ modal.classList.remove('open'); body.innerHTML = ''; }
+
+  document.querySelectorAll('[data-edge-proof]').forEach(function(btn){
+    btn.addEventListener('click', function(){ openProof(parseInt(btn.dataset.edgeProof, 10)); });
+  });
+  document.querySelectorAll('[data-edge-watch]').forEach(function(btn){
+    btn.addEventListener('click', function(){ openVideo(parseInt(btn.dataset.edgeWatch, 10)); });
+  });
+  document.querySelectorAll('[data-edge-close]').forEach(function(el){
+    el.addEventListener('click', close);
+  });
+  document.addEventListener('keydown', function(e){ if(e.key === 'Escape') close(); });
+})();
+</script>
 
 <script>
 (function(){
