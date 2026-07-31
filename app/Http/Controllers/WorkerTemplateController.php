@@ -73,6 +73,7 @@ class WorkerTemplateController extends Controller
             'worker_slug'       => $dep->worker_slug,
             'name'              => $original->name,
             'category'          => $original->category,
+            'stage_key'         => $original->stage_key,
             'tone'              => $original->tone,
             'cadence_round'     => $original->cadence_round,
             'subject_template'  => $original->subject_template,
@@ -142,6 +143,7 @@ class WorkerTemplateController extends Controller
             '{{sender_name}}'        => $user->name,
             '{{renewal_price}}'      => '$199.00',
             '{{days_until_expiry}}'  => '14',
+            '{{client_suffix}}'      => ' (Acme Corp)',
         ];
 
         $subject = str_replace(array_keys($vars), array_values($vars), $template->subject_template);

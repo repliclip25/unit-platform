@@ -184,7 +184,19 @@ body{font-family:'Inter',sans-serif;background:var(--db-bg);color:var(--db-text)
 @php
 $tokenFmt = $tokenTotal >= 1000000 ? number_format($tokenTotal/1000000,1).'M' : number_format($tokenTotal);
 $userId = auth()->id();
-$byCategory = $templates->groupBy('category');
+// Category-scoped client drafts vs stage-scoped system messages (reminders,
+// nudges, the closing notice) are two different template "shapes" — split
+// before grouping so system rows don't show up as a bogus "" category.
+$byCategory = $templates->whereNull('stage_key')->groupBy('category');
+$systemStageLabels = [
+    'confirm_payment'          => 'Payment Reminder — to you',
+    'human_decide'             => 'Approval Reminder — to you',
+    'request_invoice_nudge'    => 'Invoice Nudge — to you',
+    'request_invoice_followup' => 'Invoice Follow-up — to client',
+    'notify_stakeholders'      => 'Renewal Complete Notice — to you',
+];
+$bySystemStage = $templates->whereNotNull('stage_key')->groupBy('stage_key')
+    ->sortBy(fn($group, $key) => array_search($key, array_keys($systemStageLabels)));
 $sidebarLinks = [
   ['Memory',       'M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18', route('app.workers.memory',$dep->worker_slug), false],
   ['Templates',    'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z', route('app.workers.templates',['slug'=>$dep->worker_slug]), true],
@@ -384,6 +396,69 @@ $sidebarLinks = [
         <div class="mem-empty-sub">Platform defaults will appear here once seeded.</div>
       </div>
       @endforelse
+
+      {{-- ══ SYSTEM MESSAGES — reminders, nudges, the closing notice.
+           Stage-scoped, not category-scoped: escalation tone (gentle/direct/
+           urgent) picks the variant instead of a cadence round. ══ --}}
+      @if($bySystemStage->isNotEmpty())
+      <div class="tpl-sub" style="margin-top:28px;padding-top:20px;border-top:1px solid var(--db-border)">
+        System messages — reminders, nudges, and the closing notice {{ $dep->name }} sends on your behalf. Customize the wording per stage and escalation tone.
+      </div>
+      @foreach($bySystemStage as $stageKey => $group)
+      @php $tenantCountSys = $group->where('user_id', $userId)->count(); @endphp
+      <div class="tpl-cat">
+        <div class="tpl-cat-head">
+          <div class="tpl-cat-title">
+            {{ $systemStageLabels[$stageKey] ?? $stageKey }}
+            @if($tenantCountSys)<span class="mem-badge" style="background:var(--db-chip);color:var(--db-text)">{{ $tenantCountSys }} custom</span>@endif
+          </div>
+          <div class="tpl-cat-count">{{ $group->count() }} variant{{ $group->count() !== 1 ? 's' : '' }}</div>
+        </div>
+
+        @foreach($group->sortBy(fn($t) => array_search($t->tone, ['gentle','direct','urgent','']) ?: 99) as $t)
+        @php
+          $isDefault = !$t->user_id;
+          $forkedIdsSys = $group->where('user_id', $userId)->pluck('forked_from')->filter()->flip();
+          if ($isDefault && isset($forkedIdsSys[$t->id])) continue;
+        @endphp
+        <div class="tpl-row" id="template-{{ $t->id }}">
+          <div class="tpl-row-top">
+            <div class="tpl-row-name">
+              <span class="tpl-row-name-text">{{ $t->name }}</span>
+              @if($isDefault)
+                <span class="mem-badge" style="background:var(--db-chip);color:var(--db-text-muted)">Platform default</span>
+              @else
+                <span class="mem-badge" style="background:var(--db-chip);color:var(--db-text)">Your template</span>
+              @endif
+              @if($t->tone)
+                <span class="mem-badge" style="background:rgba(245,158,11,.12);color:#f59e0b">{{ ucfirst($t->tone) }} tone</span>
+              @else
+                <span class="mem-badge" style="background:var(--db-chip);color:var(--db-text-muted)">No escalation</span>
+              @endif
+            </div>
+            <div class="tpl-row-actions">
+              <form method="POST" action="{{ route('app.workers.templates.test', [$dep->id, $t->id]) }}">
+                @csrf
+                <button type="submit" class="mem-btn-secondary" title="Send test to {{ auth()->user()->email }}">▶ Test Send</button>
+              </form>
+              @if($isDefault)
+                <button type="button" class="mem-btn-secondary" id="customize-btn-{{ $t->id }}" onclick="customizeTemplate({{ $t->id }})">Customize</button>
+              @else
+                <button type="button" class="mem-btn-secondary" onclick='openEditModal({{ $t->id }}, @json($t))'>Edit</button>
+                <form method="POST" action="{{ route('app.workers.templates.destroy', [$dep->id, $t->id]) }}">
+                  @csrf @method('DELETE')
+                  <button type="submit" class="mem-btn-secondary" style="color:#ef4444;border-color:rgba(239,68,68,.3)" onclick="return confirm('Remove this template?')">Remove</button>
+                </form>
+              @endif
+            </div>
+          </div>
+          <div class="tpl-meta">Subject: <strong>{{ $t->subject_template }}</strong></div>
+          <div class="tpl-body">{{ $t->body_template }}</div>
+        </div>
+        @endforeach
+      </div>
+      @endforeach
+      @endif
 
     </div>
   </main>
