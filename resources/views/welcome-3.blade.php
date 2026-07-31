@@ -1109,7 +1109,7 @@ body{
 @endphp
 
 <x-public-nav :links="[
-  ['label' => 'Meet the AI Worker', 'href' => route('public.workers.index')],
+  ['label' => 'Meet the AI Agents', 'href' => route('public.workers.index')],
   ['label' => 'How It Works',     'href' => '#timeline'],
   ['label' => 'Resources',        'href' => '#resources'],
   ['label' => 'Pricing',          'href' => route('pricing')],
@@ -1789,9 +1789,14 @@ body{
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
         </a>
       </div>
+      {{-- AVA-only: DOX/MOX/NUX are Coming Soon, so showing their photos in
+           an active "day in the life" work sequence would imply they're
+           already live, same honesty rule applied everywhere else on this
+           page. All 4 steps are real AVA photos, captions match what's
+           actually in each shot. --}}
       <div class="lc-row">
         <div class="lc-photo">
-          <img src="/images/ava-life.png" alt="Wake up">
+          <img src="/images/ava-life.png" alt="AVA starting her day">
           <div class="lc-photo-body">
             <div class="lc-photo-step" style="color:#0D0D0D">1. Wake Up</div>
             <div class="lc-photo-txt">Ready for the day at the desk.</div>
@@ -1799,15 +1804,15 @@ body{
         </div>
         <div class="lc-arrow">→</div>
         <div class="lc-photo">
-          <img src="/images/dox-life.png" alt="Receive work">
+          <img src="/images/ava-running-gag-2.png" alt="AVA reviewing the renewals queue">
           <div class="lc-photo-body">
-            <div class="lc-photo-step" style="color:var(--text)">2. Receive Work</div>
-            <div class="lc-photo-txt">New tasks. New opportunities.</div>
+            <div class="lc-photo-step" style="color:var(--text)">2. Take Stock</div>
+            <div class="lc-photo-txt">Sees exactly what's due — nothing forgotten.</div>
           </div>
         </div>
         <div class="lc-arrow">→</div>
         <div class="lc-photo">
-          <img src="/images/mox-life.png" alt="Do the work">
+          <img src="/images/ava-desk.png" alt="AVA working at her desk">
           <div class="lc-photo-body">
             <div class="lc-photo-step" style="color:var(--text)">3. Do the Work</div>
             <div class="lc-photo-txt">Focus. Execute. Deliver results.</div>
@@ -1815,10 +1820,10 @@ body{
         </div>
         <div class="lc-arrow">→</div>
         <div class="lc-photo">
-          <img src="/images/nux-life.png" alt="Write their diary">
+          <img src="/images/ava-running-gag-1.png" alt="AVA delivering a completed renewal">
           <div class="lc-photo-body">
-            <div class="lc-photo-step" style="color:var(--text)">4. Write Their Diary</div>
-            <div class="lc-photo-txt">Reflect, learn, get better tomorrow.</div>
+            <div class="lc-photo-step" style="color:var(--text)">4. Close It Out</div>
+            <div class="lc-photo-txt">Renewal complete, right on time.</div>
           </div>
         </div>
       </div>
