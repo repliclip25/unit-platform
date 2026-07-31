@@ -181,17 +181,33 @@ class AvaWorker implements WorkerContract
             ['key' => 'webhook',        'label' => 'Inject & Fetch',  'sub' => 'Insert into inbox, read back',   'icon' => 'bolt',     'job_class' => null,
                 'output_column' => null,             'group' => 'reviewed', 'group_label' => 'Reviewed', 'group_color' => '#6366f1', 'image' => '/images/ava-stand.png', 'log_stage_key' => 'ingest'],
             ['key' => 'read_email',     'label' => 'Read Email',      'sub' => 'Parse & extract fields',         'icon' => 'mail',     'job_class' => 'ReadEmailJob',
-                'output_column' => 'read_output',     'group' => 'reviewed', 'group_label' => 'Reviewed', 'group_color' => '#6366f1', 'image' => '/images/ava-stand.png', 'log_stage_key' => 'read'],
+                'output_column' => 'read_output',     'group' => 'reviewed', 'group_label' => 'Reviewed', 'group_color' => '#6366f1', 'image' => '/images/ava-stand.png', 'log_stage_key' => 'read',
+                'uses_ai' => true, 'model' => null, 'max_tokens' => 512, 'output_format' => 'json',
+                'output_shape' => ['plain_english_summary', 'what_happened', 'action_needed', 'due_date_or_deadline', 'risk_if_ignored', 'urgency', 'questions_for_memory_lookup'],
+                'system' => 'You are Ava, UNIT\'s Subscription & Renewal Coordinator. Return valid JSON only. No extra text.',
+                'user'   => "Read the email below and explain what it means.\n\nReturn valid JSON only with:\n{\n  \"plain_english_summary\": \"\",\n  \"what_happened\": \"\",\n  \"action_needed\": \"\",\n  \"due_date_or_deadline\": \"\",\n  \"risk_if_ignored\": \"\",\n  \"urgency\": \"Low|Medium|High|Critical\",\n  \"questions_for_memory_lookup\": []\n}\n\nEMAIL:\n{RAW_EMAIL}"],
             ['key' => 'classify',       'label' => 'Classify',        'sub' => 'Category, priority & type',      'icon' => 'tag',      'job_class' => 'ClassifyEmailJob',
-                'output_column' => 'classify_output', 'group' => 'assessed', 'group_label' => 'Assessed', 'group_color' => '#f59e0b', 'image' => '/images/ava-stand.png', 'log_stage_key' => 'classify'],
+                'output_column' => 'classify_output', 'group' => 'assessed', 'group_label' => 'Assessed', 'group_color' => '#f59e0b', 'image' => '/images/ava-stand.png', 'log_stage_key' => 'classify',
+                'uses_ai' => true, 'model' => null, 'max_tokens' => 256, 'output_format' => 'json',
+                'output_shape' => ['category', 'subcategory', 'priority', 'required_action', 'register_to_update', 'status', 'reason'],
+                'system' => 'You are Ava, UNIT\'s Subscription & Renewal Coordinator. Return valid JSON only. No extra text.',
+                'user'   => "Classify this transaction using the email understanding below.\n\nAvailable categories: Domain Renewal, SSL Expiry, Hosting Invoice, SaaS Renewal, Failed Payment, Security Alert, Meeting Request, Client Support, Other\n\nReturn JSON:\n{\n  \"category\": \"\",\n  \"subcategory\": \"\",\n  \"priority\": \"Low|Medium|High|Critical\",\n  \"required_action\": \"\",\n  \"register_to_update\": \"\",\n  \"status\": \"\",\n  \"reason\": \"\"\n}\n\nCONTEXT:\n{READ_OUTPUT}"],
             ['key' => 'memory',         'label' => 'Memory Lookup',   'sub' => 'Match client, asset & rules',    'icon' => 'brain',    'job_class' => 'MemoryLookupJob',
-                'output_column' => 'memory_output',   'group' => 'verified', 'group_label' => 'Verified', 'group_color' => '#8b5cf6', 'image' => '/images/ava-stand.png', 'log_stage_key' => 'memory'],
+                'output_column' => 'memory_output',   'group' => 'verified', 'group_label' => 'Verified', 'group_color' => '#8b5cf6', 'image' => '/images/ava-stand.png', 'log_stage_key' => 'memory',
+                'uses_ai' => true, 'model' => null, 'max_tokens' => 768, 'output_format' => 'json',
+                'output_shape' => ['asset', 'matched_client', 'primary_contact_name', 'primary_contact_email', 'related_project_or_service', 'client_preference', 'ava_rule', 'matched_rule_id', 'confidence', 'missing_information'],
+                'system' => 'You are Ava, UNIT\'s Subscription & Renewal Coordinator. Return valid JSON only. No extra text.',
+                'user'   => "Using the extracted email information and the memory tables below, find who owns this asset and how it should be handled.\n\nReturn JSON:\n{\n  \"asset\": \"\",\n  \"matched_client\": \"\",\n  \"primary_contact_name\": \"\",\n  \"primary_contact_email\": \"\",\n  \"related_project_or_service\": \"\",\n  \"client_preference\": \"\",\n  \"ava_rule\": \"\",\n  \"matched_rule_id\": \"\",\n  \"confidence\": 0,\n  \"missing_information\": []\n}\n\nEXTRACTED EMAIL CONTEXT:\n{READ_OUTPUT}\n\nMEMORY TABLES:\n{MEMORY_TABLES}"],
             ['key' => 'log_entry',      'label' => 'Log Transaction', 'sub' => 'Write to register',              'icon' => 'log',      'job_class' => 'LogTransactionJob',
                 'output_column' => null,             'group' => 'verified', 'group_label' => 'Verified', 'group_color' => '#8b5cf6', 'image' => '/images/ava-stand.png', 'log_stage_key' => 'log'],
             ['key' => 'select_template','label' => 'Select Template', 'sub' => 'Pick best-match template',       'icon' => 'template', 'job_class' => 'SelectTemplateJob',
                 'output_column' => null,             'group' => 'prepared', 'group_label' => 'Prepared', 'group_color' => '#f97316', 'image' => '/images/ava-desk.png', 'log_stage_key' => 'template'],
             ['key' => 'draft_email',    'label' => 'Draft Email',     'sub' => 'AI-personalised draft',          'icon' => 'draft',    'job_class' => 'DraftEmailJob',
-                'output_column' => 'draft_output',    'group' => 'prepared', 'group_label' => 'Prepared', 'group_color' => '#f97316', 'image' => '/images/ava-desk.png', 'log_stage_key' => 'draft'],
+                'output_column' => 'draft_output',    'group' => 'prepared', 'group_label' => 'Prepared', 'group_color' => '#f97316', 'image' => '/images/ava-desk.png', 'log_stage_key' => 'draft',
+                'uses_ai' => true, 'model' => null, 'max_tokens' => 1024, 'output_format' => 'text',
+                'output_shape' => 'Professional email body addressed to the contact, referencing the asset and due date, signed by the tenant.',
+                'system' => 'You are Ava, a professional email coordinator. Return only the email body — no subject line, no JSON, no extra text.',
+                'user'   => "Write an email body using the template structure below.\n\nTemplate style: {TEMPLATE_NAME}\nTone: {TONE}\nTemplate body to follow:\n{BODY_TEMPLATE}\n\nFill in:\n- Contact first name: {FIRST_NAME}\n- Asset: {ASSET}\n- Client: {CLIENT}\n- Due date: {DUE_DATE}\n- Category: {CATEGORY}\n- Approval required: {APPROVAL_REQUIRED}\n- Sign as: {SENDER_NAME}\n\nRules:\n- Keep it concise\n- Do not promise work is done\n- Ask for approval when required\n- Return only the email body"],
             ['key' => 'push_draft',     'label' => 'Push to Gmail',   'sub' => 'Create draft in inbox',          'icon' => 'send',     'job_class' => 'PushToGmailJob',
                 'output_column' => null,             'group' => 'delivered','group_label' => 'Delivered','group_color' => '#06b6d4', 'image' => '/images/ava-life.png', 'log_stage_key' => 'push'],
 
@@ -218,7 +234,14 @@ class AvaWorker implements WorkerContract
             ['key' => 'human_decide',   'label' => 'Approve & Send',  'sub' => 'You decide — AVA never sends without this', 'icon' => 'check', 'job_class' => null, 'gate_type' => 'hard',
                 'output_column' => null,             'group' => 'approved', 'group_label' => 'Approved', 'group_color' => '#F5C518', 'image' => '/images/ava-life.png', 'log_stage_key' => 'human_decide'],
             ['key' => 'request_invoice',    'label' => 'Request Invoice',   'sub' => 'Attach one if you have it — never blocks the renewal', 'icon' => 'receipt', 'job_class' => 'RequestInvoiceJob', 'gate_type' => 'soft',
-                'output_column' => 'invoice_output',   'group' => 'fulfilled', 'group_label' => 'Fulfilled', 'group_color' => '#0ea5e9', 'image' => '/images/ava-life.png', 'log_stage_key' => 'request_invoice'],
+                'output_column' => 'invoice_output',   'group' => 'fulfilled', 'group_label' => 'Fulfilled', 'group_color' => '#0ea5e9', 'image' => '/images/ava-life.png', 'log_stage_key' => 'request_invoice',
+                // The stage's own job (RequestInvoiceJob) never calls AI — this
+                // describes InvoiceOcrService's on-demand extraction, which only
+                // runs once a tenant actually uploads a file via attachInvoice().
+                'uses_ai' => true, 'model' => null, 'max_tokens' => 512, 'output_format' => 'json',
+                'output_shape' => ['amount', 'currency', 'issued_date', 'due_date', 'invoice_number'],
+                'system' => 'You extract structured fields from invoice text. Return valid JSON only, no extra text. Use null for any field you cannot find — never guess.',
+                'user'   => "Extract these fields from the invoice text below:\n{\n  \"amount\": null,\n  \"currency\": null,\n  \"issued_date\": null,\n  \"due_date\": null,\n  \"invoice_number\": null\n}\n\nDates in YYYY-MM-DD format. Amount as a plain number (no currency symbol).\n\nINVOICE TEXT:\n{INVOICE_TEXT}"],
             ['key' => 'request_documents',  'label' => 'Request Documents', 'sub' => 'Any documents to send the client? Skip if not.', 'icon' => 'files', 'job_class' => 'RequestDocumentsJob', 'gate_type' => 'skippable',
                 'output_column' => 'documents_output', 'group' => 'fulfilled', 'group_label' => 'Fulfilled', 'group_color' => '#0ea5e9', 'image' => '/images/ava-life.png', 'log_stage_key' => 'request_documents'],
             ['key' => 'confirm_payment',    'label' => 'Confirm Payment',   'sub' => 'You confirm — AVA reminds until you do', 'icon' => 'alert-circle', 'job_class' => null, 'gate_type' => 'hard',
@@ -926,98 +949,30 @@ class AvaWorker implements WorkerContract
 
     // ── Block 6: Prompts ─────────────────────────────────────────────────────
 
+    // Derived from pipelineStages() rather than hand-maintained as a
+    // separate array — the two used to drift apart silently (the exact
+    // failure mode behind two bugs fixed this session: Read Email's
+    // Configure card being invisible because its key didn't match, and
+    // Draft Email's saved override never applying for the same reason).
+    // Deriving from one source makes that class of bug structurally
+    // impossible: there's only one place a stage's AI prompt lives now.
     public function prompts(): array
     {
-        return [
-            [
-                'stage'         => 'read_email',
-                'label'         => 'Read Email',
+        return collect($this->pipelineStages())
+            ->filter(fn($stage) => $stage['uses_ai'] ?? false)
+            ->map(fn($stage) => [
+                'stage'         => $stage['key'],
+                'label'         => $stage['label'],
                 'uses_ai'       => true,
-                'model'         => null,
-                'system'        => 'You are Ava, UNIT\'s Subscription & Renewal Coordinator. Return valid JSON only. No extra text.',
-                'user'          => "Read the email below and explain what it means.\n\nReturn valid JSON only with:\n{\n  \"plain_english_summary\": \"\",\n  \"what_happened\": \"\",\n  \"action_needed\": \"\",\n  \"due_date_or_deadline\": \"\",\n  \"risk_if_ignored\": \"\",\n  \"urgency\": \"Low|Medium|High|Critical\",\n  \"questions_for_memory_lookup\": []\n}\n\nEMAIL:\n{RAW_EMAIL}",
-                'output_format' => 'json',
-                'output_shape'  => ['plain_english_summary', 'what_happened', 'action_needed', 'due_date_or_deadline', 'risk_if_ignored', 'urgency', 'questions_for_memory_lookup'],
-                'max_tokens'    => 512,
-            ],
-            [
-                'stage'         => 'classify',
-                'label'         => 'Classify',
-                'uses_ai'       => true,
-                'model'         => null,
-                'system'        => 'You are Ava, UNIT\'s Subscription & Renewal Coordinator. Return valid JSON only. No extra text.',
-                'user'          => "Classify this transaction using the email understanding below.\n\nAvailable categories: Domain Renewal, SSL Expiry, Hosting Invoice, SaaS Renewal, Failed Payment, Security Alert, Meeting Request, Client Support, Other\n\nReturn JSON:\n{\n  \"category\": \"\",\n  \"subcategory\": \"\",\n  \"priority\": \"Low|Medium|High|Critical\",\n  \"required_action\": \"\",\n  \"register_to_update\": \"\",\n  \"status\": \"\",\n  \"reason\": \"\"\n}\n\nCONTEXT:\n{READ_OUTPUT}",
-                'output_format' => 'json',
-                'output_shape'  => ['category', 'subcategory', 'priority', 'required_action', 'register_to_update', 'status', 'reason'],
-                'max_tokens'    => 256,
-            ],
-            [
-                'stage'         => 'memory',
-                'label'         => 'Memory Lookup',
-                'uses_ai'       => true,
-                'model'         => null,
-                'system'        => 'You are Ava, UNIT\'s Subscription & Renewal Coordinator. Return valid JSON only. No extra text.',
-                'user'          => "Using the extracted email information and the memory tables below, find who owns this asset and how it should be handled.\n\nReturn JSON:\n{\n  \"asset\": \"\",\n  \"matched_client\": \"\",\n  \"primary_contact_name\": \"\",\n  \"primary_contact_email\": \"\",\n  \"related_project_or_service\": \"\",\n  \"client_preference\": \"\",\n  \"ava_rule\": \"\",\n  \"matched_rule_id\": \"\",\n  \"confidence\": 0,\n  \"missing_information\": []\n}\n\nEXTRACTED EMAIL CONTEXT:\n{READ_OUTPUT}\n\nMEMORY TABLES:\n{MEMORY_TABLES}",
-                'output_format' => 'json',
-                'output_shape'  => ['asset', 'matched_client', 'primary_contact_name', 'primary_contact_email', 'related_project_or_service', 'client_preference', 'ava_rule', 'matched_rule_id', 'confidence', 'missing_information'],
-                'max_tokens'    => 768,
-            ],
-            [
-                'stage'         => 'log_entry',
-                'label'         => 'Log Transaction',
-                'uses_ai'       => false,
-                'model'         => null,
-                'system'        => null,
-                'user'          => null,
-                'output_format' => null,
-                'output_shape'  => null,
-                'max_tokens'    => null,
-            ],
-            [
-                'stage'         => 'select_template',
-                'label'         => 'Select Template',
-                'uses_ai'       => false,
-                'model'         => null,
-                'system'        => null,
-                'user'          => null,
-                'output_format' => null,
-                'output_shape'  => null,
-                'max_tokens'    => null,
-            ],
-            [
-                'stage'         => 'draft_email',
-                'label'         => 'Draft Email',
-                'uses_ai'       => true,
-                'model'         => null,
-                'system'        => 'You are Ava, a professional email coordinator. Return only the email body — no subject line, no JSON, no extra text.',
-                'user'          => "Write an email body using the template structure below.\n\nTemplate style: {TEMPLATE_NAME}\nTone: {TONE}\nTemplate body to follow:\n{BODY_TEMPLATE}\n\nFill in:\n- Contact first name: {FIRST_NAME}\n- Asset: {ASSET}\n- Client: {CLIENT}\n- Due date: {DUE_DATE}\n- Category: {CATEGORY}\n- Approval required: {APPROVAL_REQUIRED}\n- Sign as: {SENDER_NAME}\n\nRules:\n- Keep it concise\n- Do not promise work is done\n- Ask for approval when required\n- Return only the email body",
-                'output_format' => 'text',
-                'output_shape'  => 'Professional email body addressed to the contact, referencing the asset and due date, signed by the tenant.',
-                'max_tokens'    => 1024,
-            ],
-            [
-                'stage'         => 'push_draft',
-                'label'         => 'Push to Gmail',
-                'uses_ai'       => false,
-                'model'         => null,
-                'system'        => null,
-                'user'          => null,
-                'output_format' => null,
-                'output_shape'  => null,
-                'max_tokens'    => null,
-            ],
-            [
-                'stage'         => 'request_invoice',
-                'label'         => 'Request Invoice (OCR)',
-                'uses_ai'       => true,
-                'model'         => null,
-                'system'        => 'You extract structured fields from invoice text. Return valid JSON only, no extra text. Use null for any field you cannot find — never guess.',
-                'user'          => "Extract these fields from the invoice text below:\n{\n  \"amount\": null,\n  \"currency\": null,\n  \"issued_date\": null,\n  \"due_date\": null,\n  \"invoice_number\": null\n}\n\nDates in YYYY-MM-DD format. Amount as a plain number (no currency symbol).\n\nINVOICE TEXT:\n{INVOICE_TEXT}",
-                'output_format' => 'json',
-                'output_shape'  => ['amount', 'currency', 'issued_date', 'due_date', 'invoice_number'],
-                'max_tokens'    => 512,
-            ],
-        ];
+                'model'         => $stage['model']         ?? null,
+                'system'        => $stage['system']        ?? null,
+                'user'          => $stage['user']           ?? null,
+                'output_format' => $stage['output_format']  ?? null,
+                'output_shape'  => $stage['output_shape']   ?? null,
+                'max_tokens'    => $stage['max_tokens']     ?? null,
+            ])
+            ->values()
+            ->all();
     }
 
     // ── Block 7: Owner ───────────────────────────────────────────────────────
