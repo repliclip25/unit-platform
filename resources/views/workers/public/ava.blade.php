@@ -3,22 +3,22 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>{{ $worker['name'] }} — {{ $worker['role'] }} | UNIT</title>
+<title>{{ $worker['name'] }} — AI Agent for Renewals | UNIT</title>
 <meta name="description" content="{{ $worker['meta_desc'] }}">
 <link rel="icon" type="image/png" href="/logo.png">
 <link rel="apple-touch-icon" href="/logo.png">
 @include('partials.seo-meta', [
-    'title'       => $worker['name'] . ' — ' . $worker['role'] . ' | UNIT',
+    'title'       => $worker['name'] . ' — AI Agent for Renewals | UNIT',
     'description' => $worker['meta_desc'],
-    'image'       => asset('images/ava-hero.jpg'),
+    'image'       => asset('images/ava-skyline.png'),
 ])
 <script type="application/ld+json">{!! json_encode([
     '@@context'    => 'https://schema.org',
     '@type'       => 'Service',
-    'name'        => $worker['name'],
+    'name'        => $worker['name'] . ' — AI Renewal Agent',
     'serviceType' => $worker['category'] ?? $worker['role'],
     'description' => $worker['meta_desc'],
-    'image'       => asset('images/ava-hero.jpg'),
+    'image'       => asset('images/ava-skyline.png'),
     'url'         => url()->current(),
     'provider'    => [
         '@type' => 'Organization',
@@ -34,6 +34,27 @@
         'name' => $f['q'],
         'acceptedAnswer' => ['@type' => 'Answer', 'text' => $f['a']],
     ], $worker['faq']),
+], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}</script>
+<script type="application/ld+json">{!! json_encode([
+    '@@context' => 'https://schema.org',
+    '@type'    => 'BreadcrumbList',
+    'itemListElement' => [
+        ['@type' => 'ListItem', 'position' => 1, 'name' => 'UNIT', 'item' => url('/')],
+        ['@type' => 'ListItem', 'position' => 2, 'name' => 'AI Workers', 'item' => route('public.workers.index')],
+        ['@type' => 'ListItem', 'position' => 3, 'name' => $worker['name'], 'item' => url()->current()],
+    ],
+], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}</script>
+<script type="application/ld+json">{!! json_encode([
+    '@@context'    => 'https://schema.org',
+    '@type'       => 'HowTo',
+    'name'        => "How {$worker['name']} Handles a Renewal",
+    'description' => "The real, end-to-end process {$worker['name']} runs on every renewal, from detection to archived proof.",
+    'step'        => array_map(fn($s, $i) => [
+        '@type'    => 'HowToStep',
+        'position' => $i + 1,
+        'name'     => $s['title'],
+        'text'     => $s['desc'],
+    ], $worker['pipeline'], array_keys($worker['pipeline'])),
 ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -197,32 +218,6 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
   display:flex;align-items:center;justify-content:center;flex-shrink:0;
 }
 .btn-watch-icon svg{width:10px;height:10px;fill:#fff;margin-left:2px}
-/* video controls bar — bottom of video col */
-.hero-vidbar{
-  position:relative;z-index:3;
-  display:flex;align-items:center;gap:14px;
-  padding:10px clamp(28px,4vw,48px);
-  background:rgba(0,0,0,.5);
-  backdrop-filter:blur(6px);
-  border-top:1px solid rgba(255,255,255,.05);
-  flex-shrink:0;
-}
-.vidbar-play{
-  width:28px;height:28px;flex-shrink:0;
-  display:flex;align-items:center;justify-content:center;cursor:pointer;
-}
-.vidbar-play svg{width:16px;height:16px;fill:#fff;margin-left:2px}
-.vidbar-time{font-size:12px;color:rgba(255,255,255,.6);font-variant-numeric:tabular-nums;white-space:nowrap}
-.vidbar-track{flex:1;height:3px;background:rgba(255,255,255,.18);border-radius:99px;position:relative;cursor:pointer}
-.vidbar-fill{height:100%;background:#fff;border-radius:99px;width:19%}
-.vidbar-thumb{
-  position:absolute;top:50%;left:19%;transform:translate(-50%,-50%);
-  width:13px;height:13px;border-radius:50%;
-  background:#fff;box-shadow:0 0 4px rgba(0,0,0,.5);
-}
-.vidbar-icons{display:flex;align-items:center;gap:14px;flex-shrink:0}
-.vidbar-icons svg{width:17px;height:17px;stroke:rgba(255,255,255,.65);fill:none;stroke-width:1.8;cursor:pointer;transition:stroke .12s}
-.vidbar-icons svg:hover{stroke:#fff}
 
 /* RIGHT: status panel — separate column, not overlay */
 .hero-panel{
@@ -903,38 +898,37 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
   </x-slot>
 </x-public-nav>
 
-{{-- HERO --}}
+{{-- HERO —
+     Real photo (ava-skyline.png) as poster, real video (AVA.MP4) wired
+     with an actual play/pause toggle instead of a decorative scrubber
+     bar around a static image with a hardcoded fake elapsed time. --}}
 <section class="hero-worker">
 
   {{-- LEFT: video column --}}
-  <div class="hero-video-col">
+  <div class="hero-video-col" id="avaHeroVideoWrap">
 
     {{-- Background media --}}
     <div class="hero-media">
-      <img src="/images/ava-hero.jpg" alt="{{ $worker['name'] }}"
-           onerror="this.src='/images/ava.png';this.onerror=null">
+      <video id="avaHeroVideo" poster="/images/ava-skyline.png" playsinline preload="metadata">
+        <source src="{{ asset('videos/AVA.MP4') }}" type="video/mp4">
+      </video>
     </div>
 
     {{-- Text content over the video --}}
     <div class="hero-text">
-      <div class="hero-eye">Meet {{ $worker['name'] }}</div>
+      <div class="hero-eye">Meet {{ $worker['name'] }} — UNIT's AI Renewal Agent</div>
       <h1 class="hero-h">She never<br>forgets a <span class="hl">renewal.</span></h1>
-    </div>
-
-    {{-- Video controls bar --}}
-    <div class="hero-vidbar">
-      <div class="vidbar-play">
-        <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-      </div>
-      <span class="vidbar-time">0:12 / 1:02</span>
-      <div class="vidbar-track">
-        <div class="vidbar-fill"></div>
-        <div class="vidbar-thumb"></div>
-      </div>
-      <div class="vidbar-icons">
-        <svg viewBox="0 0 24 24" stroke-linecap="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07"/></svg>
-        <svg viewBox="0 0 24 24" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
-        <svg viewBox="0 0 24 24" stroke-linecap="round"><path d="M8 3H5a2 2 0 00-2 2v3m18 0V5a2 2 0 00-2-2h-3m0 18h3a2 2 0 002-2v-3M3 16v3a2 2 0 002 2h3"/></svg>
+      <p class="hero-p">An AI agent that watches your inbox <em>and</em> your renewal calendar, drafts every renewal, and keeps a human in control of every send.</p>
+      <div class="hero-btns">
+        @if($avaHasDesk)
+        <a href="{{ route('app.desk.ava') }}" class="btn-hire-hero">Go to AVA's Desk</a>
+        @else
+        <a href="{{ route('hire.ava.welcome') }}" class="btn-hire-hero">Deploy AVA</a>
+        @endif
+        <button type="button" class="btn-watch-hero" id="avaHeroPlayBtn">
+          <span class="btn-watch-icon"><svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg></span>
+          Watch Her Story
+        </button>
       </div>
     </div>
 
@@ -961,6 +955,25 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
   </div>
 
 </section>
+
+<script>
+(function(){
+  var video = document.getElementById('avaHeroVideo');
+  var btn   = document.getElementById('avaHeroPlayBtn');
+  if(!video || !btn) return;
+  function setLabel(){
+    btn.innerHTML = (video.paused
+      ? '<span class="btn-watch-icon"><svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg></span>Watch Her Story'
+      : '<span class="btn-watch-icon"><svg viewBox="0 0 24 24"><rect x="6" y="5" width="4" height="14"/><rect x="14" y="5" width="4" height="14"/></svg></span>Pause');
+  }
+  btn.addEventListener('click', function(){
+    if(video.paused) video.play(); else video.pause();
+  });
+  video.addEventListener('play', setLabel);
+  video.addEventListener('pause', setLabel);
+  video.addEventListener('ended', setLabel);
+})();
+</script>
 
 {{-- THE PROBLEM --}}
 <section class="problem-sec">
