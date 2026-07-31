@@ -696,7 +696,7 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
 .perf-note{font-size:12px;color:rgba(255,255,255,.35);line-height:1.6;margin-top:8px;text-align:center}
 
 /* industries */
-.industries-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:20px}
+.industries-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:20px}
 .industry-item{display:flex;flex-direction:column;align-items:center;gap:7px;padding:14px 8px;border-radius:12px;background:var(--soft);border:1px solid var(--border)}
 [data-theme="dark"] .industry-item{background:#111;border-color:#2D2D2D}
 .industry-icon{width:36px;height:36px;display:flex;align-items:center;justify-content:center}
@@ -788,7 +788,7 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
 .security-sec{background:var(--soft);border-top:1px solid var(--border);padding:clamp(56px,7vw,80px) 0}
 [data-theme="dark"] .security-sec{background:#161616;border-color:#2D2D2D}
 .sec-top{margin-bottom:32px}
-.sec-badges{display:grid;grid-template-columns:repeat(5,1fr);gap:16px}
+.sec-badges{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
 .sec-badge{
   display:flex;flex-direction:column;align-items:center;gap:10px;
   padding:24px 14px;border-radius:16px;
@@ -864,13 +864,11 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
   .faq-grid{grid-template-columns:1fr}
   .cta-final-inner{grid-template-columns:1fr}
   .cta-final-right{display:none}
-  .industries-grid{grid-template-columns:repeat(4,1fr)}
   .sec-badges{grid-template-columns:repeat(3,1fr)}
 }
 @media(max-width:768px){
   .prob-grid{grid-template-columns:1fr}
   .tools-grid{grid-template-columns:repeat(4,1fr)}
-  .industries-grid{grid-template-columns:repeat(3,1fr)}
   .sec-badges{grid-template-columns:repeat(2,1fr)}
   .mission-stats{gap:16px}
   .ft-grid{grid-template-columns:1fr}
@@ -881,7 +879,7 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
   .tools-grid{grid-template-columns:repeat(3,1fr)}
   .perf-grid{grid-template-columns:repeat(2,1fr)}
   .perf-stat.wide{grid-column:span 2}
-  .industries-grid{grid-template-columns:repeat(2,1fr)}
+  .industries-grid{grid-template-columns:1fr}
   .mission-bar{flex-direction:column;align-items:flex-start}
   .int-logos{gap:8px}
 }
@@ -1265,21 +1263,16 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
   <div class="w">
     <div class="split-grid">
       <div>
-        <div class="sec-eye">Everything {{ $worker['name'] }} has access to</div>
-        <h2 class="sec-h" style="font-size:clamp(1.3rem,2.2vw,1.7rem)">{{ $worker['name'] }} securely accesses the data she needs to get the job done.</h2>
+        <div class="sec-eye">What {{ $worker['name'] }} actually touches</div>
+        <h2 class="sec-h" style="font-size:clamp(1.3rem,2.2vw,1.7rem)">No sprawling app list to connect. Just the data she needs.</h2>
         <div class="tools-grid">
           @php
             $tools = [
-              ['Calendar','<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>'],
-              ['CRM','<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>'],
-              ['Email','<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>'],
-              ['Contracts','<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8"/></svg>'],
-              ['Invoices','<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>'],
-              ['Drive','<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polygon points="1 6 1 22 8 12 15 22 22 6 15 16"/></svg>'],
-              ['Slack','<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14.5 10c-.83 0-1.5-.67-1.5-1.5v-5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5v5c0 .83-.67 1.5-1.5 1.5z"/><path d="M20.5 10H19V8.5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/><path d="M9.5 14c.83 0 1.5.67 1.5 1.5v5c0 .83-.67 1.5-1.5 1.5S8 21.33 8 20.5v-5c0-.83.67-1.5 1.5-1.5z"/><path d="M3.5 14H5v1.5c0 .83-.67 1.5-1.5 1.5S2 16.33 2 15.5 2.67 14 3.5 14z"/><path d="M14 14.5c0-.83.67-1.5 1.5-1.5h5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5h-5c-.83 0-1.5-.67-1.5-1.5z"/><path d="M15.5 19H14v1.5c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5-.67-1.5-1.5-1.5z"/><path d="M10 9.5C10 8.67 9.33 8 8.5 8h-5C2.67 8 2 8.67 2 9.5S2.67 11 3.5 11h5c.83 0 1.5-.67 1.5-1.5z"/><path d="M8.5 5H10V3.5C10 2.67 9.33 2 8.5 2S7 2.67 7 3.5 7.67 5 8.5 5z"/></svg>'],
-              ['Teams','<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>'],
-              ['Knowledge','<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>'],
-              ['SOPs','<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2M12 12h.01M12 16h.01"/></svg>'],
+              ['Gmail','<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>'],
+              ['Client & Contact Records','<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>'],
+              ['Renewal Registry','<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>'],
+              ['Invoices (from email)','<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>'],
+              ['Transaction Log','<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8"/></svg>'],
             ];
           @endphp
           @foreach($tools as $tool)
@@ -1289,7 +1282,7 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
           </div>
           @endforeach
         </div>
-        <p style="font-size:12.5px;color:var(--t4);margin-top:16px">{{ $worker['name'] }} securely accesses the data she needs to get the job done.</p>
+        <p style="font-size:12.5px;color:var(--t4);margin-top:16px">Gmail is the only third-party connection required. Everything else is UNIT's own memory layer, built specifically for renewals.</p>
       </div>
       <div>
         <div class="sec-eye" style="color:rgba(255,255,255,.4)">Live Performance</div>
@@ -1325,18 +1318,13 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
     <div class="split-grid">
       <div>
         <div class="sec-eye">Who hires {{ $worker['name'] }}</div>
-        <h2 class="sec-h" style="font-size:clamp(1.3rem,2.2vw,1.7rem)">Trusted by businesses across industries.</h2>
+        <h2 class="sec-h" style="font-size:clamp(1.3rem,2.2vw,1.7rem)">Built around the businesses running her today.</h2>
         <div class="industries-grid">
           @php
             $industries = [
-              ['Dental Clinics','<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2a5 5 0 015 5 5 5 0 01-5 5 5 5 0 01-5-5 5 5 0 015-5m0 12c-5.33 0-8 2.67-8 4v2h16v-2c0-1.33-2.67-4-8-4z"/></svg>'],
-              ['Gyms & Fitness','<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8h1a4 4 0 010 8h-1M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>'],
-              ['Law Firms','<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>'],
-              ['Marketing Agencies','<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg>'],
-              ['Accounting Firms','<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>'],
-              ['Consultants','<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>'],
-              ['Membership','<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>'],
-              ['SaaS','<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>'],
+              ['IT & Digital Agencies','<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>'],
+              ['Insurance Brokers','<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>'],
+              ['Compliance & Licensing Firms','<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 12l2 2 4-4"/></svg>'],
             ];
           @endphp
           @foreach($industries as $ind)
@@ -1346,6 +1334,7 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
           </div>
           @endforeach
         </div>
+        <p style="font-size:12.5px;color:var(--t4);margin-top:16px">Any business with recurring renewals fits — these are the industries where AVA runs today.</p>
       </div>
       <div class="testi-col">
         <div class="sec-eye">What business owners say</div>
@@ -1404,28 +1393,14 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
   <div class="w">
     <div class="int-top">
       <div class="sec-eye">{{ $worker['name'] }} connects with</div>
-      <h2 class="sec-h">One-click connections. No complex setup.</h2>
+      <h2 class="sec-h">One real connection. No app sprawl to manage.</h2>
     </div>
     <div class="int-logos">
-      @php
-        $integrations = [
-          ['Google Workspace','<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 22C6.48 22 2 17.52 2 12S6.48 2 12 2s10 4.48 10 10-4.48 10-10 10z"/><path d="M2 12h20M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>'],
-          ['HubSpot','<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2a5 5 0 015 5 5 5 0 01-5 5 5 5 0 01-5-5 5 5 0 015-5z"/><path d="M12 12c-5.33 0-8 2.67-8 4v2h16v-2c0-1.33-2.67-4-8-4z"/></svg>'],
-          ['Salesforce','<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h16v16H4z"/><path d="M4 9h16M9 4v16"/></svg>'],
-          ['Slack','<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>'],
-          ['QuickBooks','<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>'],
-          ['Outlook','<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>'],
-          ['Calendly','<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>'],
-          ['Stripe','<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>'],
-          ['Zapier','<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>'],
-          ['Gmail','<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>'],
-          ['Notion','<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9h6M9 13h6M9 17h4"/></svg>'],
-        ];
-      @endphp
-      @foreach($integrations as $int)
-      <div class="int-logo">{!! $int[1] !!} {{ $int[0] }}</div>
-      @endforeach
-      <span class="int-more">+ More</span>
+      <div class="int-logo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        Gmail
+      </div>
+      <span class="int-more">More connections as new AI Workers ship</span>
     </div>
   </div>
 </section>
@@ -1434,17 +1409,16 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
 <section class="security-sec">
   <div class="w">
     <div class="sec-top">
-      <div class="sec-eye">Enterprise-grade security</div>
-      <h2 class="sec-h">Your data is safe. Your trust is everything.</h2>
+      <div class="sec-eye">Security</div>
+      <h2 class="sec-h">Built to be trusted with your inbox.</h2>
     </div>
     <div class="sec-badges">
       @php
         $secBadges = [
-          ['SOC 2 Type II Compliant','<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>'],
           ['Data encrypted in transit & at rest','<rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/>'],
           ['Role-based access & permissions','<path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/>'],
           ['Audit logs & activity history','<path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/>'],
-          ['GDPR Compliant','<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/>'],
+          ['Nothing sends without your approval','<path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>'],
         ];
       @endphp
       @foreach($secBadges as $badge)
