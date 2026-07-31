@@ -49,42 +49,11 @@ button{cursor:pointer;font-family:inherit}
 .w-md{max-width:900px;margin:0 auto;padding:0 40px}
 .w-lg{max-width:1200px;margin:0 auto;padding:0 48px}
 
-/* ── NAV - same visual system as / and /workers, but position:sticky (not
-   fixed) so page content doesn't need extra top-padding to compensate ── */
-.nav{position:sticky;top:0;left:0;right:0;z-index:100;background:rgba(255,255,255,.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
-[data-theme="dark"] .nav{background:rgba(8,8,16,.92);border-color:var(--line)}
-.nav-i{display:flex;align-items:center;justify-content:space-between;height:62px;max-width:1200px;margin:0 auto;padding:0 48px}
-.logo{display:flex;align-items:center}
-.logo-name{font-family:var(--fd);font-size:1.5rem;font-weight:800;color:var(--text);letter-spacing:-.5px}
-.nav-links{display:flex;align-items:center;gap:28px;list-style:none}
-.nav-links a{font-size:14px;font-weight:500;color:var(--t2);transition:color .15s}
-.nav-links a:hover{color:var(--text)}
-.nav-links a.active{font-weight:700;color:var(--text)}
-.nav-acts{display:flex;align-items:center;gap:10px}
-.btn-login{padding:8px 18px;border-radius:8px;font-size:14px;font-weight:600;color:var(--t2);border:1px solid var(--line);transition:all .15s}
-.btn-login:hover{border-color:var(--t4);color:var(--text)}
-.btn-cta{padding:10px 22px;border-radius:99px;font-size:14px;font-weight:700;background:#0D0D0D;color:#fff;display:inline-flex;align-items:center;gap:6px;box-shadow:0 2px 12px rgba(0,0,0,.12);transition:opacity .15s,transform .15s}
-.btn-cta:hover{opacity:.9;transform:translateY(-1px)}
-[data-theme="dark"] .btn-cta{background:#fff;color:#0D0D0D}
-.ham{display:none;flex-direction:column;gap:5px;padding:4px;background:none;border:none}
-.ham span{display:block;width:22px;height:2px;background:var(--text);border-radius:2px}
-
-/* theme toggle - identical to / and /workers */
-.theme-toggle{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:1px solid var(--line);background:transparent;color:var(--t2);cursor:pointer;transition:all .2s;flex-shrink:0}
-.theme-toggle:hover{background:var(--surf);color:var(--text)}
-.theme-toggle svg{width:17px;height:17px}
-.icon-sun{display:none}.icon-moon{display:block}
-[data-theme="dark"] .icon-sun{display:block}[data-theme="dark"] .icon-moon{display:none}
-
-/* mobile menu - identical to / and /workers */
-.mob-menu{display:none;position:fixed;inset:0;z-index:200;background:#fff;flex-direction:column;padding:24px clamp(20px,5vw,48px)}
-[data-theme="dark"] .mob-menu{background:#080810}
-.mob-menu.open{display:flex}
-.mob-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:36px}
-.mob-close{font-size:22px;color:var(--t3);padding:4px;background:none;border:none}
-.mob-links{display:flex;flex-direction:column;list-style:none}
-.mob-links a{display:block;padding:14px 0;font-size:1.05rem;font-weight:600;color:var(--t2);border-bottom:1px solid var(--line)}
-.mob-ctas{margin-top:28px;display:flex;flex-direction:column;gap:10px}
+/* Nav and footer markup/CSS/JS now live entirely in the public-nav and
+   public-footer components (see those files), not here. Having a second
+   copy of that CSS in this layout was exactly how the nav ended up with
+   two different position values and two different border-color variable
+   names across the site. */
 
 /* ── SHARED CONTENT COMPONENTS (used directly by page bodies) ── */
 .eyebrow{display:inline-flex;align-items:center;gap:9px;border:1px solid var(--line);background:rgba(0,0,0,.04);color:var(--text);font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:7px 15px;border-radius:100px;margin-bottom:28px}
@@ -105,18 +74,6 @@ button{cursor:pointer;font-family:inherit}
 .btn-ln{display:inline-flex;align-items:center;gap:7px;font-size:14px;font-weight:600;padding:10px 20px;border-radius:8px;border:1px solid var(--line2);color:var(--t2);cursor:pointer;background:none;transition:border-color .15s,color .15s;font-family:var(--fb)}
 .btn-ln:hover{border-color:var(--text);color:var(--text)}
 
-/* ── FOOTER - identical to / and /workers ── */
-footer.footer{background:#0A0A0A;padding:clamp(40px,6vw,72px) 0 28px}
-.ft-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:44px;margin-bottom:44px}
-.ft-name{font-family:var(--fd);font-size:1.15rem;font-weight:800;color:#fff;margin-bottom:10px}
-.ft-desc{font-size:13.5px;color:rgba(255,255,255,.6);line-height:1.7;max-width:220px;margin-bottom:20px}
-.ft-col-h{font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.45);margin-bottom:14px}
-.ft-links{display:flex;flex-direction:column;gap:9px}
-.ft-links a{font-size:13.5px;color:rgba(255,255,255,.7);transition:color .15s}
-.ft-links a:hover{color:#fff}
-.ft-bottom{border-top:1px solid rgba(255,255,255,.12);padding-top:24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
-.ft-bottom p{font-size:12.5px;color:rgba(255,255,255,.45)}
-
 /* ── PAGE BODY DEFAULTS ── */
 .pub-hero{padding:72px 0 56px;border-bottom:1px solid var(--line)}
 .pub-hero h1{font-family:var(--fd);font-size:clamp(30px,4vw,48px);font-weight:800;letter-spacing:-1.5px;line-height:1.1;margin-bottom:16px;color:var(--text)}
@@ -132,23 +89,13 @@ footer.footer{background:#0A0A0A;padding:clamp(40px,6vw,72px) 0 28px}
 .pub-meta{font-size:12px;color:var(--t4);margin-top:8px}
 
 /* ── RESPONSIVE ── */
-@media(max-width:1024px){
-  .ft-grid{grid-template-columns:1fr 1fr;gap:28px}
-}
-@media(max-width:768px){
-  .nav-links,.nav-acts{display:none}
-  .ham{display:flex}
-}
 @media(max-width:900px){
   .sh2{font-size:34px}
 }
 @media(max-width:640px){
-  .nav-i{padding:0 20px}
   .w{padding:0 20px}
   .w-md{padding:0 20px}
   .w-lg{padding:0 20px}
-  .ft-grid{grid-template-columns:1fr}
-  .ft-bottom{flex-direction:column;text-align:center}
 }
 </style>
 @yield('head')
@@ -166,24 +113,8 @@ footer.footer{background:#0A0A0A;padding:clamp(40px,6vw,72px) 0 28px}
 
 <x-public-footer />
 
-<script>
-// ── Theme - identical key/logic to / and /workers ──
-const root = document.getElementById('html-root');
-const saved = localStorage.getItem('unit-theme');
-if (saved) root.setAttribute('data-theme', saved);
-document.getElementById('theme-toggle').addEventListener('click', function () {
-  const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-  root.setAttribute('data-theme', next);
-  localStorage.setItem('unit-theme', next);
-});
-
-// ── Mobile menu ──
-const ham = document.getElementById('ham');
-const mob = document.getElementById('mob');
-ham.addEventListener('click', () => mob.classList.add('open'));
-document.getElementById('mob-close').addEventListener('click', () => mob.classList.remove('open'));
-function closeMob() { mob.classList.remove('open'); }
-</script>
+{{-- Theme toggle + mobile menu JS now lives in <x-public-nav> (@once script
+     block), not duplicated here. --}}
 @yield('scripts')
 
 @include('partials.tracking')
