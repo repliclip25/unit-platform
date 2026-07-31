@@ -176,9 +176,9 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
 /* text content over the video */
 .hero-text{
   position:relative;z-index:2;
-  flex:1;display:flex;flex-direction:column;justify-content:center;
+  flex:1;display:flex;flex-direction:column;justify-content:flex-end;
   padding:clamp(32px,5vw,56px) clamp(28px,4vw,48px);
-  padding-bottom:16px;
+  padding-bottom:clamp(32px,5vw,56px);
 }
 .hero-copy{
   transition:opacity .35s ease,transform .35s ease,max-height .35s ease;
