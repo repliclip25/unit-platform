@@ -12,7 +12,7 @@ namespace App\Platform\Services;
  */
 class InvoiceOcrService
 {
-    public static function extract(string $absolutePath, int $userId, string $workerSlug, ?string $txId = null): array
+    public static function extract(string $absolutePath, int $userId, string $workerSlug, ?string $txId = null, ?int $deploymentId = null): array
     {
         try {
             $parser = new \Smalot\PdfParser\Parser();
@@ -28,10 +28,17 @@ class InvoiceOcrService
         $claude = app(ClaudeService::class);
         $claude->configure(ClaudeService::platformDefaultModel(), $userId, $workerSlug);
 
-        $system = 'You extract structured fields from invoice text. Return valid JSON only, no extra text. '
-            . 'Use null for any field you cannot find — never guess.';
+        // Override key matches the pipeline stage ('request_invoice'), not the
+        // usage-log tag below — that's how it shows up as an editable card on
+        // the Configure page, which lists prompts by pipeline stage key.
+        $override = $deploymentId
+            ? \App\Platform\SDK\UnitPlatform::getPromptOverride($deploymentId, 'request_invoice') ?? []
+            : [];
 
-        $prompt = <<<PROMPT
+        $system = $override['system'] ?? ('You extract structured fields from invoice text. Return valid JSON only, no extra text. '
+            . 'Use null for any field you cannot find — never guess.');
+
+        $defaultPrompt = <<<PROMPT
 Extract these fields from the invoice text below:
 {
   "amount": null,
@@ -47,8 +54,14 @@ INVOICE TEXT:
 {$text}
 PROMPT;
 
+        $prompt = !empty($override['user'])
+            ? str_replace('{INVOICE_TEXT}', $text, $override['user'])
+            : $defaultPrompt;
+
+        $maxTokens = $override['max_tokens'] ?? 512;
+
         try {
-            return $claude->ask($system, $prompt, 512, $txId, 'invoice_ocr');
+            return $claude->ask($system, $prompt, $maxTokens, $txId, 'invoice_ocr');
         } catch (\Throwable $e) {
             return ['error' => 'Could not extract invoice details automatically.'];
         }

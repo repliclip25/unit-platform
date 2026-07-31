@@ -40,7 +40,10 @@ class ReadEmailJob implements ShouldQueue
 
         $rawEmail = $input->raw['raw_email'] ?? '';
 
-        $override = UnitPlatform::getPromptOverride($input->deploymentId, 'read') ?? [];
+        // Key matches the pipeline stage ('read_email') and prompts()'s
+        // declared default — not the short 'read' tag used elsewhere for
+        // per-stage AI-model selection, a separate namespace.
+        $override = UnitPlatform::getPromptOverride($input->deploymentId, 'read_email') ?? [];
 
         $system = $override['system'] ?? 'You are Ava, UNIT\'s Subscription & Renewal Coordinator. Return valid JSON only. No extra text.';
 

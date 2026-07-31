@@ -427,7 +427,7 @@ class TransactionController extends Controller
             "invoices/{$txId}", 'invoice-' . now()->timestamp . '.pdf', config('filesystems.media_disk', 'public')
         );
 
-        $ocr = \App\Platform\Services\InvoiceOcrService::extract($disk->path($path), auth()->id(), $tx->worker_slug, $txId);
+        $ocr = \App\Platform\Services\InvoiceOcrService::extract($disk->path($path), auth()->id(), $tx->worker_slug, $txId, $tx->deployment_id);
 
         $memory  = json_decode($tx->memory_output ?? '{}', true) ?: [];
         $asset   = $memory['asset'] ?? 'this renewal';

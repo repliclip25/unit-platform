@@ -108,7 +108,11 @@ class DraftEmailJob implements ShouldQueue
     private function generateWithClaude(ClaudeService $claude, array $memory, array $classify, array $read, array $template, string $firstName, bool $lowConfidence): string
     {
         $input   = UnitPlatform::getInput($this->txId);
-        $override = UnitPlatform::getPromptOverride($input->deploymentId, 'draft') ?? [];
+        // Key matches the pipeline stage ('draft_email') and prompts()'s
+        // declared default — the Configure page saves overrides under this
+        // exact key, so querying the short 'draft' tag here was a silent
+        // no-op: any tenant edit to this card never applied.
+        $override = UnitPlatform::getPromptOverride($input->deploymentId, 'draft_email') ?? [];
 
         $lowNote = $lowConfidence
             ? "\n\nIMPORTANT: Memory match confidence is low ({$memory['confidence']}%). Keep the draft general enough to work even if the asset match is slightly off."

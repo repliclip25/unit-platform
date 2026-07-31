@@ -930,7 +930,7 @@ class AvaWorker implements WorkerContract
     {
         return [
             [
-                'stage'         => 'read',
+                'stage'         => 'read_email',
                 'label'         => 'Read Email',
                 'uses_ai'       => true,
                 'model'         => null,
@@ -1005,6 +1005,17 @@ class AvaWorker implements WorkerContract
                 'output_format' => null,
                 'output_shape'  => null,
                 'max_tokens'    => null,
+            ],
+            [
+                'stage'         => 'request_invoice',
+                'label'         => 'Request Invoice (OCR)',
+                'uses_ai'       => true,
+                'model'         => null,
+                'system'        => 'You extract structured fields from invoice text. Return valid JSON only, no extra text. Use null for any field you cannot find — never guess.',
+                'user'          => "Extract these fields from the invoice text below:\n{\n  \"amount\": null,\n  \"currency\": null,\n  \"issued_date\": null,\n  \"due_date\": null,\n  \"invoice_number\": null\n}\n\nDates in YYYY-MM-DD format. Amount as a plain number (no currency symbol).\n\nINVOICE TEXT:\n{INVOICE_TEXT}",
+                'output_format' => 'json',
+                'output_shape'  => ['amount', 'currency', 'issued_date', 'due_date', 'invoice_number'],
+                'max_tokens'    => 512,
             ],
         ];
     }
