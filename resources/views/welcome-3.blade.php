@@ -93,21 +93,6 @@ ul{list-style:none}
 [data-theme="dark"] .tl-evt strong{color:#F3F4F6}
 [data-theme="dark"] .trust-bar{border-top:1px solid #2D2D2D}
 
-/* theme toggle button */
-.theme-toggle{
-  width:36px;height:36px;border-radius:50%;
-  display:flex;align-items:center;justify-content:center;
-  border:1px solid var(--border);background:transparent;
-  color:var(--t2);cursor:pointer;
-  transition:all .2s;flex-shrink:0;
-}
-.theme-toggle:hover{background:var(--soft);color:var(--text)}
-.theme-toggle svg{width:17px;height:17px}
-.icon-sun{display:none}
-.icon-moon{display:block}
-[data-theme="dark"] .icon-sun{display:block}
-[data-theme="dark"] .icon-moon{display:none}
-
 body{
   font-family:var(--font-b);
   color:var(--text);
@@ -118,45 +103,8 @@ body{
 
 .w{ max-width:var(--max); margin:0 auto; padding:0 var(--pad); }
 
-/* ── NAV ── */
-.nav{
-  position:fixed;top:0;left:0;right:0;z-index:100;
-  background:rgba(255,255,255,0.92);
-  backdrop-filter:blur(16px);
-  border-bottom:1px solid var(--border);
-}
-.nav-i{
-  display:flex;align-items:center;justify-content:space-between;
-  height:62px;
-}
-.logo{display:flex;align-items:center}
-.logo-name{
-  font-family:var(--font-h);font-size:1.5rem;font-weight:800;
-  color:var(--text);letter-spacing:-.5px;
-}
-.nav-links{display:flex;align-items:center;gap:28px}
-.nav-links a{
-  font-size:14px;font-weight:500;color:var(--t2);
-  transition:color .15s;
-}
-.nav-links a:hover{color:var(--text)}
-.nav-acts{display:flex;align-items:center;gap:10px}
-.btn-login{
-  padding:8px 18px;border-radius:8px;font-size:14px;font-weight:600;
-  color:var(--t2);border:1px solid var(--border);
-  transition:all .15s;
-}
-.btn-login:hover{border-color:#bbb;color:var(--text)}
-.btn-cta{
-  padding:10px 22px;border-radius:99px;font-size:14px;font-weight:700;
-  background:#0D0D0D;color:#fff;
-  display:inline-flex;align-items:center;gap:6px;
-  transition:opacity .15s,transform .15s,box-shadow .15s;
-  box-shadow:0 2px 12px rgba(0,0,0,0.15);
-}
-.btn-cta:hover{opacity:.9;transform:translateY(-1px);box-shadow:0 6px 20px rgba(0,0,0,0.15)}
-.ham{display:none;flex-direction:column;gap:5px;padding:4px}
-.ham span{display:block;width:22px;height:2px;background:var(--text);border-radius:2px}
+/* Nav and footer CSS/JS now live in the public-nav and public-footer
+   components (single source of truth), not duplicated per-page. */
 
 /* ── HERO ── */
 .hero{
@@ -812,49 +760,6 @@ body{
 .trust-platform-name{font-size:13px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:4px}
 .trust-platform-stars{color:#F59E0B;font-size:11px;letter-spacing:1px}
 
-/* ── FOOTER ── */
-.footer{background:#0A0A0A;padding:clamp(40px,6vw,72px) 0 28px}
-.ft-grid{
-  display:grid;grid-template-columns:2fr 1fr 1fr 1fr;
-  gap:44px;margin-bottom:44px;
-}
-.ft-name{
-  font-family:var(--font-h);font-size:1.15rem;font-weight:800;
-  color:#fff;margin-bottom:10px;
-}
-.ft-desc{font-size:13.5px;color:rgba(255,255,255,.6);line-height:1.7;max-width:220px;margin-bottom:20px}
-.ft-col-h{
-  font-size:10.5px;font-weight:700;letter-spacing:.1em;
-  text-transform:uppercase;color:rgba(255,255,255,.45);
-  margin-bottom:14px;
-}
-.ft-links{display:flex;flex-direction:column;gap:9px}
-.ft-links a{font-size:13.5px;color:rgba(255,255,255,.7);transition:color .15s}
-.ft-links a:hover{color:#fff}
-.ft-bottom{
-  border-top:1px solid rgba(255,255,255,.12);padding-top:24px;
-  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;
-}
-.ft-bottom p{font-size:12.5px;color:rgba(255,255,255,.45)}
-
-/* ── MOBILE MENU ── */
-.mob-menu{
-  display:none;position:fixed;inset:0;z-index:200;
-  background:#fff;flex-direction:column;padding:24px var(--pad);
-}
-.mob-menu.open{display:flex}
-.mob-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:36px}
-.mob-close{font-size:22px;color:var(--t3);padding:4px}
-.mob-links{display:flex;flex-direction:column}
-.mob-links a{
-  display:block;padding:14px 0;
-  font-size:1.05rem;font-weight:600;color:var(--t2);
-  border-bottom:1px solid var(--border);
-  transition:color .15s;
-}
-.mob-links a:hover{color:var(--text)}
-.mob-ctas{margin-top:28px;display:flex;flex-direction:column;gap:10px}
-
 /* ── PROBLEMS WE SOLVE ── */
 .problems-sec{background:#fff}
 [data-theme="dark"] .problems-sec{background:#0D0D0D}
@@ -1029,13 +934,10 @@ body{
   .trust-platforms{justify-content:flex-start}
   .wk-grid{grid-template-columns:repeat(2,1fr)}
   .wk-img-bg{width:50%}
-  .ft-grid{grid-template-columns:1fr 1fr;gap:28px}
   .lc-card{grid-template-columns:1fr;gap:28px}
   .lc-arrow{display:none}
 }
 @media(max-width:768px){
-  .nav-links,.nav-acts{display:none}
-  .ham{display:flex}
   .hero{grid-template-columns:1fr;min-height:auto}
   .hero-right{order:-1;min-height:300px}
   .hero-left{padding:40px var(--pad);text-align:center}
@@ -1044,8 +946,6 @@ body{
   .tl{grid-template-columns:repeat(3,1fr)}
   .tl::before{display:none}
   .tl-item:not(:last-child)::after{display:none}
-  .ft-grid{grid-template-columns:1fr}
-  .ft-bottom{flex-direction:column;text-align:center}
   /* lifecycle: strip the card border, 2-col grid, full bleed */
   .lc-card{border:none;box-shadow:none;padding:0;background:transparent!important}
   .lifecycle .w{padding-left:10px;padding-right:10px;max-width:100%}
@@ -2096,12 +1996,7 @@ body{
 <x-public-footer />
 
 <script>
-const ham = document.getElementById('ham');
-const mob = document.getElementById('mob');
-const mobClose = document.getElementById('mob-close');
-ham.addEventListener('click', () => mob.classList.add('open'));
-mobClose.addEventListener('click', () => mob.classList.remove('open'));
-function closeMob(){ mob.classList.remove('open') }
+// Theme toggle + mobile menu JS now lives in the public-nav component, not duplicated here.
 
 // FAQ accordion
 document.querySelectorAll('.faq-q').forEach(btn => {
@@ -2112,24 +2007,6 @@ document.querySelectorAll('.faq-q').forEach(btn => {
     if(!isOpen) item.classList.add('open');
   });
 });
-
-// Theme toggle
-(function(){
-  const html = document.documentElement;
-  const btn = document.getElementById('theme-toggle');
-  const saved = localStorage.getItem('unit-theme');
-  if(saved === 'dark') html.setAttribute('data-theme','dark');
-  btn.addEventListener('click', function(){
-    const isDark = html.getAttribute('data-theme') === 'dark';
-    if(isDark){
-      html.removeAttribute('data-theme');
-      localStorage.setItem('unit-theme','light');
-    } else {
-      html.setAttribute('data-theme','dark');
-      localStorage.setItem('unit-theme','dark');
-    }
-  });
-})();
 
 // Hero image crossfade
 (function(){

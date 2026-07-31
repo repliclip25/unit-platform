@@ -71,32 +71,11 @@ ul{list-style:none}
 [data-theme="dark"] .empty-state{color:#6B7280}
 [data-theme="dark"] .btn-login{color:#D1D5DB;border-color:#2D2D2D}
 
-/* theme toggle */
-.theme-toggle{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:1px solid var(--border);background:transparent;color:var(--t2);cursor:pointer;transition:all .2s;flex-shrink:0}
-.theme-toggle:hover{background:var(--soft);color:var(--text)}
-.theme-toggle svg{width:17px;height:17px}
-.icon-sun{display:none}.icon-moon{display:block}
-[data-theme="dark"] .icon-sun{display:block}[data-theme="dark"] .icon-moon{display:none}
-
 body{font-family:var(--font-b);color:var(--text);background:var(--bg);-webkit-font-smoothing:antialiased;overflow-x:hidden}
 .w{max-width:var(--max);margin:0 auto;padding:0 var(--pad)}
 
-/* ── NAV ── */
-.nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(255,255,255,.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--border)}
-.nav-i{display:flex;align-items:center;justify-content:space-between;height:62px}
-.logo{display:flex;align-items:center}
-.logo-name{font-family:var(--font-h);font-size:1.5rem;font-weight:800;color:var(--text);letter-spacing:-.5px}
-.nav-links{display:flex;align-items:center;gap:28px}
-.nav-links a{font-size:14px;font-weight:500;color:var(--t2);transition:color .15s}
-.nav-links a:hover{color:var(--text)}
-.nav-links a.active{font-weight:700;color:#0D0D0D}
-.nav-acts{display:flex;align-items:center;gap:10px}
-.btn-login{padding:8px 18px;border-radius:8px;font-size:14px;font-weight:600;color:var(--t2);border:1px solid var(--border);transition:all .15s}
-.btn-login:hover{border-color:#bbb;color:var(--text)}
-.btn-cta{padding:10px 22px;border-radius:99px;font-size:14px;font-weight:700;background:#0D0D0D;color:#fff;display:inline-flex;align-items:center;gap:6px;box-shadow:0 2px 12px rgba(0,0,0,.12);transition:opacity .15s,transform .15s}
-.btn-cta:hover{opacity:.9;transform:translateY(-1px)}
-.ham{display:none;flex-direction:column;gap:5px;padding:4px}
-.ham span{display:block;width:22px;height:2px;background:var(--text);border-radius:2px}
+/* Nav and footer CSS/JS now live in the public-nav and public-footer
+   components (single source of truth), not duplicated per-page. */
 
 /* ── HERO ── */
 .hero-page{padding-top:62px;background:#fff;display:grid;grid-template-columns:1fr 1fr;min-height:68vh;overflow:hidden}
@@ -308,27 +287,8 @@ body{font-family:var(--font-b);color:var(--text);background:var(--bg);-webkit-fo
 .btn-cta-main:hover{opacity:.95;transform:translateY(-2px)}
 .cta-note{font-size:12px;color:rgba(255,255,255,.4)}
 
-/* ── FOOTER ── */
-.footer{background:#0A0A0A;padding:clamp(40px,6vw,72px) 0 28px}
-.ft-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:44px;margin-bottom:44px}
-.ft-name{font-family:var(--font-h);font-size:1.15rem;font-weight:800;color:#fff;margin-bottom:10px}
-.ft-desc{font-size:13.5px;color:rgba(255,255,255,.6);line-height:1.7;max-width:220px;margin-bottom:20px}
-.ft-col-h{font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.45);margin-bottom:14px}
-.ft-links{display:flex;flex-direction:column;gap:9px}
-.ft-links a{font-size:13.5px;color:rgba(255,255,255,.7);transition:color .15s}
-.ft-links a:hover{color:#fff}
-.ft-bottom{border-top:1px solid rgba(255,255,255,.12);padding-top:24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
-.ft-bottom p{font-size:12.5px;color:rgba(255,255,255,.45)}
-
-/* ── MOBILE MENU ── */
-.mob-menu{display:none;position:fixed;inset:0;z-index:200;background:#fff;flex-direction:column;padding:24px var(--pad)}
-[data-theme="dark"] .mob-menu{background:#0D0D0D}
-.mob-menu.open{display:flex}
-.mob-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:36px}
-.mob-close{font-size:22px;color:var(--t3);padding:4px}
-.mob-links{display:flex;flex-direction:column}
-.mob-links a{display:block;padding:14px 0;font-size:1.05rem;font-weight:600;color:var(--t2);border-bottom:1px solid var(--border)}
-.mob-ctas{margin-top:28px;display:flex;flex-direction:column;gap:10px}
+/* Nav and footer CSS/JS now live in the public-nav and public-footer
+   components (single source of truth), not duplicated per-page. */
 
 /* ── RESPONSIVE ── */
 @media(max-width:1024px){
@@ -338,11 +298,8 @@ body{font-family:var(--font-b);color:var(--text);background:var(--bg);-webkit-fo
   .behind-item:nth-child(2){border-right:none}
   .behind-item:nth-child(3){border-right:1px solid var(--border)}
   .behind-item:nth-child(1),.behind-item:nth-child(2){border-bottom:1px solid var(--border)}
-  .ft-grid{grid-template-columns:1fr 1fr;gap:28px}
 }
 @media(max-width:768px){
-  .nav-links,.nav-acts{display:none}
-  .ham{display:flex}
   .hero-page{grid-template-columns:1fr;min-height:auto}
   .hero-page-right{order:-1;min-height:260px}
   .hero-page-spacer{min-height:260px}
@@ -692,22 +649,7 @@ body{font-family:var(--font-b);color:var(--text);background:var(--bg);-webkit-fo
 <x-public-footer />
 
 <script>
-// ── Theme ──
-const root = document.documentElement;
-const saved = localStorage.getItem('unit-theme');
-if(saved) root.setAttribute('data-theme', saved);
-document.getElementById('theme-toggle').addEventListener('click', function(){
-  const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-  root.setAttribute('data-theme', next);
-  localStorage.setItem('unit-theme', next);
-});
-
-// ── Mobile menu ──
-const ham = document.getElementById('ham');
-const mob = document.getElementById('mob');
-ham.addEventListener('click', () => mob.classList.add('open'));
-document.getElementById('mob-close').addEventListener('click', () => mob.classList.remove('open'));
-function closeMob(){ mob.classList.remove('open'); }
+// Theme toggle + mobile menu JS now lives in the public-nav component, not duplicated here.
 
 // ── Search + tag filter ──
 const searchEl = document.getElementById('wk-search');
