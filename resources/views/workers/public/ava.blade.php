@@ -56,6 +56,17 @@
         'text'     => $s['desc'],
     ], $worker['pipeline'], array_keys($worker['pipeline'])),
 ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}</script>
+<script type="application/ld+json">{!! json_encode([
+    '@@context'     => 'https://schema.org',
+    '@type'        => 'VideoObject',
+    'name'         => "Meet {$worker['name']}, UNIT's {$worker['role']}",
+    'description'  => $worker['hero_video']['transcript'],
+    'thumbnailUrl' => asset($worker['hero_video']['thumbnail']),
+    'contentUrl'   => asset($worker['hero_video']['url']),
+    'uploadDate'   => $worker['hero_video']['upload_date'],
+    'duration'     => $worker['hero_video']['duration_iso'],
+    'transcript'   => $worker['hero_video']['transcript'],
+], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -203,6 +214,17 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
   line-height:1.75;margin-bottom:28px;max-width:400px;
 }
 .hero-btns{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.hero-transcript{margin-top:14px}
+.hero-transcript summary{
+  font-size:12px;color:rgba(255,255,255,.5);cursor:pointer;
+  list-style:none;display:inline-flex;align-items:center;gap:5px;
+  transition:color .15s;
+}
+.hero-transcript summary::-webkit-details-marker{display:none}
+.hero-transcript summary:hover{color:rgba(255,255,255,.8)}
+.hero-transcript summary::before{content:'▸';font-size:10px}
+.hero-transcript[open] summary::before{content:'▾'}
+.hero-transcript p{font-size:12.5px;color:rgba(255,255,255,.6);line-height:1.65;margin-top:8px;max-width:420px}
 .btn-hire-hero{
   display:inline-flex;align-items:center;gap:8px;
   padding:12px 22px;border-radius:10px;
@@ -985,8 +1007,9 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
 
     {{-- Background media --}}
     <div class="hero-media">
-      <video id="avaHeroVideo" poster="/images/ava-skyline.png" playsinline preload="metadata">
-        <source src="{{ asset('videos/AVA.MP4') }}" type="video/mp4">
+      <video id="avaHeroVideo" poster="{{ asset($worker['hero_video']['thumbnail']) }}" playsinline preload="metadata">
+        <source src="{{ asset($worker['hero_video']['url']) }}" type="video/mp4">
+        <track kind="captions" src="{{ asset('videos/AVA.vtt') }}" srclang="en" label="English" default>
       </video>
     </div>
 
@@ -1008,6 +1031,13 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
           Watch Her Story
         </button>
       </div>
+      {{-- Visible transcript - captions cover screen-reader/accessibility use
+           while playing, but a <track> isn't crawlable text. This is, plus
+           it lets anyone skim what she says without sound. --}}
+      <details class="hero-transcript">
+        <summary>Read the transcript</summary>
+        <p>{{ $worker['hero_video']['transcript'] }}</p>
+      </details>
     </div>
 
   </div>{{-- end .hero-video-col --}}
@@ -1344,6 +1374,23 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
     </div>
   </div>
 </section>
+
+{{-- Edge-statement videos - forward-compatible: once UNIT Studio produces a
+     real video for one of these, setting its 'video' field to a path is the
+     only change needed anywhere. Nothing renders here until a video exists. --}}
+@foreach($edgeStatements as $edge)
+@if(!empty($edge['video']))
+<script type="application/ld+json">{!! json_encode([
+    '@@context'     => 'https://schema.org',
+    '@type'        => 'VideoObject',
+    'name'         => "{$worker['name']}: {$edge['eye']}",
+    'description'  => $edge['p'],
+    'thumbnailUrl' => asset($edge['img']),
+    'contentUrl'   => asset($edge['video']),
+    'uploadDate'   => $edge['video_upload_date'] ?? now()->toDateString(),
+], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}</script>
+@endif
+@endforeach
 
 {{-- Edge statement proof/video modal - shared by all cards above --}}
 <div class="edge-modal" id="edgeModal">

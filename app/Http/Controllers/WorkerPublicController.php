@@ -22,6 +22,17 @@ class WorkerPublicController extends Controller
                 'category'   => 'Renewal Automation',
                 'meta_desc'  => "AVA is UNIT's AI Renewal Agent. She watches your inbox and renewal calendar, drafts every renewal, and closes the loop, with human approval built in.",
 
+                // Hero video metadata - drives both the <video> element and
+                // the VideoObject schema. duration_iso/upload_date come from
+                // the real file (ffprobe), not guessed.
+                'hero_video' => [
+                    'url'          => 'videos/AVA.MP4',
+                    'thumbnail'    => 'images/ava-skyline.png',
+                    'duration_iso' => 'PT22S',
+                    'upload_date'  => '2026-07-11',
+                    'transcript'   => "Hey, I'm AVA, UNIT's renewal worker. People remember birthdays. They forget renewals, licenses expire, subscriptions end, deadlines sneak up. I remember. I prepare everything. I make sure nothing important slips through. I sleep better when your renewals are done. See you tomorrow!",
+                ],
+
                 // Single source of truth for the pipeline demo AND the HowTo
                 // schema below, grouped from the real 16-stage pipeline
                 // (inject/fetch -> ... -> archive -> reschedule watch) into
