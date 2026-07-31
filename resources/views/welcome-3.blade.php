@@ -1681,26 +1681,6 @@ body{
     <div class="res-scroll-wrap">
       <div class="res-rail">
 
-        <!-- Card 1: Video -->
-        <div class="res-card">
-          <div class="res-thumb" style="background:#0D0D0D">
-            <div class="res-play-ring">
-              <div class="res-play-btn">
-                <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-              </div>
-            </div>
-          </div>
-          <div class="res-body">
-            <span class="res-badge badge-video">
-              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-              Video
-            </span>
-            <div class="res-title">AVA's First Day: Watch a full renewal handled start to finish</div>
-            <div class="res-meta">8 min watch · AVA</div>
-            <span class="res-link">Watch now <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
-          </div>
-        </div>
-
         <!-- Card 2: Blog -->
         <a href="{{ route('blog.show', '5-signs-your-team-needs-an-ai-agent') }}" class="res-card">
           <div class="res-thumb" style="background:linear-gradient(135deg,#064E3B,#065F46)">
@@ -1720,7 +1700,7 @@ body{
         </a>
 
         <!-- Card 3: Whitepaper -->
-        <div class="res-card">
+        <a href="{{ asset('whitepapers/unit-ai-agents-vs-ai-workers.pdf') }}" target="_blank" class="res-card">
           <div class="res-thumb" style="background:linear-gradient(135deg,#1E3A5F,#1D4ED8)">
             <div class="res-thumb-icon">
               <svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round"><path d="M9 12h6M9 16h6M17 21H7a2 2 0 01-2-2V5a2 2 0 012-2h7l5 5v11a2 2 0 01-2 2z"/></svg>
@@ -1731,11 +1711,11 @@ body{
               <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 4h16v16H4z"/><path d="M4 9h16M9 4v16"/></svg>
               Whitepaper
             </span>
-            <div class="res-title">The Future of Work: How AI Agents change what your team actually does</div>
-            <div class="res-meta">14 pages · PDF download</div>
+            <div class="res-title">AI Agents vs. AI Workers: how UNIT turns a manual process into a deployed AI Worker</div>
+            <div class="res-meta">6 pages · PDF download</div>
             <span class="res-link">Download <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
           </div>
-        </div>
+        </a>
 
         <!-- Card 4: Case Study -->
         <a href="{{ route('blog.show', 'inside-a-real-renewal-workflow') }}" class="res-card">
