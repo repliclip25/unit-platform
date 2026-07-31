@@ -180,6 +180,13 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
   padding:clamp(32px,5vw,56px) clamp(28px,4vw,48px);
   padding-bottom:16px;
 }
+.hero-copy{
+  transition:opacity .35s ease,transform .35s ease,max-height .35s ease;
+  max-height:400px;opacity:1;overflow:hidden;
+}
+.hero-copy.hero-copy-hidden{
+  opacity:0;transform:translateY(-8px);max-height:0;pointer-events:none;
+}
 .hero-eye{
   font-size:11px;font-weight:700;letter-spacing:.16em;
   text-transform:uppercase;color:rgba(255,255,255,.5);
@@ -437,27 +444,6 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
 .sol-peace-h{font-size:14px;font-weight:700;color:#0D0D0D;margin-bottom:4px}
 [data-theme="dark"] .sol-peace-h{color:#F3F4F6}
 .sol-peace-p{font-size:12.5px;color:var(--t3);line-height:1.55}
-/* bottom CTA strip - full width */
-.prob-cta-strip{
-  display:flex;align-items:center;justify-content:space-between;
-  flex-wrap:wrap;gap:20px;
-  padding:24px var(--pad);
-  margin-top:40px;
-  border-top:1.5px solid #E5E7EB;
-  max-width:var(--max);margin-left:auto;margin-right:auto;
-}
-[data-theme="dark"] .prob-cta-strip{border-color:#2D2D2D}
-.prob-cta-left{display:flex;align-items:center;gap:14px}
-.prob-cta-icon{
-  width:44px;height:44px;border-radius:12px;flex-shrink:0;
-  background:#F3F4F6;display:flex;align-items:center;justify-content:center;
-}
-[data-theme="dark"] .prob-cta-icon{background:#1a1a1a}
-.prob-cta-icon svg{width:22px;height:22px;stroke:#374151;fill:none;stroke-width:1.8;stroke-linecap:round}
-[data-theme="dark"] .prob-cta-icon svg{stroke:#9CA3AF}
-.prob-cta-t1{font-size:15px;font-weight:700;color:var(--text)}
-.prob-cta-t2{font-size:13px;color:var(--t3);margin-top:2px}
-.prob-cta-t2 span{color:var(--text);font-weight:700}
 .btn-prob-cta{
   display:inline-flex;align-items:center;gap:8px;
   padding:14px 28px;border-radius:10px;
@@ -468,7 +454,7 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
 .btn-prob-cta:hover{opacity:.9;transform:translateY(-1px)}
 .btn-prob-cta svg{flex-shrink:0}
 @media(max-width:900px){.prob-items{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:480px){.prob-items{grid-template-columns:1fr}.prob-cta-strip{flex-direction:column;align-items:flex-start}}
+@media(max-width:480px){.prob-items{grid-template-columns:1fr}}
 
 /* ── DAY IN LIFE / PIPELINE ── */
 .day-sec{background:#F9F9FB;padding:clamp(56px,7vw,88px) 0}
@@ -652,7 +638,7 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
 .edge-sec{background:var(--soft);border-top:1px solid var(--border);padding:clamp(56px,7vw,88px) 0}
 [data-theme="dark"] .edge-sec{background:#141414;border-color:#2D2D2D}
 .edge-head{text-align:center;max-width:680px;margin:0 auto 44px}
-.edge-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(20px,2.5vw,28px)}
+.edge-grid{display:grid;grid-template-columns:1fr 1fr;gap:clamp(20px,2.5vw,28px)}
 .edge-card{background:var(--bg);border:1px solid var(--border);border-radius:20px;overflow:hidden}
 [data-theme="dark"] .edge-card{background:#0D0D0D;border-color:#2D2D2D}
 .edge-img{aspect-ratio:16/10;overflow:hidden}
@@ -661,7 +647,6 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
 .edge-eye{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--t3);margin-bottom:10px}
 .edge-h3{font-size:1.15rem;font-weight:800;letter-spacing:-.02em;color:var(--text);margin-bottom:10px;line-height:1.25}
 .edge-p{font-size:14px;color:var(--t2);line-height:1.68}
-@media(max-width:1024px){.edge-grid{grid-template-columns:1fr 1fr}}
 @media(max-width:760px){.edge-grid{grid-template-columns:1fr}}
 
 /* ── MEET AVA - first-person narrative ── */
@@ -674,6 +659,33 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
 .meet-body p{font-size:15px;color:var(--t2);line-height:1.8;margin-bottom:16px}
 .meet-sig{font-size:13px;color:var(--t4);margin-top:20px;font-style:italic}
 @media(max-width:860px){.meet-grid{grid-template-columns:1fr}.meet-img-wrap img{max-height:360px}}
+
+/* ── MEMORY - the tenant-data differentiator ── */
+.mem-sec{background:var(--soft);border-top:1px solid var(--border);padding:clamp(56px,7vw,88px) 0}
+[data-theme="dark"] .mem-sec{background:#141414;border-color:#2D2D2D}
+.mem-head{max-width:680px;margin:0 auto 44px;text-align:center}
+.mem-grid{display:grid;grid-template-columns:.8fr 1.2fr;gap:clamp(36px,5vw,64px);align-items:center}
+.mem-img-wrap{border-radius:20px;overflow:hidden;border:1px solid var(--border)}
+.mem-img-wrap img{width:100%;height:100%;object-fit:cover;object-position:center 15%;max-height:480px}
+.mem-intro{font-size:15px;color:var(--t2);line-height:1.75;margin-bottom:24px}
+.mem-list{display:flex;flex-direction:column;gap:16px;margin-bottom:24px}
+.mem-item{display:flex;align-items:flex-start;gap:14px}
+.mem-chk{
+  width:26px;height:26px;border-radius:50%;flex-shrink:0;margin-top:1px;
+  background:#0D0D0D;display:flex;align-items:center;justify-content:center;
+}
+[data-theme="dark"] .mem-chk{background:#fff}
+.mem-chk svg{width:12px;height:12px;stroke:#fff;stroke-width:2.5;fill:none;stroke-linecap:round}
+[data-theme="dark"] .mem-chk svg{stroke:#0D0D0D}
+.mem-item-h{font-size:14.5px;font-weight:700;color:var(--text);margin-bottom:2px}
+.mem-item-p{font-size:13.5px;color:var(--t3);line-height:1.55}
+.mem-note{
+  font-size:13.5px;color:var(--t2);line-height:1.7;
+  background:var(--bg);border:1px solid var(--border);border-radius:14px;
+  padding:16px 18px;
+}
+[data-theme="dark"] .mem-note{background:#0D0D0D;border-color:#2D2D2D}
+@media(max-width:860px){.mem-grid{grid-template-columns:1fr}.mem-img-wrap img{max-height:340px}}
 
 /* tools grid */
 .tools-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-top:20px}
@@ -942,9 +954,11 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
 
     {{-- Text content over the video --}}
     <div class="hero-text">
-      <div class="hero-eye">UNIT's AI Renewal Worker</div>
-      <h1 class="hero-h">She never<br>forgets a <span class="hl">renewal.</span></h1>
-      <p class="hero-p">An AI agent that watches your inbox <em>and</em> your renewal calendar, drafts every renewal, and keeps a human in control of every send.</p>
+      <div class="hero-copy" id="avaHeroCopy">
+        <div class="hero-eye">UNIT's AI Renewal Worker</div>
+        <h1 class="hero-h">She never<br>forgets a <span class="hl">renewal.</span></h1>
+        <p class="hero-p">An AI agent that watches your inbox <em>and</em> your renewal calendar, drafts every renewal, and keeps a human in control of every send.</p>
+      </div>
       <div class="hero-btns">
         @if($avaHasDesk)
         <a href="{{ route('app.desk.ava') }}" class="btn-hire-hero">Go to AVA's Desk</a>
@@ -986,11 +1000,16 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
 (function(){
   var video = document.getElementById('avaHeroVideo');
   var btn   = document.getElementById('avaHeroPlayBtn');
+  var copy  = document.getElementById('avaHeroCopy');
   if(!video || !btn) return;
   function setLabel(){
     btn.innerHTML = (video.paused
       ? '<span class="btn-watch-icon"><svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg></span>Watch Her Story'
       : '<span class="btn-watch-icon"><svg viewBox="0 0 24 24"><rect x="6" y="5" width="4" height="14"/><rect x="14" y="5" width="4" height="14"/></svg></span>Pause');
+  }
+  function setCopyVisibility(){
+    if(!copy) return;
+    copy.classList.toggle('hero-copy-hidden', !video.paused);
   }
   btn.addEventListener('click', function(){
     if(video.paused) video.play(); else video.pause();
@@ -998,6 +1017,9 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
   video.addEventListener('play', setLabel);
   video.addEventListener('pause', setLabel);
   video.addEventListener('ended', setLabel);
+  video.addEventListener('play', setCopyVisibility);
+  video.addEventListener('pause', setCopyVisibility);
+  video.addEventListener('ended', setCopyVisibility);
 })();
 </script>
 
@@ -1060,23 +1082,6 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
 
   </div>{{-- end .prob-split --}}
 
-  {{-- Bottom CTA bar --}}
-  <div class="prob-cta-strip">
-    <div class="prob-cta-left">
-      <div class="prob-cta-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-      </div>
-      <div>
-        <div class="prob-cta-t1">Renewals are too important to leave to chance.</div>
-        <div class="prob-cta-t2">Let <span>AVA</span> handle them, so your business keeps moving forward.</div>
-      </div>
-    </div>
-    <a href="{{ route('hire.ava.welcome') }}" class="btn-prob-cta">
-      See AVA in Action
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-    </a>
-  </div>
-
 </section>
 
 {{-- MEET AVA - first-person, in her own words --}}
@@ -1099,6 +1104,58 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
           See AVA in Action
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
         </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+{{-- MEMORY - the tenant-data differentiator: AVA performs based on what
+     she's taught, not a generic shared model. This is a platform-wide
+     principle (see UNIT's "know the tenant first" philosophy), not just
+     an AVA detail, so this section pattern belongs on every worker page. --}}
+<section class="mem-sec">
+  <div class="w">
+    <div class="mem-head">
+      <div class="sec-eye">The real differentiator</div>
+      <h2 class="sec-h" style="margin-bottom:0">She only performs as well as what you teach her.</h2>
+    </div>
+    <div class="mem-grid">
+      <div class="mem-img-wrap">
+        <img src="/images/ava-boss.png" alt="AVA">
+      </div>
+      <div>
+        <p class="mem-intro">AVA doesn't draw on some shared, generic model of every business that runs her. Her memory is built entirely from what you give her, which is exactly what makes her drafts, her judgment calls, and her tone specific to your business instead of generic.</p>
+        <div class="mem-list">
+          <div class="mem-item">
+            <div class="mem-chk"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <div>
+              <div class="mem-item-h">Client & Contact Records</div>
+              <div class="mem-item-p">Who you work with, and how to reach them.</div>
+            </div>
+          </div>
+          <div class="mem-item">
+            <div class="mem-chk"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <div>
+              <div class="mem-item-h">Renewal & Asset History</div>
+              <div class="mem-item-p">What's expiring, when, and what happened last time.</div>
+            </div>
+          </div>
+          <div class="mem-item">
+            <div class="mem-chk"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <div>
+              <div class="mem-item-h">Your Email Templates & Tone</div>
+              <div class="mem-item-p">How your business actually talks to clients.</div>
+            </div>
+          </div>
+          <div class="mem-item">
+            <div class="mem-chk"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <div>
+              <div class="mem-item-h">Every Logged Transaction</div>
+              <div class="mem-item-p">A full trail of what she's done, and why she did it.</div>
+            </div>
+          </div>
+        </div>
+        <div class="mem-note">None of this is shared across tenants. Her memory is exclusively yours, and it's the reason her output feels like it came from someone who already knows your business.</div>
       </div>
     </div>
   </div>
@@ -1188,14 +1245,6 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
       <h2 class="sec-h" style="margin-bottom:0">The parts of the job everyone forgets to build.</h2>
     </div>
     <div class="edge-grid">
-      <div class="edge-card">
-        <div class="edge-img"><img src="/images/ava-boss.png" alt="AVA" style="object-position:center 20%"></div>
-        <div class="edge-body">
-          <div class="edge-eye">Her memory, your data</div>
-          <h3 class="edge-h3">She only knows what you teach her.</h3>
-          <p class="edge-p">AVA's memory, your clients, your contacts, your renewal history, your templates, lives inside your account. You decide what she remembers and how she responds. Nothing is shared across tenants, and nothing gets assumed. A worker that doesn't know your business first can't actually produce value for it.</p>
-        </div>
-      </div>
       <div class="edge-card">
         <div class="edge-img"><img src="/images/ava-active.png" alt="AVA" style="object-position:center 15%"></div>
         <div class="edge-body">
