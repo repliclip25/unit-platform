@@ -383,7 +383,6 @@ $tierColors = [
             <div class="cfg-card-body">
               <form method="POST" action="{{ route('app.workers.config', $dep->id) }}">
                 @csrf @method('PATCH')
-                <input type="hidden" name="credential_id" value="{{ $dep->credential_id }}">
                 <input type="hidden" name="send_mode" value="{{ $dep->send_mode ?? 'draft' }}">
                 <div class="cfg-field">
                   <label class="cfg-label">Deployment Name</label>
@@ -404,7 +403,6 @@ $tierColors = [
               <form method="POST" action="{{ route('app.workers.config', $dep->id) }}">
                 @csrf @method('PATCH')
                 <input type="hidden" name="name" value="{{ $dep->name }}">
-                <input type="hidden" name="credential_id" value="{{ $dep->credential_id }}">
                 <div class="cfg-field">
                   <label class="cfg-label">
                     <input type="radio" name="send_mode" value="draft" {{ ($dep->send_mode ?? 'draft') === 'draft' ? 'checked' : '' }}>
@@ -432,7 +430,6 @@ $tierColors = [
                 @csrf @method('PATCH')
                 <input type="hidden" name="name" value="{{ $dep->name }}">
                 <input type="hidden" name="ai_model" value="{{ $currentModel }}">
-                <input type="hidden" name="credential_id" value="{{ $dep->credential_id }}">
                 <input type="hidden" name="send_mode" value="{{ $dep->send_mode ?? 'draft' }}">
                 <div class="cfg-field">
                   <label class="cfg-label">Send daily summary at</label>
@@ -459,7 +456,6 @@ $tierColors = [
                 @csrf @method('PATCH')
                 <input type="hidden" name="name" value="{{ $dep->name }}">
                 <input type="hidden" name="ai_model" value="{{ $currentModel }}">
-                <input type="hidden" name="credential_id" value="{{ $dep->credential_id }}">
                 <input type="hidden" name="send_mode" value="{{ $dep->send_mode ?? 'draft' }}">
 
                 <div class="cfg-row2">

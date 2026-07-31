@@ -823,9 +823,14 @@ class WorkerController extends Controller
             'summary_hour' => (int) ($request->summary_hour ?? $existing['summary_hour'] ?? 8),
         ]);
 
+        // credential_id is deliberately NOT touched here — it's owned by
+        // connectInbox()/disconnectInbox() (deployment_credentials pivot,
+        // kept in sync as "points to primary" for backward compat). This
+        // route previously included it with `$request->credential_id ?: null`,
+        // and since no form on this page ever submitted that field, every
+        // save here silently disconnected the tenant's Gmail credential.
         DB::table('worker_deployments')->where('id', $id)->where('user_id', auth()->id())->update([
             'name'          => $request->name,
-            'credential_id' => $request->credential_id ?: null,
             'send_mode'     => in_array($request->send_mode, ['draft', 'direct'], true) ? $request->send_mode : 'draft',
             'config'        => json_encode($config),
             'updated_at'    => now(),
