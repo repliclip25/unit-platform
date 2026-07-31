@@ -126,8 +126,12 @@ class TransactionController extends Controller
         return collect($rawStages)->map(function ($stage, $i) use ($tx, $currentIdx, $reminders, $clientDrafts, $routeOverrides) {
             $state = $i < $currentIdx ? 'done' : ($i === $currentIdx ? 'active' : 'pending');
 
-            $content = $stage['output_column'] && $tx->{$stage['output_column']}
-                ? json_decode($tx->{$stage['output_column']}, true)
+            // Not every worker's pipelineStages() declares output_column on
+            // every entry (AVA always does, even as null; NUX's don't) —
+            // this page is shared across all workers, so treat it as optional.
+            $outputColumn = $stage['output_column'] ?? null;
+            $content = $outputColumn && ($tx->{$outputColumn} ?? null)
+                ? json_decode($tx->{$outputColumn}, true)
                 : null;
 
             $stageReminders = array_values(array_filter($reminders, fn($r) => ($r['stage_key'] ?? null) === $stage['key']));

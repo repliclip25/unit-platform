@@ -112,7 +112,7 @@ class TransactionControllerTest extends TestCase
         $txId = $this->makeTx(['status' => 'draft_ready']);
 
         $this->actingAs($this->user)
-            ->get(route('app.transactions.show', $txId))
+            ->get(route('app.transactions.show', ['slug' => 'ava', 'txId' => $txId]))
             ->assertOk()
             ->assertViewIs('dashboard.transaction-detail');
     }
@@ -130,7 +130,7 @@ class TransactionControllerTest extends TestCase
         ]);
 
         $this->actingAs($this->user)
-            ->get(route('app.transactions.show', 'TX-OTHER'))
+            ->get(route('app.transactions.show', ['slug' => 'ava', 'txId' => 'TX-OTHER']))
             ->assertNotFound();
     }
 
@@ -228,7 +228,7 @@ class TransactionControllerTest extends TestCase
 
         $this->actingAs($this->user)
             ->post(route('app.transactions.dismiss', $txId), ['reason' => 'Not relevant'])
-            ->assertRedirect(route('app.workers.transactions', 'ava'));
+            ->assertRedirect(route('app.transactions.show', ['slug' => 'ava', 'txId' => $txId]));
 
         $tx = DB::table('transactions')->where('tx_id', $txId)->first();
         $this->assertEquals('dismissed', $tx->status);
@@ -253,7 +253,7 @@ class TransactionControllerTest extends TestCase
 
         $this->actingAs($this->user)
             ->post(route('app.transactions.dismiss', $txId))
-            ->assertRedirect(route('app.workers.transactions', 'ava'));
+            ->assertRedirect(route('app.transactions.show', ['slug' => 'ava', 'txId' => $txId]));
 
         $this->assertEquals('dismissed', DB::table('transactions')->where('tx_id', $txId)->value('status'));
     }
@@ -313,7 +313,7 @@ class TransactionControllerTest extends TestCase
 
         $this->actingAs($this->user)
             ->post(route('app.transactions.decide', $txId), ['decision' => 'approved'])
-            ->assertRedirect(route('app.workers.transactions', 'ava'));
+            ->assertRedirect(route('app.transactions.show', ['slug' => 'ava', 'txId' => $txId]));
 
         $tx = DB::table('transactions')->where('tx_id', $txId)->first();
         // Approval marks the tx as 'approved' — sending happens manually from Gmail
@@ -345,7 +345,7 @@ class TransactionControllerTest extends TestCase
 
         $this->actingAs($this->user)
             ->post(route('app.transactions.decide', $txId), ['decision' => 'rejected', 'notes' => 'Wrong client'])
-            ->assertRedirect(route('app.workers.transactions', 'ava'));
+            ->assertRedirect(route('app.transactions.show', ['slug' => 'ava', 'txId' => $txId]));
 
         $tx = DB::table('transactions')->where('tx_id', $txId)->first();
         $this->assertEquals('rejected', $tx->status);
