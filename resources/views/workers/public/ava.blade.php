@@ -12,20 +12,39 @@
     'description' => $worker['meta_desc'],
     'image'       => asset('images/ava-skyline-og.png'),
 ])
-<script type="application/ld+json">{!! json_encode([
-    '@@context'    => 'https://schema.org',
-    '@type'       => 'Service',
-    'name'        => $worker['name'] . ': AI Renewal Agent',
-    'serviceType' => $worker['category'] ?? $worker['role'],
-    'description' => $worker['meta_desc'],
-    'image'       => asset('images/ava-skyline-og.png'),
-    'url'         => url()->current(),
-    'provider'    => [
-        '@type' => 'Organization',
-        'name'  => 'UNIT',
-        'url'   => url('/'),
-    ],
-], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}</script>
+@php
+    $__serviceSchema = [
+        '@context'    => 'https://schema.org',
+        '@type'       => 'Service',
+        'name'        => $worker['name'] . ': AI Renewal Agent',
+        'serviceType' => $worker['category'] ?? $worker['role'],
+        'description' => $worker['meta_desc'],
+        'image'       => asset('images/ava-skyline-og.png'),
+        'url'         => url()->current(),
+        'provider'    => [
+            '@type' => 'Organization',
+            'name'  => 'UNIT',
+            'url'   => url('/'),
+        ],
+    ];
+    // aggregateRating/review only ever appear once real approved reviews
+    // exist - Google's own guidance is to omit AggregateRating entirely
+    // rather than show it with zero backing data.
+    if ($reviews->count() > 0) {
+        $__serviceSchema['aggregateRating'] = [
+            '@type'       => 'AggregateRating',
+            'ratingValue' => round($reviews->avg('rating'), 1),
+            'reviewCount' => $reviews->count(),
+        ];
+        $__serviceSchema['review'] = $reviews->map(fn($r) => [
+            '@type'  => 'Review',
+            'author' => ['@type' => 'Person', 'name' => $r->author_name],
+            'reviewRating' => ['@type' => 'Rating', 'ratingValue' => $r->rating, 'bestRating' => 5],
+            'reviewBody' => $r->quote,
+        ])->values()->all();
+    }
+@endphp
+<script type="application/ld+json">{!! json_encode($__serviceSchema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}</script>
 <script type="application/ld+json">{!! json_encode([
     '@@context' => 'https://schema.org',
     '@type'    => 'FAQPage',
@@ -843,6 +862,9 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
 .testi-skel{height:10px;border-radius:99px;background:var(--border);margin-bottom:8px}
 [data-theme="dark"] .testi-skel{background:#2D2D2D}
 .testi-skel:last-child{margin-bottom:0}
+.testi-more{margin-top:14px;text-align:center}
+.testi-more a{font-size:12.5px;color:var(--t3);font-weight:600}
+.testi-more a:hover{color:var(--text)}
 
 /* integrations */
 .integrations-sec{background:#fff;border-top:1px solid var(--border);padding:clamp(56px,7vw,80px) 0}
@@ -1609,6 +1631,27 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
       </div>
       <div class="testi-col">
         <div class="sec-eye">What business owners say</div>
+        @if($reviews->count() > 0)
+        {{-- Real, admin-approved reviews only (see AdminReviewController) --}}
+        <div class="testi-grid">
+          @foreach($reviews as $review)
+          <div class="testi-card">
+            <div class="testi-stars" aria-label="{{ $review->rating }} out of 5 stars">{{ str_repeat('★', $review->rating) }}{{ str_repeat('☆', 5 - $review->rating) }}</div>
+            <p class="testi-q">"{{ $review->quote }}"</p>
+            <div class="testi-auth">
+              <div class="testi-av">{{ strtoupper(substr($review->author_name, 0, 1)) }}</div>
+              <div>
+                <div class="testi-name">{{ $review->author_name }}</div>
+                @if($review->author_company)<div class="testi-co">{{ $review->author_company }}</div>@endif
+              </div>
+            </div>
+          </div>
+          @endforeach
+        </div>
+        <div class="testi-more">
+          <a href="mailto:hello@unit.report?subject=My AVA Experience&body=Hi UNIT team, I'd like to share my experience with AVA...">Share your own experience →</a>
+        </div>
+        @else
         {{-- Skeleton placeholders, not fake quotes - no invented names,
              companies, or star ratings sitting in the DOM for crawlers to
              read as real content. Real reviews replace these as they come in. --}}
@@ -1653,6 +1696,7 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
             <div class="tov-sub">Takes 2 minutes · We reply to every submission</div>
           </div>
         </div>
+        @endif
       </div>
     </div>
   </div>

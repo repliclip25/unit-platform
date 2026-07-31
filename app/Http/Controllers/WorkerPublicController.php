@@ -89,12 +89,22 @@ class WorkerPublicController extends Controller
             ->orderBy('created_at')
             ->get(['slug', 'title', 'tag', 'excerpt']);
 
+        // Only ever 'approved' rows - pending/rejected reviews can never
+        // reach the public page or the aggregateRating below, even if a
+        // future edit to this controller forgets to re-filter.
+        $reviews = DB::table('worker_reviews')
+            ->where('worker_slug', $slug)
+            ->where('status', 'approved')
+            ->orderByDesc('approved_at')
+            ->get(['author_name', 'author_company', 'rating', 'quote', 'approved_at']);
+
         return view($view, [
             'worker'          => $w,
             'deploymentCount' => $deploymentCount,
             'tokensToday'     => $tokensToday,
             'totalTx'         => $totalTx,
             'resources'       => $resources,
+            'reviews'         => $reviews,
         ]);
     }
 

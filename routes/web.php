@@ -26,6 +26,7 @@ use App\Http\Controllers\PublicPageController;
 use App\Http\Controllers\AdminWorkerRequestController;
 use App\Http\Controllers\AdminPromptController;
 use App\Http\Controllers\AdminBlogController;
+use App\Http\Controllers\AdminReviewController;
 use App\Http\Controllers\AdminPlatformUsageController;
 use App\Http\Controllers\AdminPipelineHealthController;
 use App\Http\Controllers\AdminPricingController;
@@ -493,6 +494,14 @@ Route::middleware(['auth', 'verified', 'onboarded', 'not-pending-del'])->group(f
         Route::get('/admin/blog/{id}/edit',    [AdminBlogController::class, 'edit'])->name('admin.blog.edit');
         Route::put('/admin/blog/{id}',         [AdminBlogController::class, 'update'])->name('admin.blog.update');
         Route::delete('/admin/blog/{id}',      [AdminBlogController::class, 'destroy'])->name('admin.blog.destroy');
+
+        // ── Worker Reviews ───────────────────────────────────────────────────
+        Route::get('/admin/reviews',              [AdminReviewController::class, 'index'])->name('admin.reviews');
+        Route::get('/admin/reviews/new',          [AdminReviewController::class, 'create'])->name('admin.reviews.create');
+        Route::post('/admin/reviews',              [AdminReviewController::class, 'store'])->name('admin.reviews.store');
+        Route::post('/admin/reviews/{id}/approve', [AdminReviewController::class, 'approve'])->name('admin.reviews.approve');
+        Route::post('/admin/reviews/{id}/reject',  [AdminReviewController::class, 'reject'])->name('admin.reviews.reject');
+        Route::delete('/admin/reviews/{id}',       [AdminReviewController::class, 'destroy'])->name('admin.reviews.destroy');
 
         // ── Self Learn content registry ──────────────────────────────────────
         Route::get( '/admin/self-learn',                      [AdminSelfLearnController::class, 'index'])->name('admin.self-learn');
