@@ -299,15 +299,15 @@ class TransactionController extends Controller
     {
         $tx       = DB::table('transactions')->where('tx_id', $txId)->where('user_id', auth()->id())->firstOrFail();
         $decision = $request->input('decision'); // 'approved' | 'rejected'
+        $dep      = DB::table('worker_deployments')->where('id', $tx->deployment_id)->first();
+
+        $credential = $dep?->credential_id
+            ? DB::table('user_gmail_credentials')->where('id', $dep->credential_id)->first()
+            : null;
 
         // ── Reject: delete the Gmail draft so it can't be sent accidentally ──
         if ($decision === 'rejected' && $tx->gmail_draft_id) {
             try {
-                $dep        = DB::table('worker_deployments')->where('id', $tx->deployment_id)->first();
-                $credential = $dep?->credential_id
-                    ? DB::table('user_gmail_credentials')->where('id', $dep->credential_id)->first()
-                    : null;
-
                 if ($credential?->refresh_token) {
                     $gmail = new \App\Platform\Services\Gmail\GmailService($credential);
                     $gmail->deleteDraft($tx->gmail_draft_id);
@@ -350,6 +350,8 @@ class TransactionController extends Controller
         // scheduled one; only approving the 3rd (final) reminder actually
         // unblocks fulfillment. Fast Track never simulates real calendar
         // days, so it always treats its one draft as final.
+        $autoSentDirect = false;
+
         if ($decision === 'approved') {
             \App\Platform\SDK\UnitPlatform::markLatestClientDraftApproved($txId);
 
@@ -357,6 +359,33 @@ class TransactionController extends Controller
             $isFinalReminder = $tx->is_test || $reminderNumber === 0 || $reminderNumber >= 3;
 
             if ($isFinalReminder) {
+                // send_mode = 'direct' — the tenant has opted for UNIT to send
+                // the moment they approve, instead of leaving the Gmail draft
+                // for them to open and send themselves (the 'draft' default).
+                // Same OAuth scope either way — gmail.compose already covers
+                // sending, not just drafting; this is a behavior toggle, not
+                // a permissions change. Never applies to Fast Track (no real
+                // recipient) or when there's no draft/credential to send.
+                if (($dep->send_mode ?? 'draft') === 'direct'
+                    && !$tx->is_test
+                    && $tx->gmail_draft_id
+                    && $credential?->refresh_token
+                ) {
+                    try {
+                        $gmail = new \App\Platform\Services\Gmail\GmailService($credential);
+                        $gmail->sendDraft($tx->gmail_draft_id);
+                        $autoSentDirect = true;
+                        DB::table('transactions')->where('tx_id', $txId)->update(['status' => 'sent', 'updated_at' => now()]);
+                        \App\Platform\SDK\UnitPlatform::log('ava', $txId, 'draft_sent_direct', ['gmail_draft_id' => $tx->gmail_draft_id]);
+                    } catch (\Throwable $e) {
+                        Log::warning('Direct send failed on approve — draft left in Gmail', [
+                            'tx_id' => $txId, 'error' => $e->getMessage(),
+                        ]);
+                        // Non-fatal — falls back to the normal draft-stays-in-Gmail
+                        // outcome, same as if send_mode were 'draft'.
+                    }
+                }
+
                 \App\Platform\SDK\UnitPlatform::advance($txId, 'human_decide');
             } else {
                 \App\Platform\SDK\UnitPlatform::log('ava', $txId, 'client_reminder_approved', ['reminder_number' => $reminderNumber]);
@@ -364,7 +393,9 @@ class TransactionController extends Controller
         }
 
         $msg = $decision === 'approved'
-            ? "✓ {$txId} approved — draft is in your Gmail, ready to review and send."
+            ? ($autoSentDirect
+                ? "✓ {$txId} approved and sent."
+                : "✓ {$txId} approved — draft is in your Gmail, ready to review and send.")
             : "✗ {$txId} rejected — draft deleted.";
 
         // Approving/rejecting doesn't end the transaction's story — more

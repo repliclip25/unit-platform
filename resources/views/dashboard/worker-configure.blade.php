@@ -383,11 +383,40 @@ $tierColors = [
             <div class="cfg-card-body">
               <form method="POST" action="{{ route('app.workers.config', $dep->id) }}">
                 @csrf @method('PATCH')
+                <input type="hidden" name="credential_id" value="{{ $dep->credential_id }}">
+                <input type="hidden" name="send_mode" value="{{ $dep->send_mode ?? 'draft' }}">
                 <div class="cfg-field">
                   <label class="cfg-label">Deployment Name</label>
                   <input type="text" name="name" value="{{ $dep->name }}" required class="cfg-input">
                 </div>
                 <button type="submit" class="cfg-btn">Save Settings</button>
+              </form>
+            </div>
+          </div>
+
+          {{-- Send Mode --}}
+          <div class="cfg-card">
+            <div class="cfg-card-head">
+              <div class="cfg-card-title">Send Mode</div>
+              <div class="cfg-card-sub">What happens the moment you click Approve &amp; Send on a transaction.</div>
+            </div>
+            <div class="cfg-card-body">
+              <form method="POST" action="{{ route('app.workers.config', $dep->id) }}">
+                @csrf @method('PATCH')
+                <input type="hidden" name="name" value="{{ $dep->name }}">
+                <input type="hidden" name="credential_id" value="{{ $dep->credential_id }}">
+                <div class="cfg-field">
+                  <label class="cfg-label">
+                    <input type="radio" name="send_mode" value="draft" {{ ($dep->send_mode ?? 'draft') === 'draft' ? 'checked' : '' }}>
+                    Save as Gmail draft <span style="text-transform:none;font-weight:400">— you open Gmail and send it yourself (default)</span>
+                  </label>
+                  <label class="cfg-label" style="margin-top:8px;display:block">
+                    <input type="radio" name="send_mode" value="direct" {{ ($dep->send_mode ?? 'draft') === 'direct' ? 'checked' : '' }}>
+                    Send immediately <span style="text-transform:none;font-weight:400">— {{ $dep->name }} sends it the moment you approve, no extra step in Gmail</span>
+                  </label>
+                  <p class="cfg-hint">Either way, {{ $dep->name }} never sends without your approval first — this only changes what happens after you approve.</p>
+                </div>
+                <button type="submit" class="cfg-btn">Save Send Mode</button>
               </form>
             </div>
           </div>
@@ -403,6 +432,8 @@ $tierColors = [
                 @csrf @method('PATCH')
                 <input type="hidden" name="name" value="{{ $dep->name }}">
                 <input type="hidden" name="ai_model" value="{{ $currentModel }}">
+                <input type="hidden" name="credential_id" value="{{ $dep->credential_id }}">
+                <input type="hidden" name="send_mode" value="{{ $dep->send_mode ?? 'draft' }}">
                 <div class="cfg-field">
                   <label class="cfg-label">Send daily summary at</label>
                   <select name="summary_hour" class="cfg-select">
@@ -428,6 +459,8 @@ $tierColors = [
                 @csrf @method('PATCH')
                 <input type="hidden" name="name" value="{{ $dep->name }}">
                 <input type="hidden" name="ai_model" value="{{ $currentModel }}">
+                <input type="hidden" name="credential_id" value="{{ $dep->credential_id }}">
+                <input type="hidden" name="send_mode" value="{{ $dep->send_mode ?? 'draft' }}">
 
                 <div class="cfg-row2">
                   <div class="cfg-field">

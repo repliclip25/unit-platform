@@ -826,6 +826,7 @@ class WorkerController extends Controller
         DB::table('worker_deployments')->where('id', $id)->where('user_id', auth()->id())->update([
             'name'          => $request->name,
             'credential_id' => $request->credential_id ?: null,
+            'send_mode'     => in_array($request->send_mode, ['draft', 'direct'], true) ? $request->send_mode : 'draft',
             'config'        => json_encode($config),
             'updated_at'    => now(),
         ]);
