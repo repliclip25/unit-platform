@@ -20,7 +20,7 @@ class WorkerPublicController extends Controller
                 'slug'       => 'ava',
                 'role'       => 'AI Renewal Agent',
                 'category'   => 'Renewal Automation',
-                'meta_desc'  => "AVA is UNIT's AI Renewal Agent: an AI worker that watches your inbox and your renewal calendar, drafts renewals, and manages the full lifecycle to close, with human approval built in.",
+                'meta_desc'  => "AVA is UNIT's AI Renewal Agent. She watches your inbox and renewal calendar, drafts every renewal, and closes the loop, with human approval built in.",
 
                 // Single source of truth for the pipeline demo AND the HowTo
                 // schema below, grouped from the real 16-stage pipeline

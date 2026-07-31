@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\DB;
 
 class SitemapController extends Controller
 {
-    // Slugs with a real public profile page — see WorkerPublicController::show(),
+    // Slugs with a real public profile page , see WorkerPublicController::show(),
     // which only defines a $workers entry for 'ava' and 404s on anything else.
     private const PUBLIC_WORKER_SLUGS = ['ava'];
 
@@ -15,16 +15,16 @@ class SitemapController extends Controller
     private const WORKER_DETAILS = [
         'ava' => [
             'name'          => 'AVA',
-            'role'          => 'AI Renewal Coordinator',
+            'role'          => 'AI Renewal Agent',
             'status'        => 'Live',
-            'description'   => "AVA helps businesses manage renewal workflows from a shared inbox.\n\nAVA monitors incoming renewal emails, identifies actionable requests, gathers the information needed to process them, and prepares responses for human review before sending.",
+            'description'   => "AVA is UNIT's AI Renewal Agent. She watches two places at once: the connected Gmail inbox for incoming renewal emails, and the asset registry directly for expiration dates, so a renewal still gets caught even if the notice email never arrives.\n\nShe reads and classifies each renewal, checks her memory (the tenant's own client, contact, and renewal history, never shared across tenants) and drafts a response using the tenant's own templates and tone. The draft goes into Gmail Drafts, not Sent, and nothing reaches a client without explicit human approval.\n\nIf a draft sits unapproved, she reminds the tenant on an escalating cadence (gentle, then direct, then urgent) and pauses after a few unanswered attempts rather than nagging indefinitely. Once a renewal closes, she archives a complete record, every draft, every reminder, every approval, every payment confirmation, as a downloadable PDF with a QR code, then resets to watch for the next cycle.",
             'audienceIntro' => 'AVA is being tested and refined today with organizations such as:',
             'audienceList'  => ['IT & Digital Agencies', 'Insurance Brokers', 'Compliance & Licensing Firms'],
             'audienceOutro' => 'Additional industries and renewal workflows will be supported as the platform evolves.',
         ],
     ];
 
-    // Workers that exist in the product but don't have a public page yet —
+    // Workers that exist in the product but don't have a public page yet ,
     // listed honestly as not-yet-available rather than omitted or oversold.
     private const UPCOMING_WORKERS = [
         'DOX' => 'Document Specialist',
@@ -59,7 +59,7 @@ class SitemapController extends Controller
                 'priority' => '0.5',
             ];
         }
-        // Hardcoded fallback post (not in the DB) — see PublicPageController::blogPostData()
+        // Hardcoded fallback post (not in the DB) , see PublicPageController::blogPostData()
         $urls[] = ['loc' => route('blog.show', 'how-ava-processes-nycsca-renewal'), 'priority' => '0.5'];
 
         return response()

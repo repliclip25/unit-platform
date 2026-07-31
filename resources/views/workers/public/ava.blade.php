@@ -10,7 +10,7 @@
 @include('partials.seo-meta', [
     'title'       => $worker['name'] . ': AI Agent for Renewals | UNIT',
     'description' => $worker['meta_desc'],
-    'image'       => asset('images/ava-skyline.png'),
+    'image'       => asset('images/ava-skyline-og.png'),
 ])
 <script type="application/ld+json">{!! json_encode([
     '@@context'    => 'https://schema.org',
@@ -18,7 +18,7 @@
     'name'        => $worker['name'] . ': AI Renewal Agent',
     'serviceType' => $worker['category'] ?? $worker['role'],
     'description' => $worker['meta_desc'],
-    'image'       => asset('images/ava-skyline.png'),
+    'image'       => asset('images/ava-skyline-og.png'),
     'url'         => url()->current(),
     'provider'    => [
         '@type' => 'Organization',
@@ -1127,7 +1127,7 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
   <div class="w">
     <div class="meet-grid">
       <div class="meet-img-wrap">
-        <img src="/images/ava-selfie.png" alt="AVA">
+        <img src="/images/ava-selfie.png" alt="AVA, UNIT's AI Renewal Agent, speaking directly to camera">
       </div>
       <div>
         <div class="sec-eye">In her own words</div>
@@ -1159,7 +1159,7 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
     </div>
     <div class="mem-grid">
       <div class="mem-img-wrap">
-        <img src="/images/ava-boss.png" alt="AVA">
+        <img src="/images/ava-boss.png" alt="AVA, confident and in control of her own workflow">
       </div>
       <div>
         <p class="mem-intro">AVA doesn't draw on some shared, generic model of every business that runs her. Her memory is built entirely from what you give her, which is exactly what makes her drafts, her judgment calls, and her tone specific to your business instead of generic.</p>
@@ -1323,7 +1323,7 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
       @endphp
       @foreach($edgeStatements as $i => $edge)
       <div class="edge-card">
-        <div class="edge-img"><img src="{{ $edge['img'] }}" alt="AVA" @if($edge['img_pos']) style="object-position:{{ $edge['img_pos'] }}" @endif></div>
+        <div class="edge-img"><img src="{{ $edge['img'] }}" alt="AVA: {{ $edge['eye'] }}" @if($edge['img_pos']) style="object-position:{{ $edge['img_pos'] }}" @endif></div>
         <div class="edge-body">
           <div class="edge-eye">{{ $edge['eye'] }}</div>
           <h3 class="edge-h3">{{ $edge['h3'] }}</h3>
@@ -1369,7 +1369,7 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
   function openProof(i){
     var d = data[i];
     body.innerHTML = '<div class="edge-modal-label">' + d.label + '</div>'
-      + '<img src="' + d.proof + '" alt="Proof" class="edge-modal-img">';
+      + '<img src="' + d.proof + '" alt="' + d.label + '" class="edge-modal-img">';
     modal.classList.add('open');
   }
   function openVideo(i){
@@ -1682,7 +1682,7 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
         @endif
       </div>
       <div class="cta-final-right">
-        <img src="/images/ava-stand.png" alt="{{ $worker['name'] }}" style="object-position:center top;max-height:380px;width:auto;margin:0 auto">
+        <img src="/images/ava-stand.png" alt="AVA, ready to deploy" style="object-position:center top;max-height:380px;width:auto;margin:0 auto">
       </div>
     </div>
   </div>
