@@ -233,7 +233,7 @@ class AvaWorker implements WorkerContract
             ['key' => 'archive_evidence',   'label' => 'Archive Evidence',  'sub' => 'Combines everything into one PDF', 'icon' => 'archive', 'job_class' => 'ArchiveEvidenceJob',
                 'output_column' => 'archive_output',   'group' => 'renewed',   'group_label' => 'Renewed',   'group_color' => '#22c55e', 'image' => '/images/ava-life.png', 'log_stage_key' => 'archive_evidence'],
             ['key' => 'schedule_next_watch','label' => 'Schedule Next Watch', 'sub' => 'Asset re-enters continuous monitoring', 'icon' => 'refresh', 'job_class' => 'ScheduleNextWatchJob',
-                'output_column' => null,               'group' => 'renewed',   'group_label' => 'Renewed',   'group_color' => '#22c55e', 'image' => '/images/ava-life.png', 'log_stage_key' => 'schedule_next_watch'],
+                'output_column' => 'watch_output',     'group' => 'renewed',   'group_label' => 'Renewed',   'group_color' => '#22c55e', 'image' => '/images/ava-life.png', 'log_stage_key' => 'schedule_next_watch'],
         ];
     }
 

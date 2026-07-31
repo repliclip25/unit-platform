@@ -679,10 +679,16 @@ $statusColor = $statusColors[$tx->status] ?? ['bg'=>'var(--db-chip)','color'=>'v
                 <div class="tc-msg">{{ $c['subject'] ?? '' }}{{ "\n\n" }}{{ $c['body'] ?? '' }}</div>
               @elseif($stage['key'] === 'archive_evidence' && !empty($c['path']))
                 <a href="{{ route('app.transactions.archive-download', $tx->tx_id) }}" class="tc-btn tc-btn-ghost" style="display:inline-block;width:auto">Download PDF archive →</a>
+              @elseif($stage['key'] === 'schedule_next_watch')
+                <p style="font-size:12px;color:var(--db-text-muted)">
+                  Watch log cleared{{ !empty($c['asset']) ? " for {$c['asset']}" : '' }} — this asset re-enters monitoring for its next cycle.
+                </p>
               @else
                 <div class="tc-field-row">
                   @foreach($c as $k => $v)
-                    @if(is_scalar($v) && $v !== null && $v !== '')
+                    @if(is_bool($v))
+                    <div class="tc-field"><span class="lbl">{{ ucwords(str_replace('_',' ',$k)) }}</span>{{ $v ? 'Yes' : 'No' }}</div>
+                    @elseif(is_scalar($v) && $v !== null && $v !== '')
                     <div class="tc-field"><span class="lbl">{{ ucwords(str_replace('_',' ',$k)) }}</span>{{ $v }}</div>
                     @endif
                   @endforeach

@@ -3,6 +3,7 @@
 namespace App\Workers\AVA\Jobs;
 
 use App\Platform\SDK\UnitPlatform;
+use App\Platform\SDK\WorkerOutput;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -46,6 +47,12 @@ class ScheduleNextWatchJob implements ShouldQueue
             $cleared = DB::table('asset_watch_log')->where('asset_id', $asset->id)->delete();
         }
 
+        $output = [
+            'asset'             => $assetName,
+            'watch_log_cleared' => $cleared,
+            'closed_at'         => now()->toISOString(),
+        ];
+        UnitPlatform::commitOutput($this->txId, new WorkerOutput(stage: 'schedule_next_watch', data: $output));
         UnitPlatform::setFulfillmentStage($this->txId, 'schedule_next_watch');
         UnitPlatform::log('ava', $this->txId, 'renewal_cycle_complete', [
             'asset_id' => $asset->id ?? null, 'watch_log_cleared' => $cleared,
