@@ -427,6 +427,8 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
 [data-theme="dark"] .prob-impact-icon svg{stroke:#9CA3AF}
 .prob-impact-text{font-size:14px;color:var(--text);line-height:1.55}
 .prob-impact-text span{color:var(--text);font-weight:700}
+.prob-related-link{font-size:13px;color:var(--t3);margin-top:18px}
+.prob-related-link a{color:var(--text);font-weight:600;text-decoration:underline;text-underline-offset:2px}
 /* RIGHT - solution panel */
 .sol-panel{
   background:#F8F8FD;border:1.5px solid #E5E7EB;
@@ -876,6 +878,22 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
 @media(max-width:768px){.sec-badges{grid-template-columns:repeat(3,1fr)}}
 @media(max-width:480px){.sec-badges{grid-template-columns:repeat(2,1fr)}}
 
+/* ── RESOURCES ── */
+.res-sec{background:var(--bg);border-top:1px solid var(--border)}
+[data-theme="dark"] .res-sec{background:#0D0D0D;border-color:#2D2D2D}
+.res-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:18px;margin-top:28px}
+.res-card{
+  display:block;padding:22px;border-radius:16px;
+  background:var(--soft);border:1px solid var(--border);
+  transition:border-color .15s,transform .15s;
+}
+.res-card:hover{border-color:var(--t4);transform:translateY(-2px)}
+[data-theme="dark"] .res-card{background:#111;border-color:#2D2D2D}
+.res-tag{font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--t4);margin-bottom:10px}
+.res-h3{font-size:15px;font-weight:800;color:var(--text);line-height:1.35;margin-bottom:8px}
+.res-p{font-size:13px;color:var(--t3);line-height:1.6;margin-bottom:14px}
+.res-link{font-size:12.5px;font-weight:700;color:var(--text)}
+
 /* ── FAQ ── */
 .faq-sec{background:var(--bg);border-top:1px solid var(--border)}
 [data-theme="dark"] .faq-sec{background:#0D0D0D;border-color:#2D2D2D}
@@ -889,6 +907,7 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
 .faq-icon{font-size:18px;color:var(--t4);transition:transform .2s;flex-shrink:0;line-height:1}
 .faq-item.open .faq-icon{transform:rotate(45deg);color:var(--text)}
 .faq-a{font-size:13.5px;color:var(--t3);line-height:1.75;max-height:0;overflow:hidden;transition:max-height .3s ease,padding .3s}
+.faq-a a{color:var(--text);font-weight:600;text-decoration:underline;text-underline-offset:2px}
 .faq-item.open .faq-a{max-height:300px;padding-bottom:16px}
 
 /* ── FINAL CTA ── */
@@ -1148,6 +1167,10 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
       </div>
     </div>
 
+    <p class="prob-related-link">
+      Related reading: <a href="{{ route('blog.show', '5-signs-your-team-needs-an-ai-agent') }}">5 Signs Your Team Is Doing Work an AI Agent Should Be Doing Instead →</a>
+    </p>
+
   </div>{{-- end .prob-split --}}
 
 </section>
@@ -1172,6 +1195,9 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
           See AVA in Action
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
         </a>
+        <p class="prob-related-link" style="margin-top:16px">
+          Related reading: <a href="{{ route('blog.show', 'what-changes-when-ava-owns-your-renewal-inbox') }}">What Changes When AVA Owns Your Renewal Inbox →</a>
+        </p>
       </div>
     </div>
   </div>
@@ -1302,6 +1328,9 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
         Run a Live Test
       </a>
     </div>
+    <p class="prob-related-link">
+      Want the written walkthrough? <a href="{{ route('blog.show', 'avas-renewal-workflow-step-by-step') }}">AVA's Renewal Workflow, Step by Step →</a>
+    </p>
   </div>
 </section>
 
@@ -1673,6 +1702,36 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
   </div>
 </section>
 
+{{-- RESOURCES - real published posts about this worker (DB-driven, see
+     WorkerPublicController::show()) plus the real whitepaper. Internal
+     links only, nothing here points to a page that doesn't exist. --}}
+@if($resources->count())
+<section class="res-sec sec">
+  <div class="w">
+    <div class="sec-top">
+      <div class="sec-eye">Go deeper</div>
+      <h2 class="sec-h">See how {{ $worker['name'] }} actually works, in writing.</h2>
+    </div>
+    <div class="res-grid">
+      @foreach($resources as $post)
+      <a href="{{ route('blog.show', $post->slug) }}" class="res-card">
+        <div class="res-tag">{{ $post->tag }}</div>
+        <h3 class="res-h3">{{ $post->title }}</h3>
+        <p class="res-p">{{ $post->excerpt }}</p>
+        <span class="res-link">Read the article →</span>
+      </a>
+      @endforeach
+      <a href="{{ asset('whitepapers/unit-ai-agents-vs-ai-workers.pdf') }}" target="_blank" rel="noopener" class="res-card">
+        <div class="res-tag">Whitepaper</div>
+        <h3 class="res-h3">AI Agents vs. AI Workers</h3>
+        <p class="res-p">How UNIT turns a manual process into a deployed AI Worker, using AVA's real build as the example.</p>
+        <span class="res-link">Download the PDF →</span>
+      </a>
+    </div>
+  </div>
+</section>
+@endif
+
 {{-- FAQ --}}
 <section class="faq-sec sec">
   <div class="w">
@@ -1699,7 +1758,7 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
             <span>{{ $faq['q'] }}</span>
             <span class="faq-icon">+</span>
           </div>
-          <div class="faq-a">{{ $faq['a'] }}</div>
+          <div class="faq-a">{!! $faq['a'] !!}</div>
         </div>
         @endforeach
       </div>

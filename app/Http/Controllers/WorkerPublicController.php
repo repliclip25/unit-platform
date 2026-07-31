@@ -58,7 +58,7 @@ class WorkerPublicController extends Controller
                     ['q' => 'How does AVA access my renewal inbox?', 'a' => 'AVA connects to Gmail via OAuth2 and a real-time watch webhook. You choose which inbox she monitors, and you can revoke access at any time.'],
                     ['q' => 'What happens if AVA misses something?', 'a' => "Every transaction is fully logged and visible in your dashboard. If she can't classify something confidently, it's flagged for manual review instead of guessed at."],
                     ['q' => 'What if I need to attach an invoice or documents?', 'a' => "AVA can read an invoice's amount and dates automatically if you attach one, or you can skip supporting documents entirely, neither one blocks the renewal from moving forward."],
-                    ['q' => 'How much does it cost?', 'a' => 'Your first ' . PlatformDefaults::freeTransactionsFor($slug) . ' transactions are completely free. After that, you pay a monthly subscription based on your deployment. No setup fees, no per-transaction charges.'],
+                    ['q' => 'How much does it cost?', 'a' => 'Your first ' . PlatformDefaults::freeTransactionsFor($slug) . ' transactions are completely free. After that, you pay a monthly subscription based on your deployment. No setup fees, no per-transaction charges. See the full breakdown on the <a href="' . route('pricing') . '">pricing page</a>.'],
                     ['q' => 'Can I cancel my subscription?', 'a' => 'Yes, cancel any time, no questions asked. Your data stays accessible for 30 days after cancellation.'],
                 ],
             ],
@@ -80,11 +80,21 @@ class WorkerPublicController extends Controller
             ->where('worker_deployments.worker_slug', $slug)
             ->count();
 
+        // Real published posts tagged for this worker - drives the on-page
+        // Resources section so internal links can't go stale if a post is
+        // retitled or unpublished.
+        $resources = DB::table('blog_posts')
+            ->where('status', 'published')
+            ->where('worker_slug', $slug)
+            ->orderBy('created_at')
+            ->get(['slug', 'title', 'tag', 'excerpt']);
+
         return view($view, [
             'worker'          => $w,
             'deploymentCount' => $deploymentCount,
             'tokensToday'     => $tokensToday,
             'totalTx'         => $totalTx,
+            'resources'       => $resources,
         ]);
     }
 
