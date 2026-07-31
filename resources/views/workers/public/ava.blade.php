@@ -3,19 +3,19 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>{{ $worker['name'] }} — AI Agent for Renewals | UNIT</title>
+<title>{{ $worker['name'] }}: AI Agent for Renewals | UNIT</title>
 <meta name="description" content="{{ $worker['meta_desc'] }}">
 <link rel="icon" type="image/png" href="/logo.png">
 <link rel="apple-touch-icon" href="/logo.png">
 @include('partials.seo-meta', [
-    'title'       => $worker['name'] . ' — AI Agent for Renewals | UNIT',
+    'title'       => $worker['name'] . ': AI Agent for Renewals | UNIT',
     'description' => $worker['meta_desc'],
     'image'       => asset('images/ava-skyline.png'),
 ])
 <script type="application/ld+json">{!! json_encode([
     '@@context'    => 'https://schema.org',
     '@type'       => 'Service',
-    'name'        => $worker['name'] . ' — AI Renewal Agent',
+    'name'        => $worker['name'] . ': AI Renewal Agent',
     'serviceType' => $worker['category'] ?? $worker['role'],
     'description' => $worker['meta_desc'],
     'image'       => asset('images/ava-skyline.png'),
@@ -87,11 +87,11 @@ ul{list-style:none}
 
 body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font-smoothing:antialiased;overflow-x:hidden}
 .w{max-width:var(--max);margin:0 auto;padding:0 var(--pad)}
-/* Gold underline — the ONLY use of --brand on this page */
+/* Gold underline - the ONLY use of --brand on this page */
 .hl{position:relative;display:inline}
 .hl::after{content:'';position:absolute;left:0;right:0;bottom:-3px;height:4px;background:var(--brand);border-radius:2px}
 
-/* ── NAV — identical structure to / and /ai-workers (shared x-public-nav) ── */
+/* ── NAV - identical structure to / and /ai-workers (shared x-public-nav) ── */
 .nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(255,255,255,.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--border)}
 [data-theme="dark"] .nav{background:rgba(13,13,13,.92);border-color:#2D2D2D}
 .nav-i{display:flex;align-items:center;justify-content:space-between;height:62px}
@@ -118,7 +118,7 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
 [data-theme="dark"] .icon-sun{display:block}[data-theme="dark"] .icon-moon{display:none}
 @media(max-width:960px){.nav-links,.nav-acts{display:none}.ham{display:flex}}
 
-/* ── MOBILE MENU — identical to / and /ai-workers ── */
+/* ── MOBILE MENU - identical to / and /ai-workers ── */
 .mob-menu{display:none;position:fixed;inset:0;z-index:200;background:#fff;flex-direction:column;padding:24px var(--pad)}
 [data-theme="dark"] .mob-menu{background:#0D0D0D}
 .mob-menu.open{display:flex}
@@ -128,7 +128,7 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
 .mob-links a{display:block;padding:14px 0;font-size:1.05rem;font-weight:600;color:var(--t2);border-bottom:1px solid var(--border)}
 .mob-ctas{margin-top:28px;display:flex;flex-direction:column;gap:10px}
 
-/* ── FOOTER — identical to / and /ai-workers ── */
+/* ── FOOTER - identical to / and /ai-workers ── */
 .footer{background:#0A0A0A;padding:clamp(40px,6vw,72px) 0 28px}
 .ft-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:44px;margin-bottom:44px}
 .ft-name{font-size:1.15rem;font-weight:800;color:#fff;margin-bottom:10px}
@@ -219,7 +219,7 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
 }
 .btn-watch-icon svg{width:10px;height:10px;fill:#fff;margin-left:2px}
 
-/* RIGHT: status panel — separate column, not overlay */
+/* RIGHT: status panel - separate column, not overlay */
 .hero-panel{
   width:300px;flex-shrink:0;
   background:#111118;
@@ -353,7 +353,7 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
   max-width:var(--max);
   margin:0 auto;
 }
-/* LEFT — flat, no card wrapper */
+/* LEFT - flat, no card wrapper */
 .prob-left-header{display:flex;align-items:flex-start;gap:14px;margin-bottom:28px}
 .prob-left-icon{
   width:38px;height:38px;border-radius:50%;flex-shrink:0;
@@ -363,7 +363,7 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
 .prob-left-icon svg{width:16px;height:16px;stroke:#fff;fill:none;stroke-width:2.5;stroke-linecap:round}
 .prob-left-title{font-size:19px;font-weight:800;color:var(--text);line-height:1.2}
 .prob-left-sub{font-size:13px;color:var(--t3);margin-top:3px}
-/* 4-col × 2-row problem grid — big open cards */
+/* 4-col × 2-row problem grid - big open cards */
 .prob-items{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
 .prob-item{
   background:#fff;border:1.5px solid #E5E7EB;
@@ -398,7 +398,7 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
 [data-theme="dark"] .prob-impact-icon svg{stroke:#9CA3AF}
 .prob-impact-text{font-size:14px;color:var(--text);line-height:1.55}
 .prob-impact-text span{color:var(--text);font-weight:700}
-/* RIGHT — solution panel */
+/* RIGHT - solution panel */
 .sol-panel{
   background:#F8F8FD;border:1.5px solid #E5E7EB;
   border-radius:20px;padding:24px 22px;
@@ -437,7 +437,7 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
 .sol-peace-h{font-size:14px;font-weight:700;color:#0D0D0D;margin-bottom:4px}
 [data-theme="dark"] .sol-peace-h{color:#F3F4F6}
 .sol-peace-p{font-size:12.5px;color:var(--t3);line-height:1.55}
-/* bottom CTA strip — full width */
+/* bottom CTA strip - full width */
 .prob-cta-strip{
   display:flex;align-items:center;justify-content:space-between;
   flex-wrap:wrap;gap:20px;
@@ -563,7 +563,7 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
 .pipe-step.ps-done .pipe-time.pipe-who-you{color:#B45309}
 [data-theme="dark"] .pipe-step.ps-running .pipe-time.pipe-who-you,
 [data-theme="dark"] .pipe-step.ps-done .pipe-time.pipe-who-you{color:#F5C518}
-/* check circle inside node — hidden by default */
+/* check circle inside node - hidden by default */
 .pipe-check{
   display:none;
   width:34px;height:34px;border-radius:50%;
@@ -582,13 +582,13 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
 @keyframes badgePulse{0%,100%{box-shadow:0 0 0 0 rgba(0,0,0,.3)}50%{box-shadow:0 0 0 5px rgba(0,0,0,0)}}
 .pipe-step.ps-running .pipe-label{color:#0D0D0D;font-weight:800}
 .pipe-step.ps-running .pipe-time{color:#0D0D0D}
-/* done state — bold black border stays; icon goes green; time stays black */
+/* done state - bold black border stays; icon goes green; time stays black */
 .pipe-step.ps-done .pipe-node{border-color:#0D0D0D;border-width:2px;background:#fff}
 .pipe-step.ps-done .pipe-node svg{display:block;stroke:#22C55E}
 .pipe-step.ps-done .pipe-badge{background:#0D0D0D}
 .pipe-step.ps-done .pipe-label{color:var(--t3)}
 .pipe-step.ps-done .pipe-time{color:#0D0D0D;font-weight:600}
-/* ticker — sits below all step text, with breathing room */
+/* ticker - sits below all step text, with breathing room */
 .pipe-ticker-row{
   min-height:32px;margin-top:24px;margin-bottom:8px;
   display:flex;align-items:center;justify-content:center;gap:8px;
@@ -648,22 +648,23 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
 [data-theme="dark"] .split-sec{background:#0D0D0D;border-color:#2D2D2D}
 .split-grid{display:grid;grid-template-columns:1fr 1fr;gap:clamp(40px,6vw,72px);align-items:start}
 
-/* ── THE PARTS EVERYONE SKIPS — escalation + archive ── */
+/* ── THE PARTS EVERYONE SKIPS - escalation + archive ── */
 .edge-sec{background:var(--soft);border-top:1px solid var(--border);padding:clamp(56px,7vw,88px) 0}
 [data-theme="dark"] .edge-sec{background:#141414;border-color:#2D2D2D}
-.edge-head{text-align:center;max-width:640px;margin:0 auto 44px}
-.edge-grid{display:grid;grid-template-columns:1fr 1fr;gap:clamp(24px,3vw,32px)}
+.edge-head{text-align:center;max-width:680px;margin:0 auto 44px}
+.edge-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(20px,2.5vw,28px)}
 .edge-card{background:var(--bg);border:1px solid var(--border);border-radius:20px;overflow:hidden}
 [data-theme="dark"] .edge-card{background:#0D0D0D;border-color:#2D2D2D}
 .edge-img{aspect-ratio:16/10;overflow:hidden}
 .edge-img img{width:100%;height:100%;object-fit:cover}
-.edge-body{padding:28px}
+.edge-body{padding:24px}
 .edge-eye{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--t3);margin-bottom:10px}
-.edge-h3{font-size:1.25rem;font-weight:800;letter-spacing:-.02em;color:var(--text);margin-bottom:10px;line-height:1.25}
-.edge-p{font-size:14.5px;color:var(--t2);line-height:1.7}
+.edge-h3{font-size:1.15rem;font-weight:800;letter-spacing:-.02em;color:var(--text);margin-bottom:10px;line-height:1.25}
+.edge-p{font-size:14px;color:var(--t2);line-height:1.68}
+@media(max-width:1024px){.edge-grid{grid-template-columns:1fr 1fr}}
 @media(max-width:760px){.edge-grid{grid-template-columns:1fr}}
 
-/* ── MEET AVA — first-person narrative ── */
+/* ── MEET AVA - first-person narrative ── */
 .meet-sec{background:var(--bg);border-top:1px solid var(--border);padding:clamp(56px,7vw,88px) 0}
 [data-theme="dark"] .meet-sec{background:#0D0D0D;border-color:#2D2D2D}
 .meet-grid{display:grid;grid-template-columns:.85fr 1.15fr;gap:clamp(36px,5vw,64px);align-items:center}
@@ -893,7 +894,7 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
     ->whereIn('status', ['active', 'paused'])->exists();
 @endphp
 
-{{-- NAV — shared structure with / and /ai-workers; upcoming worker pages reuse this same component --}}
+{{-- NAV - shared structure with / and /ai-workers; upcoming worker pages reuse this same component --}}
 <x-public-nav :links="[
   ['label' => 'Meet the AI Worker', 'href' => route('public.workers.index')],
   ['label' => 'How It Works',      'href' => '#day-in-life'],
@@ -923,7 +924,7 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
   </x-slot>
 </x-public-nav>
 
-{{-- HERO —
+{{-- HERO -
      Real photo (ava-skyline.png) as poster, real video (AVA.MP4) wired
      with an actual play/pause toggle instead of a decorative scrubber
      bar around a static image with a hardcoded fake elapsed time. --}}
@@ -941,7 +942,7 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
 
     {{-- Text content over the video --}}
     <div class="hero-text">
-      <div class="hero-eye">Meet {{ $worker['name'] }} — UNIT's AI Renewal Agent</div>
+      <div class="hero-eye">UNIT's AI Renewal Worker</div>
       <h1 class="hero-h">She never<br>forgets a <span class="hl">renewal.</span></h1>
       <p class="hero-p">An AI agent that watches your inbox <em>and</em> your renewal calendar, drafts every renewal, and keeps a human in control of every send.</p>
       <div class="hero-btns">
@@ -959,7 +960,7 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
 
   </div>{{-- end .hero-video-col --}}
 
-  {{-- RIGHT: status panel (separate column) —
+  {{-- RIGHT: status panel (separate column) -
        Real numbers only: $totalTx / $deploymentCount come straight from
        the DB in WorkerPublicController (no invented fallback numbers, no
        fabricated multiplier formulas for "revenue protected" or "streak"
@@ -1029,14 +1030,14 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
     {{-- 4×2 grid --}}
     <div class="prob-items">
       @php $problems = [
-        ['icon'=>'<path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/>','h'=>'Nobody owns renewals.','p'=>'Permits, licenses, contracts— no single owner, no accountability.'],
+        ['icon'=>'<path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/>','h'=>'Nobody owns renewals.','p'=>'Permits, licenses, contracts. No single owner, no accountability.'],
         ['icon'=>'<path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/>','h'=>'Inbox chaos.','p'=>'Renewal emails get buried, deleted, or never even seen.'],
         ['icon'=>'<line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/>','h'=>'Money leaks quietly.','p'=>'Unused software, duplicates, and forgotten vendors drain budgets.'],
         ['icon'=>'<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>','h'=>'Licenses expire without warning.','p'=>'One missed renewal can halt operations or trigger fines.'],
-        ['icon'=>'<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>','h'=>'Hours wasted every week.','p'=>'Spreadsheets, portals, emails, follow-ups— it never ends.'],
+        ['icon'=>'<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>','h'=>'Hours wasted every week.','p'=>'Spreadsheets, portals, emails, follow-ups. It never ends.'],
         ['icon'=>'<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/>','h'=>'Everyone has their own system.','p'=>'No single source of truth. No visibility. No accountability.'],
-        ['icon'=>'<circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3M12 17h.01"/>','h'=>'You don\'t know what\'s due next.','p'=>'You find out only when someone asks— or after the deadline.'],
-        ['icon'=>'<path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/>','h'=>'It depends on one person.','p'=>'Vacation, sick leave, resignation— institutional knowledge disappears.'],
+        ['icon'=>'<circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3M12 17h.01"/>','h'=>'You don\'t know what\'s due next.','p'=>'You find out only when someone asks, or after the deadline.'],
+        ['icon'=>'<path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/>','h'=>'It depends on one person.','p'=>'Vacation, sick leave, resignation. Institutional knowledge disappears.'],
       ]; @endphp
       @foreach($problems as $p)
       <div class="prob-item">
@@ -1067,7 +1068,7 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
       </div>
       <div>
         <div class="prob-cta-t1">Renewals are too important to leave to chance.</div>
-        <div class="prob-cta-t2">Let <span>AVA</span> handle them — so your business keeps moving forward.</div>
+        <div class="prob-cta-t2">Let <span>AVA</span> handle them, so your business keeps moving forward.</div>
       </div>
     </div>
     <a href="{{ route('hire.ava.welcome') }}" class="btn-prob-cta">
@@ -1078,7 +1079,7 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
 
 </section>
 
-{{-- MEET AVA — first-person, in her own words --}}
+{{-- MEET AVA - first-person, in her own words --}}
 <section class="meet-sec">
   <div class="w">
     <div class="meet-grid">
@@ -1089,17 +1090,21 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
         <div class="sec-eye">In her own words</div>
         <div class="meet-quote">"I don't wait to be <span class="hl">asked.</span>"</div>
         <div class="meet-body">
-          <p>I watch two things: your inbox, and the calendar. If a renewal email lands, I read it. If no email ever comes but a deadline in your records is approaching, I catch that too. Either way, I match it to what I already know about the account and draft a response — not sent, just ready in your Gmail drafts.</p>
-          <p>Then I wait. Nothing goes to your client until you say so. But I won't let it sit forgotten — if you go quiet, I'll remind you, a little more each time, until you act.</p>
+          <p>I watch two things: your inbox, and the calendar. If a renewal email lands, I read it. If no email ever comes but a deadline in your records is approaching, I catch that too. Either way, I match it to what I already know about the account and draft a response, not sent, just ready in your Gmail drafts.</p>
+          <p>Then I wait. Nothing goes to your client until you say so. But I won't let it sit forgotten. If you go quiet, I'll remind you, a little more each time, until you act.</p>
           <p>When it's done, I move the renewal date forward, write up a signed record of everything that happened, and start watching for the next one. That's the job. I don't get tired of it.</p>
         </div>
-        <div class="meet-sig">— AVA, UNIT's AI Renewal Agent</div>
+        <div class="meet-sig">AVA, UNIT's AI Renewal Agent</div>
+        <a href="#day-in-life" class="btn-prob-cta" style="margin-top:20px">
+          See AVA in Action
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
       </div>
     </div>
   </div>
 </section>
 
-{{-- A DAY IN AVA'S LIFE — AVA's real pipeline, animated --}}
+{{-- A DAY IN AVA'S LIFE - AVA's real pipeline, animated --}}
 <section class="day-sec" id="day-in-life">
   <div class="w">
     <div class="day-top">
@@ -1109,7 +1114,7 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
       </div>
     </div>
 
-    {{-- AVA's real full pipeline, grouped into 10 honest steps — same
+    {{-- AVA's real full pipeline, grouped into 10 honest steps - same
          data drives the HowTo schema in <head>, so this can't drift out
          of sync with what's claimed to search engines. --}}
     @php
@@ -1146,17 +1151,15 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
       </div>{{-- end pipe-wrap-inner --}}
     </div>{{-- end pipe-wrap --}}
 
-    </div>
-
-    {{-- Single shared ticker row — below all steps --}}
+    {{-- Single shared ticker row - below all steps --}}
     <div class="pipe-ticker-row" id="pipeTickerRow"></div>
 
-    {{-- Cycle-complete bar — no fabricated time-savings numbers --}}
+    {{-- Cycle-complete bar - no fabricated time-savings numbers --}}
     <div class="mission-bar" id="missionBar">
-      <div class="mission-txt">Cycle Complete — Watching for the Next One 🎉</div>
+      <div class="mission-txt">Cycle Complete. Watching for the Next One 🎉</div>
     </div>
 
-    {{-- CTAs — $avaHasDesk computed once near the top of the page --}}
+    {{-- CTAs - $avaHasDesk computed once near the top of the page --}}
     <div class="pipe-cta">
       @if($avaHasDesk)
         <a href="{{ route('app.desk.ava') }}" class="btn-pipe-hire">
@@ -1177,7 +1180,7 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
   </div>
 </section>
 
-{{-- THE PARTS EVERYONE SKIPS — escalation cadence + the archive --}}
+{{-- THE PARTS EVERYONE SKIPS - escalation cadence + the archive --}}
 <section class="edge-sec">
   <div class="w">
     <div class="edge-head">
@@ -1186,11 +1189,19 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
     </div>
     <div class="edge-grid">
       <div class="edge-card">
+        <div class="edge-img"><img src="/images/ava-boss.png" alt="AVA" style="object-position:center 20%"></div>
+        <div class="edge-body">
+          <div class="edge-eye">Her memory, your data</div>
+          <h3 class="edge-h3">She only knows what you teach her.</h3>
+          <p class="edge-p">AVA's memory, your clients, your contacts, your renewal history, your templates, lives inside your account. You decide what she remembers and how she responds. Nothing is shared across tenants, and nothing gets assumed. A worker that doesn't know your business first can't actually produce value for it.</p>
+        </div>
+      </div>
+      <div class="edge-card">
         <div class="edge-img"><img src="/images/ava-active.png" alt="AVA" style="object-position:center 15%"></div>
         <div class="edge-body">
           <div class="edge-eye">Escalation, not silence</div>
           <h3 class="edge-h3">She won't let a renewal die quietly.</h3>
-          <p class="edge-p">If a draft sits unapproved, AVA doesn't wait forever — and she doesn't nag every five minutes either. Reminders escalate on a schedule matched to urgency: gentle first, then direct, then urgent as the deadline nears. After a few unanswered attempts, she pauses and waits for you — she won't spam you, but she won't let it disappear either.</p>
+          <p class="edge-p">If a draft sits unapproved, AVA doesn't wait forever, and she doesn't nag every five minutes either. Reminders escalate on a schedule matched to urgency: gentle first, then direct, then urgent as the deadline nears. After a few unanswered attempts, she pauses and waits for you. She won't spam you, but she won't let it disappear either.</p>
         </div>
       </div>
       <div class="edge-card">
@@ -1198,7 +1209,7 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
         <div class="edge-body">
           <div class="edge-eye">The Archive</div>
           <h3 class="edge-h3">Every renewal, provable.</h3>
-          <p class="edge-p">When a renewal closes, AVA builds a complete record — every draft, every reminder, every approval, every payment confirmation — into a downloadable PDF with a QR code. Hand it to a client, an auditor, or your own team and prove exactly what happened, and when.</p>
+          <p class="edge-p">When a renewal closes, AVA builds a complete record: every draft, every reminder, every approval, every payment confirmation, into a downloadable PDF with a QR code. Hand it to a client, an auditor, or your own team and prove exactly what happened, and when.</p>
         </div>
       </div>
     </div>
@@ -1214,12 +1225,12 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
   var PAUSE_MS = 3000;
 
   var tickerMessages = [
-    'Detecting a renewal — inbox or registry threshold…',
+    'Detecting a renewal: inbox or registry threshold…',
     'Reading and classifying what kind of renewal this is…',
     'Checking memory for this client\'s history…',
     'Drafting the renewal message and logging the transaction…',
     'Placing the draft in your Gmail drafts…',
-    'Waiting for your approval — she\'ll remind you if it sits…',
+    'Waiting for your approval, she\'ll remind you if it sits…',
     'Handling the invoice, or waiting if you skip it…',
     'Waiting for payment confirmation…',
     'Updating the renewal date for next cycle…',
@@ -1286,7 +1297,7 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
       </div>
       <div>
         <div class="sec-eye" style="color:rgba(255,255,255,.4)">Live Performance</div>
-        {{-- Real numbers only — dropped the fabricated "Reminders Sent",
+        {{-- Real numbers only - dropped the fabricated "Reminders Sent",
              "Revenue Protected" (was $totalTx*3.85), "Accuracy Rate", and
              "Day Streak" (was $deploymentCount*18) tiles that used to
              render here regardless of actual usage. --}}
@@ -1334,11 +1345,11 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
           </div>
           @endforeach
         </div>
-        <p style="font-size:12.5px;color:var(--t4);margin-top:16px">Any business with recurring renewals fits — these are the industries where AVA runs today.</p>
+        <p style="font-size:12.5px;color:var(--t4);margin-top:16px">Any business with recurring renewals fits. These are the industries where AVA runs today.</p>
       </div>
       <div class="testi-col">
         <div class="sec-eye">What business owners say</div>
-        {{-- Skeleton placeholders, not fake quotes — no invented names,
+        {{-- Skeleton placeholders, not fake quotes - no invented names,
              companies, or star ratings sitting in the DOM for crawlers to
              read as real content. Real reviews replace these as they come in. --}}
         <div class="testi-grid testi-blurred">
@@ -1365,7 +1376,7 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
               <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
             </div>
             <div class="tov-h">Have you used AVA?<br>We'd love to hear from you.</div>
-            <p class="tov-p">Share your experience and get featured here. Real stories from real operators — no scripts, no fluff.</p>
+            <p class="tov-p">Share your experience and get featured here. Real stories from real operators, no scripts, no fluff.</p>
             <div class="tov-badges">
               <span class="tov-badge">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
@@ -1497,7 +1508,7 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
 <x-public-footer />
 
 <script>
-// ── Theme — identical key/logic to / and /ai-workers ──
+// ── Theme - identical key/logic to / and /ai-workers ──
 const root = document.documentElement;
 const saved = localStorage.getItem('unit-theme');
 if(saved) root.setAttribute('data-theme', saved);
@@ -1507,7 +1518,7 @@ document.getElementById('theme-toggle').addEventListener('click', function(){
   localStorage.setItem('unit-theme', next);
 });
 
-// ── Mobile menu — identical to / and /ai-workers ──
+// ── Mobile menu - identical to / and /ai-workers ──
 const ham = document.getElementById('ham');
 const mob = document.getElementById('mob');
 ham.addEventListener('click', () => mob.classList.add('open'));

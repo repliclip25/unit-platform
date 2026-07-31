@@ -20,35 +20,35 @@ class WorkerPublicController extends Controller
                 'slug'       => 'ava',
                 'role'       => 'AI Renewal Agent',
                 'category'   => 'Renewal Automation',
-                'meta_desc'  => "AVA is UNIT's AI Renewal Agent — an AI agent that watches your inbox and your renewal calendar, drafts renewals, and manages the full lifecycle to close, with human approval built in.",
+                'meta_desc'  => "AVA is UNIT's AI Renewal Agent: an AI worker that watches your inbox and your renewal calendar, drafts renewals, and manages the full lifecycle to close, with human approval built in.",
 
                 // Single source of truth for the pipeline demo AND the HowTo
-                // schema below — grouped from the real 16-stage pipeline
-                // (inject/fetch → ... → archive → reschedule watch) into
+                // schema below, grouped from the real 16-stage pipeline
+                // (inject/fetch -> ... -> archive -> reschedule watch) into
                 // 10 steps a visitor can actually follow.
                 'pipeline' => [
-                    ['who' => 'AVA', 'title' => 'Detects the Renewal', 'desc' => "AVA watches two places at once: your inbox for incoming renewal emails, and your asset registry for expiration dates — so she catches it even if the email never arrives."],
-                    ['who' => 'AVA', 'title' => 'Reads & Classifies', 'desc' => "She reads the message (or the registry record), figures out what kind of renewal this is, and sets a priority. Anything that isn't a renewal exits here — no wasted effort."],
+                    ['who' => 'AVA', 'title' => 'Detects the Renewal', 'desc' => "AVA watches two places at once: your inbox for incoming renewal emails, and your asset registry for expiration dates, so she catches it even if the email never arrives."],
+                    ['who' => 'AVA', 'title' => 'Reads & Classifies', 'desc' => "She reads the message (or the registry record), figures out what kind of renewal this is, and sets a priority. Anything that isn't a renewal exits here, no wasted effort."],
                     ['who' => 'AVA', 'title' => 'Checks Her Memory', 'desc' => "She matches the renewal to your stored client, contact, and account history, so the draft isn't starting from zero."],
                     ['who' => 'AVA', 'title' => 'Drafts the Message', 'desc' => "Using your templates and that history, she writes the renewal email, then logs the transaction before anything else happens."],
                     ['who' => 'AVA', 'title' => 'Puts It In Your Inbox', 'desc' => "The draft lands in Gmail Drafts, not Sent. It's ready for you to read, edit, and approve."],
-                    ['who' => 'YOU', 'title' => 'Waits — and Reminds You', 'desc' => "Nothing goes to your client until you approve it. If it sits too long, she reminds you herself — gentle at first, more direct the longer it waits."],
+                    ['who' => 'YOU', 'title' => 'Waits, and Reminds You', 'desc' => "Nothing goes to your client until you approve it. If it sits too long, she reminds you herself: gentle at first, more direct the longer it waits."],
                     ['who' => 'YOU', 'title' => 'Handles the Invoice', 'desc' => "If you attach an invoice, she reads it automatically. If you don't, she'll ask a few times, then stop and wait for you."],
-                    ['who' => 'YOU', 'title' => 'Confirms Payment', 'desc' => "Before she closes the loop, she waits for you to confirm payment came through — with the same nudging pattern if you go quiet."],
+                    ['who' => 'YOU', 'title' => 'Confirms Payment', 'desc' => "Before she closes the loop, she waits for you to confirm payment came through, with the same nudging pattern if you go quiet."],
                     ['who' => 'AVA', 'title' => 'Updates the Renewal Date', 'desc' => 'Once confirmed, she moves the renewal date forward on her own. No manual calendar updates.'],
-                    ['who' => 'AVA', 'title' => 'Archives the Proof, Resets the Watch', 'desc' => 'She builds a complete record of everything that happened — every draft, every reminder, every decision — as a downloadable PDF with a QR code, then quietly starts watching for the next cycle.'],
+                    ['who' => 'AVA', 'title' => 'Archives the Proof, Resets the Watch', 'desc' => 'She builds a complete record of everything that happened: every draft, every reminder, every decision, as a downloadable PDF with a QR code, then quietly starts watching for the next cycle.'],
                 ],
 
                 'faq' => [
                     ['q' => 'What happens if the renewal email never shows up?', 'a' => "AVA doesn't only wait on email. She also watches your asset registry directly for expiration thresholds, so a renewal still gets caught even if the notice email is lost, filtered, or never sent."],
-                    ['q' => 'Does AVA submit renewals automatically?', 'a' => 'No. AVA prepares and drafts the renewal, then queues it for your review. Nothing reaches your client without your explicit approval — that gate never gets skipped.'],
-                    ['q' => "What happens if I ignore a reminder?", 'a' => 'AVA escalates on her own schedule — gentle, then direct, then urgent — timed by how urgent the renewal is. If you still don\'t respond after a few attempts, she pauses and waits for you to resume manually. She won\'t let it just die quietly, but she won\'t spam you forever either.'],
-                    ['q' => 'Can I prove what happened, for compliance or a client dispute?', 'a' => 'Yes. Every closed renewal gets a UNIT-branded archive PDF — every draft, every reminder, every approval decision — with a QR code linking to a signed, downloadable copy for a full year.'],
+                    ['q' => 'Does AVA submit renewals automatically?', 'a' => 'No. AVA prepares and drafts the renewal, then queues it for your review. Nothing reaches your client without your explicit approval, that gate never gets skipped.'],
+                    ['q' => "What happens if I ignore a reminder?", 'a' => 'AVA escalates on her own schedule: gentle, then direct, then urgent, timed by how urgent the renewal is. If you still don\'t respond after a few attempts, she pauses and waits for you to resume manually. She won\'t let it just die quietly, but she won\'t spam you forever either.'],
+                    ['q' => 'Can I prove what happened, for compliance or a client dispute?', 'a' => 'Yes. Every closed renewal gets a UNIT-branded archive PDF, every draft, every reminder, every approval decision, with a QR code linking to a signed, downloadable copy for a full year.'],
                     ['q' => 'How does AVA access my renewal inbox?', 'a' => 'AVA connects to Gmail via OAuth2 and a real-time watch webhook. You choose which inbox she monitors, and you can revoke access at any time.'],
                     ['q' => 'What happens if AVA misses something?', 'a' => "Every transaction is fully logged and visible in your dashboard. If she can't classify something confidently, it's flagged for manual review instead of guessed at."],
-                    ['q' => 'What if I need to attach an invoice or documents?', 'a' => "AVA can read an invoice's amount and dates automatically if you attach one, or you can skip supporting documents entirely — neither one blocks the renewal from moving forward."],
+                    ['q' => 'What if I need to attach an invoice or documents?', 'a' => "AVA can read an invoice's amount and dates automatically if you attach one, or you can skip supporting documents entirely, neither one blocks the renewal from moving forward."],
                     ['q' => 'How much does it cost?', 'a' => 'Your first ' . PlatformDefaults::freeTransactionsFor($slug) . ' transactions are completely free. After that, you pay a monthly subscription based on your deployment. No setup fees, no per-transaction charges.'],
-                    ['q' => 'Can I cancel my subscription?', 'a' => 'Yes — cancel any time, no questions asked. Your data stays accessible for 30 days after cancellation.'],
+                    ['q' => 'Can I cancel my subscription?', 'a' => 'Yes, cancel any time, no questions asked. Your data stays accessible for 30 days after cancellation.'],
                 ],
             ],
         ];

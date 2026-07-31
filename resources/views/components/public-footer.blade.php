@@ -1,8 +1,8 @@
-{{-- Single source of truth for the public-site footer — included by every
+{{-- Single source of truth for the public-site footer, included by every
      public page (home, /ai-workers, /ai-workers/{slug}, about, pricing,
      blog, terms, privacy, influencer/apply). Edit here, not per-page. --}}
 {{-- Sitewide Organization + WebSite JSON-LD lives here since this partial
-     already renders on every public page — one edit point, not nine. --}}
+     already renders on every public page, one edit point, not nine. --}}
 <script type="application/ld+json">{!! json_encode([
     '@@context'    => 'https://schema.org',
     '@type'       => 'Organization',
@@ -27,7 +27,7 @@
       <div>
         <div class="ft-col-h">Workers</div>
         <div class="ft-links">
-          <a href="{{ route('public.workers.show', 'ava') }}">AVA — Renewals</a>
+          <a href="{{ route('public.workers.show', 'ava') }}">AVA: Renewals</a>
           <a href="{{ route('public.workers.index') }}">All Workers</a>
           <a href="{{ route('app.referral.index') }}">Refer &amp; Earn</a>
           <a href="{{ route('influencer.apply') }}">Partner Program</a>
