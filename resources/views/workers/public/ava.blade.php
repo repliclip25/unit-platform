@@ -648,6 +648,21 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
 [data-theme="dark"] .split-sec{background:#0D0D0D;border-color:#2D2D2D}
 .split-grid{display:grid;grid-template-columns:1fr 1fr;gap:clamp(40px,6vw,72px);align-items:start}
 
+/* ── THE PARTS EVERYONE SKIPS — escalation + archive ── */
+.edge-sec{background:var(--soft);border-top:1px solid var(--border);padding:clamp(56px,7vw,88px) 0}
+[data-theme="dark"] .edge-sec{background:#141414;border-color:#2D2D2D}
+.edge-head{text-align:center;max-width:640px;margin:0 auto 44px}
+.edge-grid{display:grid;grid-template-columns:1fr 1fr;gap:clamp(24px,3vw,32px)}
+.edge-card{background:var(--bg);border:1px solid var(--border);border-radius:20px;overflow:hidden}
+[data-theme="dark"] .edge-card{background:#0D0D0D;border-color:#2D2D2D}
+.edge-img{aspect-ratio:16/10;overflow:hidden}
+.edge-img img{width:100%;height:100%;object-fit:cover}
+.edge-body{padding:28px}
+.edge-eye{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--t3);margin-bottom:10px}
+.edge-h3{font-size:1.25rem;font-weight:800;letter-spacing:-.02em;color:var(--text);margin-bottom:10px;line-height:1.25}
+.edge-p{font-size:14.5px;color:var(--t2);line-height:1.7}
+@media(max-width:760px){.edge-grid{grid-template-columns:1fr}}
+
 /* ── MEET AVA — first-person narrative ── */
 .meet-sec{background:var(--bg);border-top:1px solid var(--border);padding:clamp(56px,7vw,88px) 0}
 [data-theme="dark"] .meet-sec{background:#0D0D0D;border-color:#2D2D2D}
@@ -1160,6 +1175,34 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
         Run a Live Test
       </a>
+    </div>
+  </div>
+</section>
+
+{{-- THE PARTS EVERYONE SKIPS — escalation cadence + the archive --}}
+<section class="edge-sec">
+  <div class="w">
+    <div class="edge-head">
+      <div class="sec-eye">What most renewal tools skip</div>
+      <h2 class="sec-h" style="margin-bottom:0">The parts of the job everyone forgets to build.</h2>
+    </div>
+    <div class="edge-grid">
+      <div class="edge-card">
+        <div class="edge-img"><img src="/images/ava-active.png" alt="AVA" style="object-position:center 15%"></div>
+        <div class="edge-body">
+          <div class="edge-eye">Escalation, not silence</div>
+          <h3 class="edge-h3">She won't let a renewal die quietly.</h3>
+          <p class="edge-p">If a draft sits unapproved, AVA doesn't wait forever — and she doesn't nag every five minutes either. Reminders escalate on a schedule matched to urgency: gentle first, then direct, then urgent as the deadline nears. After a few unanswered attempts, she pauses and waits for you — she won't spam you, but she won't let it disappear either.</p>
+        </div>
+      </div>
+      <div class="edge-card">
+        <div class="edge-img"><img src="/images/ava-in-office.png" alt="AVA"></div>
+        <div class="edge-body">
+          <div class="edge-eye">The Archive</div>
+          <h3 class="edge-h3">Every renewal, provable.</h3>
+          <p class="edge-p">When a renewal closes, AVA builds a complete record — every draft, every reminder, every approval, every payment confirmation — into a downloadable PDF with a QR code. Hand it to a client, an auditor, or your own team and prove exactly what happened, and when.</p>
+        </div>
+      </div>
     </div>
   </div>
 </section>
