@@ -54,11 +54,16 @@ class MemoryLookupJob implements ShouldQueue
             'ava_rules'=> $this->prepareRules($input->memory['rules'] ?? [], $input->persona),
         ];
 
-        $system = 'You are Ava, UNIT\'s Subscription & Renewal Coordinator. Return valid JSON only. No extra text. '
-            . 'When selecting an ava_rule, prefer rules with priority Critical > High > Medium > Low. '
-            . 'Persona-specific rules (is_platform=false) take precedence over platform rules (is_platform=true) when both could apply.';
+        $override = UnitPlatform::getPromptOverride($input->deploymentId, 'memory') ?? [];
 
-        $prompt = <<<PROMPT
+        $system = $override['system'] ?? ('You are Ava, UNIT\'s Subscription & Renewal Coordinator. Return valid JSON only. No extra text. '
+            . 'When selecting an ava_rule, prefer rules with priority Critical > High > Medium > Low. '
+            . 'Persona-specific rules (is_platform=false) take precedence over platform rules (is_platform=true) when both could apply.');
+
+        $readJson   = $this->jsonPretty($readOutput);
+        $memoryJson = $this->jsonPretty($memory);
+
+        $defaultPrompt = <<<PROMPT
 Using the extracted email information and the memory tables below, find who owns this asset and how it should be handled.
 
 Return JSON:
@@ -79,13 +84,18 @@ matched_rule_id must be the exact rule_id (e.g. "AVA-006") of the single rule yo
 for programmatic enforcement downstream, separate from ava_rule which is the human-readable summary.
 
 EXTRACTED EMAIL CONTEXT:
-{$this->jsonPretty($readOutput)}
+{$readJson}
 
 MEMORY TABLES:
-{$this->jsonPretty($memory)}
+{$memoryJson}
 PROMPT;
 
-        $output = $claude->ask($system, $prompt, $input->maxTokens('memory', 768), $this->txId, 'memory');
+        $prompt = !empty($override['user'])
+            ? str_replace(['{READ_OUTPUT}', '{MEMORY_TABLES}'], [$readJson, $memoryJson], $override['user'])
+            : $defaultPrompt;
+
+        $maxTokens = $override['max_tokens'] ?? $input->maxTokens('memory', 768);
+        $output    = $claude->ask($system, $prompt, $maxTokens, $this->txId, 'memory');
 
         // Low confidence — flag but continue pipeline
         $confidence      = $output['confidence'] ?? 0;
