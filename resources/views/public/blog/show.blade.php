@@ -129,7 +129,7 @@
         @endforeach
       </div>
 
-      {{-- Article footer — reflects the post's real author field, not a
+      {{-- Article footer - reflects the post's real author field, not a
            hardcoded byline. --}}
       <div style="margin-top:56px;padding-top:32px;border-top:1px solid var(--line)">
         <div style="display:flex;align-items:center;gap:16px">
@@ -168,7 +168,7 @@
         </a>
       </div>
 
-      {{-- More articles — real posts, not a hardcoded list linking nowhere --}}
+      {{-- More articles - real posts, not a hardcoded list linking nowhere --}}
       @if($related->isNotEmpty())
       <div class="sidebar-card">
         <div class="sidebar-label">More from the blog</div>
@@ -184,7 +184,7 @@
       {{-- Deploy CTA --}}
       <div class="sidebar-cta">
         <h3>Deploy an AI Worker free</h3>
-        <p>Browse UNIT's AI Workers and run a live test — start free, no card required.</p>
+        <p>Browse UNIT's AI Workers and run a live test, start free, no card required.</p>
         <a href="{{ route('public.workers.index') }}" class="btn-g" style="display:block;text-align:center;font-size:13px">Browse AI Workers →</a>
       </div>
 

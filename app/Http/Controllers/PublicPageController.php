@@ -9,7 +9,7 @@ class PublicPageController extends Controller
 {
     public function about()
     {
-        // Real numbers, not invented ones — see MEMORY/session notes on
+        // Real numbers, not invented ones. See MEMORY/session notes on
         // removing fabricated stats from public pages.
         return view('public.about', [
             'totalTx'         => DB::table('transactions')->count(),
@@ -23,7 +23,7 @@ class PublicPageController extends Controller
     {
         // This page renders its own hardcoded Free Trial and Enterprise cards
         // around the worker cards, so only the single paid, non-trial plan per
-        // worker belongs here — not every plan_slug row in worker_pricing.
+        // worker belongs here, not every plan_slug row in worker_pricing.
         $plans = DB::table('worker_pricing')
             ->where('active', true)
             ->where('is_trial_plan', false)
@@ -49,7 +49,7 @@ class PublicPageController extends Controller
             : null;
 
         // A logged-in visitor with an existing deployment shouldn't see a
-        // generic "Deploy" CTA — the card should nudge them toward whatever
+        // generic "Deploy" CTA, the card should nudge them toward whatever
         // their actual subscription state calls for (upgrade, manage billing,
         // go to their desk, etc).
         $userBilling = collect();
@@ -100,7 +100,7 @@ class PublicPageController extends Controller
     {
         $rawBody = $row->body;
 
-        // Quill stores HTML — detect and pass through as a single html block
+        // Quill stores HTML, detect and pass through as a single html block
         if (str_starts_with(ltrim($rawBody), '<')) {
             $body = [['html', $rawBody]];
         } else {
@@ -155,7 +155,7 @@ class PublicPageController extends Controller
                 'slug'    => 'how-ava-processes-nycsca-renewal',
                 'tag'     => 'Automation · AVA',
                 'title'         => 'How AVA processes a NYCSCA renewal from inbox to draft in under 5 minutes',
-                'excerpt'       => 'A step-by-step walkthrough of AVA\'s 8-stage pipeline — what each job does, how memory lookup works, and why the human-review gate matters.',
+                'excerpt'       => 'A step-by-step walkthrough of AVA\'s 8-stage pipeline: what each job does, how memory lookup works, and why the human-review gate matters.',
                 'date'          => 'June 2026',
                 'published_iso' => '2026-06-01T00:00:00+00:00',
                 'modified_iso'  => '2026-06-01T00:00:00+00:00',
@@ -163,22 +163,22 @@ class PublicPageController extends Controller
                 'read'    => '8 min',
                 'body'    => [
                     ['h2', 'The problem with renewal inboxes'],
-                    ['p', 'A typical compliance coordinator\'s inbox on a Monday morning looks like this: 14 emails from NYCSCA, 6 from DOB, 3 from FDNY — all requiring action, all with different deadlines, all requiring you to cross-reference a license database you have open in another tab. This is the problem AVA was built to solve.'],
-                    ['p', 'AVA doesn\'t just read the emails. It runs each one through an 8-stage pipeline that mirrors exactly what an experienced coordinator would do — but in under 5 minutes, with a full audit trail.'],
+                    ['p', 'A typical compliance coordinator\'s inbox on a Monday morning looks like this: 14 emails from NYCSCA, 6 from DOB, 3 from FDNY, all requiring action, all with different deadlines, all requiring you to cross-reference a license database you have open in another tab. This is the problem AVA was built to solve.'],
+                    ['p', 'AVA doesn\'t just read the emails. It runs each one through an 8-stage pipeline that mirrors exactly what an experienced coordinator would do, but in under 5 minutes, with a full audit trail.'],
                     ['h2', 'Stage 1 & 2: Inject & Read'],
-                    ['p', 'When a new email arrives in the monitored Gmail inbox, a webhook fires and AVA creates a transaction record. The first job, ReadEmailJob, sends the raw email to Claude with a structured prompt asking for a plain-English summary, the action needed, the due date, and an urgency rating. The output is JSON — structured data that every downstream stage can use.'],
+                    ['p', 'When a new email arrives in the monitored Gmail inbox, a webhook fires and AVA creates a transaction record. The first job, ReadEmailJob, sends the raw email to Claude with a structured prompt asking for a plain-English summary, the action needed, the due date, and an urgency rating. The output is JSON: structured data that every downstream stage can use.'],
                     ['h2', 'Stage 3: Classify'],
                     ['p', 'ClassifyEmailJob takes the read output and categorizes the email: renewal, new application, status inquiry, or not relevant. It also assigns priority (Low/Medium/High/Critical) and determines what type of response is needed. Emails that don\'t match any renewal pattern are marked as not relevant and no further AI runs.'],
                     ['h2', 'Stage 4: Memory Lookup'],
-                    ['p', 'MemoryLookupJob searches the tenant\'s client and asset records for the relevant entity — matching by license number, company name, or contact email. This is what allows AVA to say "this is John D. at Acme Corp, License #2847, renewal due August 15th" instead of treating every email as if it\'s the first time.'],
+                    ['p', 'MemoryLookupJob searches the tenant\'s client and asset records for the relevant entity, matching by license number, company name, or contact email. This is what allows AVA to say "this is John D. at Acme Corp, License #2847, renewal due August 15th" instead of treating every email as if it\'s the first time.'],
                     ['h2', 'Stage 5 & 6: Log & Select Template'],
-                    ['p', 'LogTransactionJob writes the renewal to the register. SelectTemplateJob picks the best-matching email template for this type of response — considering the agency, the category, and the tone setting the tenant configured.'],
+                    ['p', 'LogTransactionJob writes the renewal to the register. SelectTemplateJob picks the best-matching email template for this type of response, considering the agency, the category, and the tone setting the tenant configured.'],
                     ['h2', 'Stage 7: Draft'],
-                    ['p', 'DraftEmailJob is where the actual writing happens. It combines the read output, classification, memory data, and selected template into a single Claude prompt. The output is a complete email body — ready for human review. Nothing is sent at this stage.'],
+                    ['p', 'DraftEmailJob is where the actual writing happens. It combines the read output, classification, memory data, and selected template into a single Claude prompt. The output is a complete email body, ready for human review. Nothing is sent at this stage.'],
                     ['h2', 'Stage 8: Push to Gmail Draft'],
-                    ['p', 'PushToGmailJob takes the draft and pushes it directly into Gmail Drafts via the Gmail API. The coordinator opens Gmail, sees a draft already written and addressed, reads it, makes any edits, and hits send. The whole pipeline — inbox to draft — takes between 90 seconds and 5 minutes depending on API response times.'],
+                    ['p', 'PushToGmailJob takes the draft and pushes it directly into Gmail Drafts via the Gmail API. The coordinator opens Gmail, sees a draft already written and addressed, reads it, makes any edits, and hits send. The whole pipeline, inbox to draft, takes between 90 seconds and 5 minutes depending on API response times.'],
                     ['h2', 'The human gate'],
-                    ['p', 'AVA never sends email. This is deliberate. Every draft requires your explicit approval. The pipeline surfaces the work; you make the call. This isn\'t a limitation — it\'s the design. Compliance work has consequences, and the human should always be in the loop on what goes out.'],
+                    ['p', 'AVA never sends email. This is deliberate. Every draft requires your explicit approval. The pipeline surfaces the work; you make the call. This isn\'t a limitation, it\'s the design. Compliance work has consequences, and the human should always be in the loop on what goes out.'],
                 ],
             ],
         ];

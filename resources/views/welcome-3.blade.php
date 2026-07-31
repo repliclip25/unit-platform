@@ -3,12 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>UNIT — AI Agents That Complete Real Business Work</title>
+<title>UNIT: AI Agents That Complete Real Business Work</title>
 <meta name="description" content="Deploy specialized AI agents that own complete business workflows. UNIT AI Workers manage renewals, documents, publishing, compliance, and more while keeping humans in control.">
 <link rel="icon" type="image/png" href="/logo.png">
 <link rel="apple-touch-icon" href="/logo.png">
 @include('partials.seo-meta', [
-    'title'       => 'UNIT — AI Agents That Complete Real Business Work',
+    'title'       => 'UNIT: AI Agents That Complete Real Business Work',
     'description' => 'Deploy specialized AI agents that own complete business workflows. UNIT AI Workers manage renewals, documents, publishing, compliance, and more while keeping humans in control.',
     'image'       => asset('images/hero-team-2.png'),
 ])
@@ -217,7 +217,7 @@ body{
 }
 .proof-txt{font-size:13px;color:var(--t3);line-height:1.5}
 .proof-txt strong{color:var(--text);display:block}
-/* Hero image — bleeds to right edge, crossfade between two images */
+/* Hero image - bleeds to right edge, crossfade between two images */
 .hero-right{
   position:relative;
   overflow:hidden;
@@ -358,7 +358,7 @@ body{
 }
 .wk-card:hover{transform:translateY(-4px);box-shadow:0 16px 40px rgba(0,0,0,0.08)}
 
-/* Character image — absolute, right side, fills card height */
+/* Character image - absolute, right side, fills card height */
 .wk-img-bg{
   position:absolute;
   right:0;top:0;bottom:0;
@@ -378,7 +378,7 @@ body{
   background:linear-gradient(to right, #fff 0%, rgba(255,255,255,.9) 25%, rgba(255,255,255,.4) 50%, transparent 68%);
 }
 
-/* Content — left side, z-index above image */
+/* Content - left side, z-index above image */
 .wk-content{
   position:relative;z-index:1;
   padding:22px 20px 20px;
@@ -456,7 +456,7 @@ body{
 /*
   12s total cycle, 2s per node.
   Active window = 0–15% = 1.8s. Next node starts at 2s (16.7%).
-  Gap between end of active (1.8s) and next start (2s) = 0.2s — clean, no overlap.
+  Gap between end of active (1.8s) and next start (2s) = 0.2s - clean, no overlap.
 */
 @keyframes nodeActivate{
   0%   {background:#fff;border-color:#D1D5DB;transform:scale(1);color:#111;box-shadow:0 2px 8px rgba(0,0,0,.06)}
@@ -493,7 +493,7 @@ body{
 .lifecycle{background:#fff;padding-top:0}
 /* break lifecycle card past the normal .w max-width */
 .lifecycle .w{ max-width:min(1360px, calc(100vw - 48px)); }
-/* outer card wraps the whole section — break out of .w padding to fill viewport */
+/* outer card wraps the whole section - break out of .w padding to fill viewport */
 .lc-card{
   border:1.5px solid var(--border);
   border-radius:28px;
@@ -537,7 +537,7 @@ body{
   text-transform:uppercase;margin-bottom:6px;
 }
 .lc-photo-txt{font-size:13.5px;color:var(--t2);line-height:1.55;font-weight:500}
-/* circular arrow badge — sits in the gap, centered on image height */
+/* circular arrow badge - sits in the gap, centered on image height */
 .lc-arrow{
   flex-shrink:0;
   width:36px;
@@ -881,7 +881,7 @@ body{
 
 /* ── PROBLEMS VIDEO CAROUSEL ──
    Clips are shot reel-size (9:16 portrait). Cap the height (not the
-   width) so the whole clip fits in one screen with room to spare —
+   width) so the whole clip fits in one screen with room to spare -
    width is then derived from the aspect ratio, not stretched to fill
    the column, so the frame stays centered instead of edge-to-edge. */
 .problems-video{position:relative;width:fit-content;margin:0 auto}
@@ -934,7 +934,7 @@ body{
 .pv-prev{left:-16px}
 .pv-next{right:-16px}
 
-/* ── INDUSTRIES ── — a worker's card: photo of the specific worker
+/* ── INDUSTRIES ── - a worker's card: photo of the specific worker
    on the left, their info on the right. Industries are what AVA
    serves today; once other workers are live, they get their own
    card with their own capabilities here, not a shared UNIT-wide claim. */
@@ -1101,7 +1101,7 @@ body{
 
 @php
   // Nav CTA should never tell an already-onboarded, logged-in user to
-  // "Deploy AVA" or "Log in" — both are wrong once they have
+  // "Deploy AVA" or "Log in" - both are wrong once they have
   // an account and/or a deployed worker.
   $__navAvaHasDesk = auth()->check() && \Illuminate\Support\Facades\DB::table('worker_deployments')
     ->where('user_id', auth()->id())->where('worker_slug', 'ava')
@@ -1146,7 +1146,7 @@ body{
         <em>real business work.</em>
       </h1>
       <p class="hero-p">
-        UNIT is an AI agent platform where every AI agent is designed as a specialized AI Worker. Instead of answering questions, UNIT agents monitor, execute, and complete entire business workflows — from renewals and documents to publishing and compliance — while keeping your team in control.
+        UNIT is an AI agent platform where every AI agent is designed as a specialized AI Worker. Instead of answering questions, UNIT agents monitor, execute, and complete entire business workflows, from renewals and documents to publishing and compliance, while keeping your team in control.
       </p>
       <div class="hero-btns">
         <a href="#workers" class="btn-hero">
@@ -1168,8 +1168,8 @@ body{
   </div>
 
   <div class="hero-right">
-    <img src="/images/hero-team-2.png" alt="AVA, DOX, MOX and NUX — the UNIT AI workforce" class="hero-slide active" id="slide-0">
-    <img src="/images/hero-team.png"   alt="AVA, DOX, MOX and NUX — selfie"                 class="hero-slide hidden" id="slide-1">
+    <img src="/images/hero-team-2.png" alt="AVA, DOX, MOX and NUX: the UNIT AI workforce" class="hero-slide active" id="slide-0">
+    <img src="/images/hero-team.png"   alt="AVA, DOX, MOX and NUX: selfie"                 class="hero-slide hidden" id="slide-1">
     <span class="hero-right-spacer" aria-hidden="true"></span>
     <div class="hero-fade"></div>
     <div class="hero-badge">
@@ -1190,7 +1190,7 @@ body{
 
 <!-- ACTIVITY FEED TICKER -->
 {{-- AVA-only: DOX/MOX/NUX are not live yet (see worker cards below), so the
-     ticker only shows real workflow stages the live AVA pipeline performs —
+     ticker only shows real workflow stages the live AVA pipeline performs -
      no fabricated activity for Coming Soon workers. --}}
 <div class="activity-feed">
   <div class="feed-track">
@@ -1243,7 +1243,7 @@ body{
       <span class="feed-action">3 renewals processed before 9 AM · zero missed</span>
       <span class="feed-time">today</span>
     </div>
-    <!-- set 2 — exact clone for seamless loop -->
+    <!-- set 2 - exact clone for seamless loop -->
     <div class="feed-item">
       <span class="feed-dot green"></span>
       <span class="feed-worker" style="color:#0D0D0D">AVA</span>
@@ -1321,7 +1321,7 @@ body{
             </div>
             <div class="problem-text">
               <h4>Manual Follow-ups</h4>
-              <p>Reminders get sent late — or not at all — when they depend on someone remembering.</p>
+              <p>Reminders get sent late, or not at all, when they depend on someone remembering.</p>
             </div>
           </div>
           <div class="problem-item">
@@ -1366,7 +1366,7 @@ body{
       </div>
 
       {{-- Worker introduction videos. Only DOX.mp4 exists in public/videos/
-           today — DOX is still Coming Soon as a product, so its slide is
+           today - DOX is still Coming Soon as a product, so its slide is
            tagged accordingly. Other slides stay as placeholders until their
            videos are filmed; swap in a <video class="pv-media"> the same
            way once ready. --}}
@@ -1648,7 +1648,7 @@ body{
       <div class="industries-info">
         <div class="sec-eye">AVA · Industries served</div>
         <h2 class="sec-h">Built for Teams With Recurring,<br>Deadline-Driven Work</h2>
-        <p class="sec-p">AVA is built for organizations where a missed renewal deadline has a real cost — not generic office work.</p>
+        <p class="sec-p">AVA is built for organizations where a missed renewal deadline has a real cost, not generic office work.</p>
         <div class="industries-tags">
           <span class="what-pill">Insurance</span>
           <span class="what-pill">IT Services</span>
@@ -1807,7 +1807,7 @@ body{
           <img src="/images/ava-running-gag-2.png" alt="AVA reviewing the renewals queue">
           <div class="lc-photo-body">
             <div class="lc-photo-step" style="color:var(--text)">2. Take Stock</div>
-            <div class="lc-photo-txt">Sees exactly what's due — nothing forgotten.</div>
+            <div class="lc-photo-txt">Sees exactly what's due. Nothing forgotten.</div>
           </div>
         </div>
         <div class="lc-arrow">→</div>
@@ -1873,7 +1873,7 @@ body{
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 019.9-1"/><circle cx="12" cy="16" r="1.5"/></svg>
         </div>
         <h4>Secure Credentials</h4>
-        <p>OAuth tokens are decrypted only at runtime — never passed through queues in plaintext.</p>
+        <p>OAuth tokens are decrypted only at runtime, never passed through queues in plaintext.</p>
       </div>
     </div>
   </div>
@@ -1939,7 +1939,7 @@ body{
     <div class="center" style="margin-bottom:0">
       <div class="sec-eye">How it works</div>
       <h2 class="sec-h">Every AI Worker Follows<br>the Same Operating Loop</h2>
-      <p class="sec-p">This is the loop every UNIT AI Worker runs — whether it's managing renewals today or a new workflow tomorrow.</p>
+      <p class="sec-p">This is the loop every UNIT AI Worker runs, whether it's managing renewals today or a new workflow tomorrow.</p>
     </div>
     <div class="ops-flow">
       <div class="ops-step"><span class="ops-step-num">1</span>Monitor</div>
@@ -1959,30 +1959,30 @@ body{
       <div class="ops-step"><span class="ops-step-num">8</span>Learn</div>
       <span class="ops-arrow">→</span>
       <div class="ops-step"><span class="ops-step-num">9</span>Monitor Again</div>
-      <div class="ops-loop-note">The loop never stops — every completed task feeds directly back into monitoring the next one.</div>
+      <div class="ops-loop-note">The loop never stops. Every completed task feeds directly back into monitoring the next one.</div>
     </div>
   </div>
 </section>
 
 @php
-  // Single source of truth for the FAQ accordion — also drives the
+  // Single source of truth for the FAQ accordion - also drives the
   // FAQPage JSON-LD below so schema can't drift out of sync with the
   // visible copy.
   $__faqs = [
-    ['q' => 'What is an AI agent?', 'a' => 'An AI agent is software that takes real actions toward a goal — not just answers questions. Instead of waiting for a prompt, it monitors a workflow, makes decisions inside defined rules, and completes tasks end-to-end.'],
-    ['q' => 'What is an AI Worker?', 'a' => "AI Worker is UNIT's name for the AI agents we build. Each AI Worker is a specialized agent trained for one job — like managing renewals — not a general-purpose assistant. It owns that workflow completely, from detection to completion."],
-    ['q' => "What's the difference between an AI agent and ChatGPT?", 'a' => "ChatGPT waits for you to type a prompt and answers inside a conversation. A UNIT AI agent doesn't wait — it monitors your systems continuously, decides when action is needed, and executes a workflow on its own, only stopping to ask you for approval on the parts that matter."],
-    ['q' => 'How do AI Workers work?', 'a' => "Each AI Worker runs a defined pipeline — read the input, classify it, check memory and history, take action, and route the result to you for approval. AVA's renewal pipeline, for example, reads Gmail, classifies emails, drafts a response, and waits for your sign-off before anything goes out."],
-    ['q' => 'Can AI agents send emails?', 'a' => "Not without you. AVA drafts renewal emails and prepares them in Gmail, but UNIT never sends, submits, or transmits anything on your behalf. You review the draft and send it yourself — that's a deliberate design choice, not a limitation."],
-    ['q' => 'Can AI agents monitor Gmail?', 'a' => "Yes. AVA connects to your Gmail inbox through Google's official OAuth and watch APIs, reads incoming mail, and classifies renewal-related messages automatically — without you needing to forward or flag anything."],
-    ['q' => 'Can AI agents work together?', 'a' => 'Yes — UNIT\'s AI Workers are built to hand off context to each other, like AVA closing a renewal and passing the related documents to a document-management worker. AVA is live today; the other workers in that handoff chain are in development.'],
-    ['q' => 'What business workflows can UNIT automate?', 'a' => 'AVA, live today, owns the full renewal workflow — tracking expirations, starting campaigns, following up, supporting invoicing, and updating records. Document management, brand monitoring, and content publishing workflows are in active development.'],
-    ['q' => 'Which industries use UNIT?', 'a' => 'UNIT is built for organizations with recurring, deadline-driven workflows — including insurance, IT services, digital agencies, compliance-heavy operations, professional services, accounting, law firms, and consultancies.'],
-    ['q' => 'Can I deploy multiple AI Workers?', 'a' => 'Yes. A single account can deploy multiple worker instances — even multiple deployments of the same worker across different inboxes or clients. Start with one and add more as your operation grows.'],
-    ['q' => 'Do AI agents replace employees?', 'a' => "No. UNIT's AI Workers are built to own the repetitive parts of a workflow — tracking, drafting, following up — while every meaningful decision routes back to a human for approval. The goal is to remove busywork, not decision-making authority."],
-    ['q' => 'How do approvals work?', 'a' => 'When a worker finishes a task, the result is routed to a review queue in your dashboard. You approve or reject each item — approving keeps the draft in place for you to act on, rejecting removes it. Nothing is sent or finalized without that step.'],
+    ['q' => 'What is an AI agent?', 'a' => 'An AI agent is software that takes real actions toward a goal, not just answers questions. Instead of waiting for a prompt, it monitors a workflow, makes decisions inside defined rules, and completes tasks end-to-end.'],
+    ['q' => 'What is an AI Worker?', 'a' => "AI Worker is UNIT's name for the AI agents we build. Each AI Worker is a specialized agent trained for one job, like managing renewals, not a general-purpose assistant. It owns that workflow completely, from detection to completion."],
+    ['q' => "What's the difference between an AI agent and ChatGPT?", 'a' => "ChatGPT waits for you to type a prompt and answers inside a conversation. A UNIT AI agent doesn't wait: it monitors your systems continuously, decides when action is needed, and executes a workflow on its own, only stopping to ask you for approval on the parts that matter."],
+    ['q' => 'How do AI Workers work?', 'a' => "Each AI Worker runs a defined pipeline: read the input, classify it, check memory and history, take action, and route the result to you for approval. AVA's renewal pipeline, for example, reads Gmail, classifies emails, drafts a response, and waits for your sign-off before anything goes out."],
+    ['q' => 'Can AI agents send emails?', 'a' => "Not without you. AVA drafts renewal emails and prepares them in Gmail, but UNIT never sends, submits, or transmits anything on your behalf. You review the draft and send it yourself, that's a deliberate design choice, not a limitation."],
+    ['q' => 'Can AI agents monitor Gmail?', 'a' => "Yes. AVA connects to your Gmail inbox through Google's official OAuth and watch APIs, reads incoming mail, and classifies renewal-related messages automatically, without you needing to forward or flag anything."],
+    ['q' => 'Can AI agents work together?', 'a' => 'Yes, UNIT\'s AI Workers are built to hand off context to each other, like AVA closing a renewal and passing the related documents to a document-management worker. AVA is live today; the other workers in that handoff chain are in development.'],
+    ['q' => 'What business workflows can UNIT automate?', 'a' => 'AVA, live today, owns the full renewal workflow: tracking expirations, starting campaigns, following up, supporting invoicing, and updating records. Document management, brand monitoring, and content publishing workflows are in active development.'],
+    ['q' => 'Which industries use UNIT?', 'a' => 'UNIT is built for organizations with recurring, deadline-driven workflows, including insurance, IT services, digital agencies, compliance-heavy operations, professional services, accounting, law firms, and consultancies.'],
+    ['q' => 'Can I deploy multiple AI Workers?', 'a' => 'Yes. A single account can deploy multiple worker instances, even multiple deployments of the same worker across different inboxes or clients. Start with one and add more as your operation grows.'],
+    ['q' => 'Do AI agents replace employees?', 'a' => "No. UNIT's AI Workers are built to own the repetitive parts of a workflow: tracking, drafting, following up, while every meaningful decision routes back to a human for approval. The goal is to remove busywork, not decision-making authority."],
+    ['q' => 'How do approvals work?', 'a' => 'When a worker finishes a task, the result is routed to a review queue in your dashboard. You approve or reject each item: approving keeps the draft in place for you to act on, rejecting removes it. Nothing is sent or finalized without that step.'],
     ['q' => 'How does AVA manage renewals?', 'a' => 'AVA reads your inbox, classifies renewal-related emails, checks your client and contract history, drafts a response using your templates, and puts it in your review queue. Once you approve, the draft is ready in Gmail for you to send.'],
-    ['q' => 'Does UNIT integrate with Gmail?', 'a' => "Yes — Gmail is UNIT's first live integration. AVA connects via OAuth2 and Google's Pub/Sub webhook to watch your inbox and process renewal emails in real time."],
+    ['q' => 'Does UNIT integrate with Gmail?', 'a' => "Yes, Gmail is UNIT's first live integration. AVA connects via OAuth2 and Google's Pub/Sub webhook to watch your inbox and process renewal emails in real time."],
     ['q' => 'Can UNIT integrate with other systems?', 'a' => "Gmail is live today. Google Workspace, Microsoft 365, Google Drive, Calendar, and additional APIs are on the roadmap as UNIT's worker library grows."],
   ];
 @endphp
@@ -2003,7 +2003,7 @@ body{
       <div class="faq-left">
         <div class="sec-eye">FAQ</div>
         <h2 class="what-h" style="margin-bottom:16px">Not an app.<br>Not a bot.<br><em>An AI Agent.</em></h2>
-        <p style="font-size:.975rem;color:var(--t3);line-height:1.75;margin-bottom:20px">A UNIT AI Worker is an AI agent built from your day-to-day workflow. It runs without hand-holding, handles its job end-to-end, and reports back to you — so you always know what was done and why.</p>
+        <p style="font-size:.975rem;color:var(--t3);line-height:1.75;margin-bottom:20px">A UNIT AI Worker is an AI agent built from your day-to-day workflow. It runs without hand-holding, handles its job end-to-end, and reports back to you, so you always know what was done and why.</p>
         <a href="{{ route('hire.ava.welcome') }}" class="btn-outline">
           Get started free
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>

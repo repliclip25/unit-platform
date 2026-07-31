@@ -3,13 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Meet the Team — UNIT AI Agents</title>
-<meta name="description" content="Meet UNIT's AI agents — each an AI worker trained for one job. AVA, our AI renewal coordinator, is live; more AI agents are coming soon.">
+<title>Meet the Team: UNIT AI Agents</title>
+<meta name="description" content="Meet UNIT's AI agents, each an AI worker trained for one job. AVA, our AI renewal coordinator, is live; more AI agents are coming soon.">
 <link rel="icon" type="image/png" href="/logo.png">
 <link rel="apple-touch-icon" href="/logo.png">
 @include('partials.seo-meta', [
-    'title'       => 'Meet the Team — UNIT AI Agents',
-    'description' => "Meet UNIT's AI agents — each an AI worker trained for one job. AVA, our AI renewal coordinator, is live; more AI agents are coming soon.",
+    'title'       => 'Meet the Team: UNIT AI Agents',
+    'description' => "Meet UNIT's AI agents, each an AI worker trained for one job. AVA, our AI renewal coordinator, is live; more AI agents are coming soon.",
     'image'       => asset('images/hero-team-2.png'),
 ])
 <script type="application/ld+json">{!! json_encode([
@@ -200,7 +200,7 @@ body{font-family:var(--font-b);color:var(--text);background:var(--bg);-webkit-fo
   gap:clamp(16px,2vw,24px);
 }
 
-/* individual card — mirrors the screenshot layout exactly */
+/* individual card - mirrors the screenshot layout exactly */
 .wk-card{
   background:#fff;
   border:1px solid var(--border);
@@ -214,7 +214,7 @@ body{font-family:var(--font-b);color:var(--text);background:var(--bg);-webkit-fo
 .wk-card:hover{transform:translateY(-3px);box-shadow:0 16px 44px rgba(0,0,0,.08)}
 [data-theme="dark"] .wk-card:hover{box-shadow:0 16px 44px rgba(0,0,0,.35)}
 
-/* floating character image — right half */
+/* floating character image - right half */
 .wk-img-bg{
   position:absolute;right:0;top:0;bottom:0;
   width:48%;
@@ -384,7 +384,7 @@ body{font-family:var(--font-b);color:var(--text);background:var(--bg);-webkit-fo
 
 @php
   // Nav CTA should never tell an already-onboarded, logged-in user to
-  // "Deploy AVA" or "Log in" — both are wrong once they have
+  // "Deploy AVA" or "Log in" - both are wrong once they have
   // an account and/or a deployed worker.
   $__navAvaHasDesk = auth()->check() && \Illuminate\Support\Facades\DB::table('worker_deployments')
     ->where('user_id', auth()->id())->where('worker_slug', 'ava')
@@ -433,7 +433,7 @@ body{font-family:var(--font-b);color:var(--text);background:var(--bg);-webkit-fo
   </div>
   <div class="hero-page-right">
     <span class="hero-page-spacer" aria-hidden="true"></span>
-    <img src="/images/hero-team-2.png" alt="AVA, DOX, MOX and NUX — the UNIT AI workforce">
+    <img src="/images/hero-team-2.png" alt="AVA, DOX, MOX and NUX: the UNIT AI workforce">
     <div class="hero-fade-page"></div>
     <div class="hero-badge">
       <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M12 2l1.5 4.5H18l-3.75 2.75 1.5 4.5L12 11l-3.75 2.75 1.5-4.5L6 6.5h4.5L12 2z" fill="#F59E0B"/></svg>
@@ -445,7 +445,7 @@ body{font-family:var(--font-b);color:var(--text);background:var(--bg);-webkit-fo
 <!-- ACTIVITY FEED -->
 {{-- AVA-only: DOX/MOX/NUX are not live yet (see roster below), so the
      ticker only shows real workflow stages the live AVA pipeline
-     performs — no fabricated activity for Coming Soon workers. Matches
+     performs - no fabricated activity for Coming Soon workers. Matches
      the homepage ticker for consistency. --}}
 <div class="activity-feed">
   <div class="feed-track">
@@ -626,21 +626,21 @@ body{font-family:var(--font-b);color:var(--text);background:var(--bg);-webkit-fo
     <div class="behind-intro">
       <div class="sec-eye">Behind every worker</div>
       <h2 class="sec-h">Real lives. Real work. Real results.</h2>
-      <p class="sec-p">Every worker operates with the same commitment — learning, improving, and reporting back after every single task.</p>
+      <p class="sec-p">Every worker operates with the same commitment: learning, improving, and reporting back after every single task.</p>
     </div>
     <div class="behind-grid">
       <div class="behind-item">
         <div class="behind-icon"><svg class="icon-diary" viewBox="0 0 24 24" fill="none" stroke="#0D0D0D" stroke-width="2" stroke-linecap="round"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4z"/></svg></div>
         <div>
           <div class="behind-h">They keep a diary.</div>
-          <p class="behind-p">Every worker writes about their day — what they did, what they learned, and what's next. You always know what happened.</p>
+          <p class="behind-p">Every worker writes about their day: what they did, what they learned, and what's next. You always know what happened.</p>
         </div>
       </div>
       <div class="behind-item">
         <div class="behind-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2" stroke-linecap="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></div>
         <div>
           <div class="behind-h">They get better.</div>
-          <p class="behind-p">They improve with every task, every challenge, and every win. No retraining required — they just keep getting sharper.</p>
+          <p class="behind-p">They improve with every task, every challenge, and every win. No retraining required, they just keep getting sharper.</p>
         </div>
       </div>
       <div class="behind-item">
@@ -654,7 +654,7 @@ body{font-family:var(--font-b);color:var(--text);background:var(--bg);-webkit-fo
         <div class="behind-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg></div>
         <div>
           <div class="behind-h">They've never met.</div>
-          <p class="behind-p">Each worker believes they're alone at UNIT — for now. As you hire more, they'll learn to collaborate. Stay tuned.</p>
+          <p class="behind-p">Each worker believes they're alone at UNIT, for now. As you hire more, they'll learn to collaborate. Stay tuned.</p>
         </div>
       </div>
     </div>

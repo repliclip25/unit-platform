@@ -3,14 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>@yield('title', 'UNIT') — AI Agent Platform</title>
+<title>@yield('title', 'UNIT'): AI Agent Platform</title>
 <meta name="description" content="@yield('description', 'UNIT is an AI agent platform that helps businesses deploy specialized AI Workers to manage recurring business workflows, automate operations, and complete real work.')">
 <link rel="icon" type="image/png" href="/logo.png">
 <link rel="apple-touch-icon" href="/logo.png">
 {{-- Captures the title/description sections above as strings (instead of re-declaring
      them) so every public page gets OG/Twitter tags for free without duplicating copy. --}}
 @php
-    $__fullTitle = trim($__env->yieldContent('title', 'UNIT')) . ' — AI Agent Platform';
+    $__fullTitle = trim($__env->yieldContent('title', 'UNIT')) . ': AI Agent Platform';
     $__fullDesc  = trim($__env->yieldContent('description', 'UNIT is an AI agent platform that helps businesses deploy specialized AI Workers to manage recurring business workflows, automate operations, and complete real work.'));
 @endphp
 @include('partials.seo-meta', [
@@ -49,7 +49,7 @@ button{cursor:pointer;font-family:inherit}
 .w-md{max-width:900px;margin:0 auto;padding:0 40px}
 .w-lg{max-width:1200px;margin:0 auto;padding:0 48px}
 
-/* ── NAV — same visual system as / and /workers, but position:sticky (not
+/* ── NAV - same visual system as / and /workers, but position:sticky (not
    fixed) so page content doesn't need extra top-padding to compensate ── */
 .nav{position:sticky;top:0;left:0;right:0;z-index:100;background:rgba(255,255,255,.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
 [data-theme="dark"] .nav{background:rgba(8,8,16,.92);border-color:var(--line)}
@@ -69,14 +69,14 @@ button{cursor:pointer;font-family:inherit}
 .ham{display:none;flex-direction:column;gap:5px;padding:4px;background:none;border:none}
 .ham span{display:block;width:22px;height:2px;background:var(--text);border-radius:2px}
 
-/* theme toggle — identical to / and /workers */
+/* theme toggle - identical to / and /workers */
 .theme-toggle{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:1px solid var(--line);background:transparent;color:var(--t2);cursor:pointer;transition:all .2s;flex-shrink:0}
 .theme-toggle:hover{background:var(--surf);color:var(--text)}
 .theme-toggle svg{width:17px;height:17px}
 .icon-sun{display:none}.icon-moon{display:block}
 [data-theme="dark"] .icon-sun{display:block}[data-theme="dark"] .icon-moon{display:none}
 
-/* mobile menu — identical to / and /workers */
+/* mobile menu - identical to / and /workers */
 .mob-menu{display:none;position:fixed;inset:0;z-index:200;background:#fff;flex-direction:column;padding:24px clamp(20px,5vw,48px)}
 [data-theme="dark"] .mob-menu{background:#080810}
 .mob-menu.open{display:flex}
@@ -105,7 +105,7 @@ button{cursor:pointer;font-family:inherit}
 .btn-ln{display:inline-flex;align-items:center;gap:7px;font-size:14px;font-weight:600;padding:10px 20px;border-radius:8px;border:1px solid var(--line2);color:var(--t2);cursor:pointer;background:none;transition:border-color .15s,color .15s;font-family:var(--fb)}
 .btn-ln:hover{border-color:var(--text);color:var(--text)}
 
-/* ── FOOTER — identical to / and /workers ── */
+/* ── FOOTER - identical to / and /workers ── */
 footer.footer{background:#0A0A0A;padding:clamp(40px,6vw,72px) 0 28px}
 .ft-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:44px;margin-bottom:44px}
 .ft-name{font-family:var(--fd);font-size:1.15rem;font-weight:800;color:#fff;margin-bottom:10px}
@@ -167,7 +167,7 @@ footer.footer{background:#0A0A0A;padding:clamp(40px,6vw,72px) 0 28px}
 <x-public-footer />
 
 <script>
-// ── Theme — identical key/logic to / and /workers ──
+// ── Theme - identical key/logic to / and /workers ──
 const root = document.getElementById('html-root');
 const saved = localStorage.getItem('unit-theme');
 if (saved) root.setAttribute('data-theme', saved);

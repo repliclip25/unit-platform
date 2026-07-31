@@ -38,15 +38,15 @@
   <h2>4. Third-Party Services</h2>
   <p>UNIT integrates with:</p>
   <ul>
-    <li><strong>Google / Gmail API</strong> — inbox access and draft push</li>
-    <li><strong>Anthropic Claude API</strong> — AI processing of email content</li>
-    <li><strong>Stripe</strong> — payment processing</li>
-    <li><strong>Redis</strong> — job queue processing (ephemeral, not persisted)</li>
+    <li><strong>Google / Gmail API</strong>: inbox access and draft push</li>
+    <li><strong>Anthropic Claude API</strong>: AI processing of email content</li>
+    <li><strong>Stripe</strong>: payment processing</li>
+    <li><strong>Redis</strong>: job queue processing (ephemeral, not persisted)</li>
   </ul>
   <p>Each third-party provider has their own privacy policy governing their use of data.</p>
 
   <h2>5. Security</h2>
-  <p>We use TLS/HTTPS for all data in transit. OAuth tokens are stored encrypted at rest. Access to production data is restricted to authorized personnel. We use Google's standard OAuth2 flow — we never handle your Google password.</p>
+  <p>We use TLS/HTTPS for all data in transit. OAuth tokens are stored encrypted at rest. Access to production data is restricted to authorized personnel. We use Google's standard OAuth2 flow, we never handle your Google password.</p>
 
   <h2>6. Your Rights</h2>
   <p>You may request access to, correction of, or deletion of your personal data at any time by emailing <a href="mailto:hello@unit.report">hello@unit.report</a>. You may also disconnect Gmail access from your dashboard at any time, which revokes our inbox access immediately.</p>

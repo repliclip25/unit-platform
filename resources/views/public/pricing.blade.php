@@ -37,7 +37,7 @@
 .pc-glow-stripe { height:3px;width:100%;position:absolute;top:0;left:0 }
 .pc-inner { padding:24px;display:flex;flex-direction:column;flex:1 }
 
-/* Tier badge — explicit colors per theme */
+/* Tier badge - explicit colors per theme */
 .pc-tier {
     display:inline-flex;align-items:center;gap:5px;
     font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;
@@ -109,14 +109,14 @@
 <div class="w pub-hero" style="text-align:center">
     <div class="eyebrow">Pricing</div>
     <h1>An AI agent for every workflow.</h1>
-    <p style="font-size:16px;color:var(--t3);max-width:480px;margin:0 auto;line-height:1.7">Each UNIT AI agent is priced for what it automates — and what that's worth to your team. Start free, no card required.</p>
+    <p style="font-size:16px;color:var(--t3);max-width:480px;margin:0 auto;line-height:1.7">Each UNIT AI agent is priced for what it automates, and what that's worth to your team. Start free, no card required.</p>
 </div>
 
 <div class="w" style="max-width:1040px;margin:0 auto;padding:0 24px 96px">
 
     <div class="pc-note">
         <svg style="width:16px;height:16px;color:var(--text);flex-shrink:0;margin-top:2px" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-        <p><strong style="color:var(--text)">You only pay for the worker you deploy.</strong> Each worker has a monthly rate covering a set number of transactions, then a low overage rate after that. What counts as a "transaction" depends on the worker — defined on each card.</p>
+        <p><strong style="color:var(--text)">You only pay for the worker you deploy.</strong> Each worker has a monthly rate covering a set number of transactions, then a low overage rate after that. What counts as a "transaction" depends on the worker, defined on each card.</p>
     </div>
 
     @if($plans->count())
@@ -142,13 +142,13 @@
                 </div>
                 <div class="pc-tx-def">
                     @if($trialTransactions)
-                        <strong>Every worker ships with {{ number_format($trialTransactions) }} free transactions{{ $trialDays ? ' over '.$trialDays.' days' : '' }}.</strong> Full pipeline. Your inbox, your clients, your templates — not a sandbox.
+                        <strong>Every worker ships with {{ number_format($trialTransactions) }} free transactions{{ $trialDays ? ' over '.$trialDays.' days' : '' }}.</strong> Full pipeline. Your inbox, your clients, your templates, not a sandbox.
                     @else
-                        <strong>Every worker ships with a free trial.</strong> Full pipeline. Your inbox, your clients, your templates — not a sandbox.
+                        <strong>Every worker ships with a free trial.</strong> Full pipeline. Your inbox, your clients, your templates, not a sandbox.
                     @endif
                 </div>
                 <ul class="pc-features">
-                    @foreach(['Full AI pipeline on live data','Memory bank, templates & rules','Human review dashboard','Upgrade anytime — no restart'] as $f)
+                    @foreach(['Full AI pipeline on live data','Memory bank, templates & rules','Human review dashboard','Upgrade anytime, no restart'] as $f)
                     <li>
                         <span class="pc-check" style="background:rgba(74,222,128,.12)"><svg style="width:8px;height:8px" fill="none" stroke="#16a34a" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
                         {{ $f }}
@@ -179,7 +179,7 @@
             $accent = $plan->accent_color ?? '#142C74';
             $hex = ltrim($accent, '#');
             $r = hexdec(substr($hex,0,2)); $g = hexdec(substr($hex,2,2)); $b = hexdec(substr($hex,4,2));
-            // Short name: take part before — or -
+            // Short name: take part before the separator
             $shortName = trim(preg_split('/\s*[—\-]\s*/', $plan->display_name ?: $plan->worker_slug)[0]);
 
             // Nudge logged-in users based on their real subscription state for
@@ -200,17 +200,17 @@
             } elseif ($billing->status === 'active') {
                 $ctaLabel = "Go to your desk";
                 $ctaHref  = $deskRoute;
-                $banner   = "You're already on {$shortName} — this is your current plan.";
+                $banner   = "You're already on {$shortName}: this is your current plan.";
             } elseif ($billing->status === 'trial') {
                 $used     = (int) $billing->trial_transactions_used;
                 $limit    = (int) $billing->trial_transactions_limit;
                 $ctaLabel = "Upgrade to {$shortName}";
                 $ctaHref  = $billingRoute;
-                $banner   = "Free trial in progress — {$used}/{$limit} transactions used.";
+                $banner   = "Free trial in progress: {$used}/{$limit} transactions used.";
             } elseif ($billing->status === 'trial_exhausted') {
                 $ctaLabel = "Upgrade now";
                 $ctaHref  = $billingRoute;
-                $banner   = "Your free trial is used up — upgrade to keep {$shortName} running.";
+                $banner   = "Your free trial is used up, upgrade to keep {$shortName} running.";
             } elseif ($billing->status === 'past_due') {
                 $ctaLabel = "Update payment method";
                 $ctaHref  = route('app.billing.portal');
@@ -256,7 +256,7 @@
                 <ul class="pc-features">
                     @foreach([
                         number_format($plan->included_transactions).' transactions/month included',
-                        'Full pipeline — no features gated',
+                        'Full pipeline, no features gated',
                         'Memory bank, templates & custom rules',
                         'Usage dashboard & audit trail',
                         'Email support + onboarding help',
@@ -307,13 +307,13 @@
     <div style="text-align:center;padding:72px 0"><p style="color:var(--t3)">Pricing coming soon.</p></div>
     @endif
 
-    {{-- FAQ — single source of truth for both the visible accordion and
+    {{-- FAQ - single source of truth for both the visible accordion and
          the FAQPage schema below, so they can't drift out of sync. --}}
     @php
         $__pricingFaqs = [
-            ['q' => 'What counts as a transaction?', 'a' => 'It depends on the worker — each card above defines exactly what "1 transaction" means for that specific worker. For AVA it\'s one renewal email processed through the full pipeline: read, classified, drafted, and pushed to your Gmail drafts.'],
+            ['q' => 'What counts as a transaction?', 'a' => 'It depends on the worker: each card above defines exactly what "1 transaction" means for that specific worker. For AVA it\'s one renewal email processed through the full pipeline: read, classified, drafted, and pushed to your Gmail drafts.'],
             ['q' => 'What happens when I run out of transactions?', 'a' => 'Processing continues at the overage rate shown on the card. You can set a monthly spend cap from billing to prevent unexpected charges.'],
-            ['q' => 'Can I run multiple workers?', 'a' => 'Yes. Each worker you deploy is billed independently. They don\'t share transaction pools or billing — each meters separately.'],
+            ['q' => 'Can I run multiple workers?', 'a' => 'Yes. Each worker you deploy is billed independently. They don\'t share transaction pools or billing, each meters separately.'],
             ['q' => 'Can I cancel anytime?', 'a' => 'Yes. Cancel from billing at any time. Your worker runs through the end of the period. Data is preserved for 30 days after.'],
             ['q' => 'Do you use my email content to train AI?', 'a' => 'No. Content is processed in memory to generate drafts and stored only in your account audit trail. We never use your data to train AI models.'],
             ['q' => 'Is there a long-term contract?', 'a' => 'No. All plans are month-to-month. Enterprise includes annual pricing options.'],

@@ -4,7 +4,7 @@
 
 Instead of using one generic AI assistant for every task, organizations deploy specialized AI workers through UNIT. Each worker is trained for a single responsibility, follows a defined workflow, connects to the organization's existing tools, and logs every action for human review.
 
-UNIT workers don't just answer questions—they execute work from start to finish.
+UNIT workers don't just answer questions, they execute work from start to finish.
 
 ## How UNIT Works
 
@@ -17,7 +17,7 @@ UNIT workers don't just answer questions—they execute work from start to finis
 ## AI Workers
 
 @foreach ($workers as $worker)
-### {!! $worker['name'] !!} — {!! $worker['role'] !!} ({!! $worker['status'] !!})
+### {!! $worker['name'] !!}: {!! $worker['role'] !!} ({!! $worker['status'] !!})
 
 {!! $worker['description'] !!}
 
@@ -35,7 +35,7 @@ UNIT workers don't just answer questions—they execute work from start to finis
 ### Coming Soon
 
 @foreach ($upcomingWorkers as $name => $role)
-- {!! $name !!} — {!! $role !!}
+- {!! $name !!}: {!! $role !!}
 @endforeach
 
 ## Platform
@@ -62,7 +62,7 @@ UNIT is built around specialized AI workers rather than general-purpose assistan
 ## Current Worker
 
 @foreach ($workers as $worker)
-- {!! $worker['name'] !!} — {{ $worker['url'] }}
+- {!! $worker['name'] !!}: {{ $worker['url'] }}
 @endforeach
 
 ## Legal
