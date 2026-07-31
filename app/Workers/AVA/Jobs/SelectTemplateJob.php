@@ -30,26 +30,9 @@ class SelectTemplateJob implements ShouldQueue
         $userTemplates    = $input->memory['templates'];
         $defaultTemplates = $input->memory['templates_default'];
 
-        // 1. User-customised template for this category
-        $template = collect($userTemplates)->firstWhere('category', $category);
-
-        // 2. Platform default for this category
-        if (!$template) {
-            $template = collect($defaultTemplates)
-                ->where('category', $category)
-                ->where('is_default', true)
-                ->first();
-        }
-
-        // 3. Generic fallback
-        if (!$template) {
-            $template = collect($defaultTemplates)
-                ->where('category', 'Other')
-                ->where('is_default', true)
-                ->first();
-        }
-
-        $template = $template ? (array) $template : [];
+        // Round 1 — DraftEmailJob re-resolves for rounds 2/3 itself, since
+        // this job only ever runs once, at the start of the transaction.
+        $template = \App\Platform\Services\TemplateResolver::resolve($category, $userTemplates, $defaultTemplates, 1);
 
         $output = [
             'template_id'       => $template['id']               ?? null,

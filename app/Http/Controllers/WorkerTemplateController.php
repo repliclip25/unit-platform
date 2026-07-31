@@ -39,8 +39,8 @@ class WorkerTemplateController extends Controller
     public function workerStore(int $id, Request $request)
     {
         $dep = DB::table('worker_deployments')->where('id', $id)->where('user_id', auth()->id())->firstOrFail();
-        $request->validate(['name' => 'required', 'category' => 'required', 'subject_template' => 'required', 'body_template' => 'required']);
-        DB::table('email_templates')->insert(['user_id' => auth()->id(), 'worker_slug' => $dep->worker_slug, 'name' => $request->name, 'category' => $request->category, 'tone' => $request->tone ?? 'Professional, concise', 'subject_template' => $request->subject_template, 'body_template' => $request->body_template, 'approval_required' => $request->boolean('approval_required'), 'is_default' => false, 'active' => true, 'created_at' => now(), 'updated_at' => now()]);
+        $request->validate(['name' => 'required', 'category' => 'required', 'subject_template' => 'required', 'body_template' => 'required', 'cadence_round' => 'nullable|in:1,2,3']);
+        DB::table('email_templates')->insert(['user_id' => auth()->id(), 'worker_slug' => $dep->worker_slug, 'name' => $request->name, 'category' => $request->category, 'tone' => $request->tone ?? 'Professional, concise', 'cadence_round' => $request->cadence_round ?: null, 'subject_template' => $request->subject_template, 'body_template' => $request->body_template, 'approval_required' => $request->boolean('approval_required'), 'is_default' => false, 'active' => true, 'created_at' => now(), 'updated_at' => now()]);
         return back()->with('success', 'Template saved.');
     }
 
@@ -74,6 +74,7 @@ class WorkerTemplateController extends Controller
             'name'              => $original->name,
             'category'          => $original->category,
             'tone'              => $original->tone,
+            'cadence_round'     => $original->cadence_round,
             'subject_template'  => $original->subject_template,
             'body_template'     => $original->body_template,
             'approval_required' => $original->approval_required,
@@ -94,6 +95,7 @@ class WorkerTemplateController extends Controller
         $request->validate([
             'name'             => 'required|string|max:255',
             'tone'             => 'nullable|string|max:100',
+            'cadence_round'    => 'nullable|in:1,2,3',
             'subject_template' => 'required|string',
             'body_template'    => 'required|string',
             'approval_required'=> 'nullable|boolean',
@@ -104,6 +106,7 @@ class WorkerTemplateController extends Controller
             ->update([
                 'name'             => $request->name,
                 'tone'             => $request->tone ?? 'Professional, concise',
+                'cadence_round'    => $request->cadence_round ?: null,
                 'subject_template' => $request->subject_template,
                 'body_template'    => $request->body_template,
                 'approval_required'=> $request->boolean('approval_required'),

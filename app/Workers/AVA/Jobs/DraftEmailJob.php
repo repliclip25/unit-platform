@@ -37,6 +37,22 @@ class DraftEmailJob implements ShouldQueue
         $template = $input->stage('template');
         $read     = $input->stage('read');
 
+        // Rounds 2/3 (dispatched by ClientReminderCycleJob with the next
+        // cadence threshold) re-resolve the template instead of reusing
+        // round 1's frozen template_output — a tenant may have written
+        // distinct wording for the 2nd/3rd reminder under the same category.
+        $roundNumber = match ($this->daysBeforeExpiry) {
+            15      => 2,
+            0       => 3,
+            default => 1,
+        };
+        if ($roundNumber > 1) {
+            $roundTemplate = \App\Platform\Services\TemplateResolver::resolve(
+                $classify['category'] ?? 'Other', $input->memory['templates'], $input->memory['templates_default'], $roundNumber
+            );
+            if ($roundTemplate) $template = $roundTemplate;
+        }
+
         UnitPlatform::setStatus($this->txId, 'drafting');
 
         $lowConfidence        = !empty($memory['low_confidence_warning']);

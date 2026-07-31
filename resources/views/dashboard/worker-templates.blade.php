@@ -350,6 +350,11 @@ $sidebarLinks = [
               @else
                 <span class="mem-badge" style="background:rgba(34,197,94,.12);color:#22c55e" title="{{ $dep->name }} sends immediately without waiting for your review">⚡ Auto-sends</span>
               @endif
+              @if($t->cadence_round)
+                <span class="mem-badge" style="background:rgba(59,130,246,.12);color:#60a5fa" title="Only used for the {{ ['1st','2nd','3rd'][$t->cadence_round-1] ?? $t->cadence_round.'th' }} reminder in the 30/15/0-day cadence">{{ ['1st','2nd','3rd'][$t->cadence_round-1] ?? $t->cadence_round.'th' }} reminder only</span>
+              @else
+                <span class="mem-badge" style="background:var(--db-chip);color:var(--db-text-muted)" title="Used for every round of the 30/15/0-day cadence unless a round-specific template exists">All rounds</span>
+              @endif
             </div>
             <div class="tpl-row-actions">
               <form method="POST" action="{{ route('app.workers.templates.test', [$dep->id, $t->id]) }}">
@@ -406,6 +411,15 @@ $sidebarLinks = [
           <div><label class="mem-field-label">Tone</label><input type="text" name="tone" id="edit-tone" class="mem-input"></div>
         </div>
         <div>
+          <label class="mem-field-label">Cadence Round <span style="text-transform:none;font-weight:400">— which reminder this applies to</span></label>
+          <select name="cadence_round" id="edit-cadence-round" class="mem-input">
+            <option value="">All rounds (default)</option>
+            <option value="1">1st reminder only (30 days before expiry)</option>
+            <option value="2">2nd reminder only (15 days before expiry)</option>
+            <option value="3">3rd reminder only (day of expiry)</option>
+          </select>
+        </div>
+        <div>
           <label class="mem-field-label">Subject Template</label>
           <input type="text" name="subject_template" id="edit-subject" required class="mem-input" style="font-family:monospace">
           <div class="tpl-hint">Available: <span>@{{asset}}, @{{due_date}}, @{{client}}, @{{renewal_price}}</span></div>
@@ -443,6 +457,15 @@ $sidebarLinks = [
           <div><label class="mem-field-label">Category</label><input type="text" name="category" required placeholder="e.g. Domain Renewal" class="mem-input"></div>
         </div>
         <div><label class="mem-field-label">Tone</label><input type="text" name="tone" value="Professional, concise" class="mem-input"></div>
+        <div>
+          <label class="mem-field-label">Cadence Round <span style="text-transform:none;font-weight:400">— which reminder this applies to</span></label>
+          <select name="cadence_round" class="mem-input">
+            <option value="">All rounds (default)</option>
+            <option value="1">1st reminder only (30 days before expiry)</option>
+            <option value="2">2nd reminder only (15 days before expiry)</option>
+            <option value="3">3rd reminder only (day of expiry)</option>
+          </select>
+        </div>
         <div><label class="mem-field-label">Subject Template</label><input type="text" name="subject_template" required class="mem-input" style="font-family:monospace"></div>
         <div>
           <label class="mem-field-label">Body Template</label>
@@ -491,6 +514,7 @@ const WORKER_ID = {{ $dep->id }};
 function openEditModal(id, t) {
     document.getElementById('edit-name').value    = t.name;
     document.getElementById('edit-tone').value    = t.tone || '';
+    document.getElementById('edit-cadence-round').value = t.cadence_round || '';
     document.getElementById('edit-subject').value = t.subject_template;
     document.getElementById('edit-body').value    = t.body_template;
     document.getElementById('edit-approval').checked = !!parseInt(t.approval_required);
