@@ -92,6 +92,7 @@
 <link rel="stylesheet" href="/css/unit-public.css">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;scroll-padding-top:108px} /* clears the fixed nav (62px) + sticky worker subnav (46px) */
 img{display:block;max-width:100%}
 a{text-decoration:none;color:inherit}
 button{cursor:pointer;font-family:inherit;border:none;background:none}
@@ -961,14 +962,11 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
     ->whereIn('status', ['active', 'paused'])->exists();
 @endphp
 
-{{-- NAV - shared structure with / and /ai-workers; upcoming worker pages reuse this same component --}}
-<x-public-nav :links="[
-  ['label' => 'Meet the AI Worker', 'href' => route('public.workers.index')],
-  ['label' => 'How It Works',      'href' => '#day-in-life'],
-  ['label' => 'For Business',      'href' => '#faq'],
-  ['label' => 'Resources',         'href' => '#integrations'],
-  ['label' => 'Pricing',           'href' => route('pricing')],
-]">
+{{-- NAV - global links now come from App\Support\PublicNav, identical on
+     every public page. Page-specific jump links live in <x-worker-subnav>
+     below, kept structurally separate so they can't drift into the global
+     nav the way "For Business" pointing at #faq used to. --}}
+<x-public-nav :links="\App\Support\PublicNav::links()">
   <x-slot:cta>
     @if($avaHasDesk)
     <a href="{{ route('app.desk.ava') }}" class="btn-cta">
@@ -990,6 +988,13 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
     @endif
   </x-slot>
 </x-public-nav>
+
+<x-worker-subnav :items="[
+  ['label' => 'Meet AVA',                 'href' => '#meet-ava'],
+  ['label' => 'How She Works',            'href' => '#day-in-life'],
+  ['label' => 'Integrations & Security', 'href' => '#integrations'],
+  ['label' => 'FAQ',                      'href' => '#faq'],
+]" />
 
 {{-- HERO -
      Real photo (ava-skyline.png) as poster, real video (AVA.MP4) wired
@@ -1152,7 +1157,7 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
 </section>
 
 {{-- MEET AVA - first-person, in her own words --}}
-<section class="meet-sec">
+<section class="meet-sec" id="meet-ava">
   <div class="w">
     <div class="meet-grid">
       <div class="meet-img-wrap">
@@ -1658,7 +1663,7 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
 
 {{-- INTEGRATIONS + SECURITY --}}
 {{-- INTEGRATIONS --}}
-<section class="integrations-sec">
+<section class="integrations-sec" id="integrations">
   <div class="w">
     <div class="int-top">
       <div class="sec-eye">{{ $worker['name'] }} connects with</div>
@@ -1731,7 +1736,7 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
 @endif
 
 {{-- FAQ --}}
-<section class="faq-sec sec">
+<section class="faq-sec sec" id="faq">
   <div class="w">
     <div class="faq-grid">
       <div>

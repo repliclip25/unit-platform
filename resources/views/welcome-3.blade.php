@@ -1008,12 +1008,7 @@ body{
     ->whereIn('status', ['active', 'paused'])->exists();
 @endphp
 
-<x-public-nav :links="[
-  ['label' => 'Meet the AI Agents', 'href' => route('public.workers.index')],
-  ['label' => 'How It Works',     'href' => '#timeline'],
-  ['label' => 'Resources',        'href' => '#resources'],
-  ['label' => 'Pricing',          'href' => route('pricing')],
-]">
+<x-public-nav :links="\App\Support\PublicNav::links()">
   <x-slot:cta>
     @if($__navAvaHasDesk)
     <a href="{{ route('app.desk.ava') }}" class="btn-cta">

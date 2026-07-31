@@ -348,12 +348,7 @@ body{font-family:var(--font-b);color:var(--text);background:var(--bg);-webkit-fo
     ->whereIn('status', ['active', 'paused'])->exists();
 @endphp
 
-<x-public-nav :links="[
-  ['label' => 'Meet the AI Worker', 'href' => route('public.workers.index'), 'active' => true],
-  ['label' => 'How It Works',     'href' => url('/') . '#timeline'],
-  ['label' => 'Resources',        'href' => url('/') . '#resources'],
-  ['label' => 'Pricing',          'href' => route('pricing')],
-]">
+<x-public-nav :links="\App\Support\PublicNav::links()">
   <x-slot:cta>
     @if($__navAvaHasDesk)
     <a href="{{ route('app.desk.ava') }}" class="btn-cta">Go to AVA's Desk <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>

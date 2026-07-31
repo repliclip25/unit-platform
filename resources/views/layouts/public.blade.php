@@ -102,12 +102,7 @@ button{cursor:pointer;font-family:inherit}
 </head>
 <body>
 
-<x-public-nav :links="[
-  ['label' => 'Meet the AI Worker', 'href' => route('public.workers.index'), 'active' => request()->routeIs('public.workers.index')],
-  ['label' => 'Pricing',          'href' => route('pricing'),              'active' => request()->routeIs('pricing')],
-  ['label' => 'Blog',             'href' => route('blog'),                 'active' => request()->routeIs('blog*')],
-  ['label' => 'Company',          'href' => route('about'),                'active' => request()->routeIs('about')],
-]" />
+<x-public-nav :links="\App\Support\PublicNav::links()" />
 
 @yield('body')
 
