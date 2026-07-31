@@ -557,8 +557,12 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
 .pipe-time{
   font-size:11px;font-weight:600;color:transparent;
   font-variant-numeric:tabular-nums;min-height:16px;
-  transition:color .3s;
+  transition:color .3s;letter-spacing:.04em;text-transform:uppercase;
 }
+.pipe-step.ps-running .pipe-time.pipe-who-you,
+.pipe-step.ps-done .pipe-time.pipe-who-you{color:#B45309}
+[data-theme="dark"] .pipe-step.ps-running .pipe-time.pipe-who-you,
+[data-theme="dark"] .pipe-step.ps-done .pipe-time.pipe-who-you{color:#F5C518}
 /* check circle inside node — hidden by default */
 .pipe-check{
   display:none;
@@ -608,9 +612,6 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
 [data-theme="dark"] .mission-bar{background:#1a1a1a;border-color:#2D2D2D}
 .mission-bar.visible{opacity:1;transform:translateY(0)}
 .mission-txt{font-size:17px;font-weight:700;color:var(--text)}
-.mission-stats{display:flex;gap:40px}
-.mission-stat-n{font-size:1.4rem;font-weight:800;color:var(--text);letter-spacing:-.03em}
-.mission-stat-l{font-size:11.5px;color:var(--t4);margin-top:2px}
 /* CTA buttons below pipeline */
 .pipe-cta{display:flex;align-items:center;gap:12px;margin-top:28px;flex-wrap:wrap;width:fit-content}
 .btn-pipe-hire{
@@ -1095,90 +1096,38 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
       </div>
     </div>
 
-    {{-- AVA's real 8-stage pipeline (human-friendly labels) --}}
+    {{-- AVA's real full pipeline, grouped into 10 honest steps — same
+         data drives the HowTo schema in <head>, so this can't drift out
+         of sync with what's claimed to search engines. --}}
+    @php
+      $pipeIcons = [
+        '<circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>',
+        '<path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/>',
+        '<path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/>',
+        '<path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4z"/>',
+        '<path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/><polyline points="9 10 12 13 15 10"/>',
+        '<path d="M18 8a6 6 0 00-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/>',
+        '<path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 12l2 2 4-4"/>',
+        '<path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>',
+        '<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>',
+        '<polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/>',
+      ];
+    @endphp
     <div class="pipe-wrap">
       <div class="pipe-wrap-inner">
       <div class="pipeline-row" id="pipelineRow">
 
-      <div class="pipe-step" data-step="0" data-time="9:00 AM">
+      @foreach($worker['pipeline'] as $i => $step)
+      <div class="pipe-step" data-step="{{ $i }}" data-who="{{ $step['who'] }}">
         <div class="pipe-node">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1M12 3v13M8 7l4-4 4 4"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round">{!! $pipeIcons[$i] !!}</svg>
           <div class="pipe-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
-          <span class="pipe-badge">1</span>
+          <span class="pipe-badge">{{ $i + 1 }}</span>
         </div>
-        <div class="pipe-label">Task Received</div>
-        <div class="pipe-time"></div>
+        <div class="pipe-label">{{ $step['title'] }}</div>
+        <div class="pipe-time pipe-who-{{ strtolower($step['who']) }}">{{ $step['who'] === 'AVA' ? 'AVA' : 'You decide' }}</div>
       </div>
-
-      <div class="pipe-step" data-step="1" data-time="9:00 AM">
-        <div class="pipe-node">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-          <div class="pipe-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
-          <span class="pipe-badge">2</span>
-        </div>
-        <div class="pipe-label">Reads the Email</div>
-        <div class="pipe-time"></div>
-      </div>
-
-      <div class="pipe-step" data-step="2" data-time="9:01 AM">
-        <div class="pipe-node">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
-          <div class="pipe-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
-          <span class="pipe-badge">3</span>
-        </div>
-        <div class="pipe-label">Figures Out Priority</div>
-        <div class="pipe-time"></div>
-      </div>
-
-      <div class="pipe-step" data-step="3" data-time="9:01 AM">
-        <div class="pipe-node">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
-          <div class="pipe-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
-          <span class="pipe-badge">4</span>
-        </div>
-        <div class="pipe-label">Looks Up the Customer</div>
-        <div class="pipe-time"></div>
-      </div>
-
-      <div class="pipe-step" data-step="4" data-time="9:02 AM">
-        <div class="pipe-node">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-          <div class="pipe-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
-          <span class="pipe-badge">5</span>
-        </div>
-        <div class="pipe-label">Logs the Interaction</div>
-        <div class="pipe-time"></div>
-      </div>
-
-      <div class="pipe-step" data-step="5" data-time="9:02 AM">
-        <div class="pipe-node">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>
-          <div class="pipe-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
-          <span class="pipe-badge">6</span>
-        </div>
-        <div class="pipe-label">Picks the Right Message</div>
-        <div class="pipe-time"></div>
-      </div>
-
-      <div class="pipe-step" data-step="6" data-time="9:03 AM">
-        <div class="pipe-node">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4z"/></svg>
-          <div class="pipe-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
-          <span class="pipe-badge">7</span>
-        </div>
-        <div class="pipe-label">Writes the Email</div>
-        <div class="pipe-time"></div>
-      </div>
-
-      <div class="pipe-step" data-step="7" data-time="9:03 AM">
-        <div class="pipe-node">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/><polyline points="9 10 12 13 15 10"/></svg>
-          <div class="pipe-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
-          <span class="pipe-badge">8</span>
-        </div>
-        <div class="pipe-label">Lands in Your Inbox</div>
-        <div class="pipe-time"></div>
-      </div>
+      @endforeach
 
       </div>{{-- end pipeline-row --}}
       </div>{{-- end pipe-wrap-inner --}}
@@ -1189,19 +1138,9 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
     {{-- Single shared ticker row — below all steps --}}
     <div class="pipe-ticker-row" id="pipeTickerRow"></div>
 
-    {{-- Mission complete bar --}}
+    {{-- Cycle-complete bar — no fabricated time-savings numbers --}}
     <div class="mission-bar" id="missionBar">
-      <div class="mission-txt">Mission Complete 🎉</div>
-      <div class="mission-stats">
-        <div>
-          <div class="mission-stat-n">3 minutes</div>
-          <div class="mission-stat-l">Time Taken</div>
-        </div>
-        <div>
-          <div class="mission-stat-n">35 minutes</div>
-          <div class="mission-stat-l">Human effort saved</div>
-        </div>
-      </div>
+      <div class="mission-txt">Cycle Complete — Watching for the Next One 🎉</div>
     </div>
 
     {{-- CTAs — $avaHasDesk computed once near the top of the page --}}
@@ -1234,20 +1173,21 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
   var PAUSE_MS = 3000;
 
   var tickerMessages = [
-    'AVA is picking up a new renewal task…',
-    'Reading the renewal email from your inbox…',
-    'Figuring out: renewal · high priority · expiring soon…',
-    'Pulling up customer history and past renewals…',
-    'Logging every action so you have a full audit trail…',
-    'Selecting the right tone and message template…',
-    'Writing a personalised renewal email for your customer…',
-    'Renewal draft ready and waiting in your inbox…',
+    'Detecting a renewal — inbox or registry threshold…',
+    'Reading and classifying what kind of renewal this is…',
+    'Checking memory for this client\'s history…',
+    'Drafting the renewal message and logging the transaction…',
+    'Placing the draft in your Gmail drafts…',
+    'Waiting for your approval — she\'ll remind you if it sits…',
+    'Handling the invoice, or waiting if you skip it…',
+    'Waiting for payment confirmation…',
+    'Updating the renewal date for next cycle…',
+    'Archiving the proof and resetting the watch…',
   ];
 
   function clearAll(){
     steps.forEach(function(s){
       s.classList.remove('ps-running','ps-done');
-      s.querySelector('.pipe-time').textContent = '';
     });
     tickerRow.innerHTML = '';
     missionBar.classList.remove('visible');
@@ -1264,14 +1204,11 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
       return;
     }
     var step = steps[i];
-    var timeEl = step.querySelector('.pipe-time');
     step.classList.add('ps-running');
-    timeEl.textContent = step.dataset.time;  // stamp time when step activates
     tickerRow.innerHTML = '<span class="pipe-ticker-dot"></span>' + tickerMessages[i];
     setTimeout(function(){
       step.classList.remove('ps-running');
       step.classList.add('ps-done');
-      // time stays visible in done color
       runStep(i + 1);
     }, STEP_MS);
   }

@@ -27,16 +27,16 @@ class WorkerPublicController extends Controller
                 // (inject/fetch → ... → archive → reschedule watch) into
                 // 10 steps a visitor can actually follow.
                 'pipeline' => [
-                    ['title' => 'Detects the Renewal', 'desc' => "AVA watches two places at once: your inbox for incoming renewal emails, and your asset registry for expiration dates — so she catches it even if the email never arrives."],
-                    ['title' => 'Reads & Classifies', 'desc' => "She reads the message (or the registry record), figures out what kind of renewal this is, and sets a priority. Anything that isn't a renewal exits here — no wasted effort."],
-                    ['title' => 'Checks Her Memory', 'desc' => "She matches the renewal to your stored client, contact, and account history, so the draft isn't starting from zero."],
-                    ['title' => 'Drafts the Message', 'desc' => "Using your templates and that history, she writes the renewal email, then logs the transaction before anything else happens."],
-                    ['title' => 'Puts It In Your Inbox', 'desc' => "The draft lands in Gmail Drafts, not Sent. It's ready for you to read, edit, and approve."],
-                    ['title' => 'Waits — and Reminds You', 'desc' => "Nothing goes to your client until you approve it. If it sits too long, she reminds you herself — gentle at first, more direct the longer it waits."],
-                    ['title' => 'Handles the Invoice', 'desc' => "If you attach an invoice, she reads it automatically. If you don't, she'll ask a few times, then stop and wait for you."],
-                    ['title' => 'Confirms Payment', 'desc' => "Before she closes the loop, she waits for you to confirm payment came through — with the same nudging pattern if you go quiet."],
-                    ['title' => 'Updates the Renewal Date', 'desc' => 'Once confirmed, she moves the renewal date forward on her own. No manual calendar updates.'],
-                    ['title' => 'Archives the Proof, Resets the Watch', 'desc' => 'She builds a complete record of everything that happened — every draft, every reminder, every decision — as a downloadable PDF with a QR code, then quietly starts watching for the next cycle.'],
+                    ['who' => 'AVA', 'title' => 'Detects the Renewal', 'desc' => "AVA watches two places at once: your inbox for incoming renewal emails, and your asset registry for expiration dates — so she catches it even if the email never arrives."],
+                    ['who' => 'AVA', 'title' => 'Reads & Classifies', 'desc' => "She reads the message (or the registry record), figures out what kind of renewal this is, and sets a priority. Anything that isn't a renewal exits here — no wasted effort."],
+                    ['who' => 'AVA', 'title' => 'Checks Her Memory', 'desc' => "She matches the renewal to your stored client, contact, and account history, so the draft isn't starting from zero."],
+                    ['who' => 'AVA', 'title' => 'Drafts the Message', 'desc' => "Using your templates and that history, she writes the renewal email, then logs the transaction before anything else happens."],
+                    ['who' => 'AVA', 'title' => 'Puts It In Your Inbox', 'desc' => "The draft lands in Gmail Drafts, not Sent. It's ready for you to read, edit, and approve."],
+                    ['who' => 'YOU', 'title' => 'Waits — and Reminds You', 'desc' => "Nothing goes to your client until you approve it. If it sits too long, she reminds you herself — gentle at first, more direct the longer it waits."],
+                    ['who' => 'YOU', 'title' => 'Handles the Invoice', 'desc' => "If you attach an invoice, she reads it automatically. If you don't, she'll ask a few times, then stop and wait for you."],
+                    ['who' => 'YOU', 'title' => 'Confirms Payment', 'desc' => "Before she closes the loop, she waits for you to confirm payment came through — with the same nudging pattern if you go quiet."],
+                    ['who' => 'AVA', 'title' => 'Updates the Renewal Date', 'desc' => 'Once confirmed, she moves the renewal date forward on her own. No manual calendar updates.'],
+                    ['who' => 'AVA', 'title' => 'Archives the Proof, Resets the Watch', 'desc' => 'She builds a complete record of everything that happened — every draft, every reminder, every decision — as a downloadable PDF with a QR code, then quietly starts watching for the next cycle.'],
                 ],
 
                 'faq' => [
