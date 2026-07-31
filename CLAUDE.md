@@ -5,6 +5,7 @@
 - **[UNIT.md](UNIT.md)** — What the platform is, the multi-tenant model, the 11 worker module spec, billing, admin, referral, and the future marketplace vision
 - **[WORKER.md](WORKER.md)** — The WorkerContract interface, all 31 contract methods across 8 blocks (including `employee()` persona), WorkerRegistry hybrid model, lifecycle states, NULL contract rule, versioning, worker-to-worker communication
 - **[AVA.md](AVA.md)** — AVA's specific implementation: Gmail watch, 8-stage pipeline, renewal register, memory layers, Fast Track, QA checks
+- **[WORKER-PROFILE.md](WORKER-PROFILE.md)** — Public worker profile page spec: required data shape, the 15 page sections and their constraints, required JSON-LD, SEO checklist, reviews backend. Reference implementation is AVA's page; read this before building a second worker's public page
 
 Read these before working on platform-level features, adding a new worker, or modifying AVA's pipeline.
 
