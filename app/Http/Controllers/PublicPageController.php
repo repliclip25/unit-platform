@@ -2,11 +2,44 @@
 
 namespace App\Http\Controllers;
 
+use App\Platform\Services\EmailDispatcher;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class PublicPageController extends Controller
 {
+    public function subscribeToBlog(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email|max:255',
+        ]);
+
+        $existing = DB::table('blog_subscribers')->where('email', $request->email)->first();
+        if ($existing) {
+            if ($existing->unsubscribed_at) {
+                DB::table('blog_subscribers')->where('id', $existing->id)->update([
+                    'unsubscribed_at' => null,
+                    'updated_at'      => now(),
+                ]);
+                return back()->with('success', 'Welcome back! You\'re subscribed again.');
+            }
+            return back()->with('success', 'You\'re already subscribed.');
+        }
+
+        DB::table('blog_subscribers')->insert([
+            'email'              => $request->email,
+            'unsubscribe_token'  => Str::random(48),
+            'source'             => $request->query('utm_source'),
+            'created_at'         => now(),
+            'updated_at'         => now(),
+        ]);
+
+        EmailDispatcher::send('inbound_newsletter_subscribe', $request->email, $request->email, null);
+
+        return back()->with('success', 'You\'re subscribed! Watch your inbox for new posts.');
+    }
+
     public function about()
     {
         // Real numbers, not invented ones. See MEMORY/session notes on

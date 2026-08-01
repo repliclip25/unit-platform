@@ -69,6 +69,7 @@ Route::get('/pricing',              [PublicPageController::class, 'pricing'])->n
 Route::get('/privacy',              [PublicPageController::class, 'privacy'])->name('privacy');
 Route::get('/terms',                [PublicPageController::class, 'terms'])->name('terms');
 Route::get('/blog',                 [PublicPageController::class, 'blog'])->name('blog');
+Route::post('/blog/subscribe',      [PublicPageController::class, 'subscribeToBlog'])->middleware('throttle:5,1')->name('blog.subscribe');
 Route::get('/blog/{slug}',          [PublicPageController::class, 'blogPost'])->name('blog.show');
 
 // Memory access invite accept (public — email link may arrive before login)
