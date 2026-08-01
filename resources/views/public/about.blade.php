@@ -84,8 +84,8 @@
       <h2 class="sh2" style="font-size:32px">From running the process to automating it</h2>
     </div>
     <div class="pub-body" style="padding:0">
-      <p>We didn't start as a software company. We started inside operations teams, running renewal pipelines, managing compliance calendars, chasing filings across government agencies. The work was repetitive, high-stakes, and completely manual. Every missed step meant downstream problems that took hours to untangle.</p>
-      <p>The tools that existed were either too generic (spreadsheets, project management apps) or too expensive (custom enterprise software no small team could afford). So we started automating our own workflows, piece by piece, until we had something that actually ran the process instead of just organizing it.</p>
+      <p>We didn't start as a software company. We started running an IT and digital agency, tracking domain renewals, hosting renewals, and vendor contracts across every client at once. A missed renewal wasn't just an internal mistake, it was a client-facing problem. Reminder emails got buried, filtered, or never arrived at all.</p>
+      <p>The tools that existed were either too generic (spreadsheets, shared inboxes) or too expensive (enterprise software built for teams far bigger than ours). So we built AVA to solve our own problem first: a worker that watched every renewal, not just the inbox, and caught the ones that would have otherwise slipped through.</p>
       <p>UNIT is that system, made available to every team.</p>
     </div>
   </div>
