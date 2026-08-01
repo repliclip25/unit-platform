@@ -904,5 +904,7 @@ function escHtml(str) {
   });
 })();
 </script>
+
+@include('partials.tracking')
 </body>
 </html>

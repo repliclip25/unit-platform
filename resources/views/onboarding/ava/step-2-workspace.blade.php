@@ -365,5 +365,7 @@ body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-fon
 
 </div>
 
+
+@include('partials.tracking')
 </body>
 </html>

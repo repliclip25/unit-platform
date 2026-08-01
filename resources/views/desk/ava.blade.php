@@ -872,5 +872,7 @@ $sidebarLinks = [
   loadTransaction(tab.dataset.initialTx);
 })();
 </script>
+
+@include('partials.tracking')
 </body>
 </html>

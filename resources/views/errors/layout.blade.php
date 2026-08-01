@@ -42,5 +42,7 @@ body{
   <a href="/" class="err-btn err-btn-primary">Go home</a>
   <a href="/ai-workers" class="err-btn err-btn-ghost">Browse AI Workers</a>
 </div>
+
+@include('partials.tracking')
 </body>
 </html>

@@ -1184,5 +1184,7 @@ if(txId){
 </script>
 
 <x-self-learn pageKey="hire.ava.onshift" />
+
+@include('partials.tracking')
 </body>
 </html>

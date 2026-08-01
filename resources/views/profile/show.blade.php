@@ -745,5 +745,7 @@ document.getElementById('confirm_delete')?.addEventListener('input', function() 
     btn.style.opacity = this.value === 'DELETE' ? '1' : '.5';
 });
 </script>
+
+@include('partials.tracking')
 </body>
 </html>

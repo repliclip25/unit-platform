@@ -761,5 +761,7 @@ $statusColor = $statusColors[$tx->status] ?? ['bg'=>'var(--db-chip)','color'=>'v
   });
 })();
 </script>
+
+@include('partials.tracking')
 </body>
 </html>

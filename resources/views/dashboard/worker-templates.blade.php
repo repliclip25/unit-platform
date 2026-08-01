@@ -636,5 +636,7 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 @endif
 </script>
+
+@include('partials.tracking')
 </body>
 </html>

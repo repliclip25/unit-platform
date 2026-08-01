@@ -412,5 +412,7 @@ $priorityColors = ['Critical'=>'#ef4444','High'=>'#f59e0b','Medium'=>'#9ca3af','
   });
 })();
 </script>
+
+@include('partials.tracking')
 </body>
 </html>

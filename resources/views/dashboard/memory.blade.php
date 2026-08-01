@@ -1005,5 +1005,7 @@ if (['mine','shared','access'].includes(hash)) {
   document.addEventListener('DOMContentLoaded', function () { showTab('access'); });
 @endif
 </script>
+
+@include('partials.tracking')
 </body>
 </html>

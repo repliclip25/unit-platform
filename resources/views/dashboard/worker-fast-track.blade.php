@@ -879,5 +879,7 @@ if (ftForm) {
   });
 }
 </script>
+
+@include('partials.tracking')
 </body>
 </html>

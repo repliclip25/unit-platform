@@ -650,5 +650,7 @@ function toggleDeploy(slug) {
     }
 }
 </script>
+
+@include('partials.tracking')
 </body>
 </html>

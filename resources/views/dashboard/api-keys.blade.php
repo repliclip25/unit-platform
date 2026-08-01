@@ -554,5 +554,7 @@ function toggleKeyForm(provider) {
   if (el) el.style.display = el.style.display === 'none' ? 'block' : 'none';
 }
 </script>
+
+@include('partials.tracking')
 </body>
 </html>

@@ -445,5 +445,7 @@ copyBtn.addEventListener('click', function () {
   });
 });
 </script>
+
+@include('partials.tracking')
 </body>
 </html>

@@ -426,5 +426,7 @@ $sidebarLinks = [
   });
 })();
 </script>
+
+@include('partials.tracking')
 </body>
 </html>

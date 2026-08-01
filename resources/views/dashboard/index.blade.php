@@ -627,5 +627,7 @@ $notifTextColors = ['error'=>'#f87171','warning'=>'#fbbf24','info'=>'var(--db-te
   });
 })();
 </script>
+
+@include('partials.tracking')
 </body>
 </html>
