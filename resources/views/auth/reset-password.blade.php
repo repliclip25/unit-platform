@@ -97,5 +97,7 @@ document.getElementById('theme-toggle').addEventListener('click', function () {
   localStorage.setItem('unit-theme-v2', next);
 });
 </script>
+
+@include('partials.tracking')
 </body>
 </html>

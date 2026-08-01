@@ -463,6 +463,10 @@ class WorkerController extends Controller
                     'first_worker_slug' => $request->worker_slug,
                     'first_worker_at'   => now(),
                 ]);
+                // One-time GA4 conversion event on the tenant's FIRST deployment
+                // ever, not every subsequent one — consumed on the next page
+                // load, see dashboard/worker-detail.blade.php and dashboard/billing.blade.php
+                session(['ga4_worker_deployed' => $request->worker_slug]);
             }
         } catch (\Throwable) {
             // Column may not exist on older production schema — non-fatal

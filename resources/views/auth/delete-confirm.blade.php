@@ -73,5 +73,7 @@
     </a>
     @endif
 </div>
+
+@include('partials.tracking')
 </body>
 </html>

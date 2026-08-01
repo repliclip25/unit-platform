@@ -479,5 +479,9 @@ body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-fon
 
 </div>
 
+@include('partials.tracking')
+@if(session()->pull('ga4_signup_completed'))
+<script>window.dataLayer = window.dataLayer || []; dataLayer.push({event: 'sign_up', method: 'email'});</script>
+@endif
 </body>
 </html>

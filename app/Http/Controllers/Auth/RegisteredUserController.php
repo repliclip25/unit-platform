@@ -101,6 +101,10 @@ class RegisteredUserController extends Controller
             session(['onboarding_intent_worker' => $workerIntent]);
         }
 
+        // One-time GA4 conversion event, consumed and cleared on the next
+        // page load — see resources/views/onboarding/ava/step-1-welcome.blade.php
+        session(['ga4_signup_completed' => true]);
+
         // If user arrived via a hire flow (e.g. /hire/ava/welcome), intended()
         // sends them back there. Otherwise (direct /register link, an ad
         // landing straight on signup, etc.) fall back to the v2 onboarding

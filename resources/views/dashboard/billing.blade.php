@@ -613,5 +613,9 @@ $statusColors = [
   }
 })();
 </script>
+@include('partials.tracking')
+@if($__ga4WorkerSlug = session()->pull('ga4_worker_deployed'))
+<script>window.dataLayer = window.dataLayer || []; dataLayer.push({event: 'worker_deployed', worker_slug: @json($__ga4WorkerSlug)});</script>
+@endif
 </body>
 </html>

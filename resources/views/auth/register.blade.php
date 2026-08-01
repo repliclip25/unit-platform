@@ -153,5 +153,8 @@ document.getElementById('theme-toggle').addEventListener('click', function () {
   localStorage.setItem('unit-theme-v2', next);
 });
 </script>
+
+@include('partials.tracking')
+<script>window.dataLayer = window.dataLayer || []; dataLayer.push({event: 'signup_started'});</script>
 </body>
 </html>

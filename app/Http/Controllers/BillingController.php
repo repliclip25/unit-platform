@@ -269,6 +269,11 @@ class BillingController extends Controller
         \App\Platform\Services\InfluencerService::handleConversion($user->id);
 
         $planLabel = ucfirst($planSlug);
+
+        // One-time GA4 conversion event, consumed on the next page load —
+        // see dashboard/worker-detail.blade.php
+        session(['ga4_checkout_completed' => ['worker_slug' => $deployment->worker_slug, 'plan_slug' => $planSlug]]);
+
         return redirect()->route('app.workers.show', $deploymentId)
             ->with('success', ucfirst($deployment->worker_slug) . " {$planLabel} plan activated. You're fully operational.");
     }
