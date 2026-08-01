@@ -141,8 +141,8 @@
   <div class="w">
     <div class="about-cta-inner">
       <div class="about-cta-eyebrow">See it in action</div>
-      <h2>AVA handles renewals for compliance and licensing firms too.</h2>
-      <p>If your team manages license renewals across multiple clients rather than one agency, see how AVA fits a <a href="{{ route('compliance') }}" class="cta-link">compliance and licensing workflow</a>.</p>
+      <h2>AVA started as a fix for domain and hosting renewals.</h2>
+      <p>AVA also handles renewals for <a href="{{ route('compliance') }}" class="cta-link">compliance and licensing firms</a>, and it started as a fix for <a href="{{ route('agencies') }}" class="cta-link">IT and digital agency renewal tracking</a>, still its primary use case today.</p>
       <a href="{{ route('public.workers.show', 'ava') }}" class="btn-cta-final">
         See AVA's full profile
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>

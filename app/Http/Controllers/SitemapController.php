@@ -40,6 +40,7 @@ class SitemapController extends Controller
         $urls[] = ['loc' => route('public.workers.index'), 'priority' => '0.9'];
         $urls[] = ['loc' => route('about'), 'priority' => '0.5'];
         $urls[] = ['loc' => route('pricing'), 'priority' => '0.6'];
+        $urls[] = ['loc' => route('agencies'), 'priority' => '0.75'];
         $urls[] = ['loc' => route('insurance'), 'priority' => '0.7'];
         $urls[] = ['loc' => route('compliance'), 'priority' => '0.7'];
         $urls[] = ['loc' => route('blog'), 'priority' => '0.6'];

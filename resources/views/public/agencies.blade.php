@@ -1,17 +1,18 @@
 @extends('layouts.public')
-@section('title', 'Compliance License Renewal Automation — AVA by UNIT')
-@section('description', 'AVA automates compliance and license renewal tracking for licensing firms — monitoring expirations across clients, managing the renewal lifecycle, and keeping your team audit-ready.')
+@section('title', 'Renewal Operations Software for Agencies — AVA by UNIT')
+@section('description', "AVA is renewal operations software built for IT and digital agencies — tracking domain, hosting, and vendor renewals across every client, catching them even when the reminder email never arrives.")
 @section('og_type', 'website')
 
 @php
     $__faq = [
+        ['q' => 'What happens if the renewal email never shows up?', 'a' => "AVA doesn't only wait on email. She also watches your asset registry directly for expiration thresholds, so a renewal still gets caught even if the notice email is lost, filtered, or never sent."],
         ['q' => 'Does AVA submit renewals automatically?', 'a' => 'No. AVA prepares and drafts the renewal, then queues it for your review. Nothing reaches your client without your explicit approval, that gate never gets skipped.'],
         ['q' => 'Can I prove what happened, for compliance or a client dispute?', 'a' => 'Yes. Every closed renewal gets a UNIT-branded archive PDF, every draft, every reminder, every approval decision, with a QR code linking to a signed, downloadable copy for a full year.'],
         ['q' => 'How does AVA access my renewal inbox?', 'a' => 'AVA connects to Gmail via OAuth2 and a real-time watch webhook. You choose which inbox she monitors, and you can revoke access at any time.'],
         ['q' => 'Can I cancel my subscription?', 'a' => 'Yes, cancel any time, no questions asked. Your data stays accessible for 30 days after cancellation.'],
     ];
     $__faqSchema = [
-        '@context' => 'https://schema.org',
+        '@context'  => 'https://schema.org',
         '@type'     => 'FAQPage',
         'mainEntity' => array_map(fn ($f) => [
             '@type'          => 'Question',
@@ -25,9 +26,9 @@
 <script type="application/ld+json">{!! json_encode([
     '@@context'    => 'https://schema.org',
     '@type'       => 'Service',
-    'name'        => 'AVA: AI Compliance License Renewal Automation',
-    'serviceType' => 'Compliance License Renewal',
-    'description' => 'AVA monitors renewal-related email across clients, tracks license and regulatory deadlines, and drafts every renewal response for human review.',
+    'name'        => 'AVA: Renewal Operations for Agencies',
+    'serviceType' => 'Renewal Operations for Agencies',
+    'description' => "AVA tracks domain, hosting, and vendor renewals across every client an IT or digital agency manages, catching renewals even when the reminder email never arrives.",
     'url'         => url()->current(),
     'provider'    => ['@type' => 'Organization', 'name' => 'UNIT', 'url' => url('/')],
 ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}</script>
@@ -37,7 +38,7 @@
     '@type'    => 'BreadcrumbList',
     'itemListElement' => [
         ['@type' => 'ListItem', 'position' => 1, 'name' => 'Home', 'item' => url('/')],
-        ['@type' => 'ListItem', 'position' => 2, 'name' => 'Compliance', 'item' => url()->current()],
+        ['@type' => 'ListItem', 'position' => 2, 'name' => 'Agencies', 'item' => url()->current()],
     ],
 ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}</script>
 <style>
@@ -65,20 +66,20 @@
 @section('body')
 
 <div class="w pub-hero">
-  <div class="eyebrow">For Compliance &amp; Licensing Firms</div>
-  <h1>One inbox tracking every license renewal your clients depend on.</h1>
-  <p>AVA is an AI renewal coordinator built for teams managing license and regulatory renewals across multiple clients, so nothing depends on one person's memory.</p>
+  <div class="eyebrow">For IT &amp; Digital Agencies</div>
+  <h1>Built because domain and hosting renewals kept slipping through the cracks.</h1>
+  <p>AVA started as a fix for a real agency problem, before it was a product. It tracks every domain, hosting, and vendor renewal your clients depend on, and catches them even when the reminder email doesn't show up.</p>
 </div>
 
 <section class="about-sec">
   <div class="w" style="max-width:800px">
     <div class="about-sec-h">
-      <div class="slabel">The problem</div>
-      <h2 class="sh2" style="font-size:32px">Renewal tracking breaks down at scale</h2>
+      <div class="slabel">Why this exists</div>
+      <h2 class="sh2" style="font-size:32px">This is where AVA started</h2>
     </div>
     <div class="pub-body" style="padding:0">
-      <p>A compliance or licensing firm isn't managing one renewal calendar, it's managing dozens, each with its own agency, deadline, and paperwork. A spreadsheet or a shared inbox can't keep up once that volume grows.</p>
-      <p>AVA reads renewal-related email continuously and keeps a running, logged record of every case, so nothing depends on one person remembering to check.</p>
+      <p>Running an IT or digital agency means tracking domain renewals, hosting renewals, and vendor contracts across every client at once, and a missed one isn't just an internal mistake, it's a client-facing problem. Renewal reminder emails get buried in a shared inbox, filtered as spam, or sometimes never sent at all.</p>
+      <p>AVA was built to solve that first, before any other use case existed. It's still the primary reason the platform exists.</p>
     </div>
   </div>
 </section>
@@ -87,35 +88,35 @@
   <div class="w" style="max-width:800px">
     <div class="about-sec-h">
       <div class="slabel">How AVA helps</div>
-      <h2 class="sh2" style="font-size:32px">One worker, watching every case</h2>
+      <h2 class="sh2" style="font-size:32px">One worker, watching every client's renewals</h2>
     </div>
     <div class="belief-list">
       <div class="belief-item">
-        <div class="belief-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
+        <div class="belief-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></div>
         <div class="belief-text">
-          <h4>Monitors renewal activity as it happens</h4>
-          <p>AVA connects to Gmail and watches for renewal and license notices across the inbox you assign, catching each one as it arrives.</p>
+          <h4>Watches your inbox and your asset registry</h4>
+          <p>Domain and hosting renewal notices don't always arrive on schedule. AVA tracks expiration dates directly in your asset registry too, so a renewal still gets caught even if the reminder email never shows up.</p>
         </div>
       </div>
       <div class="belief-item">
-        <div class="belief-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></div>
+        <div class="belief-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
         <div class="belief-text">
-          <h4>Works every renewal to completion</h4>
-          <p>Each detected renewal is logged and tracked individually, not lumped into a single shared to-do list that's easy to lose track of.</p>
+          <h4>Tracks every renewal to completion</h4>
+          <p>Once a renewal is detected, AVA sends escalating reminders, gentle, then direct, then urgent, and keeps working the case until it's resolved.</p>
         </div>
       </div>
       <div class="belief-item">
         <div class="belief-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 12l2 2 4-4"/><path d="M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9c1.5 0 2.9.37 4.14 1.02"/></svg></div>
         <div class="belief-text">
-          <h4>Drafts for review, never sends unsupervised</h4>
-          <p>AVA prepares each renewal response and queues it in Gmail Drafts. Nothing goes to a client without your approval.</p>
+          <h4>Drafts the response, you approve it</h4>
+          <p>AVA prepares the renewal reply using what it knows about the client or asset, and queues it in Gmail Drafts. Nothing sends without your review.</p>
         </div>
       </div>
       <div class="belief-item">
         <div class="belief-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8"/></svg></div>
         <div class="belief-text">
-          <h4>Gives you an audit trail</h4>
-          <p>Every closed renewal gets a full, logged record, so you can show exactly what happened and when, for a client or a regulator.</p>
+          <h4>Keeps a record for every renewal</h4>
+          <p>Every step is logged, so when a client asks what happened on their domain or hosting renewal, there's an answer, not a guess.</p>
         </div>
       </div>
     </div>
@@ -126,7 +127,7 @@
   <div class="w" style="max-width:800px">
     <div class="about-sec-h">
       <div class="slabel">Questions</div>
-      <h2 class="sh2" style="font-size:32px">Common questions from compliance teams</h2>
+      <h2 class="sh2" style="font-size:32px">Common questions from agencies</h2>
     </div>
     <div class="pub-body" style="padding:0">
       @foreach ($__faq as $item)
@@ -141,8 +142,8 @@
   <div class="w">
     <div class="about-cta-inner">
       <div class="about-cta-eyebrow">See it in action</div>
-      <h2>AVA started as a fix for domain and hosting renewals.</h2>
-      <p>AVA also handles renewals for <a href="{{ route('insurance') }}" class="cta-link">insurance brokers</a>, and it started as a fix for <a href="{{ route('agencies') }}" class="cta-link">IT and digital agency renewal tracking</a>, still its primary use case today.</p>
+      <h2>AVA also handles insurance and compliance renewals.</h2>
+      <p>If your team manages license or policy renewals rather than domains and hosting, see how AVA fits an <a href="{{ route('insurance') }}" class="cta-link">insurance brokerage</a> or <a href="{{ route('compliance') }}" class="cta-link">compliance and licensing</a> workflow.</p>
       <a href="{{ route('public.workers.show', 'ava') }}" class="btn-cta-final">
         See AVA's full profile
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>

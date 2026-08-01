@@ -58,6 +58,7 @@ UNIT is built around specialized AI workers rather than general-purpose assistan
 - {{ route('about') }}
 - {{ route('pricing') }}
 - {{ route('blog') }}
+- {{ route('agencies') }}
 - {{ route('insurance') }}
 - {{ route('compliance') }}
 

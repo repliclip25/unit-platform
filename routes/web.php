@@ -70,6 +70,7 @@ Route::get('/privacy',              [PublicPageController::class, 'privacy'])->n
 Route::get('/terms',                [PublicPageController::class, 'terms'])->name('terms');
 Route::get('/insurance',            [PublicPageController::class, 'insurance'])->name('insurance');
 Route::get('/compliance',           [PublicPageController::class, 'compliance'])->name('compliance');
+Route::get('/agencies',             [PublicPageController::class, 'agencies'])->name('agencies');
 Route::get('/blog',                 [PublicPageController::class, 'blog'])->name('blog');
 Route::post('/blog/subscribe',      [PublicPageController::class, 'subscribeToBlog'])->middleware('throttle:5,1')->name('blog.subscribe');
 Route::get('/blog/{slug}',          [PublicPageController::class, 'blogPost'])->name('blog.show');
