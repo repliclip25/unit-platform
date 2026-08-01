@@ -6,7 +6,7 @@
 <div class="w pub-hero">
   <div class="eyebrow">Legal</div>
   <h1>Privacy Policy</h1>
-  <p class="pub-meta">Last updated: June 23, 2026</p>
+  <p class="pub-meta">Last updated: August 2, 2026</p>
 </div>
 
 <div class="w pub-body">
@@ -42,22 +42,33 @@
     <li><strong>Anthropic Claude API</strong>: AI processing of email content</li>
     <li><strong>Stripe</strong>: payment processing</li>
     <li><strong>Redis</strong>: job queue processing (ephemeral, not persisted)</li>
+    <li><strong>Google Tag Manager &amp; Google Analytics</strong>: pageview and product usage analytics</li>
+    <li><strong>Meta (Facebook) Pixel</strong>: advertising measurement, only after you accept cookie consent</li>
   </ul>
   <p>Each third-party provider has their own privacy policy governing their use of data.</p>
 
-  <h2>5. Security</h2>
+  <h2>5. Cookies &amp; Tracking Technologies</h2>
+  <p>We use cookies and similar technologies (including browser local storage) for a few distinct purposes:</p>
+  <ul>
+    <li><strong>Essential.</strong> Keeping you signed in and remembering basic preferences like your theme choice. These are required for the platform to function and are not optional.</li>
+    <li><strong>Analytics.</strong> Google Tag Manager and Google Analytics help us understand how the platform is used in aggregate, page views and basic product events like a worker being deployed. This runs automatically for a US-focused product and does not build advertising profiles.</li>
+    <li><strong>Advertising measurement.</strong> The Meta (Facebook) Pixel only loads after you explicitly accept our cookie consent banner. If you decline, or simply don't interact with the banner, it never loads, and you can use UNIT fully either way.</li>
+  </ul>
+  <p>Admins and internal team members are excluded from all analytics and advertising tracking. You can withdraw consent at any time by clearing your browser's local storage for unit.report, which resets the consent banner.</p>
+
+  <h2>6. Security</h2>
   <p>We use TLS/HTTPS for all data in transit. OAuth tokens are stored encrypted at rest. Access to production data is restricted to authorized personnel. We use Google's standard OAuth2 flow, we never handle your Google password.</p>
 
-  <h2>6. Your Rights</h2>
+  <h2>7. Your Rights</h2>
   <p>You may request access to, correction of, or deletion of your personal data at any time by emailing <a href="mailto:hello@unit.report">hello@unit.report</a>. You may also disconnect Gmail access from your dashboard at any time, which revokes our inbox access immediately.</p>
 
-  <h2>7. Children's Privacy</h2>
+  <h2>8. Children's Privacy</h2>
   <p>UNIT is a business operations platform not intended for use by anyone under the age of 18. We do not knowingly collect personal information from minors.</p>
 
-  <h2>8. Changes to This Policy</h2>
+  <h2>9. Changes to This Policy</h2>
   <p>We may update this policy from time to time. We'll notify active users by email of any material changes. Continued use of UNIT after changes constitutes acceptance of the updated policy.</p>
 
-  <h2>9. Contact</h2>
+  <h2>10. Contact</h2>
   <p>Questions about this Privacy Policy? Reach us at <a href="mailto:hello@unit.report">hello@unit.report</a>.</p>
 
 </div>
