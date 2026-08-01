@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>UNIT: AI Agents That Complete Real Business Work</title>
 <meta name="description" content="Deploy specialized AI agents that own complete business workflows. UNIT AI Workers manage renewals, documents, publishing, compliance, and more while keeping humans in control.">
-<link rel="icon" type="image/png" href="/logo.png">
-<link rel="apple-touch-icon" href="/logo.png">
+<link rel="icon" type="image/png" href="/favicon.png">
+<link rel="apple-touch-icon" href="/favicon.png">
 @include('partials.seo-meta', [
     'title'       => 'UNIT: AI Agents That Complete Real Business Work',
     'description' => 'Deploy specialized AI agents that own complete business workflows. UNIT AI Workers manage renewals, documents, publishing, compliance, and more while keeping humans in control.',

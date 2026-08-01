@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>@yield('title', 'UNIT'): AI Agent Platform</title>
 <meta name="description" content="@yield('description', 'UNIT is an AI agent platform that helps businesses deploy specialized AI Workers to manage recurring business workflows, automate operations, and complete real work.')">
-<link rel="icon" type="image/png" href="/logo.png">
-<link rel="apple-touch-icon" href="/logo.png">
+<link rel="icon" type="image/png" href="/favicon.png">
+<link rel="apple-touch-icon" href="/favicon.png">
 {{-- Captures the title/description sections above as strings (instead of re-declaring
      them) so every public page gets OG/Twitter tags for free without duplicating copy. --}}
 @php

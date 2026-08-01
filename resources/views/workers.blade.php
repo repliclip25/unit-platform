@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Meet the Team: UNIT AI Agents</title>
 <meta name="description" content="Meet UNIT's AI agents, each an AI worker trained for one job. AVA, our AI renewal coordinator, is live; more AI agents are coming soon.">
-<link rel="icon" type="image/png" href="/logo.png">
-<link rel="apple-touch-icon" href="/logo.png">
+<link rel="icon" type="image/png" href="/favicon.png">
+<link rel="apple-touch-icon" href="/favicon.png">
 @include('partials.seo-meta', [
     'title'       => 'Meet the Team: UNIT AI Agents',
     'description' => "Meet UNIT's AI agents, each an AI worker trained for one job. AVA, our AI renewal coordinator, is live; more AI agents are coming soon.",

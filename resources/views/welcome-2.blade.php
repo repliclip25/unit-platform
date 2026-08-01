@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>UNIT — AI Agents That Never Stop Showing Up</title>
 <meta name="description" content="UNIT deploys specialized AI agents — AI workers trained for one job, not generic chat. AVA, our AI renewal coordinator, is live today.">
-<link rel="icon" type="image/png" href="/logo.png">
-<link rel="apple-touch-icon" href="/logo.png">
+<link rel="icon" type="image/png" href="/favicon.png">
+<link rel="apple-touch-icon" href="/favicon.png">
 @include('partials.seo-meta', [
     'title'       => 'UNIT — AI Agents That Never Stop Showing Up',
     'description' => 'UNIT deploys specialized AI agents — AI workers trained for one job, not generic chat. AVA, our AI renewal coordinator, is live today.',

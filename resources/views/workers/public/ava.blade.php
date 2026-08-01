@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{{ $worker['name'] }}: AI Agent for Renewals | UNIT</title>
 <meta name="description" content="{{ $worker['meta_desc'] }}">
-<link rel="icon" type="image/png" href="/logo.png">
-<link rel="apple-touch-icon" href="/logo.png">
+<link rel="icon" type="image/png" href="/favicon.png">
+<link rel="apple-touch-icon" href="/favicon.png">
 @include('partials.seo-meta', [
     'title'       => $worker['name'] . ': AI Agent for Renewals | UNIT',
     'description' => $worker['meta_desc'],
