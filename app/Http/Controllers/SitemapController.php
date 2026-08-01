@@ -18,8 +18,8 @@ class SitemapController extends Controller
             'role'          => 'AI Renewal Agent',
             'status'        => 'Live',
             'description'   => "AVA is UNIT's AI Renewal Agent. She watches two places at once: the connected Gmail inbox for incoming renewal emails, and the asset registry directly for expiration dates, so a renewal still gets caught even if the notice email never arrives.\n\nShe reads and classifies each renewal, checks her memory (the tenant's own client, contact, and renewal history, never shared across tenants) and drafts a response using the tenant's own templates and tone. The draft goes into Gmail Drafts, not Sent, and nothing reaches a client without explicit human approval.\n\nIf a draft sits unapproved, she reminds the tenant on an escalating cadence (gentle, then direct, then urgent) and pauses after a few unanswered attempts rather than nagging indefinitely. Once a renewal closes, she archives a complete record, every draft, every reminder, every approval, every payment confirmation, as a downloadable PDF with a QR code, then resets to watch for the next cycle.",
-            'audienceIntro' => 'AVA is being tested and refined today with organizations such as:',
-            'audienceList'  => ['IT & Digital Agencies', 'Insurance Brokers', 'Compliance & Licensing Firms'],
+            'audienceIntro' => "AVA started as a fix for a real problem: tracking domain, hosting, and vendor renewals for an IT & digital agency. That's still the primary use case today. The platform is also being tested and refined with:",
+            'audienceList'  => ['Insurance Brokers', 'Compliance & Licensing Firms'],
             'audienceOutro' => 'Additional industries and renewal workflows will be supported as the platform evolves.',
         ],
     ];
