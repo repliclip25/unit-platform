@@ -128,7 +128,7 @@
     <div class="about-sec-h">
       <div class="slabel">Our AI workforce</div>
       <h2 class="sh2" style="font-size:32px">One live worker. Three more in development.</h2>
-      <p class="ssub" style="margin-top:10px">UNIT's first live AI Worker is AVA, an AI Renewal Coordinator built for IT &amp; Digital Agencies, Insurance Brokers, and Compliance &amp; Licensing Firms. Each worker that follows is purpose-built for a specific workflow, not a general-purpose assistant.</p>
+      <p class="ssub" style="margin-top:10px">UNIT's first live AI Worker is AVA, an AI Renewal Coordinator built to track domain, hosting, and vendor renewals for IT &amp; digital agencies, now also serving Insurance Brokers and Compliance &amp; Licensing Firms. Each worker that follows is purpose-built for a specific workflow, not a general-purpose assistant.</p>
     </div>
     <div class="workforce-grid">
       <a href="{{ route('public.workers.show', 'ava') }}" class="wf-card" style="text-decoration:none">
