@@ -4,7 +4,7 @@
 
 @section('head')
 <style>
-/* Page-specific tokens not in the shared layout — blue accent for the "Pro" tier */
+/* Page-specific tokens not in the shared layout: blue accent for the "Pro" tier */
 :root{
   --blue:#4f46e5;--blue-bg:rgba(79,70,229,0.08);--blue-border:rgba(79,70,229,0.2);
 }
@@ -169,7 +169,7 @@
   <div class="w">
     <div class="eyebrow"><span class="eyebrow-dot"></span>Influencer Partner Program</div>
     <h1>Earn recurring commission<br>every month. <span class="gold">Up to 30%.</span></h1>
-    <p class="hero-sub">Promote UNIT to your audience of contractors, compliance teams, and renewal professionals. Every paying customer you refer earns you a percentage of their monthly subscription — for as long as they stay.</p>
+    <p class="hero-sub">Promote UNIT to your audience of contractors, compliance teams, and renewal professionals. Every paying customer you refer earns you a percentage of their monthly subscription, for as long as they stay.</p>
     <div class="hero-trust">
       <div class="htrust">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m4 12 5 5L20 6"/></svg>
@@ -267,7 +267,7 @@
     <div class="tenant-strip">
       <div class="ts-text">
         <h3>Already a UNIT customer? Try the Referral Program instead.</h3>
-        <p>Tenants earn $25 account credit per conversion — no audience required. Just share your link with another team.</p>
+        <p>Tenants earn $25 account credit per conversion, no audience required. Just share your link with another team.</p>
       </div>
       <a href="{{ route('app.referral.index') }}" class="btn-green">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
@@ -296,17 +296,17 @@
         <div class="calc-field">
           <label>AVG SUBSCRIPTION ($/mo)</label>
           <select id="calc-plan" onchange="calcEarnings()">
-            <option value="49">Starter — $49/mo</option>
-            <option value="99" selected>Growth — $99/mo</option>
-            <option value="199">Scale — $199/mo</option>
+            <option value="49">Starter: $49/mo</option>
+            <option value="99" selected>Growth: $99/mo</option>
+            <option value="199">Scale: $199/mo</option>
           </select>
         </div>
         <div class="calc-field">
           <label>YOUR TIER</label>
           <select id="calc-tier" onchange="calcEarnings()">
-            <option value="0.20">Starter — 20%</option>
-            <option value="0.25" selected>Pro — 25%</option>
-            <option value="0.30">Elite — 30%</option>
+            <option value="0.20">Starter: 20%</option>
+            <option value="0.25" selected>Pro: 25%</option>
+            <option value="0.30">Elite: 30%</option>
           </select>
         </div>
       </div>
@@ -444,12 +444,12 @@
     <div class="faq-list">
       @foreach([
         ['q'=>'When and how do I get paid?','a'=>'Commission is calculated on the 1st of every month based on the MRR of your active referred customers. Payouts are sent within 5 business days via bank transfer or PayPal. There\'s a $50 minimum payout threshold.'],
-        ['q'=>'How long does commission last?','a'=>'Commission is recurring — you earn for as long as a referred customer stays subscribed. If they cancel, that commission stops. If they re-subscribe, it resumes.'],
-        ['q'=>'How do tier upgrades work?','a'=>'Tiers are based on cumulative paid conversions. Once you hit the threshold (5 for Pro, 15 for Elite), your rate upgrades automatically for all future commission calculations — including existing customers.'],
+        ['q'=>'How long does commission last?','a'=>'Commission is recurring: you earn for as long as a referred customer stays subscribed. If they cancel, that commission stops. If they re-subscribe, it resumes.'],
+        ['q'=>'How do tier upgrades work?','a'=>'Tiers are based on cumulative paid conversions. Once you hit the threshold (5 for Pro, 15 for Elite), your rate upgrades automatically for all future commission calculations, including existing customers.'],
         ['q'=>'What counts as a conversion?','a'=>'A conversion is when someone you referred activates a paid UNIT subscription. Free trial sign-ups do not count until they convert to paid.'],
         ['q'=>'Can I promote UNIT without applying first?','a'=>'You can share your referral link informally, but to get a vanity link, access the partner dashboard, and receive payouts, you need to complete the application and be approved.'],
-        ['q'=>'What\'s the difference between this and the Referral Program?','a'=>'The Referral Program is for existing UNIT customers who want to earn $25 account credit per conversion — no audience required. The Influencer Program is for creators and consultants who promote UNIT to their audience and earn 20–30% recurring MRR commission.'],
-        ['q'=>'Can I be in both programs?','a'=>'Yes. If you\'re a UNIT customer and a creator, you can earn account credit through the Referral Program and recurring commission through the Influencer Program simultaneously — with separate links.'],
+        ['q'=>'What\'s the difference between this and the Referral Program?','a'=>'The Referral Program is for existing UNIT customers who want to earn $25 account credit per conversion, no audience required. The Influencer Program is for creators and consultants who promote UNIT to their audience and earn 20–30% recurring MRR commission.'],
+        ['q'=>'Can I be in both programs?','a'=>'Yes. If you\'re a UNIT customer and a creator, you can earn account credit through the Referral Program and recurring commission through the Influencer Program simultaneously, with separate links.'],
       ] as $faq)
       <div class="faq-item">
         <div class="faq-q" onclick="this.closest('.faq-item').classList.toggle('open')">

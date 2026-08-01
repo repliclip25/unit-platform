@@ -74,17 +74,7 @@
   <p style="text-align:center;color:var(--t4);padding:40px 0">More posts coming soon.</p>
   @endif
 
-  <div style="margin-top:60px;text-align:center;padding:40px;background:var(--card);border:1px solid var(--line);border-radius:18px">
-    <div style="font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--t4);margin-bottom:12px">Newsletter</div>
-    <div style="font-family:var(--fd);font-size:22px;font-weight:800;margin-bottom:10px">Get new posts in your inbox</div>
-    <p style="font-size:14px;color:var(--t3);margin-bottom:24px;max-width:400px;margin-left:auto;margin-right:auto">One email when we publish something new. No marketing, no roundups, just the article.</p>
-    <div style="display:flex;gap:8px;max-width:380px;margin:0 auto">
-      <input type="email" placeholder="you@yourfirm.com" style="flex:1;padding:10px 14px;border-radius:9px;border:1px solid var(--line);background:var(--surf);color:var(--text);font-size:14px;outline:none">
-      <button class="btn-g" style="padding:10px 18px;white-space:nowrap">Subscribe</button>
-    </div>
-  </div>
-
-  <div style="margin-top:24px;text-align:center;padding:28px 40px;background:var(--card);border:1px solid var(--line);border-radius:18px">
+  <div style="margin-top:60px;text-align:center;padding:28px 40px;background:var(--card);border:1px solid var(--line);border-radius:18px">
     <div style="font-family:var(--fd);font-size:17px;font-weight:800;margin-bottom:6px">Write about UNIT and get paid for it</div>
     <p style="font-size:13.5px;color:var(--t3);margin-bottom:16px">Newsletter writers and industry creators earn 20–30% recurring commission through our Partner Program.</p>
     <a href="{{ route('influencer.apply') }}" class="btn-ln" style="display:inline-block">Partner Program →</a>

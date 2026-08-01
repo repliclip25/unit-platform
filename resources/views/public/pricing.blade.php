@@ -47,11 +47,11 @@
 /* Worker card badge adapts to light: use dark text on tinted bg */
 [data-theme="light"] .pc-tier-worker { color:#000 !important;opacity:.75 }
 
-.pc-name    { font-size:18px;font-weight:800;color:var(--text);font-family:'Space Grotesk',sans-serif;margin-bottom:5px;line-height:1.2 }
+.pc-name    { font-size:18px;font-weight:800;color:var(--text);font-family:var(--fd);margin-bottom:5px;line-height:1.2 }
 .pc-tagline { font-size:13px;color:var(--t3);line-height:1.6;margin-bottom:18px }
 
 .pc-price-row { display:flex;align-items:baseline;gap:4px;margin-bottom:3px }
-.pc-price     { font-size:40px;font-weight:800;color:var(--text);line-height:1;font-family:'Space Grotesk',sans-serif }
+.pc-price     { font-size:40px;font-weight:800;color:var(--text);line-height:1;font-family:var(--fd) }
 .pc-price-unit{ font-size:13px;color:var(--t3) }
 .pc-price-sub { font-size:12px;color:var(--t3);margin-bottom:16px }
 
@@ -320,7 +320,7 @@
         ];
     @endphp
     <div class="faq-wrap">
-        <h2 style="font-family:'Space Grotesk',sans-serif;font-size:24px;font-weight:800;color:var(--text);text-align:center;margin-bottom:6px">Common questions</h2>
+        <h2 style="font-family:var(--fd);font-size:24px;font-weight:800;color:var(--text);text-align:center;margin-bottom:6px">Common questions</h2>
         <p style="text-align:center;color:var(--t3);font-size:13px;margin-bottom:32px">Anything else? <a href="mailto:hello@unit.report" style="color:var(--text);font-weight:600;text-decoration:underline">hello@unit.report</a></p>
         @foreach($__pricingFaqs as $faq)
         <details class="faq-item">
