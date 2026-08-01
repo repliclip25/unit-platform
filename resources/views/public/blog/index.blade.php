@@ -18,6 +18,21 @@
 .blog-cta{display:inline-flex;align-items:center;gap:4px;font-size:13px;font-weight:600;color:var(--text);margin-top:8px;text-decoration:none}
 .blog-cta:hover{text-decoration:underline}
 .coming-chip{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;background:rgba(255,255,255,0.06);border:1px solid var(--line);color:var(--t4)}
+
+.blog-featured{background:var(--card);border:1px solid var(--line);border-radius:18px;overflow:hidden;display:grid;grid-template-columns:1fr 1fr;margin-top:40px}
+.blog-featured-media{background:linear-gradient(135deg,#0a0800,#1a1200);display:flex;align-items:center;justify-content:center;padding:60px 40px;min-height:260px;border-right:1px solid var(--line)}
+.blog-featured-media-text{font-size:72px;font-weight:900;font-family:var(--fd);color:rgba(241,211,98,0.15);line-height:1;letter-spacing:-4px;text-align:center}
+.blog-featured-body{padding:40px}
+.blog-featured-body h2{font-family:var(--fd);font-size:24px;font-weight:800;margin:12px 0 14px;line-height:1.25}
+.blog-featured-body p{font-size:14px;color:var(--t3);line-height:1.65;margin-bottom:20px}
+
+@media(max-width:680px){
+  .blog-featured{grid-template-columns:1fr}
+  .blog-featured-media{min-height:160px;padding:36px 24px;border-right:none;border-bottom:1px solid var(--line)}
+  .blog-featured-media-text{font-size:48px}
+  .blog-featured-body{padding:28px 24px}
+  .blog-featured-body h2{font-size:20px}
+}
 </style>
 @endsection
 
@@ -32,14 +47,14 @@
 
   {{-- Featured post - most recently published, not hardcoded --}}
   @if($featured)
-  <div style="background:var(--card);border:1px solid var(--line);border-radius:18px;overflow:hidden;display:grid;grid-template-columns:1fr 1fr;margin-top:40px">
-    <div style="background:linear-gradient(135deg,#0a0800,#1a1200);display:flex;align-items:center;justify-content:center;padding:60px 40px;min-height:260px;border-right:1px solid var(--line)">
-      <div style="font-size:72px;font-weight:900;font-family:var(--fd);color:rgba(241,211,98,0.15);line-height:1;letter-spacing:-4px;text-align:center">{{ strtoupper($featured->worker_slug ?? 'UNIT') }}</div>
+  <div class="blog-featured">
+    <div class="blog-featured-media">
+      <div class="blog-featured-media-text">{{ strtoupper($featured->worker_slug ?? 'UNIT') }}</div>
     </div>
-    <div style="padding:40px">
+    <div class="blog-featured-body">
       <div class="blog-tag">{{ $featured->tag }}</div>
-      <h2 style="font-family:var(--fd);font-size:24px;font-weight:800;margin:12px 0 14px;line-height:1.25">{{ $featured->title }}</h2>
-      <p style="font-size:14px;color:var(--t3);line-height:1.65;margin-bottom:20px">{{ $featured->excerpt }}</p>
+      <h2>{{ $featured->title }}</h2>
+      <p>{{ $featured->excerpt }}</p>
       <div class="blog-meta">{{ \Carbon\Carbon::parse($featured->created_at)->format('M Y') }} · {{ ceil(str_word_count(strip_tags($featured->body)) / 200) }} min read</div>
       <a href="{{ route('blog.show', $featured->slug) }}" class="blog-cta">Read article →</a>
     </div>
