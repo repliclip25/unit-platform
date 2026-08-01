@@ -50,6 +50,8 @@ class PublicPageController extends Controller
         ]);
     }
     public function privacy()     { return view('public.privacy'); }
+    public function insurance()   { return view('public.insurance'); }
+    public function compliance()  { return view('public.compliance'); }
     public function terms()       { return view('public.terms'); }
 
     public function pricing()
