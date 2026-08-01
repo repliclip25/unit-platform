@@ -4,14 +4,6 @@
 
 @section('head')
 <style>
-/* Page-specific tokens not in the shared layout: blue accent for the "Pro" tier */
-:root{
-  --blue:#4f46e5;--blue-bg:rgba(79,70,229,0.08);--blue-border:rgba(79,70,229,0.2);
-}
-[data-theme="dark"]{
-  --blue:#818cf8;--blue-bg:rgba(129,140,248,0.1);--blue-border:rgba(129,140,248,0.25);
-}
-
 /* HERO */
 .hero{padding:60px 0 56px;position:relative;overflow:hidden}
 .hero::before{content:'';position:absolute;top:-180px;right:-180px;width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(var(--accent-rgb),0.08) 0%,transparent 65%);pointer-events:none}
@@ -29,33 +21,31 @@
 .sec-h{font-family:var(--fd);font-size:34px;font-weight:800;letter-spacing:-1.2px;margin-bottom:10px;text-align:center;color:var(--text)}
 .sec-sub{font-size:15px;color:var(--t2);text-align:center;margin-bottom:48px;line-height:1.6}
 
+/* Neutral cards for Starter/Pro, matching the platform's default chrome.
+   Elite gets the featured dark-inverted treatment (same pattern as
+   pricing.blade.php's worker card) rather than a distinct hue, since
+   it's the top/aspirational tier. */
 .tier-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:28px}
 .tier-card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:28px;text-align:center;transition:border-color .2s,box-shadow .2s}
 .tier-card:hover{box-shadow:0 12px 40px rgba(0,0,0,.1)}
 [data-theme="dark"] .tier-card:hover{box-shadow:0 12px 40px rgba(0,0,0,.5)}
-.tier-card.starter{border-color:var(--green-border)}
-.tier-card.pro{border-color:var(--blue-border);background:linear-gradient(135deg,var(--blue-bg) 0%,var(--card) 60%)}
-.tier-card.elite{border-color:rgba(var(--accent-rgb),0.35);background:linear-gradient(135deg,rgba(var(--accent-rgb),0.08) 0%,var(--card) 60%)}
+.tier-card.elite{background:#0D0D0D;border-color:#0D0D0D}
+[data-theme="dark"] .tier-card.elite{background:#161616;border-color:#2D2D2D}
 .tier-icon{font-size:28px;margin-bottom:12px}
-.tier-name{font-family:var(--fd);font-size:17px;font-weight:800;margin-bottom:16px}
-.tier-card.starter .tier-name{color:var(--green)}
-.tier-card.pro .tier-name{color:var(--blue)}
-.tier-card.elite .tier-name{color:var(--gold-text)}
-.tier-pct{font-family:var(--fd);font-size:52px;font-weight:800;letter-spacing:-2px;line-height:1;margin-bottom:4px}
-.tier-card.starter .tier-pct{color:var(--green)}
-.tier-card.pro .tier-pct{color:var(--blue)}
-.tier-card.elite .tier-pct{color:var(--gold-text)}
+.tier-name{font-family:var(--fd);font-size:17px;font-weight:800;margin-bottom:16px;color:var(--text)}
+.tier-card.elite .tier-name{color:#fff}
+.tier-pct{font-family:var(--fd);font-size:52px;font-weight:800;letter-spacing:-2px;line-height:1;margin-bottom:4px;color:var(--text)}
+.tier-card.elite .tier-pct{color:var(--gold)}
 .tier-unit{font-size:13px;color:var(--t3);margin-bottom:16px}
-.tier-range{display:inline-block;font-size:11px;font-weight:700;padding:4px 12px;border-radius:100px;margin-bottom:16px}
-.tier-card.starter .tier-range{background:var(--green-bg);border:1px solid var(--green-border);color:var(--green)}
-.tier-card.pro .tier-range{background:var(--blue-bg);border:1px solid var(--blue-border);color:var(--blue)}
-.tier-card.elite .tier-range{background:rgba(var(--accent-rgb),0.12);border:1px solid rgba(var(--accent-rgb),0.28);color:var(--gold-text)}
+.tier-card.elite .tier-unit{color:rgba(255,255,255,.5)}
+.tier-range{display:inline-block;font-size:11px;font-weight:700;padding:4px 12px;border-radius:100px;margin-bottom:16px;background:rgba(0,0,0,.05);border:1px solid var(--line);color:var(--t2)}
+[data-theme="dark"] .tier-range{background:rgba(255,255,255,.06)}
+.tier-card.elite .tier-range{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.15);color:#fff}
 .tier-perks{display:flex;flex-direction:column;gap:7px;text-align:left;margin-top:4px}
 .tier-perk{display:flex;align-items:flex-start;gap:8px;font-size:12.5px;color:var(--t2)}
-.tier-perk svg{flex-shrink:0;margin-top:1px}
-.tier-card.starter .tier-perk svg{color:var(--green)}
-.tier-card.pro .tier-perk svg{color:var(--blue)}
-.tier-card.elite .tier-perk svg{color:var(--gold-text)}
+.tier-perk svg{flex-shrink:0;margin-top:1px;color:var(--text)}
+.tier-card.elite .tier-perk{color:rgba(255,255,255,.75)}
+.tier-card.elite .tier-perk svg{color:#fff}
 
 /* EARNINGS CALCULATOR */
 .calc-sec{padding:56px 0;border-top:1px solid var(--line);background:var(--surf)}
@@ -135,12 +125,14 @@
 .alert-ok{background:var(--green-bg);border:1px solid var(--green-border);color:var(--green);padding:13px 16px;border-radius:10px;margin-bottom:18px;font-size:13.5px;font-weight:500}
 .alert-err{background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.25);color:#f87171;padding:13px 16px;border-radius:10px;margin-bottom:18px;font-size:13.5px}
 
-/* TENANT STRIP */
-.tenant-strip{margin:40px 0;background:var(--green-bg);border:1px solid var(--green-border);border-radius:16px;padding:24px 28px;display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap}
+/* TENANT STRIP - neutral, matching the platform's default chrome */
+.tenant-strip{margin:40px 0;background:rgba(0,0,0,.03);border:1px solid var(--line);border-radius:16px;padding:24px 28px;display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap}
+[data-theme="dark"] .tenant-strip{background:rgba(255,255,255,.04)}
 .ts-text h3{font-family:var(--fd);font-size:17px;font-weight:700;color:var(--text);margin-bottom:4px}
 .ts-text p{font-size:13px;color:var(--t3);line-height:1.5}
-.btn-green{display:inline-flex;align-items:center;gap:7px;font-size:13.5px;font-weight:700;padding:10px 20px;border-radius:9px;background:var(--green-bg);border:1px solid var(--green-border);color:var(--green);cursor:pointer;transition:all .15s;white-space:nowrap;font-family:var(--fb)}
-.btn-green:hover{background:rgba(34,197,94,0.18)}
+.btn-black{display:inline-flex;align-items:center;gap:7px;font-size:13.5px;font-weight:700;padding:10px 20px;border-radius:9px;background:#0D0D0D;color:#fff;cursor:pointer;transition:all .15s;white-space:nowrap;font-family:var(--fb)}
+[data-theme="dark"] .btn-black{background:#fff;color:#0D0D0D}
+.btn-black:hover{opacity:.88;transform:translateY(-1px)}
 
 @media(max-width:860px){
   .apply-grid{grid-template-columns:1fr}
@@ -269,7 +261,7 @@
         <h3>Already a UNIT customer? Try the Referral Program instead.</h3>
         <p>Tenants earn $25 account credit per conversion, no audience required. Just share your link with another team.</p>
       </div>
-      <a href="{{ route('app.referral.index') }}" class="btn-green">
+      <a href="{{ route('app.referral.index') }}" class="btn-black">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
         Referral Program →
       </a>

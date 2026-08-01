@@ -13,39 +13,47 @@
     align-items:stretch;
 }
 
-/* ── BASE CARD ── */
+/* ── BASE CARD ──
+   One consistent neutral card style (white/black border, matching the
+   platform's default chrome), the worker plan is the actual product
+   being sold so it gets the featured dark-inverted treatment (same
+   pattern as .sec-dark/.cta-final elsewhere), not a distinct color. */
 .pc-card {
     border-radius:20px;
     display:flex;
     flex-direction:column;
     position:relative;
     overflow:hidden;
+    background:var(--card);
+    border:1px solid var(--line);
+    box-shadow:0 2px 16px rgba(0,0,0,.06);
     transition:transform .2s,box-shadow .2s;
 }
-.pc-card:hover { transform:translateY(-2px) }
+.pc-card:hover { transform:translateY(-2px);box-shadow:0 6px 32px rgba(0,0,0,.1) }
 
-[data-theme="dark"] .pc-card-free       { background:#0e0e16;border:1px solid rgba(74,222,128,.2);box-shadow:0 16px 48px rgba(0,0,0,.45) }
-[data-theme="dark"] .pc-card-worker     { border:1px solid rgba(255,255,255,.08);box-shadow:0 16px 48px rgba(0,0,0,.45) }
-[data-theme="dark"] .pc-card-enterprise { background:#0e0e16;border:1px solid rgba(96,165,250,.2);box-shadow:0 16px 48px rgba(0,0,0,.45) }
-[data-theme="dark"] .pc-card:hover      { box-shadow:0 24px 64px rgba(0,0,0,.6) }
+.pc-card-worker { background:#0D0D0D;border-color:#0D0D0D;color:#fff }
+[data-theme="dark"] .pc-card-worker { background:#161616;border-color:#2D2D2D }
+.pc-card-worker .pc-name,
+.pc-card-worker .pc-price,
+.pc-card-worker .pc-price-unit { color:#fff }
+.pc-card-worker .pc-tagline,
+.pc-card-worker .pc-price-sub { color:rgba(255,255,255,.55) }
+.pc-card-worker .pc-features li { color:rgba(255,255,255,.75) }
+.pc-card-worker .pc-tx-def { background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.1);color:rgba(255,255,255,.6) }
+.pc-card-worker .pc-tx-def strong { color:#fff }
 
-[data-theme="light"] .pc-card-free      { background:#fff;border:1px solid #d4f5e1;box-shadow:0 2px 16px rgba(0,0,0,.06) }
-[data-theme="light"] .pc-card-worker    { background:#fff;border:1px solid #e8e8e6;box-shadow:0 2px 16px rgba(0,0,0,.06) }
-[data-theme="light"] .pc-card-enterprise{ background:#fff;border:1px solid #cde3fb;box-shadow:0 2px 16px rgba(0,0,0,.06) }
-[data-theme="light"] .pc-card:hover     { box-shadow:0 6px 32px rgba(0,0,0,.1) }
-
-.pc-glow-stripe { height:3px;width:100%;position:absolute;top:0;left:0 }
+.pc-glow-stripe { height:3px;width:100%;position:absolute;top:0;left:0;background:var(--gold) }
 .pc-inner { padding:24px;display:flex;flex-direction:column;flex:1 }
 
-/* Tier badge - explicit colors per theme */
+/* Tier badge - neutral everywhere, gold dot marks the featured plan */
 .pc-tier {
     display:inline-flex;align-items:center;gap:5px;
     font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;
     padding:4px 10px;border-radius:99px;margin-bottom:16px;width:fit-content;
+    background:rgba(0,0,0,.05);color:var(--t2);border:1px solid var(--line);
 }
-
-/* Worker card badge adapts to light: use dark text on tinted bg */
-[data-theme="light"] .pc-tier-worker { color:#000 !important;opacity:.75 }
+[data-theme="dark"] .pc-tier { background:rgba(255,255,255,.06) }
+.pc-card-worker .pc-tier { background:rgba(255,255,255,.1);color:#fff;border-color:rgba(255,255,255,.15) }
 
 .pc-name    { font-size:18px;font-weight:800;color:var(--text);font-family:var(--fd);margin-bottom:5px;line-height:1.2 }
 .pc-tagline { font-size:13px;color:var(--t3);line-height:1.6;margin-bottom:18px }
@@ -58,41 +66,47 @@
 .pc-tx-def {
     font-size:12px;color:var(--t3);
     padding:9px 12px;border-radius:9px;line-height:1.55;margin-bottom:18px;
+    background:rgba(0,0,0,.03);border:1px solid var(--line);
 }
-[data-theme="dark"]  .pc-tx-def { background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08) }
-[data-theme="light"] .pc-tx-def { background:#f4f4f2;border:1px solid #e0e0de;color:#555 }
-[data-theme="light"] .pc-tx-def strong { color:#111 }
+[data-theme="dark"] .pc-tx-def { background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.08) }
+.pc-tx-def strong { color:var(--text) }
+.pc-card-worker .pc-tx-def strong { color:#fff }
 
 .pc-features { list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:8px }
 .pc-features li { font-size:13px;color:var(--t2);display:flex;align-items:flex-start;gap:8px;line-height:1.5 }
-[data-theme="light"] .pc-features li { color:#333 }
-.pc-check { width:16px;height:16px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px }
+.pc-check { width:16px;height:16px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;background:rgba(0,0,0,.06) }
+[data-theme="dark"] .pc-check { background:rgba(255,255,255,.08) }
+.pc-card-worker .pc-check { background:rgba(255,255,255,.12) }
 
-/* Buttons */
+/* Buttons - always black/white, matching the platform's CTA convention */
 .pc-cta { margin-top:auto;padding-top:20px }
 .pc-btn {
     display:block;width:100%;text-align:center;
     padding:12px 0;border-radius:10px;
     font-size:13px;font-weight:700;text-decoration:none;
+    background:#0D0D0D;color:#fff;
     transition:opacity .15s,transform .15s;
 }
 .pc-btn:hover { opacity:.88;transform:translateY(-1px) }
+.pc-card-worker .pc-btn { background:#fff;color:#0D0D0D }
+.pc-btn-ghost { background:transparent;color:var(--text);border:1px solid var(--line2) }
 .pc-worker-link {
     display:block;text-align:center;margin-top:10px;
     font-size:12px;color:var(--t3);text-decoration:none;
     transition:color .15s;
 }
 .pc-worker-link:hover { color:var(--t2) }
+.pc-card-worker .pc-worker-link { color:rgba(255,255,255,.45) }
+.pc-card-worker .pc-worker-link:hover { color:rgba(255,255,255,.7) }
 
-/* Note banner */
+/* Note banner - neutral, not tinted */
 .pc-note {
     border-radius:12px;padding:14px 18px;margin-bottom:36px;
     display:flex;gap:11px;align-items:flex-start;
+    background:rgba(0,0,0,.03);border:1px solid var(--line);
 }
-[data-theme="dark"]  .pc-note { background:rgba(20,44,116,.08);border:1px solid rgba(20,44,116,.22) }
-[data-theme="light"] .pc-note { background:#eef1fa;border:1px solid rgba(20,44,116,.25) }
+[data-theme="dark"] .pc-note { background:rgba(255,255,255,.04) }
 .pc-note p { font-size:13px;color:var(--t2);line-height:1.6;margin:0 }
-[data-theme="light"] .pc-note p { color:#1a2a5e }
 
 /* FAQ */
 .faq-wrap { max-width:640px;margin:0 auto }
@@ -124,10 +138,9 @@
 
         {{-- FREE TRIAL --}}
         <div class="pc-card pc-card-free">
-            <div class="pc-glow-stripe" style="background:linear-gradient(90deg,transparent,rgba(74,222,128,.55),transparent)"></div>
             <div class="pc-inner">
-                <div class="pc-tier" style="background:rgba(74,222,128,.12);color:#16a34a;border:1px solid rgba(74,222,128,.25)">
-                    <svg style="width:6px;height:6px" fill="#4ade80" viewBox="0 0 8 8"><circle cx="4" cy="4" r="4"/></svg>
+                <div class="pc-tier">
+                    <svg style="width:6px;height:6px" fill="currentColor" viewBox="0 0 8 8"><circle cx="4" cy="4" r="4"/></svg>
                     Free Trial
                 </div>
                 <div class="pc-name">Try any worker free</div>
@@ -150,7 +163,7 @@
                 <ul class="pc-features">
                     @foreach(['Full AI pipeline on live data','Memory bank, templates & rules','Human review dashboard','Upgrade anytime, no restart'] as $f)
                     <li>
-                        <span class="pc-check" style="background:rgba(74,222,128,.12)"><svg style="width:8px;height:8px" fill="none" stroke="#16a34a" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
+                        <span class="pc-check"><svg style="width:8px;height:8px" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
                         {{ $f }}
                     </li>
                     @endforeach
@@ -168,7 +181,7 @@
                     }
                 @endphp
                 <div class="pc-cta">
-                    <a href="{{ $freeCtaHref }}" class="pc-btn" style="background:rgba(74,222,128,.14);color:#16a34a;border:1px solid rgba(74,222,128,.3)">{{ $freeCtaLabel }}</a>
+                    <a href="{{ $freeCtaHref }}" class="pc-btn pc-btn-ghost">{{ $freeCtaLabel }}</a>
                 </div>
             </div>
         </div>
@@ -176,11 +189,8 @@
         {{-- WORKER CARDS --}}
         @foreach($plans as $plan)
         @php
-            $accent = $plan->accent_color ?? '#142C74';
-            $hex = ltrim($accent, '#');
-            $r = hexdec(substr($hex,0,2)); $g = hexdec(substr($hex,2,2)); $b = hexdec(substr($hex,4,2));
             // Short name: take part before the separator
-            $shortName = trim(preg_split('/\s*[—\-]\s*/', $plan->display_name ?: $plan->worker_slug)[0]);
+            $shortName = trim(preg_split('/\s*[:—\-]\s*/', $plan->display_name ?: $plan->worker_slug)[0]);
 
             // Nudge logged-in users based on their real subscription state for
             // this worker, instead of always sending them back to Register.
@@ -225,18 +235,18 @@
                 $banner   = null;
             }
         @endphp
-        <div class="pc-card pc-card-worker" style="background:linear-gradient(150deg,rgba({{ $r }},{{ $g }},{{ $b }},.06) 0%,transparent 50%)">
-            <div class="pc-glow-stripe" style="background:linear-gradient(90deg,transparent,{{ $accent }},transparent);opacity:.6"></div>
+        <div class="pc-card pc-card-worker">
+            <div class="pc-glow-stripe"></div>
             <div class="pc-inner">
-                <div class="pc-tier pc-tier-worker" style="background:rgba({{ $r }},{{ $g }},{{ $b }},.12);color:{{ $accent }};border:1px solid rgba({{ $r }},{{ $g }},{{ $b }},.22)">
-                    <svg style="width:6px;height:6px" fill="{{ $accent }}" viewBox="0 0 8 8"><circle cx="4" cy="4" r="4"/></svg>
+                <div class="pc-tier">
+                    <svg style="width:6px;height:6px" fill="var(--gold)" viewBox="0 0 8 8"><circle cx="4" cy="4" r="4"/></svg>
                     {{ strtoupper($plan->worker_slug) }} Worker
                 </div>
                 <div class="pc-name">{{ $plan->display_name ?: strtoupper($plan->worker_slug) }}</div>
                 @if($plan->tagline)<div class="pc-tagline">{{ $plan->tagline }}</div>@endif
                 @if($banner)
-                <div class="pc-tx-def" style="border-color:{{ $accent }}55;margin-bottom:14px">
-                    <strong style="color:{{ $accent }}">{{ $banner }}</strong>
+                <div class="pc-tx-def" style="margin-bottom:14px">
+                    <strong style="color:var(--gold)">{{ $banner }}</strong>
                 </div>
                 @endif
                 <div class="pc-price-row">
@@ -262,13 +272,13 @@
                         'Email support + onboarding help',
                     ] as $f)
                     <li>
-                        <span class="pc-check" style="background:rgba({{ $r }},{{ $g }},{{ $b }},.1)"><svg style="width:8px;height:8px" fill="none" stroke="{{ $accent }}" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
+                        <span class="pc-check"><svg style="width:8px;height:8px" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
                         {{ $f }}
                     </li>
                     @endforeach
                 </ul>
                 <div class="pc-cta">
-                    <a href="{{ $ctaHref }}" class="pc-btn" style="background:{{ $accent }};color:#ffffff">{{ $ctaLabel }}</a>
+                    <a href="{{ $ctaHref }}" class="pc-btn">{{ $ctaLabel }}</a>
                     @if($plan->worker_url)
                     <a href="{{ $plan->worker_url }}" class="pc-worker-link">Learn more about {{ $shortName }} →</a>
                     @endif
@@ -279,10 +289,9 @@
 
         {{-- ENTERPRISE --}}
         <div class="pc-card pc-card-enterprise">
-            <div class="pc-glow-stripe" style="background:linear-gradient(90deg,transparent,rgba(96,165,250,.5),transparent)"></div>
             <div class="pc-inner">
-                <div class="pc-tier" style="background:rgba(96,165,250,.1);color:#1d6fb8;border:1px solid rgba(96,165,250,.22)">
-                    <svg style="width:6px;height:6px" fill="#60a5fa" viewBox="0 0 8 8"><circle cx="4" cy="4" r="4"/></svg>
+                <div class="pc-tier">
+                    <svg style="width:6px;height:6px" fill="currentColor" viewBox="0 0 8 8"><circle cx="4" cy="4" r="4"/></svg>
                     Enterprise
                 </div>
                 <div class="pc-name">High-volume & custom</div>
@@ -292,13 +301,13 @@
                 <ul class="pc-features" style="margin-top:16px">
                     @foreach(['Unlimited transaction volume','Dedicated processing queue','Custom worker for your workflow','Uptime SLA + priority support','White-label options available'] as $f)
                     <li>
-                        <span class="pc-check" style="background:rgba(96,165,250,.1)"><svg style="width:8px;height:8px" fill="none" stroke="#1d6fb8" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
+                        <span class="pc-check"><svg style="width:8px;height:8px" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
                         {{ $f }}
                     </li>
                     @endforeach
                 </ul>
                 <div class="pc-cta">
-                    <a href="mailto:hello@unit.report?subject=Enterprise inquiry" class="pc-btn" style="background:rgba(96,165,250,.1);color:#1d6fb8;border:1px solid rgba(96,165,250,.25)">Talk to us</a>
+                    <a href="mailto:hello@unit.report?subject=Enterprise inquiry" class="pc-btn pc-btn-ghost">Talk to us</a>
                 </div>
             </div>
         </div>
