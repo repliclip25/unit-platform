@@ -35,6 +35,7 @@ final class UnitPlatform
         'archive_evidence'  => 'archive_output',
         'notify_stakeholders' => 'notify_output',
         'notify_customer'   => 'notify_customer_output',
+        'schedule_next_watch' => 'watch_output',
     ];
 
     // ── Transaction status → (stage_key, event) for stage log ────────────

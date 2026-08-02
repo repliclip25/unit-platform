@@ -36,26 +36,39 @@ class ScheduleNextWatchJob implements ShouldQueue
         $memory = $input->stage('memory');
 
         $assetName = $memory['asset'] ?? null;
+        $lineItems = $memory['line_items'] ?? null;
+
         // Fast Track's asset is synthetic — never touch a real asset's watch
         // log just because its name happens to match the test scenario.
-        $asset = ($assetName && !$input->isFastTrack())
-            ? DB::table('assets')->where('user_id', $input->userId)->where('name', $assetName)->whereNull('deleted_at')->first()
-            : null;
+        $cleared  = 0;
+        $assetIds = [];
 
-        $cleared = 0;
-        if ($asset) {
-            $cleared = DB::table('asset_watch_log')->where('asset_id', $asset->id)->delete();
+        if (!$input->isFastTrack()) {
+            if ($lineItems) {
+                // A bundle's real asset IDs are already known — clear every
+                // member's watch log, not just whichever one happened to be
+                // named in memory['asset'] (the group label for a bundle).
+                $assetIds = collect($lineItems)->pluck('id')->all();
+            } elseif ($assetName) {
+                $asset = DB::table('assets')->where('user_id', $input->userId)->where('name', $assetName)->whereNull('deleted_at')->first();
+                if ($asset) $assetIds = [$asset->id];
+            }
+
+            if ($assetIds) {
+                $cleared = DB::table('asset_watch_log')->whereIn('asset_id', $assetIds)->delete();
+            }
         }
 
         $output = [
             'asset'             => $assetName,
+            'asset_ids'         => $assetIds,
             'watch_log_cleared' => $cleared,
             'closed_at'         => now()->toISOString(),
         ];
         UnitPlatform::commitOutput($this->txId, new WorkerOutput(stage: 'schedule_next_watch', data: $output));
         UnitPlatform::setFulfillmentStage($this->txId, 'schedule_next_watch');
         UnitPlatform::log('ava', $this->txId, 'renewal_cycle_complete', [
-            'asset_id' => $asset->id ?? null, 'watch_log_cleared' => $cleared,
+            'asset_ids' => $assetIds, 'watch_log_cleared' => $cleared,
         ]);
 
         // Terminal — advance() will find nothing after this stage and return.

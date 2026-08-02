@@ -52,4 +52,52 @@ class AvaWorkerStageConsistencyTest extends TestCase
             );
         }
     }
+
+    /**
+     * Guards a second, distinct silent-drift bug found in this same
+     * session: ScheduleNextWatchJob was given a real output_column
+     * ('watch_output') in pipelineStages() so its Transaction Center card
+     * would stop rendering empty — but UnitPlatform::commitOutput() writes
+     * through a *different*, separately-maintained map
+     * (UnitPlatform::STAGE_COLUMNS), which never got the matching entry.
+     * The job ran successfully, logged success, advanced the pipeline —
+     * and silently wrote to no column at all. Only caught by manually
+     * dispatching the job and checking the actual column, not by reading
+     * the Transaction Center (which had been verified earlier using a
+     * hand-set value, not a real job run).
+     *
+     * Every fulfillment stage from human_decide onward uses its full
+     * pipelineStages() key verbatim in STAGE_COLUMNS (no short alias) —
+     * the six original synchronous stages (read_email, classify, memory,
+     * select_template, draft_email, push_draft) are the only ones with
+     * deliberately different short internal keys, so they're excluded here.
+     */
+    public function test_every_fulfillment_stage_output_column_is_wired_in_stage_columns(): void
+    {
+        $shortAliased = ['read_email', 'classify', 'memory', 'select_template', 'draft_email', 'push_draft', 'webhook', 'log_entry'];
+
+        $worker = new AvaWorker();
+        $reflection = new \ReflectionClass(\App\Platform\SDK\UnitPlatform::class);
+        $stageColumns = $reflection->getConstant('STAGE_COLUMNS');
+
+        foreach ($worker->pipelineStages() as $stage) {
+            if (empty($stage['output_column']) || in_array($stage['key'], $shortAliased, true)) {
+                continue;
+            }
+
+            $this->assertArrayHasKey(
+                $stage['key'],
+                $stageColumns,
+                "pipelineStages() stage '{$stage['key']}' declares output_column '{$stage['output_column']}', " .
+                "but UnitPlatform::STAGE_COLUMNS has no entry for it — commitOutput() would silently write nowhere."
+            );
+
+            $this->assertSame(
+                $stage['output_column'],
+                $stageColumns[$stage['key']],
+                "pipelineStages() stage '{$stage['key']}' declares output_column '{$stage['output_column']}', " .
+                "but STAGE_COLUMNS maps it to '{$stageColumns[$stage['key']]}' instead — these must match."
+            );
+        }
+    }
 }
