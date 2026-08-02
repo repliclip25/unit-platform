@@ -78,11 +78,13 @@ class AssetTransactionSynthesizer
             ],
         ));
 
+        $categoryForColumn = self::categoryForAssetType($asset->type);
+
         UnitPlatform::commitOutput($tx->tx_id, new WorkerOutput(
-            stage:  'classify',
-            status: 'classifying',
-            data:   [
-                'category'           => self::categoryForAssetType($asset->type),
+            stage:    'classify',
+            status:   'classifying',
+            data:     [
+                'category'           => $categoryForColumn,
                 'subcategory'        => $asset->type,
                 'priority'           => $urgency,
                 'required_action'    => 'Confirm renewal',
@@ -90,6 +92,14 @@ class AssetTransactionSynthesizer
                 'status'             => 'Renewal Watch',
                 'reason'             => $threshold ? "Asset expiry threshold crossed ({$threshold})" : 'Manually triggered (Renew Now)',
             ],
+            // Named shortcuts — the ONLY thing that syncs transactions.category
+            // and .priority (the Transaction Center title and the Transactions
+            // list columns both read those top-level columns, not this data
+            // blob). Without these, every Human Trigger / watch-synthesized
+            // transaction shows "Processing..." and blank Category/Priority
+            // forever, even after the renewal fully completes.
+            category: $categoryForColumn,
+            priority: $urgency,
         ));
 
         UnitPlatform::commitOutput($tx->tx_id, new WorkerOutput(
@@ -194,9 +204,9 @@ class AssetTransactionSynthesizer
         ));
 
         UnitPlatform::commitOutput($tx->tx_id, new WorkerOutput(
-            stage:  'classify',
-            status: 'classifying',
-            data:   [
+            stage:    'classify',
+            status:   'classifying',
+            data:     [
                 'category'           => $category,
                 'subcategory'        => 'bundle',
                 'priority'           => $urgency,
@@ -205,6 +215,12 @@ class AssetTransactionSynthesizer
                 'status'             => 'Renewal Watch',
                 'reason'             => $threshold ? "Asset expiry threshold crossed ({$threshold})" : 'Manually triggered (Renew Now)',
             ],
+            // Same shortcut-param requirement as create() above — without
+            // these, transactions.category/.priority never get set, and
+            // the transaction shows "Processing..." forever even after the
+            // renewal fully completes (confirmed live on TX-80E589DD).
+            category: $category,
+            priority: $urgency,
         ));
 
         UnitPlatform::commitOutput($tx->tx_id, new WorkerOutput(
