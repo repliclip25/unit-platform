@@ -36,6 +36,11 @@ class InvoiceFollowUpJob implements ShouldQueue
         $dep = DB::table('worker_deployments')->where('id', $this->deploymentId)->first();
         if (!$dep || $dep->status !== 'active') return;
 
+        // Message gate — defaults enabled, preserving today's live behavior;
+        // a tenant can turn off this specific client-facing send from AVA
+        // Settings without touching the invoice-attachment flow itself.
+        if (!UnitPlatform::gateEnabled($dep->id, 'request_invoice_followup', true)) return;
+
         $attached = DB::table('transactions')
             ->where('deployment_id', $this->deploymentId)
             ->where('is_test', false)

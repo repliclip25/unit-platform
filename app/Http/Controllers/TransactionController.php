@@ -359,8 +359,13 @@ class TransactionController extends Controller
         if ($decision === 'approved') {
             \App\Platform\SDK\UnitPlatform::markLatestClientDraftApproved($txId);
 
+            // Message gate — "Send Reminders (3 cadence)" master switch on
+            // AVA Settings. Off means every transaction behaves like Fast
+            // Track: the first (only) draft is always treated as final,
+            // same as if the tenant chose a single-shot draft from the start.
+            $cadenceOn       = \App\Platform\SDK\UnitPlatform::gateEnabled($tx->deployment_id, 'client_cadence', true);
             $reminderNumber  = (int) $tx->client_reminder_number;
-            $isFinalReminder = $tx->is_test || $reminderNumber === 0 || $reminderNumber >= 3;
+            $isFinalReminder = $tx->is_test || !$cadenceOn || $reminderNumber === 0 || $reminderNumber >= 3;
 
             if ($isFinalReminder) {
                 // send_mode = 'direct' — the tenant has opted for UNIT to send

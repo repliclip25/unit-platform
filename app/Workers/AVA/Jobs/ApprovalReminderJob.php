@@ -40,6 +40,11 @@ class ApprovalReminderJob implements ShouldQueue
         $dep = DB::table('worker_deployments')->where('id', $this->deploymentId)->first();
         if (!$dep || $dep->status !== 'active') return;
 
+        // Message gate — "Nudge Me" master switch on AVA Settings. Off means
+        // AVA still waits on the tenant exactly as before, it just stops
+        // emailing them about it — they check UNIT themselves instead.
+        if (!UnitPlatform::gateEnabled($dep->id, 'nudge_me', true)) return;
+
         // human_decision IS NULL — a real transaction's client draft is
         // approved/rejected once per round (up to 3, on the 30/15/0-day
         // cadence, see ClientReminderCycleJob); fulfillment_stage stays

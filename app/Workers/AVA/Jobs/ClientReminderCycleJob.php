@@ -41,6 +41,12 @@ class ClientReminderCycleJob implements ShouldQueue
         $dep = DB::table('worker_deployments')->where('id', $this->deploymentId)->first();
         if (!$dep || $dep->status !== 'active') return;
 
+        // Message gate — with client_cadence off, decide() already treats
+        // round 1 as final, so no transaction should ever be sitting here
+        // waiting on a next round for this deployment. Checked explicitly
+        // anyway rather than relying on that as the only guarantee.
+        if (!UnitPlatform::gateEnabled($dep->id, 'client_cadence', true)) return;
+
         $waiting = DB::table('transactions')
             ->where('deployment_id', $this->deploymentId)
             ->where('fulfillment_stage', 'human_decide')

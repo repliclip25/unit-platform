@@ -51,6 +51,10 @@ class AssetExpiryWatchJob implements ShouldQueue
         $dep = DB::table('worker_deployments')->where('id', $this->deploymentId)->first();
         if (!$dep || $dep->status !== 'active') return;
 
+        // Trigger gate — a tenant can run on Gmail Watch alone without the
+        // asset registry proactively creating transactions, or vice versa.
+        if (!UnitPlatform::gateEnabled($dep->id, 'asset_watch', true)) return;
+
         $assets = DB::table('assets')
             ->where('user_id', $dep->user_id)
             ->whereNull('deleted_at')

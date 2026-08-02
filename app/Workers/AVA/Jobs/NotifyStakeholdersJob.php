@@ -50,10 +50,15 @@ class NotifyStakeholdersJob implements ShouldQueue
             $template['body_template'] ?? "Hi,\n\nThe renewal for {$asset}{$clientSuffix} is complete. The next cycle is already being watched.\n\n— AVA"
         );
 
+        // Message gate — defaults enabled, preserving today's live behavior.
+        // The stage itself still runs and advances the pipeline either way;
+        // this only controls whether the email actually goes out.
+        $gateOn = UnitPlatform::gateEnabled($input->deploymentId, 'notify_stakeholders', true);
+
         // Fast Track runs every stage for real so the tenant can preview the
         // full lifecycle, but must never actually spam their own inbox every
         // time they click "Run Fast Track" — draft the message, don't send it.
-        if ($input->tenantEmail && !$input->isFastTrack()) {
+        if ($gateOn && $input->tenantEmail && !$input->isFastTrack()) {
             EmailDispatcher::send(
                 'ava_renewal_complete',
                 $input->tenantEmail,
@@ -66,7 +71,7 @@ class NotifyStakeholdersJob implements ShouldQueue
 
         UnitPlatform::commitOutput($this->txId, new WorkerOutput(
             stage: 'notify_stakeholders',
-            data:  ['to' => $input->tenantEmail, 'subject' => $subject, 'body' => $body, 'sent' => !$input->isFastTrack()],
+            data:  ['to' => $input->tenantEmail, 'subject' => $subject, 'body' => $body, 'sent' => $gateOn && !$input->isFastTrack()],
         ));
         UnitPlatform::setFulfillmentStage($this->txId, 'notify_stakeholders');
         UnitPlatform::log('ava', $this->txId, 'stakeholders_notified', ['to' => $input->tenantEmail]);

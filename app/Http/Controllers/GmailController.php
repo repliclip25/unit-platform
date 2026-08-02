@@ -220,6 +220,15 @@ class GmailController extends Controller
             return response()->json(['status' => 'ok'], 200);
         }
 
+        // Trigger gate — a tenant can turn off Gmail Watch from AVA Settings
+        // without disconnecting the credential itself (e.g. running on Asset
+        // Watch alone for a while). Drop the webhook, don't error — Google
+        // will keep delivering regardless.
+        if (!\App\Platform\SDK\UnitPlatform::gateEnabled($deployment->id, 'gmail_watch', true)) {
+            Log::info('Webhook: gmail_watch trigger gate disabled, dropping', ['deployment_id' => $deployment->id]);
+            return response()->json(['status' => 'ok'], 200);
+        }
+
         // Resolve the worker contract — silently drops if decommissioned
         $contract = WorkerRegistry::resolveActive($deployment->worker_slug);
         if (WorkerRegistry::isNull($contract)) {

@@ -43,6 +43,9 @@ class PaymentReminderJob implements ShouldQueue
         $dep = DB::table('worker_deployments')->where('id', $this->deploymentId)->first();
         if (!$dep || $dep->status !== 'active') return;
 
+        // Message gate — "Nudge Me" master switch on AVA Settings.
+        if (!UnitPlatform::gateEnabled($dep->id, 'nudge_me', true)) return;
+
         $stuck = DB::table('transactions')
             ->where('deployment_id', $this->deploymentId)
             ->where('fulfillment_stage', 'confirm_payment')
