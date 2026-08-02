@@ -136,11 +136,22 @@ class TransactionController extends Controller
 
             $stageReminders = array_values(array_filter($reminders, fn($r) => ($r['stage_key'] ?? null) === $stage['key']));
 
+            // A stage-gated stage (Request Invoice/Documents, Confirm
+            // Payment, Generate Closeout Report) that's already behind us
+            // but has no output at all was skipped by a disabled AVA
+            // Settings gate, not just "hasn't happened yet" — worth telling
+            // the tenant apart from a normal completed stage, especially
+            // for confirm_payment where "skipped" means no one ever
+            // confirmed money changed hands.
+            $skippedByGate = $state === 'done' && empty($content)
+                && !\App\Platform\SDK\UnitPlatform::gateEnabled($tx->deployment_id, $stage['key'], true);
+
             return array_merge(['gate_type' => null], $stage, $routeOverrides[$stage['key']] ?? [], [
-                'i'         => $i,
-                'state'     => $state,
-                'content'   => $content,
-                'reminders' => $stageReminders,
+                'i'              => $i,
+                'state'          => $state,
+                'content'        => $content,
+                'skipped_by_gate'=> $skippedByGate,
+                'reminders'      => $stageReminders,
                 // Draft Email and human_decide both show the same up-to-3
                 // client drafts — one tenant reviews every cadence message
                 // once, instead of hunting across two stage cards for it.

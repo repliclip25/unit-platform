@@ -166,11 +166,14 @@ body{font-family:'Inter',sans-serif;background:var(--db-bg);color:var(--db-text)
 .tc-stage-icon{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10.5px;font-weight:800;flex-shrink:0;background:var(--db-chip);color:var(--db-text-muted)}
 .tc-stage.is-done .tc-stage-icon{background:#22c55e;color:#fff}
 .tc-stage.is-active.gate-hard .tc-stage-icon{background:#F5C518;color:#412402}
+.tc-stage.is-skipped{opacity:1}
+.tc-stage.is-skipped .tc-stage-icon{background:var(--db-chip);color:var(--db-text-muted);border:1.5px dashed var(--db-border)}
 .tc-stage-label{font-size:13px;font-weight:700;color:var(--db-text)}
 .tc-stage-sub{font-size:11px;color:var(--db-text-muted);margin-top:1px}
 .tc-stage-tag{font-size:9px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:3px 9px;border-radius:99px;margin-left:auto;flex-shrink:0;white-space:nowrap}
 .tc-stage-tag.blocks{background:rgba(239,159,39,.15);color:#EF9F27}
 .tc-stage-tag.soft,.tc-stage-tag.skippable{background:var(--db-chip);color:var(--db-text-muted)}
+.tc-stage-tag.skipped{background:rgba(239,68,68,.1);color:#ef4444}
 .tc-stage-body{margin-top:10px;padding-left:32px}
 .tc-msg{background:var(--db-chip);border-radius:8px;padding:9px 11px;font-size:11.5px;color:var(--db-text-muted);line-height:1.6;margin-top:6px;white-space:pre-wrap}
 .tc-msg-meta{font-size:10.5px;color:var(--db-text-muted);margin-bottom:3px;display:flex;align-items:center;gap:6px}
@@ -460,6 +463,30 @@ $statusColor = $statusColors[$tx->status] ?? ['bg'=>'var(--db-chip)','color'=>'v
       </div>
       @endif
 
+      {{-- Notify Customer discovery — shown once a renewal has actually
+           closed out (reached notify_customer or later) if the tenant has
+           never turned this on. It's an opt-in feature with no other
+           discovery path, so the moment it would have mattered is exactly
+           when to mention it. --}}
+      @php
+        $notifyCustomerStage = collect($stages)->firstWhere('key', 'notify_customer');
+        $showNotifyCustomerTip = $notifyCustomerStage
+            && in_array($notifyCustomerStage['state'], ['done', 'active'], true)
+            && !\App\Platform\SDK\UnitPlatform::gateEnabled($tx->deployment_id, 'notify_customer', false);
+      @endphp
+      @if($showNotifyCustomerTip)
+      <div class="td-banner data" style="border-color:rgba(59,130,246,.3);background:rgba(59,130,246,.08)">
+        <div class="td-banner-title" style="color:#60a5fa">💡 This renewal closed without telling the client</div>
+        <div class="td-banner-body">
+          AVA emailed you that this renewal is complete, but didn't notify the client directly — that's an opt-in feature, off by default.
+          Turn on <strong style="color:var(--db-text)">"Renewal Complete Notice to Client"</strong> in AVA Settings if you'd like AVA to tell them the next renewal date automatically.
+        </div>
+        <div class="td-banner-actions">
+          <a href="{{ route('app.workers.settings', $tx->worker_slug) }}" class="td-btn td-btn-amber" style="background:#2563eb">Open AVA Settings →</a>
+        </div>
+      </div>
+      @endif
+
       {{-- Dismissed notice --}}
       @if($isDismissed)
       <div class="td-dismissed">○ This transaction was dismissed and removed from active queues. The audit trail is preserved below.</div>
@@ -523,23 +550,31 @@ $statusColor = $statusColors[$tx->status] ?? ['bg'=>'var(--db-chip)','color'=>'v
         @foreach($stages as $stage)
         @php
           $isGate = !empty($stage['gate_type']);
-          $classes = 'tc-stage is-' . $stage['state'] . ($isGate ? ' gate-' . $stage['gate_type'] : '');
+          $classes = 'tc-stage is-' . $stage['state'] . ($isGate ? ' gate-' . $stage['gate_type'] : '') . (!empty($stage['skipped_by_gate']) ? ' is-skipped' : '');
         @endphp
         <div class="{{ $classes }}">
           <div class="tc-stage-head">
             <span class="tc-stage-icon">
-              @if($stage['state'] === 'done')✓@else{{ $stage['i'] + 1 }}@endif
+              @if(!empty($stage['skipped_by_gate']))–@elseif($stage['state'] === 'done')✓@else{{ $stage['i'] + 1 }}@endif
             </span>
             <div style="min-width:0">
               <div class="tc-stage-label">{{ $stage['label'] }}</div>
               @if($stage['state'] !== 'done')<div class="tc-stage-sub">{{ $stage['sub'] }}</div>@endif
             </div>
+            @if(!empty($stage['skipped_by_gate']))<span class="tc-stage-tag skipped">skipped — disabled in settings</span>@endif
             @if($stage['gate_type'] === 'hard')<span class="tc-stage-tag blocks">blocks renewal</span>@endif
             @if($stage['gate_type'] === 'soft')<span class="tc-stage-tag soft">optional · won't block</span>@endif
             @if($stage['gate_type'] === 'skippable')<span class="tc-stage-tag skippable">skippable</span>@endif
           </div>
 
-          @if($stage['state'] !== 'pending')
+          @if(!empty($stage['skipped_by_gate']))
+          <div class="tc-stage-body">
+            <p style="font-size:12px;color:var(--db-text-muted)">
+              This stage never ran — <strong style="color:var(--db-text)">{{ $stage['label'] }}</strong> is turned off in
+              <a href="{{ route('app.workers.settings', $tx->worker_slug) }}" style="color:var(--accent-text,var(--db-text));text-decoration:underline">AVA Settings</a>.
+            </p>
+          </div>
+          @elseif($stage['state'] !== 'pending')
           <div class="tc-stage-body">
 
             {{-- Approve & Send — up to 3 client reminder drafts. A tab per

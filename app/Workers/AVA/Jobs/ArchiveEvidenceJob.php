@@ -108,6 +108,15 @@ class ArchiveEvidenceJob implements ShouldQueue
                 . '<div class="msg"><strong>' . $esc($r['subject'] ?? null) . '</strong><br><br>' . nl2br($esc($r['body'] ?? null)) . '</div>';
         }
 
+        // A stage-gated section with no data at all reads very differently
+        // depending on why — "the tenant didn't need this" vs. "this was
+        // turned off in AVA Settings and never even ran." The archive is
+        // supposed to be the honest record of what actually happened, so
+        // say which one it was rather than leaving it ambiguous.
+        $gateSkippedNote = fn (string $stageKey, string $label) => !UnitPlatform::gateEnabled($input->deploymentId, $stageKey, true)
+            ? "<h2>{$label}</h2><p style=\"color:#888\">Skipped — this stage is turned off in AVA Settings.</p>"
+            : '';
+
         // 2. Invoice
         if (!empty($invoice['status']) || !empty($invoice['sample'])) {
             $html .= '<h2>2. Invoice request</h2><table>'
@@ -131,6 +140,8 @@ class ArchiveEvidenceJob implements ShouldQueue
                 $html .= '<div class="msg-meta">Nudge to attach invoice &mdash; attempt ' . $esc($r['attempt_number'] ?? null) . ' &middot; ' . $when($r['sent_at'] ?? null) . '</div>'
                     . '<div class="msg"><strong>' . $esc($r['subject'] ?? null) . '</strong><br><br>' . nl2br($esc($r['body'] ?? null)) . '</div>';
             }
+        } else {
+            $html .= $gateSkippedNote('request_invoice', '2. Invoice request');
         }
 
         // 3. Documents
@@ -145,16 +156,28 @@ class ArchiveEvidenceJob implements ShouldQueue
                 $html .= '<div class="msg-meta">Message ' . $esc($m['sequence'] ?? null) . ' to client &middot; ' . $when($m['sent_at'] ?? null) . '</div>'
                     . '<div class="msg"><strong>' . $esc($m['subject'] ?? null) . '</strong><br><br>' . nl2br($esc($m['body'] ?? null)) . '</div>';
             }
+        } else {
+            $html .= $gateSkippedNote('request_documents', '3. Supporting document request');
         }
 
-        // 4. Payment & renewal
-        $paymentConfirmedText = ($payment['confirmed'] ?? null) === true
-            ? $when($payment['confirmed_at'] ?? null)
-            : $esc($payment['confirmed'] ?? null);
-        $html .= '<h2>4. Payment &amp; renewal</h2><table>'
-            . '<tr><td class="label">Payment confirmed</td><td>' . $paymentConfirmedText . '</td></tr>'
-            . '<tr><td class="label">Renewal date</td><td>' . $esc($renewal['old_date'] ?? null) . ' &rarr; ' . $esc($renewal['new_date'] ?? null) . '</td></tr>'
-            . '</table>';
+        // 4. Payment & renewal — confirm_payment is a hard gate, so a
+        // missing confirmation with the gate off is the highest-stakes
+        // case of this whole "skipped vs never reached" distinction: it
+        // means the renewal closed out with nobody ever confirming money
+        // changed hands.
+        if (empty($payment) && !UnitPlatform::gateEnabled($input->deploymentId, 'confirm_payment', true)) {
+            $html .= '<h2>4. Payment &amp; renewal</h2>'
+                . '<p style="color:#c0392b"><strong>Payment confirmation was skipped</strong> — this gate is turned off in AVA Settings. No one confirmed payment for this renewal.</p>'
+                . '<table><tr><td class="label">Renewal date</td><td>' . $esc($renewal['old_date'] ?? null) . ' &rarr; ' . $esc($renewal['new_date'] ?? null) . '</td></tr></table>';
+        } else {
+            $paymentConfirmedText = ($payment['confirmed'] ?? null) === true
+                ? $when($payment['confirmed_at'] ?? null)
+                : $esc($payment['confirmed'] ?? null);
+            $html .= '<h2>4. Payment &amp; renewal</h2><table>'
+                . '<tr><td class="label">Payment confirmed</td><td>' . $paymentConfirmedText . '</td></tr>'
+                . '<tr><td class="label">Renewal date</td><td>' . $esc($renewal['old_date'] ?? null) . ' &rarr; ' . $esc($renewal['new_date'] ?? null) . '</td></tr>'
+                . '</table>';
+        }
         foreach ($remindersFor('confirm_payment') as $r) {
             $html .= '<div class="msg-meta">Payment reminder &mdash; attempt ' . $esc($r['attempt_number'] ?? null) . ' &middot; ' . $when($r['sent_at'] ?? null) . '</div>'
                 . '<div class="msg"><strong>' . $esc($r['subject'] ?? null) . '</strong><br><br>' . nl2br($esc($r['body'] ?? null)) . '</div>';
