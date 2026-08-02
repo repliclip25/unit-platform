@@ -34,6 +34,7 @@ final class UnitPlatform
         'update_renewal_date' => 'renewal_output',
         'archive_evidence'  => 'archive_output',
         'notify_stakeholders' => 'notify_output',
+        'notify_customer'   => 'notify_customer_output',
     ];
 
     // ── Transaction status → (stage_key, event) for stage log ────────────

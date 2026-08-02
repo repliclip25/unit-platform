@@ -862,6 +862,10 @@ class WorkerController extends Controller
             'nudge_me'                  => ['label' => 'Nudge Me',                         'hint' => 'Email you when a draft or payment is waiting on you. Off means AVA still waits, it just stops emailing about it.'],
             'request_invoice_followup'  => ['label' => 'Invoice Follow-up to Client',      'hint' => 'Follow up with the client after an invoice is attached.'],
             'notify_stakeholders'       => ['label' => 'Renewal Complete Notice',          'hint' => 'Email you once a renewal closes out.'],
+            // Brand new — off by default, unlike every gate above. A tenant
+            // opts in to AVA emailing their customer directly; existing
+            // deployments don't suddenly start doing this on their behalf.
+            'notify_customer'           => ['label' => 'Renewal Complete Notice to Client', 'hint' => 'Tell the client directly — next renewal date and when to expect the next reminder. Off by default.', 'default' => false],
         ],
     ];
 

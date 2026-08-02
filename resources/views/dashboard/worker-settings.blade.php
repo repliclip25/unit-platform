@@ -290,7 +290,7 @@ $sidebarLinks = [
               </div>
               <label class="mem-toggle-row">
                 <div class="mem-toggle">
-                  <input type="checkbox" name="{{ $key }}" value="1" {{ (!isset($gateRows[$key]) || $gateRows[$key]->enabled) ? 'checked' : '' }}>
+                  <input type="checkbox" name="{{ $key }}" value="1" {{ (isset($gateRows[$key]) ? $gateRows[$key]->enabled : ($g['default'] ?? true)) ? 'checked' : '' }}>
                   <div class="mem-toggle-track"><div class="mem-toggle-thumb"></div></div>
                 </div>
               </label>
@@ -315,7 +315,7 @@ $sidebarLinks = [
               </div>
               <label class="mem-toggle-row">
                 <div class="mem-toggle">
-                  <input type="checkbox" name="{{ $key }}" value="1" {{ (!isset($gateRows[$key]) || $gateRows[$key]->enabled) ? 'checked' : '' }}>
+                  <input type="checkbox" name="{{ $key }}" value="1" {{ (isset($gateRows[$key]) ? $gateRows[$key]->enabled : ($g['default'] ?? true)) ? 'checked' : '' }}>
                   <div class="mem-toggle-track"><div class="mem-toggle-thumb"></div></div>
                 </div>
               </label>
@@ -340,7 +340,7 @@ $sidebarLinks = [
               </div>
               <label class="mem-toggle-row">
                 <div class="mem-toggle">
-                  <input type="checkbox" name="{{ $key }}" value="1" {{ (!isset($gateRows[$key]) || $gateRows[$key]->enabled) ? 'checked' : '' }}>
+                  <input type="checkbox" name="{{ $key }}" value="1" {{ (isset($gateRows[$key]) ? $gateRows[$key]->enabled : ($g['default'] ?? true)) ? 'checked' : '' }}>
                   <div class="mem-toggle-track"><div class="mem-toggle-thumb"></div></div>
                 </div>
               </label>

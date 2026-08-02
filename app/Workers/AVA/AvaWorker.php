@@ -253,6 +253,13 @@ class AvaWorker implements WorkerContract
             // stakeholder message, so it can't be generated first.
             ['key' => 'notify_stakeholders','label' => 'Notify Stakeholders', 'sub' => 'Emails you the renewal is complete', 'icon' => 'bell', 'job_class' => 'NotifyStakeholdersJob',
                 'output_column' => 'notify_output',     'group' => 'renewed',   'group_label' => 'Renewed',   'group_color' => '#22c55e', 'image' => '/images/ava-life.png', 'log_stage_key' => 'notify_stakeholders'],
+            // The first message that goes to the actual CLIENT, not the
+            // tenant — next renewal date + when the next cadence starts.
+            // The stage always runs (so archive/schedule_next_watch keep
+            // moving); the send itself is gated by 'notify_customer'
+            // (see AVA Settings), off by default since it's brand new.
+            ['key' => 'notify_customer',    'label' => 'Notify Customer',   'sub' => 'Tells the client their renewal is done and when to expect the next one', 'icon' => 'bell', 'job_class' => 'NotifyCustomerJob',
+                'output_column' => 'notify_customer_output', 'group' => 'renewed', 'group_label' => 'Renewed', 'group_color' => '#22c55e', 'image' => '/images/ava-life.png', 'log_stage_key' => 'notify_customer'],
             ['key' => 'archive_evidence',   'label' => 'Archive Evidence',  'sub' => 'Combines everything into one PDF', 'icon' => 'archive', 'job_class' => 'ArchiveEvidenceJob',
                 'output_column' => 'archive_output',   'group' => 'renewed',   'group_label' => 'Renewed',   'group_color' => '#22c55e', 'image' => '/images/ava-life.png', 'log_stage_key' => 'archive_evidence'],
             ['key' => 'schedule_next_watch','label' => 'Schedule Next Watch', 'sub' => 'Asset re-enters continuous monitoring', 'icon' => 'refresh', 'job_class' => 'ScheduleNextWatchJob',

@@ -48,6 +48,7 @@ class ArchiveEvidenceJob implements ShouldQueue
         $payment   = $input->stage('confirm_payment');
         $renewal   = $input->stage('update_renewal_date');
         $notify    = $input->stage('notify_stakeholders');
+        $notifyCustomer = $input->stage('notify_customer');
 
         $reminders    = json_decode($tx->reminders ?? '[]', true) ?: [];
         $clientDrafts = json_decode($tx->client_drafts ?? '[]', true) ?: [];
@@ -159,12 +160,23 @@ class ArchiveEvidenceJob implements ShouldQueue
                 . '<div class="msg"><strong>' . $esc($r['subject'] ?? null) . '</strong><br><br>' . nl2br($esc($r['body'] ?? null)) . '</div>';
         }
 
-        // 5. Closing message
+        // 5. Closing message to the tenant
         if ($notify) {
             $html .= '<h2>5. Closing message to stakeholders</h2><table>'
                 . '<tr><td class="label">To</td><td>' . $esc($notify['to'] ?? null) . '</td></tr>'
                 . '<tr><td class="label">Subject</td><td>' . $esc($notify['subject'] ?? null) . '</td></tr>'
                 . '</table><div class="msg">' . nl2br($esc($notify['body'] ?? null)) . '</div>';
+        }
+
+        // 6. Closing message to the client — only if the tenant opted in
+        // (notify_customer gate); the stage still ran either way, but
+        // 'sent' reflects whether anything actually went out.
+        if ($notifyCustomer && !empty($notifyCustomer['sent'])) {
+            $html .= '<h2>6. Closing message to client</h2><table>'
+                . '<tr><td class="label">To</td><td>' . $esc($notifyCustomer['to'] ?? null) . '</td></tr>'
+                . '<tr><td class="label">Subject</td><td>' . $esc($notifyCustomer['subject'] ?? null) . '</td></tr>'
+                . '<tr><td class="label">Next renewal</td><td>' . $esc($notifyCustomer['next_renewal_date'] ?? null) . '</td></tr>'
+                . '</table><div class="msg">' . nl2br($esc($notifyCustomer['body'] ?? null)) . '</div>';
         }
 
         $html .= '<div class="ft">This record is durable proof of a UNIT-coordinated renewal. Re-download at any time via the QR code above or the link it resolves to.</div>';

@@ -686,6 +686,15 @@ $statusColor = $statusColors[$tx->status] ?? ['bg'=>'var(--db-chip)','color'=>'v
                 @include('dashboard.partials._client-draft-tabs', ['clientDrafts' => $stage['client_drafts'], 'wrapId' => 'cd-draft-' . $tx->tx_id])
               @elseif($stage['key'] === 'notify_stakeholders')
                 <div class="tc-msg">{{ $c['subject'] ?? '' }}{{ "\n\n" }}{{ $c['body'] ?? '' }}</div>
+              @elseif($stage['key'] === 'notify_customer')
+                @if(!empty($c['sent']))
+                  <div class="tc-msg-meta">Sent to {{ $c['to'] ?? 'the client' }} · next renewal {{ $c['next_renewal_date'] ?? '—' }}</div>
+                @elseif(empty($c['to']))
+                  <div class="tc-msg-meta" style="color:var(--db-text-muted)">Drafted, not sent — no client email on file</div>
+                @else
+                  <div class="tc-msg-meta" style="color:var(--db-text-muted)">Drafted, not sent — "Renewal Complete Notice to Client" is off in AVA Settings</div>
+                @endif
+                <div class="tc-msg">{{ $c['subject'] ?? '' }}{{ "\n\n" }}{{ $c['body'] ?? '' }}</div>
               @elseif($stage['key'] === 'archive_evidence' && !empty($c['path']))
                 <a href="{{ route('app.transactions.archive-download', $tx->tx_id) }}" class="tc-btn tc-btn-ghost" style="display:inline-block;width:auto">Download PDF archive →</a>
               @elseif($stage['key'] === 'schedule_next_watch')

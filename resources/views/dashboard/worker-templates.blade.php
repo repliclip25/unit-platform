@@ -194,6 +194,7 @@ $systemStageLabels = [
     'request_invoice_nudge'    => 'Invoice Nudge — to you',
     'request_invoice_followup' => 'Invoice Follow-up — to client',
     'notify_stakeholders'      => 'Renewal Complete Notice — to you',
+    'notify_customer'          => 'Renewal Complete Notice — to client',
 ];
 $bySystemStage = $templates->whereNotNull('stage_key')->groupBy('stage_key')
     ->sortBy(fn($group, $key) => array_search($key, array_keys($systemStageLabels)));
