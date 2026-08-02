@@ -182,6 +182,45 @@ class AssetGroupController extends Controller
         return response()->json(['ok' => true]);
     }
 
+    // ── Human Trigger — push an asset into the pipeline on demand ────────────
+    // The third entry point alongside Gmail Watch and Asset Watch: a tenant
+    // (or a client asking directly) wants this started right now instead of
+    // waiting for tomorrow's threshold scan. Always available — not gated
+    // by AVA Settings, since it's an explicit, one-off human action rather
+    // than a background job.
+    public function renewNow(int $depId, int $assetId)
+    {
+        $dep = DB::table('worker_deployments')
+            ->where('id', $depId)
+            ->where('user_id', auth()->id())
+            ->firstOrFail();
+
+        $asset = DB::table('assets')
+            ->where('id', $assetId)
+            ->where('user_id', auth()->id())
+            ->whereNull('deleted_at')
+            ->firstOrFail();
+
+        // Don't create a second in-flight transaction for the same asset —
+        // dismissed/rejected transactions don't count, everything else does.
+        $inFlight = DB::table('transactions')
+            ->where('deployment_id', $depId)
+            ->whereNotIn('status', ['dismissed', 'rejected'])
+            ->whereRaw("JSON_EXTRACT(raw_input, '$.asset_id') = ?", [$assetId])
+            ->where('created_at', '>', now()->subDay())
+            ->exists();
+
+        if ($inFlight) {
+            return back()->with('error', "{$asset->name} already has a transaction in progress — check Activity Log.");
+        }
+
+        $tx = \App\Workers\AVA\Services\AssetTransactionSynthesizer::create($asset, $dep, 'human_trigger');
+
+        return redirect()
+            ->route('app.transactions.show', ['slug' => $dep->worker_slug, 'txId' => $tx->tx_id])
+            ->with('success', "{$asset->name} pushed into the pipeline.");
+    }
+
     // ── Private helpers ───────────────────────────────────────────────────────
 
     private function authoriseGroup(int $depId, int $groupId): void

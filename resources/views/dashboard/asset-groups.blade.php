@@ -443,6 +443,10 @@ $sidebarLinks = [
               @endif
             </div>
           </div>
+          <form method="POST" action="{{ route('app.workers.assets.renew-now', [$dep->id, $item->id]) }}" onsubmit="return confirm('Push {{ addslashes($item->name) }} into the pipeline now?')">
+            @csrf
+            <button class="ag-item-remove" type="submit" title="Push this asset into the pipeline right now, instead of waiting for the next scheduled check">Renew Now</button>
+          </form>
           <form method="POST" action="{{ route('app.workers.memory.groups.items.remove', [$dep->id, $group->id, $item->id]) }}">
             @csrf @method('DELETE')
             <button class="ag-item-remove">Remove</button>

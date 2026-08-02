@@ -3,7 +3,7 @@
 namespace App\Workers\AVA\Jobs;
 
 use App\Platform\SDK\UnitPlatform;
-use App\Platform\SDK\WorkerOutput;
+use App\Workers\AVA\Services\AssetTransactionSynthesizer;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -68,7 +68,7 @@ class AssetExpiryWatchJob implements ShouldQueue
                 $threshold = $this->resolveThreshold($daysLeft);
                 if (!$threshold || $this->alreadyNotified($asset->id, $threshold)) continue;
 
-                $this->createSyntheticTransaction($asset, $dep, $daysLeft, $threshold);
+                AssetTransactionSynthesizer::create($asset, $dep, 'asset_watch', $threshold);
 
                 DB::table('asset_watch_log')->insert([
                     'asset_id'    => $asset->id,
@@ -110,96 +110,4 @@ class AssetExpiryWatchJob implements ShouldQueue
             : true; // non-overdue buckets fire exactly once as the asset crosses them
     }
 
-    private function createSyntheticTransaction(object $asset, object $dep, int $daysLeft, string $threshold): void
-    {
-        $client  = $asset->client_id ? DB::table('clients')->where('id', $asset->client_id)->first() : null;
-        $contact = $client
-            ? DB::table('contacts')->where('client_id', $client->id)->orderByDesc('is_primary')->first()
-            : null;
-
-        $urgency = match (true) {
-            $threshold === 'overdue' => 'Critical',
-            in_array($threshold, ['1', '7'], true) => 'High',
-            $threshold === '14' => 'Medium',
-            default => 'Low',
-        };
-
-        $tx = UnitPlatform::createTransaction('ava', [
-            'source'        => 'asset_watch',
-            'user_id'       => $dep->user_id,
-            'deployment_id' => $dep->id,
-            'asset_id'      => $asset->id,
-            'threshold'     => $threshold,
-        ]);
-
-        // No inbound email for this trigger — the asset record itself is the
-        // source of truth, so 'read' and 'classify' are synthesized directly
-        // instead of running ReadEmailJob/ClassifyEmailJob against nothing.
-        UnitPlatform::commitOutput($tx->tx_id, new WorkerOutput(
-            stage:  'read',
-            status: 'reading',
-            data:   [
-                'plain_english_summary' => $threshold === 'overdue'
-                    ? "{$asset->name} is overdue for renewal ({$asset->renewal_date})."
-                    : "{$asset->name} is due for renewal in {$daysLeft} day(s) ({$asset->renewal_date}).",
-                'what_happened'              => 'Renewal date reached from the asset registry — no inbound email for this one.',
-                'action_needed'              => 'Confirm renewal status with the client and follow up as needed.',
-                'due_date_or_deadline'       => $asset->renewal_date,
-                'risk_if_ignored'            => 'Service interruption or an unplanned lapse in coverage.',
-                'urgency'                    => $urgency,
-                'questions_for_memory_lookup'=> [],
-            ],
-        ));
-
-        UnitPlatform::commitOutput($tx->tx_id, new WorkerOutput(
-            stage:  'classify',
-            status: 'classifying',
-            data:   [
-                'category'            => $this->categoryForAssetType($asset->type),
-                'subcategory'         => $asset->type,
-                'priority'            => $urgency,
-                'required_action'     => 'Confirm renewal',
-                'register_to_update'  => 'renewal_register',
-                'status'              => 'Renewal Watch',
-                'reason'              => "Asset expiry threshold crossed ({$threshold})",
-            ],
-        ));
-
-        UnitPlatform::commitOutput($tx->tx_id, new WorkerOutput(
-            stage:  'memory',
-            status: 'memory_lookup',
-            data:   [
-                'asset'                      => $asset->name,
-                'matched_client'             => $client->name ?? null,
-                'primary_contact_name'       => $contact->name  ?? null,
-                'primary_contact_email'      => $contact->email ?? null,
-                'related_project_or_service' => $asset->vendor,
-                'client_preference'          => null,
-                'ava_rule'                   => null,
-                'matched_rule_id'            => null,
-                // Certain — the asset record is already known, there's no AI
-                // match to be uncertain about.
-                'confidence'                 => 100,
-                'missing_information'        => $contact ? [] : ['No contact on file for this client'],
-                'rule_requires_approval'     => true,
-            ],
-        ));
-
-        UnitPlatform::log('ava', $tx->tx_id, 'asset_watch_triggered', [
-            'asset_id' => $asset->id, 'threshold' => $threshold, 'days_left' => $daysLeft,
-        ]);
-
-        UnitPlatform::advance($tx->tx_id, 'memory');
-    }
-
-    private function categoryForAssetType(?string $type): string
-    {
-        return match (strtolower($type ?? '')) {
-            'domain'  => 'Domain Renewal',
-            'ssl'     => 'SSL Expiry',
-            'hosting' => 'Hosting Invoice',
-            'saas'    => 'SaaS Renewal',
-            default   => 'Other',
-        };
-    }
 }
