@@ -214,6 +214,8 @@ $sidebarLinks = [
   ['Templates',    'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z', route('app.workers.templates',['slug'=>$dep->worker_slug]), false],
   ['Rules',        'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4', route('app.workers.rules',$dep->worker_slug), false],
   ['Configure',    'M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z', route('app.workers.configure', $dep->worker_slug), true],
+
+  ['Settings',     'M10.5 6h9.75M10.5 6a1.5 1.5 0 11-3 0m3 0a1.5 1.5 0 10-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-9.75 0h9.75', route('app.workers.settings', $dep->worker_slug), false],
   ['Fast Track',   'M13 10V3L4 14h7v7l9-11h-7z', route('app.workers.fast-track.page',$dep->worker_slug), false],
   ['Integrations', 'M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1', route('app.workers.connect',$dep->worker_slug), false],
   ['Billing',      'M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z', route('app.workers.billing',$dep->worker_slug), false],
@@ -383,38 +385,11 @@ $tierColors = [
             <div class="cfg-card-body">
               <form method="POST" action="{{ route('app.workers.config', $dep->id) }}">
                 @csrf @method('PATCH')
-                <input type="hidden" name="send_mode" value="{{ $dep->send_mode ?? 'draft' }}">
                 <div class="cfg-field">
                   <label class="cfg-label">Deployment Name</label>
                   <input type="text" name="name" value="{{ $dep->name }}" required class="cfg-input">
                 </div>
                 <button type="submit" class="cfg-btn">Save Settings</button>
-              </form>
-            </div>
-          </div>
-
-          {{-- Send Mode --}}
-          <div class="cfg-card">
-            <div class="cfg-card-head">
-              <div class="cfg-card-title">Send Mode</div>
-              <div class="cfg-card-sub">What happens the moment you click Approve &amp; Send on a transaction.</div>
-            </div>
-            <div class="cfg-card-body">
-              <form method="POST" action="{{ route('app.workers.config', $dep->id) }}">
-                @csrf @method('PATCH')
-                <input type="hidden" name="name" value="{{ $dep->name }}">
-                <div class="cfg-field">
-                  <label class="cfg-label">
-                    <input type="radio" name="send_mode" value="draft" {{ ($dep->send_mode ?? 'draft') === 'draft' ? 'checked' : '' }}>
-                    Save as Gmail draft <span style="text-transform:none;font-weight:400">— you open Gmail and send it yourself (default)</span>
-                  </label>
-                  <label class="cfg-label" style="margin-top:8px;display:block">
-                    <input type="radio" name="send_mode" value="direct" {{ ($dep->send_mode ?? 'draft') === 'direct' ? 'checked' : '' }}>
-                    Send immediately <span style="text-transform:none;font-weight:400">— {{ $dep->name }} sends it the moment you approve, no extra step in Gmail</span>
-                  </label>
-                  <p class="cfg-hint">Either way, {{ $dep->name }} never sends without your approval first — this only changes what happens after you approve.</p>
-                </div>
-                <button type="submit" class="cfg-btn">Save Send Mode</button>
               </form>
             </div>
           </div>
@@ -430,7 +405,6 @@ $tierColors = [
                 @csrf @method('PATCH')
                 <input type="hidden" name="name" value="{{ $dep->name }}">
                 <input type="hidden" name="ai_model" value="{{ $currentModel }}">
-                <input type="hidden" name="send_mode" value="{{ $dep->send_mode ?? 'draft' }}">
                 <div class="cfg-field">
                   <label class="cfg-label">Send daily summary at</label>
                   <select name="summary_hour" class="cfg-select">
@@ -456,7 +430,6 @@ $tierColors = [
                 @csrf @method('PATCH')
                 <input type="hidden" name="name" value="{{ $dep->name }}">
                 <input type="hidden" name="ai_model" value="{{ $currentModel }}">
-                <input type="hidden" name="send_mode" value="{{ $dep->send_mode ?? 'draft' }}">
 
                 <div class="cfg-row2">
                   <div class="cfg-field">

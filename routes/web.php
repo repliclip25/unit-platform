@@ -247,6 +247,8 @@ Route::middleware(['auth', 'verified', 'onboarded', 'not-pending-del'])->group(f
     Route::post('/workers/{id}/inboxes/{credentialId}/rewatch',      [WorkerController::class, 'rewatchInbox'])->name('workers.inboxes.rewatch');
     Route::get('/workers/{slug}/configure',                          [WorkerController::class, 'configure'])->name('workers.configure');
     Route::patch('/workers/{id}/config',                             [WorkerController::class, 'updateConfig'])->name('workers.config');
+    Route::get('/workers/{slug}/settings',                           [WorkerController::class, 'settings'])->name('workers.settings');
+    Route::patch('/workers/{id}/settings',                           [WorkerController::class, 'updateSettings'])->name('workers.settings.update');
     Route::patch('/workers/{id}/model',                              [WorkerController::class, 'updateModel'])->name('workers.model');
     Route::patch('/workers/{id}/persona',                            [WorkerController::class, 'updatePersona'])->name('workers.persona');
     Route::post('/workers/{id}/prompt-overrides',                    [WorkerController::class, 'savePromptOverride'])->name('workers.prompt-overrides');

@@ -833,13 +833,74 @@ class WorkerController extends Controller
         // route previously included it with `$request->credential_id ?: null`,
         // and since no form on this page ever submitted that field, every
         // save here silently disconnected the tenant's Gmail credential.
+        // send_mode moved to AVA Settings (updateSettings()) — not this
+        // route's concern, same reasoning as credential_id above.
         DB::table('worker_deployments')->where('id', $id)->where('user_id', auth()->id())->update([
             'name'          => $request->name,
-            'send_mode'     => in_array($request->send_mode, ['draft', 'direct'], true) ? $request->send_mode : 'draft',
             'config'        => json_encode($config),
             'updated_at'    => now(),
         ]);
         return back()->with('success', 'Worker configuration saved.');
+    }
+
+    // Gate keys this page renders, grouped for the view — the single
+    // source of truth for what "AVA Settings" actually controls. See
+    // UnitPlatform::gateEnabled() for how each is consulted.
+    private const GATE_SECTIONS = [
+        'trigger' => [
+            'gmail_watch' => ['label' => 'Connect Gmail Watch', 'hint' => 'Real inbound renewal emails create transactions.'],
+            'asset_watch' => ['label' => 'Connect Asset Watch', 'hint' => 'Your asset registry proactively creates transactions as renewal dates approach.'],
+        ],
+        'stage' => [
+            'request_invoice'   => ['label' => 'Request Invoice',          'hint' => 'Offer to attach an invoice — never blocks the renewal either way.'],
+            'request_documents' => ['label' => 'Request Document',         'hint' => 'Offer to attach supporting documents.'],
+            'confirm_payment'   => ['label' => 'Request Payment',          'hint' => 'Wait for you to confirm payment before closing out the renewal.'],
+            'archive_evidence'  => ['label' => 'Generate Closeout Report', 'hint' => 'Build the full closing PDF with a shareable, signed download link.'],
+        ],
+        'message' => [
+            'client_cadence'            => ['label' => 'Send Reminders (3 cadence)',       'hint' => 'The 30/15/0-day client reminder cadence. Off treats every renewal as a single draft.'],
+            'nudge_me'                  => ['label' => 'Nudge Me',                         'hint' => 'Email you when a draft or payment is waiting on you. Off means AVA still waits, it just stops emailing about it.'],
+            'request_invoice_followup'  => ['label' => 'Invoice Follow-up to Client',      'hint' => 'Follow up with the client after an invoice is attached.'],
+            'notify_stakeholders'       => ['label' => 'Renewal Complete Notice',          'hint' => 'Email you once a renewal closes out.'],
+        ],
+    ];
+
+    public function settings(string $slug)
+    {
+        $dep = DB::table('worker_deployments')->where('user_id', auth()->id())
+            ->where(fn($q) => $q->where('worker_slug', $slug)->when(is_numeric($slug), fn($q2) => $q2->orWhere('id', (int)$slug)))
+            ->firstOrFail();
+
+        $gateRows = DB::table('deployment_stage_settings')->where('deployment_id', $dep->id)->get()->keyBy('key');
+
+        $shell = \App\Platform\Services\WorkerShellService::build(auth()->id(), $dep->worker_slug);
+        extract($shell); // workerCatalog, registryRows, registryRow, profileImg, coverImg, tokenTotal
+        $firstName = explode(' ', trim(auth()->user()->name))[0];
+
+        return view('dashboard.worker-settings', compact(
+            'dep', 'gateRows', 'workerCatalog', 'tokenTotal', 'firstName'
+        ) + ['gateSections' => self::GATE_SECTIONS]);
+    }
+
+    public function updateSettings(Request $request, int $id)
+    {
+        $dep = DB::table('worker_deployments')->where('id', $id)->where('user_id', auth()->id())->firstOrFail();
+
+        foreach (self::GATE_SECTIONS as $type => $keys) {
+            foreach (array_keys($keys) as $key) {
+                DB::table('deployment_stage_settings')->updateOrInsert(
+                    ['deployment_id' => $dep->id, 'key' => $key],
+                    ['type' => $type, 'enabled' => $request->boolean($key), 'created_at' => now(), 'updated_at' => now()]
+                );
+            }
+        }
+
+        DB::table('worker_deployments')->where('id', $id)->update([
+            'send_mode'  => in_array($request->send_mode, ['draft', 'direct'], true) ? $request->send_mode : 'draft',
+            'updated_at' => now(),
+        ]);
+
+        return back()->with('success', 'AVA Settings saved.');
     }
 
     public function updateModel(Request $request, int $id)
