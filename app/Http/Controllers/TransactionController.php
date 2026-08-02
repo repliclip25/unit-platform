@@ -419,6 +419,13 @@ class TransactionController extends Controller
                 }
 
                 if ($skipCadence) {
+                    // Persisted (not just logged) so NotifyCustomerJob — which
+                    // may run much later, after invoice/documents/payment —
+                    // can also skip its own client-facing send. A deal closed
+                    // outside AVA shouldn't get an AVA-generated "your renewal
+                    // is complete" email either, same reasoning as skipping
+                    // the direct-send path above.
+                    DB::table('transactions')->where('tx_id', $txId)->update(['cadence_skipped' => true]);
                     \App\Platform\SDK\UnitPlatform::log('ava', $txId, 'human_decide_skip_cadence', [
                         'reminder_number' => $reminderNumber, 'reason' => 'Closed outside AVA — remaining reminder rounds skipped',
                     ]);

@@ -754,6 +754,8 @@ $statusColor = $statusColors[$tx->status] ?? ['bg'=>'var(--db-chip)','color'=>'v
               @elseif($stage['key'] === 'notify_customer')
                 @if(!empty($c['sent']))
                   <div class="tc-msg-meta">Sent to {{ $c['to'] ?? 'the client' }} · next renewal {{ $c['next_renewal_date'] ?? '—' }}</div>
+                @elseif(!empty($c['cadence_skipped']))
+                  <div class="tc-msg-meta" style="color:var(--db-text-muted)">Drafted, not sent — approved via "Approve &amp; proceed," already closed with the client outside AVA</div>
                 @elseif(empty($c['to']))
                   <div class="tc-msg-meta" style="color:var(--db-text-muted)">Drafted, not sent — no client email on file</div>
                 @else

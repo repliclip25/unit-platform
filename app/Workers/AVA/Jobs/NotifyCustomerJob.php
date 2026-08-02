@@ -72,10 +72,19 @@ class NotifyCustomerJob implements ShouldQueue
         // in this pipeline which defaults on. See class docblock.
         $gateOn = UnitPlatform::gateEnabled($input->deploymentId, 'notify_customer', false);
 
+        // "Approve & proceed" (TransactionController::decide()) means the
+        // tenant already closed this renewal with the client outside AVA —
+        // an AVA-generated "your renewal is complete" email at this point
+        // would be redundant or confusing, same reasoning as skipping the
+        // direct-send path there. The stage still runs and commits its
+        // output either way (see class docblock), only the send is skipped.
+        $cadenceSkipped = (bool) DB::table('transactions')->where('tx_id', $this->txId)->value('cadence_skipped');
+        $shouldSend     = $gateOn && !$cadenceSkipped;
+
         // Fast Track drafts this so the tenant can preview it, but never
         // sends to a real inbox on a test run — same guard as every other
         // client-facing send.
-        if ($gateOn && $clientEmail && !$input->isFastTrack()) {
+        if ($shouldSend && $clientEmail && !$input->isFastTrack()) {
             EmailDispatcher::send(
                 'ava_renewal_complete_customer',
                 $clientEmail,
@@ -93,11 +102,12 @@ class NotifyCustomerJob implements ShouldQueue
                 'subject'           => $subject,
                 'body'              => $body,
                 'next_renewal_date' => $nextRenewalDate,
-                'sent'              => $gateOn && !$input->isFastTrack() && (bool) $clientEmail,
+                'sent'              => $shouldSend && !$input->isFastTrack() && (bool) $clientEmail,
+                'cadence_skipped'   => $cadenceSkipped,
             ],
         ));
         UnitPlatform::setFulfillmentStage($this->txId, 'notify_customer');
-        UnitPlatform::log('ava', $this->txId, 'customer_notified', ['to' => $clientEmail, 'gate_on' => $gateOn]);
+        UnitPlatform::log('ava', $this->txId, 'customer_notified', ['to' => $clientEmail, 'gate_on' => $gateOn, 'cadence_skipped' => $cadenceSkipped]);
 
         UnitPlatform::advance($this->txId, 'notify_customer');
     }
