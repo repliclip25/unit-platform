@@ -67,6 +67,16 @@ class DraftEmailJob implements ShouldQueue
             $body = $this->generateWithClaude($claude, $memory, $classify, $read, $template, $firstName, $lowConfidence);
         }
 
+        // Every existing template predates {{line_items}} — a bundle
+        // shouldn't depend on a tenant remembering to add the placeholder
+        // to get a correct, informative draft. If it's present in memory
+        // but the template text never referenced it (so fillPlaceholders()
+        // had nothing to substitute), append the breakdown automatically.
+        $lineItems = $memory['line_items'] ?? null;
+        if ($lineItems && !str_contains($template['body_template'] ?? '', '{{line_items}}')) {
+            $body = rtrim($body) . "\n\n" . $this->formatLineItems($lineItems);
+        }
+
         $reviewNote = $lowConfidence
             ? "⚠️ LOW CONFIDENCE MATCH ({$memory['confidence']}%). {$lowConfidenceWarning} Review carefully before sending."
             : 'Review before sending. No work has been confirmed or promised.';
@@ -108,7 +118,7 @@ class DraftEmailJob implements ShouldQueue
         $sanitize = fn(?string $v): string => trim(str_replace(["\r\n", "\r", "\n"], ' ', $v ?? ''));
 
         return str_replace(
-            ['{{contact_first_name}}', '{{contact_name}}', '{{asset}}', '{{client}}', '{{due_date}}', '{{sender_name}}'],
+            ['{{contact_first_name}}', '{{contact_name}}', '{{asset}}', '{{client}}', '{{due_date}}', '{{sender_name}}', '{{line_items}}'],
             [
                 $sanitize($firstName),
                 $sanitize($memory['primary_contact_name'] ?? ''),
@@ -116,9 +126,29 @@ class DraftEmailJob implements ShouldQueue
                 $sanitize($memory['matched_client'] ?? ''),
                 $sanitize($read['due_date_or_deadline'] ?? ''),
                 'Franklin',
+                // Deliberately not run through $sanitize — this is the one
+                // placeholder meant to span multiple lines (a bundle's
+                // per-asset breakdown), everything else here is a single
+                // value that shouldn't wrap.
+                $this->formatLineItems($memory['line_items'] ?? null),
             ],
             $tpl
         );
+    }
+
+    // Renders a renews_together bundle's per-asset breakdown as a short
+    // bullet list — empty string (nothing to insert) for a normal
+    // single-asset transaction, so {{line_items}} is safe to leave in a
+    // template unconditionally without it ever printing something odd.
+    private function formatLineItems(?array $lineItems): string
+    {
+        if (!$lineItems) return '';
+
+        return collect($lineItems)->map(function ($item) {
+            $date = $item['renewal_date'] ?? null;
+            $when = $date ? \Carbon\Carbon::parse($date)->format('M j, Y') : 'date on file';
+            return "- {$item['name']} ({$item['type']}) — renews {$when}";
+        })->implode("\n");
     }
 
     private function generateWithClaude(ClaudeService $claude, array $memory, array $classify, array $read, array $template, string $firstName, bool $lowConfidence): string
@@ -132,6 +162,10 @@ class DraftEmailJob implements ShouldQueue
 
         $lowNote = $lowConfidence
             ? "\n\nIMPORTANT: Memory match confidence is low ({$memory['confidence']}%). Keep the draft general enough to work even if the asset match is slightly off."
+            : '';
+
+        $bundleNote = !empty($memory['line_items'])
+            ? "\n\nThis is a bundled renewal covering multiple services — mention that several items are renewing together, but don't list them individually in your prose; the itemized breakdown is appended separately after your draft."
             : '';
 
         $system = $override['system'] ?? 'You are Ava, a professional email coordinator. Return only the email body — no subject line, no JSON, no extra text.';
@@ -159,7 +193,7 @@ Fill in:
 - Category: {$classify['category']}
 - Approval required: {$template['approval_required']}
 - Sign as: Franklin
-{$lowNote}
+{$lowNote}{$bundleNote}
 
 Rules:
 - Keep it concise

@@ -505,7 +505,7 @@ $sidebarLinks = [
         <div>
           <label class="mem-field-label">Body Template</label>
           <textarea name="body_template" id="edit-body" rows="10" required class="mem-textarea" style="font-family:monospace;resize:none"></textarea>
-          <div class="tpl-hint">Available: <span>@{{contact_first_name}}, @{{asset}}, @{{client}}, @{{due_date}}, @{{sender_name}}, @{{renewal_price}}, @{{days_until_expiry}}</span></div>
+          <div class="tpl-hint">Available: <span>@{{contact_first_name}}, @{{asset}}, @{{client}}, @{{due_date}}, @{{sender_name}}, @{{renewal_price}}, @{{days_until_expiry}}, @{{line_items}}</span> <span style="opacity:.7">— @{{line_items}} only fills in for a bundled ("renews together") transaction; empty otherwise</span></div>
         </div>
         <label class="mem-toggle-row">
           <div class="mem-toggle"><input type="checkbox" name="approval_required" id="edit-approval" value="1"><div class="mem-toggle-track"><div class="mem-toggle-thumb"></div></div></div>
@@ -548,7 +548,7 @@ $sidebarLinks = [
         <div>
           <label class="mem-field-label">Body Template</label>
           <textarea name="body_template" rows="8" required class="mem-textarea" style="font-family:monospace;resize:none"></textarea>
-          <div class="tpl-hint">Available: <span>@{{contact_first_name}}, @{{asset}}, @{{client}}, @{{due_date}}, @{{sender_name}}, @{{renewal_price}}</span></div>
+          <div class="tpl-hint">Available: <span>@{{contact_first_name}}, @{{asset}}, @{{client}}, @{{due_date}}, @{{sender_name}}, @{{renewal_price}}, @{{line_items}}</span> <span style="opacity:.7">— @{{line_items}} only fills in for a bundled transaction</span></div>
         </div>
         <label class="mem-toggle-row">
           <div class="mem-toggle"><input type="checkbox" name="approval_required" value="1" checked><div class="mem-toggle-track"><div class="mem-toggle-thumb"></div></div></div>
