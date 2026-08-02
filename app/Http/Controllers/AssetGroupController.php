@@ -36,7 +36,7 @@ class AssetGroupController extends Controller
                 ->where('gi.group_id', $group->id)
                 ->whereNull('a.deleted_at')
                 ->orderBy('gi.sort_order')
-                ->select('a.id', 'a.name', 'a.type', 'a.vendor', 'a.renewal_date', 'a.status', 'gi.sort_order')
+                ->select('a.id', 'a.name', 'a.type', 'a.vendor', 'a.renewal_date', 'a.renewal_cadence_days', 'a.status', 'gi.sort_order')
                 ->get();
             return $group;
         });
@@ -265,6 +265,35 @@ class AssetGroupController extends Controller
         return redirect()
             ->route('app.transactions.show', ['slug' => $dep->worker_slug, 'txId' => $tx->tx_id])
             ->with('success', "\"{$group->name}\" pushed into the pipeline as one bundled transaction.");
+    }
+
+    // Asset data integrity, not pipeline behavior — a file-imported asset
+    // commonly has no renewal_date and never had renewal_cadence_days set
+    // at all (that field has no UI anywhere else in the app; every asset
+    // silently defaults to a 365-day cadence in UpdateRenewalDateJob
+    // regardless of whether that's true). Fixes every asset in a group in
+    // one batch, since that's where a tenant actually notices the gap.
+    public function fixDates(int $depId, int $groupId, Request $request)
+    {
+        $this->authoriseGroup($depId, $groupId);
+
+        $memberIds = DB::table('asset_group_items')->where('group_id', $groupId)->pluck('asset_id')->all();
+        $submitted = $request->input('assets', []);
+
+        $updated = 0;
+        foreach ($submitted as $assetId => $fields) {
+            $assetId = (int) $assetId;
+            if (!in_array($assetId, $memberIds, true)) continue;
+
+            DB::table('assets')->where('id', $assetId)->where('user_id', auth()->id())->update([
+                'renewal_date'         => $fields['renewal_date'] ?: null,
+                'renewal_cadence_days' => $fields['renewal_cadence_days'] ?: null,
+                'updated_at'           => now(),
+            ]);
+            $updated++;
+        }
+
+        return back()->with('success', "Updated {$updated} asset date" . ($updated === 1 ? '' : 's') . '.');
     }
 
     // ── Private helpers ───────────────────────────────────────────────────────

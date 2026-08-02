@@ -401,12 +401,51 @@ $sidebarLinks = [
               <button type="submit" class="ag-link-action" title="Bundles every asset in this group into one transaction, right now">Renew Group Now</button>
             </form>
             @endif
+            @if($group->items->isNotEmpty())
+            <button onclick="toggleFixDates({{ $group->id }})" class="ag-link-action" title="Set renewal date and cadence for every asset in this group — file-imported assets commonly arrive with neither set">Fix Dates</button>
+            @endif
             <button onclick="toggleGroupEdit({{ $group->id }})" class="ag-link-action">Edit</button>
             <form method="POST" action="{{ route('app.workers.memory.groups.destroy', [$dep->id, $group->id]) }}" onsubmit="return confirm('Remove group \'{{ addslashes($group->name) }}\'? Assets are not deleted.')">
               @csrf @method('DELETE')
               <button type="submit" class="ag-link-action">Remove</button>
             </form>
           </div>
+        </div>
+
+        {{-- Fix Dates panel — asset data integrity, not pipeline behavior.
+             renewal_cadence_days has no UI anywhere else in the app; every
+             asset silently defaults to a 365-day cadence at renewal time
+             regardless of what's actually true. --}}
+        <div id="group-fixdates-{{ $group->id }}" class="mem-edit-panel" style="display:none">
+          <form method="POST" action="{{ route('app.workers.memory.groups.fix-dates', [$dep->id, $group->id]) }}">
+            @csrf
+            <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:12px">
+              @foreach($group->items as $fixItem)
+              <div style="display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:10px;align-items:end">
+                <div>
+                  <label class="mem-field-label">{{ $fixItem->name }} <span style="opacity:.7;text-transform:none;font-weight:400">({{ $fixItem->type }})</span></label>
+                </div>
+                <div>
+                  <label class="mem-field-label">Renewal Date</label>
+                  <input type="date" name="assets[{{ $fixItem->id }}][renewal_date]" value="{{ $fixItem->renewal_date }}" class="mem-input">
+                </div>
+                <div>
+                  <label class="mem-field-label">Cadence</label>
+                  <select name="assets[{{ $fixItem->id }}][renewal_cadence_days]" class="mem-select">
+                    <option value="30"  {{ $fixItem->renewal_cadence_days == 30  ? 'selected' : '' }}>Monthly (30d)</option>
+                    <option value="90"  {{ $fixItem->renewal_cadence_days == 90  ? 'selected' : '' }}>Quarterly (90d)</option>
+                    <option value="365" {{ !$fixItem->renewal_cadence_days || $fixItem->renewal_cadence_days == 365 ? 'selected' : '' }}>Annual (365d)</option>
+                    <option value="730" {{ $fixItem->renewal_cadence_days == 730 ? 'selected' : '' }}>Biennial (730d)</option>
+                  </select>
+                </div>
+              </div>
+              @endforeach
+            </div>
+            <div style="display:flex;gap:8px">
+              <button type="submit" class="mem-btn">Save Dates</button>
+              <button type="button" class="mem-btn-secondary" onclick="toggleFixDates({{ $group->id }})">Cancel</button>
+            </div>
+          </form>
         </div>
 
         {{-- Inline edit form --}}
@@ -553,6 +592,10 @@ $sidebarLinks = [
 
 function toggleGroupEdit(id) {
   var el = document.getElementById('group-edit-' + id);
+  el.style.display = el.style.display === 'none' ? 'block' : 'none';
+}
+function toggleFixDates(id) {
+  var el = document.getElementById('group-fixdates-' + id);
   el.style.display = el.style.display === 'none' ? 'block' : 'none';
 }
 </script>

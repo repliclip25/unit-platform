@@ -293,6 +293,7 @@ Route::middleware(['auth', 'verified', 'onboarded', 'not-pending-del'])->group(f
     Route::post('/workers/{id}/memory/groups/{gid}/reorder',         [AssetGroupController::class, 'reorder'])->name('workers.memory.groups.reorder');
     Route::post('/workers/{id}/assets/{aid}/renew-now',               [AssetGroupController::class, 'renewNow'])->name('workers.assets.renew-now');
     Route::post('/workers/{id}/memory/groups/{gid}/renew-now',        [AssetGroupController::class, 'renewGroupNow'])->name('workers.memory.groups.renew-now');
+    Route::post('/workers/{id}/memory/groups/{gid}/fix-dates',        [AssetGroupController::class, 'fixDates'])->name('workers.memory.groups.fix-dates');
 
     // ── Worker: Templates ───────────────────────────────────────────────────
     Route::get('/workers/{slug}/templates',                          [WorkerTemplateController::class, 'workerIndex'])->name('workers.templates');
