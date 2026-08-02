@@ -395,6 +395,12 @@ $sidebarLinks = [
             @if($group->notes)<div class="ag-group-notes">{{ $group->notes }}</div>@endif
           </div>
           <div class="ag-group-actions">
+            @if($group->items->isNotEmpty())
+            <form method="POST" action="{{ route('app.workers.memory.groups.renew-now', [$dep->id, $group->id]) }}" onsubmit="return confirm('Push all {{ $group->items->count() }} assets in \'{{ addslashes($group->name) }}\' into the pipeline as one bundled transaction now?')">
+              @csrf
+              <button type="submit" class="ag-link-action" title="Bundles every asset in this group into one transaction, right now">Renew Group Now</button>
+            </form>
+            @endif
             <button onclick="toggleGroupEdit({{ $group->id }})" class="ag-link-action">Edit</button>
             <form method="POST" action="{{ route('app.workers.memory.groups.destroy', [$dep->id, $group->id]) }}" onsubmit="return confirm('Remove group \'{{ addslashes($group->name) }}\'? Assets are not deleted.')">
               @csrf @method('DELETE')

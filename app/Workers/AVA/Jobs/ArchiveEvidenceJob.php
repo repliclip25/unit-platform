@@ -84,6 +84,18 @@ class ArchiveEvidenceJob implements ShouldQueue
             . '<tr><td class="label">Contact</td><td>' . $esc($memory['primary_contact_name'] ?? null) . ' &lt;' . $esc($memory['primary_contact_email'] ?? null) . '&gt;</td></tr>'
             . '</table>';
 
+        // A renews_together bundle — the itemized breakdown behind the
+        // group label used as "Asset" above, so the archive is a complete
+        // record of exactly what renewed, not just a summary count.
+        if (!empty($memory['line_items'])) {
+            $html .= '<h2>Bundled services</h2><table>'
+                . '<tr><td class="label"><strong>Name</strong></td><td><strong>Type</strong></td><td><strong>Renewal date</strong></td></tr>';
+            foreach ($memory['line_items'] as $item) {
+                $html .= '<tr><td class="label">' . $esc($item['name'] ?? null) . '</td><td>' . $esc($item['type'] ?? null) . '</td><td>' . $esc($item['renewal_date'] ?? null) . '</td></tr>';
+            }
+            $html .= '</table>';
+        }
+
         // 1. Every client-facing draft round, in order, with its approval.
         $html .= '<h2>1. Renewal drafts sent to client</h2>';
         if ($clientDrafts) {

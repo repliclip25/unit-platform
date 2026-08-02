@@ -420,6 +420,28 @@ $statusColor = $statusColors[$tx->status] ?? ['bg'=>'var(--db-chip)','color'=>'v
         </div>
       </div>
 
+      {{-- Bundle breakdown — this transaction covers a renews_together
+           group, not a single asset. Shown once, near the top, since it's
+           relevant context for every stage below rather than belonging to
+           any one of them. --}}
+      @if($memory && !empty($memory->line_items))
+      <div class="td-card" style="border-color:rgba(59,130,246,.3);background:rgba(59,130,246,.05)">
+        <div class="td-card-head" style="margin-bottom:10px">
+          <span class="td-card-num" style="background:rgba(59,130,246,.15);color:#60a5fa">⇄</span>
+          <span class="td-card-title">Bundled renewal — {{ count($memory->line_items) }} services</span>
+        </div>
+        @foreach($memory->line_items as $item)
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:6px 0{{ !$loop->last ? ';border-bottom:1px solid var(--db-border)' : '' }}">
+          <div style="min-width:0">
+            <div style="font-size:12.5px;font-weight:600;color:var(--db-text)">{{ $item->name }}</div>
+            <div style="font-size:11px;color:var(--db-text-muted)">{{ $item->type }}{{ $item->vendor ? ' · ' . $item->vendor : '' }}</div>
+          </div>
+          <div style="font-size:11.5px;color:var(--db-text-muted);white-space:nowrap">{{ $item->renewal_date ? \Carbon\Carbon::parse($item->renewal_date)->format('M j, Y') : '—' }}</div>
+        </div>
+        @endforeach
+      </div>
+      @endif
+
       {{-- Failure context banner --}}
       @if($isFailed)
       <div class="td-banner {{ $failureType === 'infrastructure' ? 'infra' : 'data' }}">

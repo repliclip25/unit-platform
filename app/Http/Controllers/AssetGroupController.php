@@ -223,6 +223,50 @@ class AssetGroupController extends Controller
             ->with('success', "{$asset->name} pushed into the pipeline.");
     }
 
+    // Group-level Human Trigger — bundles every member with a
+    // renewal_date into one transaction right now, same as the per-asset
+    // "Renew Now" above but for a whole renews_together group at once.
+    // Available regardless of whether renews_together is actually set —
+    // it's an explicit human override either way, the flag only controls
+    // AssetExpiryWatchJob's automated behavior.
+    public function renewGroupNow(int $depId, int $groupId)
+    {
+        $dep   = DB::table('worker_deployments')->where('id', $depId)->where('user_id', auth()->id())->firstOrFail();
+        $group = DB::table('asset_groups')->where('id', $groupId)->where('deployment_id', $depId)->where('user_id', auth()->id())->firstOrFail();
+
+        $assets = DB::table('assets as a')
+            ->join('asset_group_items as gi', 'gi.asset_id', '=', 'a.id')
+            ->where('gi.group_id', $groupId)
+            ->where('a.user_id', auth()->id())
+            ->whereNull('a.deleted_at')
+            ->select('a.*')
+            ->get()
+            ->all();
+
+        if (empty($assets)) {
+            return back()->with('error', "\"{$group->name}\" has no assets to renew.");
+        }
+
+        $assetIds = collect($assets)->pluck('id')->all();
+        $inFlight = DB::table('transactions')
+            ->where('deployment_id', $depId)
+            ->whereNotIn('status', ['dismissed', 'rejected'])
+            ->where('created_at', '>', now()->subDay())
+            ->get()
+            ->contains(fn ($tx) => !empty(array_intersect(json_decode($tx->raw_input, true)['asset_ids'] ?? [], $assetIds)));
+
+        if ($inFlight) {
+            return back()->with('error', "\"{$group->name}\" already has a transaction in progress — check Activity Log.");
+        }
+
+        $client = $group->client_id ? DB::table('clients')->where('id', $group->client_id)->first() : null;
+        $tx = \App\Workers\AVA\Services\AssetTransactionSynthesizer::createForGroup($assets, $client, $dep, 'human_trigger');
+
+        return redirect()
+            ->route('app.transactions.show', ['slug' => $dep->worker_slug, 'txId' => $tx->tx_id])
+            ->with('success', "\"{$group->name}\" pushed into the pipeline as one bundled transaction.");
+    }
+
     // ── Private helpers ───────────────────────────────────────────────────────
 
     private function authoriseGroup(int $depId, int $groupId): void
