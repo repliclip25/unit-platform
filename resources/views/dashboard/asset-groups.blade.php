@@ -115,6 +115,14 @@ body{font-family:'Inter',sans-serif;background:var(--db-bg);color:var(--db-text)
 .mem-select,.mem-input,.mem-textarea{width:100%;border-radius:9px;padding:9px 12px;font-size:13px;background:transparent;border:1px solid var(--db-border);color:var(--db-text);font-family:inherit}
 .mem-select:focus,.mem-input:focus,.mem-textarea:focus{outline:none;border-color:var(--db-invert-bg)}
 
+.mem-toggle-row{display:flex;align-items:center;gap:10px}
+.mem-toggle{position:relative;width:36px;height:20px;flex-shrink:0}
+.mem-toggle input{position:absolute;opacity:0;width:0;height:0}
+.mem-toggle-track{position:absolute;inset:0;border-radius:99px;background:var(--db-chip);transition:.15s}
+.mem-toggle-thumb{position:absolute;top:3px;left:3px;width:14px;height:14px;border-radius:50%;background:var(--db-invert-bg);transition:.15s}
+.mem-toggle input:checked ~ .mem-toggle-track{background:var(--db-invert-bg)}
+.mem-toggle input:checked ~ .mem-toggle-track .mem-toggle-thumb{transform:translateX(16px);background:var(--db-invert-text)}
+
 .ag-legend{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px}
 .ag-legend-chip{display:flex;align-items:center;gap:6px;font-size:11.5px;padding:5px 12px;border-radius:99px;background:var(--db-chip);border:1px solid var(--db-border);color:var(--db-text-muted)}
 .ag-legend-chip strong{color:var(--db-text)}
@@ -344,6 +352,12 @@ $sidebarLinks = [
               <label class="mem-field-label">Notes</label>
               <textarea name="notes" rows="2" placeholder="What does this group represent?" class="mem-textarea"></textarea>
             </div>
+            <div class="mem-field-full">
+              <label class="mem-toggle-row">
+                <div class="mem-toggle"><input type="checkbox" name="renews_together" value="1"><div class="mem-toggle-track"><div class="mem-toggle-thumb"></div></div></div>
+                <span style="font-size:12px;color:var(--db-text-muted)">These assets renew together <span style="opacity:.7">— AVA bundles them into one transaction, triggered off whichever member's renewal date comes first, instead of one transaction per asset</span></span>
+              </label>
+            </div>
           </div>
           <div style="display:flex;gap:8px">
             <button type="submit" class="mem-btn">Create Group</button>
@@ -373,6 +387,7 @@ $sidebarLinks = [
           <div style="flex:1;min-width:0">
             <span class="ag-group-name">{{ $group->name }}</span>
             @if($group->type)<span class="mem-badge">{{ $typeLabel }}</span>@endif
+            @if($group->renews_together)<span class="mem-badge" style="background:rgba(59,130,246,.12);color:#60a5fa" title="AVA bundles these into one transaction, triggered off whichever member's renewal date comes first">⇄ Renews together</span>@endif
             @if($days !== null)
             <span class="mem-badge" style="background:{{ $days<=0?'rgba(239,68,68,.15)':($days<=15?'rgba(245,158,11,.15)':($days<=30?'rgba(234,179,8,.15)':'var(--db-chip)')) }};color:{{ $days<=0?'#ef4444':($days<=15?'#f59e0b':($days<=30?'#eab308':'var(--db-text-muted)')) }}">{{ $days <= 0 ? 'Expired' : 'Next expiry ' . $days . 'd' }}</span>
             @endif
@@ -416,6 +431,12 @@ $sidebarLinks = [
               <div class="mem-field-full">
                 <label class="mem-field-label">Notes</label>
                 <textarea name="notes" rows="2" class="mem-textarea">{{ $group->notes }}</textarea>
+              </div>
+              <div class="mem-field-full">
+                <label class="mem-toggle-row">
+                  <div class="mem-toggle"><input type="checkbox" name="renews_together" value="1" {{ $group->renews_together ? 'checked' : '' }}><div class="mem-toggle-track"><div class="mem-toggle-thumb"></div></div></div>
+                  <span style="font-size:12px;color:var(--db-text-muted)">These assets renew together <span style="opacity:.7">— AVA bundles them into one transaction, triggered off whichever member's renewal date comes first</span></span>
+                </label>
               </div>
             </div>
             <div style="display:flex;gap:8px">

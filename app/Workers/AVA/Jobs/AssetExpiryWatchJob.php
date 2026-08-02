@@ -62,7 +62,51 @@ class AssetExpiryWatchJob implements ShouldQueue
             ->whereNotNull('renewal_date')
             ->get();
 
+        // renews_together groups fire as one bundled transaction, off
+        // whichever member's date comes first — not one per asset. Members
+        // already handled this way are skipped in the per-asset loop below.
+        $bundledAssetIds = [];
+        $groups = DB::table('asset_groups')
+            ->where('deployment_id', $this->deploymentId)
+            ->where('renews_together', true)
+            ->get();
+
+        foreach ($groups as $group) {
+            try {
+                $memberIds = DB::table('asset_group_items')->where('group_id', $group->id)->pluck('asset_id');
+                $members   = $assets->whereIn('id', $memberIds)->all();
+                if (empty($members)) continue;
+
+                $earliest  = collect($members)->sortBy('renewal_date')->first();
+                $daysLeft  = (int) now()->diffInDays($earliest->renewal_date, false);
+                $threshold = $this->resolveThreshold($daysLeft);
+                // Dedup off the earliest member's own watch log — if it's
+                // already logged for this threshold, the group already fired.
+                if (!$threshold || $this->alreadyNotified($earliest->id, $threshold)) continue;
+
+                $client = $group->client_id ? DB::table('clients')->where('id', $group->client_id)->first() : null;
+                AssetTransactionSynthesizer::createForGroup($members, $client, $dep, 'asset_watch', $threshold);
+
+                foreach ($members as $member) {
+                    DB::table('asset_watch_log')->insert([
+                        'asset_id'    => $member->id,
+                        'threshold'   => $threshold,
+                        'notified_at' => now(),
+                        'created_at'  => now(),
+                        'updated_at'  => now(),
+                    ]);
+                    $bundledAssetIds[] = $member->id;
+                }
+            } catch (\Throwable $e) {
+                Log::error('AssetExpiryWatchJob failed for renews_together group', [
+                    'group_id' => $group->id, 'deployment_id' => $this->deploymentId, 'error' => $e->getMessage(),
+                ]);
+            }
+        }
+
         foreach ($assets as $asset) {
+            if (in_array($asset->id, $bundledAssetIds, true)) continue;
+
             try {
                 $daysLeft  = (int) now()->diffInDays($asset->renewal_date, false);
                 $threshold = $this->resolveThreshold($daysLeft);

@@ -121,6 +121,135 @@ class AssetTransactionSynthesizer
         return $tx;
     }
 
+    /**
+     * Same synthesis as create(), but for an asset_groups row flagged
+     * renews_together (see AssetExpiryWatchJob) — one transaction covering
+     * every member, not one per asset. Real-world precedent: a tenant's
+     * actual invoice can bundle a domain + SSL + hosting renewal into one
+     * line-itemed bill even when the individually-tracked renewal_date on
+     * each asset doesn't line up — the bundle is billed together because
+     * that's how the tenant actually runs it, not because the dates match.
+     * Triggered off whichever member's date comes first; every member with
+     * a renewal_date joins the bundle once it fires, not just the one that
+     * crossed threshold.
+     */
+    public static function createForGroup(array $assets, ?object $client, object $dep, string $source, ?string $threshold = null): object
+    {
+        $dated  = collect($assets)->filter(fn ($a) => $a->renewal_date)->sortBy('renewal_date')->values();
+        $anchor = $dated->first() ?? $assets[0];
+
+        $daysLeft = $anchor->renewal_date
+            ? (int) now()->startOfDay()->diffInDays(\Carbon\Carbon::parse($anchor->renewal_date)->startOfDay(), false)
+            : null;
+
+        $urgency = self::resolveUrgency($threshold, $daysLeft);
+
+        $contact = $client
+            ? DB::table('contacts')->where('client_id', $client->id)->orderByDesc('is_primary')->first()
+            : null;
+
+        $lineItems = collect($assets)->map(fn ($a) => [
+            'id'           => $a->id,
+            'name'         => $a->name,
+            'type'         => $a->type,
+            'vendor'       => $a->vendor,
+            'renewal_date' => $a->renewal_date,
+        ])->all();
+
+        $groupLabel = ($client->name ?? 'Bundle') . ' — ' . count($assets) . ' service' . (count($assets) === 1 ? '' : 's');
+
+        // Same category only if every member agrees — a genuinely mixed
+        // bundle (domain + hosting + SSL, as in the real Baskel example)
+        // isn't any one of those things, so it falls to the generic bucket
+        // rather than mislabeling it as whichever type happens to sort first.
+        $types = collect($assets)->pluck('type')->unique();
+        $category = $types->count() === 1 ? self::categoryForAssetType($types->first()) : 'Other';
+
+        $tx = UnitPlatform::createTransaction('ava', [
+            'source'        => $source,
+            'user_id'       => $dep->user_id,
+            'deployment_id' => $dep->id,
+            'asset_ids'     => collect($assets)->pluck('id')->all(),
+            'threshold'     => $threshold,
+        ]);
+
+        $summary = match (true) {
+            $threshold === 'overdue' => "{$groupLabel} is overdue for renewal ({$anchor->renewal_date}).",
+            $daysLeft !== null       => "{$groupLabel} is due for renewal in {$daysLeft} day(s) ({$anchor->renewal_date}).",
+            default                  => "{$groupLabel} was pushed into the pipeline manually.",
+        };
+
+        UnitPlatform::commitOutput($tx->tx_id, new WorkerOutput(
+            stage:  'read',
+            status: 'reading',
+            data:   [
+                'plain_english_summary' => $summary,
+                'what_happened'         => 'These assets renew together — bundled into one transaction instead of one per asset.',
+                'action_needed'               => 'Confirm renewal status with the client and follow up as needed.',
+                'due_date_or_deadline'        => $anchor->renewal_date,
+                'risk_if_ignored'             => 'Service interruption or an unplanned lapse in coverage across the bundle.',
+                'urgency'                     => $urgency,
+                'questions_for_memory_lookup' => [],
+            ],
+        ));
+
+        UnitPlatform::commitOutput($tx->tx_id, new WorkerOutput(
+            stage:  'classify',
+            status: 'classifying',
+            data:   [
+                'category'           => $category,
+                'subcategory'        => 'bundle',
+                'priority'           => $urgency,
+                'required_action'    => 'Confirm renewal',
+                'register_to_update' => 'renewal_register',
+                'status'             => 'Renewal Watch',
+                'reason'             => $threshold ? "Asset expiry threshold crossed ({$threshold})" : 'Manually triggered (Renew Now)',
+            ],
+        ));
+
+        UnitPlatform::commitOutput($tx->tx_id, new WorkerOutput(
+            stage:  'memory',
+            status: 'memory_lookup',
+            data:   [
+                'asset'                      => $groupLabel,
+                'line_items'                 => $lineItems,
+                'matched_client'             => $client->name ?? null,
+                'primary_contact_name'       => $contact->name  ?? null,
+                'primary_contact_email'      => $contact->email ?? null,
+                'related_project_or_service' => null,
+                'client_preference'          => null,
+                'ava_rule'                   => null,
+                'matched_rule_id'            => null,
+                'confidence'                 => 100,
+                'missing_information'        => $contact ? [] : ['No contact on file for this client'],
+                'rule_requires_approval'     => true,
+            ],
+        ));
+
+        UnitPlatform::log('ava', $tx->tx_id, 'asset_group_transaction_synthesized', [
+            'asset_ids' => collect($assets)->pluck('id')->all(), 'source' => $source, 'threshold' => $threshold, 'days_left' => $daysLeft,
+        ]);
+
+        UnitPlatform::advance($tx->tx_id, 'memory');
+
+        return $tx;
+    }
+
+    private static function resolveUrgency(?string $threshold, ?int $daysLeft): string
+    {
+        return match (true) {
+            $threshold === 'overdue' => 'Critical',
+            in_array($threshold, ['1', '7'], true) => 'High',
+            $threshold === '14' => 'Medium',
+            $threshold === '30' => 'Low',
+            $daysLeft === null => 'High',
+            $daysLeft < 0      => 'Critical',
+            $daysLeft <= 7     => 'High',
+            $daysLeft <= 14    => 'Medium',
+            default            => 'Low',
+        };
+    }
+
     private static function categoryForAssetType(?string $type): string
     {
         return match (strtolower($type ?? '')) {

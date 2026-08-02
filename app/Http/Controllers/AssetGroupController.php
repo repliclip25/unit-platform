@@ -75,14 +75,15 @@ class AssetGroupController extends Controller
         $request->validate(['name' => 'required|string|max:200']);
 
         DB::table('asset_groups')->insert([
-            'deployment_id' => $depId,
-            'user_id'       => auth()->id(),
-            'client_id'     => $request->client_id ?: null,
-            'name'          => $request->name,
-            'type'          => $request->type ?: null,
-            'notes'         => $request->notes,
-            'created_at'    => now(),
-            'updated_at'    => now(),
+            'deployment_id'    => $depId,
+            'user_id'          => auth()->id(),
+            'client_id'        => $request->client_id ?: null,
+            'name'             => $request->name,
+            'type'             => $request->type ?: null,
+            'notes'            => $request->notes,
+            'renews_together'  => $request->boolean('renews_together'),
+            'created_at'       => now(),
+            'updated_at'       => now(),
         ]);
 
         return back()->with('success', 'Group created.');
@@ -96,11 +97,12 @@ class AssetGroupController extends Controller
         $request->validate(['name' => 'required|string|max:200']);
 
         DB::table('asset_groups')->where('id', $groupId)->update([
-            'name'       => $request->name,
-            'client_id'  => $request->client_id ?: null,
-            'type'       => $request->type ?: null,
-            'notes'      => $request->notes,
-            'updated_at' => now(),
+            'name'            => $request->name,
+            'client_id'       => $request->client_id ?: null,
+            'type'            => $request->type ?: null,
+            'notes'           => $request->notes,
+            'renews_together' => $request->boolean('renews_together'),
+            'updated_at'      => now(),
         ]);
 
         return back()->with('success', 'Group updated.');
