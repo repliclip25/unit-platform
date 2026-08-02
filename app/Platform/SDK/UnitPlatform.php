@@ -341,6 +341,17 @@ final class UnitPlatform
         // hard-gate stage (e.g. after the human acts) starts its own scan
         // past that same stage, so it's never self-blocking.
         for ($i = $currentIndex + 1; $i < count($stages); $i++) {
+            // A tenant can disable specific stages from AVA Settings
+            // (Request Invoice, Request Documents, Confirm Payment, Generate
+            // Closeout Report) — a disabled stage never dispatches and never
+            // halts, even a hard gate; advance() just continues scanning
+            // past it, same as any other job-less marker. Applies to new
+            // transactions only — the gate is checked live, at whatever
+            // point a transaction happens to reach that stage.
+            if (!self::gateEnabled($input->deploymentId, $stages[$i]['key'], true)) {
+                continue;
+            }
+
             if (empty($stages[$i]['job_class'])) {
                 if (($stages[$i]['gate_type'] ?? null) === 'hard') {
                     self::setFulfillmentStage($txId, $stages[$i]['key']);
@@ -679,6 +690,24 @@ final class UnitPlatform
             'model'      => $row->model         ?: null,
             'max_tokens' => $row->max_tokens    ?: null,
         ], fn($v) => $v !== null);
+    }
+
+    // ── Deployment-level gates — "AVA Settings" page. Trigger sources
+    // (gmail_watch, asset_watch), stage gates (whether a pipeline stage runs
+    // at all — key matches the stage's own pipelineStages() key), and
+    // message gates (whether a stage that DOES run also sends its email).
+    // No row for a key means "use the default" — existing deployments never
+    // need a backfill when a new gate is introduced.
+    public static function gateEnabled(?int $deploymentId, string $key, bool $default = true): bool
+    {
+        if (!$deploymentId) return $default;
+
+        $row = DB::table('deployment_stage_settings')
+            ->where('deployment_id', $deploymentId)
+            ->where('key', $key)
+            ->first();
+
+        return $row ? (bool) $row->enabled : $default;
     }
 
     // ─────────────────────────────────────────────────────────────────────
