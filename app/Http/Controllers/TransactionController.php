@@ -367,6 +367,15 @@ class TransactionController extends Controller
         // days, so it always treats its one draft as final.
         $autoSentDirect = false;
 
+        // Approve & Proceed — the tenant already closed this renewal with the
+        // client outside AVA (phone call, WhatsApp, in person) and doesn't
+        // want to wait through the remaining 30/15-day reminder rounds
+        // before fulfillment unlocks. Forces this decision to be treated as
+        // final regardless of which cadence round it actually is, and
+        // deliberately skips the direct-send path too — nothing should go
+        // out over email for a deal that was already closed elsewhere.
+        $skipCadence = (bool) $request->boolean('skip_cadence');
+
         if ($decision === 'approved') {
             \App\Platform\SDK\UnitPlatform::markLatestClientDraftApproved($txId);
 
@@ -376,7 +385,7 @@ class TransactionController extends Controller
             // same as if the tenant chose a single-shot draft from the start.
             $cadenceOn       = \App\Platform\SDK\UnitPlatform::gateEnabled($tx->deployment_id, 'client_cadence', true);
             $reminderNumber  = (int) $tx->client_reminder_number;
-            $isFinalReminder = $tx->is_test || !$cadenceOn || $reminderNumber === 0 || $reminderNumber >= 3;
+            $isFinalReminder = $skipCadence || $tx->is_test || !$cadenceOn || $reminderNumber === 0 || $reminderNumber >= 3;
 
             if ($isFinalReminder) {
                 // send_mode = 'direct' — the tenant has opted for UNIT to send
@@ -385,8 +394,11 @@ class TransactionController extends Controller
                 // Same OAuth scope either way — gmail.compose already covers
                 // sending, not just drafting; this is a behavior toggle, not
                 // a permissions change. Never applies to Fast Track (no real
-                // recipient) or when there's no draft/credential to send.
-                if (($dep->send_mode ?? 'draft') === 'direct'
+                // recipient), when there's no draft/credential to send, or
+                // when skip_cadence fired (already closed outside AVA — an
+                // email going out now would be redundant or confusing).
+                if (!$skipCadence
+                    && ($dep->send_mode ?? 'draft') === 'direct'
                     && !$tx->is_test
                     && $tx->gmail_draft_id
                     && $credential?->refresh_token
@@ -406,6 +418,12 @@ class TransactionController extends Controller
                     }
                 }
 
+                if ($skipCadence) {
+                    \App\Platform\SDK\UnitPlatform::log('ava', $txId, 'human_decide_skip_cadence', [
+                        'reminder_number' => $reminderNumber, 'reason' => 'Closed outside AVA — remaining reminder rounds skipped',
+                    ]);
+                }
+
                 \App\Platform\SDK\UnitPlatform::advance($txId, 'human_decide');
             } else {
                 \App\Platform\SDK\UnitPlatform::log('ava', $txId, 'client_reminder_approved', ['reminder_number' => $reminderNumber]);
@@ -413,9 +431,11 @@ class TransactionController extends Controller
         }
 
         $msg = $decision === 'approved'
-            ? ($autoSentDirect
-                ? "✓ {$txId} approved and sent."
-                : "✓ {$txId} approved — draft is in your Gmail, ready to review and send.")
+            ? ($skipCadence
+                ? "✓ {$txId} approved — remaining reminders skipped, moved straight to fulfillment."
+                : ($autoSentDirect
+                    ? "✓ {$txId} approved and sent."
+                    : "✓ {$txId} approved — draft is in your Gmail, ready to review and send."))
             : "✗ {$txId} rejected — draft deleted.";
 
         // Approving/rejecting doesn't end the transaction's story — more

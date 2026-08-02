@@ -638,10 +638,18 @@ $statusColor = $statusColors[$tx->status] ?? ['bg'=>'var(--db-chip)','color'=>'v
                     <button type="submit" class="tc-btn tc-btn-ghost" style="width:100%">Reject</button>
                   </form>
                 </div>
+                <form method="POST" action="{{ route('app.transactions.decide', $tx->tx_id) }}" style="margin-top:6px" onclick="return confirm('This skips the remaining reminder rounds and moves straight to fulfillment (invoice, documents, payment). Use this only if you already closed this renewal with the client outside AVA.\n\nContinue?')">
+                  @csrf<input type="hidden" name="decision" value="approved"><input type="hidden" name="skip_cadence" value="1">
+                  <button type="submit" class="td-link-underline" style="width:100%;text-align:center;padding:6px 0">Approve &amp; proceed <span style="opacity:.7">— already closed this outside AVA, skip remaining reminders</span></button>
+                </form>
                 @else
                 <p style="font-size:12px;color:var(--db-text-muted);margin-top:8px">
                   ✓ Approved — waiting for the next scheduled reminder before this can advance further.
                 </p>
+                <form method="POST" action="{{ route('app.transactions.decide', $tx->tx_id) }}" style="margin-top:6px" onclick="return confirm('This skips the remaining reminder rounds and moves straight to fulfillment (invoice, documents, payment). Use this only if you already closed this renewal with the client outside AVA.\n\nContinue?')">
+                  @csrf<input type="hidden" name="decision" value="approved"><input type="hidden" name="skip_cadence" value="1">
+                  <button type="submit" class="td-link-underline" style="width:100%;text-align:center;padding:6px 0">Approve &amp; proceed <span style="opacity:.7">— already closed this outside AVA, skip remaining reminders</span></button>
+                </form>
                 @endif
               @endif
             @endif

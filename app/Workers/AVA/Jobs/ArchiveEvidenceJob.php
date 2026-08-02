@@ -53,6 +53,13 @@ class ArchiveEvidenceJob implements ShouldQueue
         $reminders    = json_decode($tx->reminders ?? '[]', true) ?: [];
         $clientDrafts = json_decode($tx->client_drafts ?? '[]', true) ?: [];
 
+        // Archive honesty — a transaction with only 1 of 3 drafts on record
+        // reads very differently depending on why: cadence still in
+        // progress vs. a tenant deliberately cutting it short because the
+        // renewal was already closed with the client outside AVA.
+        $skippedCadence = DB::table('platform_events')
+            ->where('tx_id', $this->txId)->where('event', 'human_decide_skip_cadence')->exists();
+
         $avaVersion = \App\Platform\Services\WorkerRegistry::resolve($input->workerSlug)->identity()['version'] ?? '—';
 
         $esc  = fn ($v) => htmlspecialchars((string) ($v ?? '—'), ENT_QUOTES);
@@ -98,6 +105,9 @@ class ArchiveEvidenceJob implements ShouldQueue
 
         // 1. Every client-facing draft round, in order, with its approval.
         $html .= '<h2>1. Renewal drafts sent to client</h2>';
+        if ($skippedCadence) {
+            $html .= '<p style="color:#b45309;font-size:13px;margin-bottom:10px">⚠ Approved via "Approve &amp; proceed" — the tenant confirmed this renewal was already closed with the client outside AVA, and the remaining reminder rounds below were deliberately skipped rather than sent.</p>';
+        }
         if ($clientDrafts) {
             foreach ($clientDrafts as $cd) {
                 $ordinal = ['1st', '2nd', '3rd'][($cd['reminder_number'] ?? 1) - 1] ?? (($cd['reminder_number'] ?? '?') . 'th');
