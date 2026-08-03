@@ -15,7 +15,9 @@ Update this file whenever a service is added, removed, or its pricing/status cha
 | **Est. cost @ 5,000 tx/mo** | Rough monthly cost at 5,000 AVA transactions per month |
 | **Config location** | Where credentials live in the codebase |
 
-**"Transaction"** on UNIT = one email fully processed by AVA end-to-end (5 Claude API calls: read, classify, memory, draft, push).
+**"Transaction"** on UNIT = one renewal fully processed by AVA end-to-end through drafting (4 Claude API calls: read, classify, memory, draft — `push` creates the Gmail draft via API and does not call AI). A transaction started via **Human Trigger** or the **Asset Expiry Watch** daily scan (see `AVA.md`) skips `read`/`classify` entirely — those stages are synthesized directly from the asset record — so it's 2 AI calls, not 4, for those.
+
+**Not included in the per-transaction estimate below:** if a tenant attaches an invoice at the `request_invoice` fulfillment stage, `InvoiceOcrService` makes one additional on-demand Claude call to extract amount/currency/dates. This only happens for transactions that reach fulfillment and get an invoice attached — it's real cost, just not flat-rate enough to fold into the per-transaction average below.
 
 ---
 
@@ -162,4 +164,4 @@ When a new third-party service is integrated:
 
 ---
 
-*Last updated: 2026-07-04*
+*Last updated: 2026-08-03 — corrected the per-transaction Claude call count (4, not 5 — `push` never calls AI) and noted the invoice-OCR call and the reduced call count for Human Trigger / Asset Expiry Watch transactions. See `AVA.md` for the full pipeline; nothing else here (services, pricing, infra) has changed since 2026-07-04.*
