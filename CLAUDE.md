@@ -3,8 +3,8 @@
 ## Platform Documentation
 
 - **[UNIT.md](UNIT.md)** — What the platform is, the multi-tenant model, the 11 worker module spec, billing, admin, referral, and the future marketplace vision
-- **[WORKER.md](WORKER.md)** — The WorkerContract interface, all 31 contract methods across 8 blocks (including `employee()` persona), WorkerRegistry hybrid model, lifecycle states, NULL contract rule, versioning, worker-to-worker communication
-- **[AVA.md](AVA.md)** — AVA's specific implementation: Gmail watch, 8-stage pipeline, renewal register, memory layers, Fast Track, QA checks
+- **[WORKER.md](WORKER.md)** — The WorkerContract interface, all 40 contract methods across 8 blocks (including `employee()` persona, `personas()` ICPs, `groupTypes()` asset grouping, billing/AI-stage/memory-requirement declarations), WorkerRegistry hybrid model, lifecycle states, NULL contract rule, versioning, worker-to-worker communication
+- **[AVA.md](AVA.md)** — AVA's specific implementation: Gmail watch, the full 17-stage pipeline (drafting through fulfillment/archive/next-cycle), gating architecture, Human Trigger + Asset Watch ingest paths, asset groups/bundling, client reminder cadence, memory layers, Fast Track, QA checks
 - **[WORKER-PROFILE.md](WORKER-PROFILE.md)** — Public worker profile page spec: required data shape, the 15 page sections and their constraints, required JSON-LD, SEO checklist, reviews backend. Reference implementation is AVA's page; read this before building a second worker's public page
 
 Read these before working on platform-level features, adding a new worker, or modifying AVA's pipeline.
@@ -66,12 +66,14 @@ UNIT is a multi-tenant SaaS platform that lets organizations deploy AI-powered a
 
 ### AVA Worker Pipeline (`app/Workers/AVA/`)
 
-Jobs run in sequence on a named queue (`ava-{deployment_id}`):
+17 stages total, on a named queue (`ava-{deployment_id}`). The **drafting chain** (synchronous, one job dispatches the next):
 
 ```
 ReadEmailJob → ClassifyEmailJob → MemoryLookupJob → SelectTemplateJob
     → LogTransactionJob → DraftEmailJob → PushToGmailJob
 ```
+
+...continues into an event-driven **fulfillment chain** once a human approves the draft: `human_decide` (hard gate) → `request_invoice` → `request_documents` → `confirm_payment` (hard gate) → `update_renewal_date` → `notify_stakeholders` → `notify_customer` (opt-in) → `archive_evidence` → `schedule_next_watch`. A transaction can also start without any inbound email at all — see "Ingest Paths" in `AVA.md`. Full detail (gating, asset bundling, reminder cadence): **`AVA.md`**.
 
 Terminal statuses: `draft_ready`, `approved`, `sent`, `failed`, `rejected`, `dismissed`, `blocked`
 

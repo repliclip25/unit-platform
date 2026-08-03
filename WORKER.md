@@ -45,7 +45,7 @@ Platform-built workers in `$map` default to `active` unless a `worker_registry` 
 
 ---
 
-## Quick Reference — All 30 Contract Methods
+## Quick Reference — All 40 Contract Methods
 
 | Block | Method | Returns | Nullable / Empty? |
 |---|---|---|---|
@@ -71,8 +71,11 @@ Platform-built workers in `$map` default to `active` unless a `worker_registry` 
 | 3 | `commit()` | ?array | `null` if no injection |
 | 3 | `subscriptions()` | array | `[]` if emits only |
 | 3 | `versionChangelog()` | array | `[]` for v1.0 |
-| 3 | `notifications()` | array | `[]` if none |
-| 3 | `dashboard()` | array | No |
+| 3b | `notifications()` | array | `[]` if none |
+| 3c | `overview()` | array | No |
+| 3c | `valueClock()` | array | No |
+| 3c | `deskCards()` | array | `[]` if no desk cards |
+| 3d | `dashboard()` | array | No |
 | 4 | `qaRequirements()` | array | `[]` if none |
 | 5 | `output()` | array | No |
 | 6 | `prompts()` | array | No — list all stages |
@@ -80,6 +83,12 @@ Platform-built workers in `$map` default to `active` unless a `worker_registry` 
 | 8 | `scheduledJobs()` | array | `[]` if none |
 | 8 | `fastTrackJobClass()` | string | `''` to use ingestJobClass |
 | 8 | `stuckRecoveryMap()` | array | `[]` if no recovery |
+| 8 | `billing()` | array | No |
+| 8 | `defaultPlan()` | string | No |
+| 8 | `aiStages()` | array | No |
+| 8 | `memoryRequirements()` | array | `[]` if no platform memory |
+| 8 | `personas()` | array | `[]` if no persona concept |
+| 8 | `groupTypes()` | array | `[]` if no asset grouping |
 
 ---
 
@@ -278,8 +287,38 @@ Available query keys: `tx_draft_ready_undecided`, `tx_urgent_open`, `tx_failed_t
 
 Levels: `error` | `warning` | `info`
 
+### `overview(): array`
+Declares the employer-facing overview dashboard for this worker. A generic renderer loops these panels in priority order — tenants can reorder or hide panels via deployment config with no code change.
+
+Returns `panels` — an ordered array of panel declarations. Each entry: `type`, `title`, `priority` (1 = top), plus panel-type-specific keys (`windows`, `metrics`, `period`, `limit`, `empty`, etc.).
+
+Registered panel types — only these are valid:
+
+| Type | Purpose |
+|---|---|
+| `action_queue` | Items needing a human decision right now |
+| `horizon` | Upcoming deadlines bucketed by time window |
+| `metric_strip` | 3-4 KPI numbers at a glance |
+| `proof_of_work` | What the worker accomplished this period |
+| `alert_feed` | Issues needing awareness but not immediate action |
+| `activity_feed` | Human-readable chronological log |
+| `insight` | AI-generated natural language briefing (optional) |
+| `status_map` | Visual state breakdown (optional) |
+
+### `valueClock(): array`
+The primary value metric this worker surfaces on the profile stat strip and any Value Clock display.
+
+Fields: `label` (e.g. `'Hours Saved, All Time'`), `metric` (resolver key used by `ClockResolver`, e.g. `'hours_saved_alltime'`), `unit` (optional suffix, e.g. `'hrs'`), `subtitle` (template using `{count}` for the raw DB count), `formula` (one-line derivation shown in the tooltip, e.g. `'emails × 0.25h'`), `source` (one sentence explaining the assumption), `scope` (`'deployment'` | `'user'` | `'platform'`).
+
+### `deskCards(): array`
+This worker's pipeline cards for the "Your Desk" feed. An array keyed by metric slug (e.g. `'processed'`, `'drafts'`), each with `label`, `description`, `default`, `default_pos`, `dismissible`. Keys are stored as `worker.{slug}.{metric}` in `user_desk_cards`.
+
+Return `[]` to contribute no desk cards (e.g. non-pipeline workers).
+
+---
+
 ### `dashboard(): array`
-Visual identity and worker-specific stats for this worker's card on the Command Center.
+Visual identity and worker-specific stats for this worker's card on the Command Center. The platform top bar already covers universal pipeline metrics (total processed, in pipeline, needs review, failed) — this declares only what's unique to this worker's output domain.
 
 Fields: `accent` (Tailwind color key), `icon` (SVG `<path>` d= string), `stats` (up to 3 pills: `{ key, label, query }`).
 
@@ -410,6 +449,50 @@ public function stuckRecoveryMap(): array
 }
 ```
 
+### `billing(): array`
+Billing DNA — how this worker is metered and what its trial looks like.
+
+Required keys: `trial_transactions` (int, free units on first deploy, e.g. `25`), `trial_days` (int, max trial length, e.g. `14`), `billing_unit` (what one "transaction" represents for this worker — `'email'` for AVA, `'post'` for NUX, `'video'` for future workers), `unit_label` (singular UI label, e.g. `'email processed'`), `unit_label_plural` (e.g. `'emails processed'`).
+
+The platform reads this at deploy time to seed `deployment_billing` and the trial ledger. Admins can override `trial_transactions` via `worker_pricing.free_transactions` without a code deploy — the platform checks the DB first, falls back to this contract.
+
+### `defaultPlan(): string`
+The plan slug every new deployment starts on — the trial plan, the lowest tier with the `free_transactions` allocation. Used at deploy time to set `deployment_billing.plan_slug` so AI tier, transaction limit, and pricing all resolve immediately with no admin intervention. Must match a `worker_pricing` row with `worker_slug = $this->identity()['slug']`.
+
+### `aiStages(): array`
+Declares which pipeline stages use AI and which model slot each maps to. Returns an array keyed by model field name (must match `worker_pricing` columns and `WorkerInput` properties — `classify_model`, `draft_model`, etc.). Each entry: `key`, `label` (shown in the admin pricing panel), `job_class` (from `pipelineStages()`).
+
+Keys are stored in `worker_pricing.stage_models` JSON (e.g. `{"read":"claude-haiku-4-5-20251001",...}`). `WorkerInput::modelFor(key)` resolves the model per stage at runtime. The platform uses this to render one model selector per AI stage in the admin pricing panel, and to populate `stage_models` defaults when a new plan tier is applied.
+
+### `memoryRequirements(): array`
+Declares which platform memory entities this worker relies on. Memory is platform-scoped (clients, contacts, assets belong to the user, not to any worker) — workers declare what they need so the platform can calculate health scores and send enrichment nudges on their behalf.
+
+Return an array with any of these keys: `'clients' => [...]`, `'contacts' => [...]`, `'assets' => [...]` (each a list of required fields). A "complete record" for health scoring is one client that satisfies all declared contact and asset field requirements. Return `[]` if this worker doesn't use platform memory at all.
+
+Example (AVA):
+```php
+public function memoryRequirements(): array
+{
+    return [
+        'clients'  => ['name'],
+        'contacts' => ['name', 'email'],
+        'assets'   => ['name', 'renewal_date'],
+    ];
+}
+```
+
+### `personas(): array`
+Declares the personas (ICPs) this worker serves. Drives the onboarding persona-selection step, memory step copy/asset types, and per-persona nudge email copy. Return `[]` if this worker has no persona concept — the persona step is skipped in onboarding.
+
+Each key is a slug stored in `worker_deployments.persona`. Shape per persona: `label`, `tagline`, `detail`, `examples` (string[]), `icon` (`'computer'` | `'shield'` | `'clipboard'` | `'grid'`), `asset_types` (`['value' => 'Label']` map for the memory step dropdown), `memory_copy` (`['client_noun','asset_noun','example_client','example_asset']`), `nudge_copy` (`['d1'=>['subject','body'], 'd3'=>..., 'd7'=>...]`, placeholders `{name} {score} {complete} {needed} {threshold} {app_url}`).
+
+AVA declares 4 personas: `it_agency` (the founding use case — domain/SSL/hosting/SaaS renewals for IT and digital agencies), `insurance_broker`, `compliance`, and `other`. `it_agency` is the primary persona the rest of AVA's copy and defaults are tuned around; the others are secondary expansion segments.
+
+### `groupTypes(): array`
+Declares the asset group types this worker supports. Groups are worker-scoped — they let a deployment organize platform memory assets into logical bundles meaningful to that worker's context (see Asset Groups in `AVA.md`). Return an array of `{ value, label, description }`. Return `[]` if this worker doesn't use asset grouping.
+
+AVA declares 4 group types: `service_bundle`, `vendor_cluster`, `expiry_window`, `contract_scope`.
+
 ---
 
 ## The NULL Contract Rule
@@ -437,6 +520,10 @@ public function subscriptions(): array    { return []; }    // subscribes to no 
 public function scheduledJobs(): array    { return []; }    // no recurring jobs
 public function stuckRecoveryMap(): array { return []; }    // no auto-recovery
 public function fastTrackJobClass(): string { return ''; }  // use ingestJobClass for fast track
+public function deskCards(): array        { return []; }    // no "Your Desk" cards
+public function memoryRequirements(): array { return []; }  // doesn't use platform memory
+public function personas(): array         { return []; }    // no persona concept — skips onboarding step
+public function groupTypes(): array       { return []; }    // no asset grouping
 ```
 
 ---
