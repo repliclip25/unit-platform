@@ -3,6 +3,7 @@
 namespace App\Workers\AVA\Jobs;
 
 use App\Platform\SDK\UnitPlatform;
+use App\Platform\SDK\Columns\AssetGroupColumns;
 use App\Workers\AVA\Services\AssetTransactionSynthesizer;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -68,7 +69,7 @@ class AssetExpiryWatchJob implements ShouldQueue
         $bundledAssetIds = [];
         $groups = DB::table('asset_groups')
             ->where('deployment_id', $this->deploymentId)
-            ->where('renews_together', true)
+            ->where(AssetGroupColumns::RENEWS_TOGETHER, true)
             ->get();
 
         foreach ($groups as $group) {

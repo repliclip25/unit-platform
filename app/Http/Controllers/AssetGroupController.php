@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Platform\Services\WorkerRegistry;
+use App\Platform\SDK\Columns\AssetGroupColumns;
 
 class AssetGroupController extends Controller
 {
@@ -81,7 +82,7 @@ class AssetGroupController extends Controller
             'name'             => $request->name,
             'type'             => $request->type ?: null,
             'notes'            => $request->notes,
-            'renews_together'  => $request->boolean('renews_together'),
+            AssetGroupColumns::RENEWS_TOGETHER => $request->boolean('renews_together'),
             'created_at'       => now(),
             'updated_at'       => now(),
         ]);
@@ -101,7 +102,7 @@ class AssetGroupController extends Controller
             'client_id'       => $request->client_id ?: null,
             'type'            => $request->type ?: null,
             'notes'           => $request->notes,
-            'renews_together' => $request->boolean('renews_together'),
+            AssetGroupColumns::RENEWS_TOGETHER => $request->boolean('renews_together'),
             'updated_at'      => now(),
         ]);
 

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use App\Platform\SDK\Columns\TransactionColumns;
 
 class TransactionController extends Controller
 {
@@ -400,7 +401,7 @@ class TransactionController extends Controller
             // skip its own client-facing send. A deal closed outside AVA
             // shouldn't get an AVA-generated "your renewal is complete"
             // email either, same reasoning as skipping direct-send above.
-            DB::table('transactions')->where('tx_id', $txId)->update(['cadence_skipped' => true]);
+            DB::table('transactions')->where('tx_id', $txId)->update([TransactionColumns::CADENCE_SKIPPED => true]);
             \App\Platform\SDK\UnitPlatform::log('ava', $txId, 'human_decide_skip_cadence', [
                 'reminder_number' => $reminderNumber, 'reason' => 'Closed outside AVA — remaining reminder rounds skipped',
             ]);

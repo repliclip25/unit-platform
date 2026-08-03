@@ -4,6 +4,7 @@ namespace App\Workers\AVA\Jobs;
 
 use App\Platform\SDK\UnitPlatform;
 use App\Platform\SDK\WorkerOutput;
+use App\Platform\SDK\Columns\TransactionColumns;
 use App\Platform\Services\EmailDispatcher;
 use App\Platform\Services\TemplateResolver;
 use Illuminate\Bus\Queueable;
@@ -78,7 +79,7 @@ class NotifyCustomerJob implements ShouldQueue
         // would be redundant or confusing, same reasoning as skipping the
         // direct-send path there. The stage still runs and commits its
         // output either way (see class docblock), only the send is skipped.
-        $cadenceSkipped = (bool) DB::table('transactions')->where('tx_id', $this->txId)->value('cadence_skipped');
+        $cadenceSkipped = (bool) DB::table('transactions')->where('tx_id', $this->txId)->value(TransactionColumns::CADENCE_SKIPPED);
         $shouldSend     = $gateOn && !$cadenceSkipped;
 
         // Fast Track drafts this so the tenant can preview it, but never

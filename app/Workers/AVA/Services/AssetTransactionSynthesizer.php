@@ -23,21 +23,7 @@ class AssetTransactionSynthesizer
             ? (int) now()->startOfDay()->diffInDays(\Carbon\Carbon::parse($asset->renewal_date)->startOfDay(), false)
             : null;
 
-        $urgency = match (true) {
-            $threshold === 'overdue' => 'Critical',
-            in_array($threshold, ['1', '7'], true) => 'High',
-            $threshold === '14' => 'Medium',
-            $threshold === '30' => 'Low',
-            // Human Trigger has no watch threshold — base urgency on the
-            // real days left the same way; a tenant explicitly asking for
-            // this now is itself a signal, so default to High if there's
-            // no renewal date to judge by at all.
-            $daysLeft === null => 'High',
-            $daysLeft < 0      => 'Critical',
-            $daysLeft <= 7     => 'High',
-            $daysLeft <= 14    => 'Medium',
-            default            => 'Low',
-        };
+        $urgency = self::resolveUrgency($threshold, $daysLeft);
 
         $client  = $asset->client_id ? DB::table('clients')->where('id', $asset->client_id)->first() : null;
         $contact = $client
@@ -251,6 +237,8 @@ class AssetTransactionSynthesizer
         return $tx;
     }
 
+    // Shared by both create() and createForGroup() — used to be duplicated
+    // inline in create() until it drifted out of sync with this copy.
     private static function resolveUrgency(?string $threshold, ?int $daysLeft): string
     {
         return match (true) {
@@ -258,6 +246,10 @@ class AssetTransactionSynthesizer
             in_array($threshold, ['1', '7'], true) => 'High',
             $threshold === '14' => 'Medium',
             $threshold === '30' => 'Low',
+            // Human Trigger has no watch threshold — base urgency on the
+            // real days left the same way; a tenant explicitly asking for
+            // this now is itself a signal, so default to High if there's
+            // no renewal date to judge by at all.
             $daysLeft === null => 'High',
             $daysLeft < 0      => 'Critical',
             $daysLeft <= 7     => 'High',
