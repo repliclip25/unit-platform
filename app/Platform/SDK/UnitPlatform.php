@@ -325,7 +325,7 @@ final class UnitPlatform
         DB::table('transactions')->where('tx_id', $txId)->update($update);
 
         // Mark stage completed in the stage log with duration
-        self::logStageCompleted($txId, $output->stage);
+        (new Internal\StageLog())->completed($txId, $output->stage);
     }
 
     // ── PIPELINE ADVANCE — dispatches whatever comes after a given stage,
@@ -349,56 +349,43 @@ final class UnitPlatform
             return;
         }
 
-        // Find the next stage in contract order that actually has a job to
-        // run. A stage with no job_class is either a synthetic marker safe to
-        // skip past (e.g. 'webhook') or a genuine hard gate
-        // (gate_type: 'hard', e.g. 'human_decide', 'confirm_payment') — those
-        // stop advance() entirely rather than being skipped, since nothing
-        // should auto-dispatch past a stage that's waiting on a human. Soft
-        // and skippable gates never halt advance() — they either have their
-        // own job_class (dispatched normally below) or, if job-less, are
-        // just skipped past like any other marker. A caller resuming FROM a
-        // hard-gate stage (e.g. after the human acts) starts its own scan
-        // past that same stage, so it's never self-blocking.
-        for ($i = $currentIndex + 1; $i < count($stages); $i++) {
-            // A tenant can disable specific stages from AVA Settings
-            // (Request Invoice, Request Documents, Confirm Payment, Generate
-            // Closeout Report) — a disabled stage never dispatches and never
-            // halts, even a hard gate; advance() just continues scanning
-            // past it, same as any other job-less marker. Applies to new
-            // transactions only — the gate is checked live, at whatever
-            // point a transaction happens to reach that stage.
-            if (!self::gateEnabled($input->deploymentId, $stages[$i]['key'], true)) {
-                continue;
-            }
+        // The actual "what's next" decision (skip disabled gates, halt at a
+        // hard gate, dispatch the next runnable stage, or report the
+        // pipeline complete) is pure logic with no DB/queue dependency — see
+        // Internal\PipelineAdvancer's own docblock for why it's split out.
+        // A caller resuming FROM a hard-gate stage (e.g. after the human
+        // acts) starts its own scan past that same stage, so it's never
+        // self-blocking.
+        $decision = (new Internal\PipelineAdvancer())->resolveNextDispatch(
+            $stages,
+            $currentIndex,
+            fn(string $stageKey) => self::gateEnabled($input->deploymentId, $stageKey, true),
+        );
 
-            if (empty($stages[$i]['job_class'])) {
-                if (($stages[$i]['gate_type'] ?? null) === 'hard') {
-                    self::setFulfillmentStage($txId, $stages[$i]['key']);
-                    return; // waiting on a human action to resume from here
-                }
-                continue;
-            }
+        if ($decision['type'] === Internal\PipelineAdvancer::COMPLETE) {
+            return; // no stage after this one — the pipeline is complete for this transaction
+        }
 
-            // Derive the Jobs namespace from the worker contract's own FQCN
-            // (via WorkerRegistry) rather than re-deriving it from the slug —
-            // Str::studly('ava') produces 'Ava', not 'AVA', which only ever
-            // worked locally because macOS's filesystem is case-insensitive;
-            // Linux (production) is case-sensitive and fails class_exists().
-            $contractClass   = \App\Platform\Services\WorkerRegistry::resolve($input->workerSlug)::class;
-            $workerNamespace = substr($contractClass, 0, strrpos($contractClass, '\\'));
-            $jobFqn = $workerNamespace . '\\Jobs\\' . $stages[$i]['job_class'];
+        if ($decision['type'] === Internal\PipelineAdvancer::HALT) {
+            self::setFulfillmentStage($txId, $decision['stage']['key']);
+            return; // waiting on a human action to resume from here
+        }
 
-            if (!class_exists($jobFqn)) {
-                Log::error('UnitPlatform::advance — job class not found', ['tx_id' => $txId, 'job_class' => $jobFqn]);
-                return;
-            }
+        // Derive the Jobs namespace from the worker contract's own FQCN (via
+        // WorkerRegistry) rather than re-deriving it from the slug —
+        // Str::studly('ava') produces 'Ava', not 'AVA', which only ever
+        // worked locally because macOS's filesystem is case-insensitive;
+        // Linux (production) is case-sensitive and fails class_exists().
+        $contractClass   = \App\Platform\Services\WorkerRegistry::resolve($input->workerSlug)::class;
+        $workerNamespace = substr($contractClass, 0, strrpos($contractClass, '\\'));
+        $jobFqn = $workerNamespace . '\\Jobs\\' . $decision['stage']['job_class'];
 
-            $jobFqn::dispatch($txId)->onQueue($input->queue);
+        if (!class_exists($jobFqn)) {
+            Log::error('UnitPlatform::advance — job class not found', ['tx_id' => $txId, 'job_class' => $jobFqn]);
             return;
         }
 
-        // No stage after this one — the pipeline is complete for this transaction.
+        $jobFqn::dispatch($txId)->onQueue($input->queue);
     }
 
     // ── Trial quota: charged once, the first time a transaction reaches a
@@ -545,110 +532,16 @@ final class UnitPlatform
         $stageKey = $mapped['stage'] ?? $tx?->current_stage;
         if (!$stageKey) return;
 
-        $event = $mapped['event'];
-
-        try {
-            if ($event === 'started') {
-                DB::table('transaction_stage_log')->insert([
-                    'tx_id'         => $txId,
-                    'deployment_id' => $tx?->deployment_id,
-                    'user_id'       => $tx?->user_id,
-                    'worker_slug'   => $tx?->worker_slug,
-                    'stage_key'     => $stageKey,
-                    'event'         => 'started',
-                    'attempt'       => self::currentAttempt($txId, $stageKey),
-                    'created_at'    => now(),
-                ]);
-            } elseif ($event === 'completed') {
-                self::logStageCompleted($txId, $stageKey);
-            } elseif ($event === 'failed') {
-                self::logStageFailed($txId, $stageKey, $status);
-            }
-        } catch (\Throwable $e) {
-            Log::warning('StageLog write failed', ['tx_id' => $txId, 'error' => $e->getMessage()]);
-        }
-    }
-
-    // ─────────────────────────────────────────────────────────────────────
-    // STAGE LOG HELPERS — internal only
-    // ─────────────────────────────────────────────────────────────────────
-
-    private static function logStageCompleted(string $txId, string $stageKey): void
-    {
-        try {
-            $started = DB::table('transaction_stage_log')
-                ->where('tx_id', $txId)
-                ->where('stage_key', $stageKey)
-                ->where('event', 'started')
-                ->latest('id')
-                ->first();
-
-            $durationMs = $started
-                ? max(0, (int) \Carbon\Carbon::parse($started->created_at)->diffInMilliseconds(now()))
-                : null;
-
-            $tx = DB::table('transactions')->where('tx_id', $txId)
-                ->select('deployment_id', 'user_id', 'worker_slug')
-                ->first();
-
-            DB::table('transaction_stage_log')->insert([
-                'tx_id'         => $txId,
-                'deployment_id' => $tx?->deployment_id,
-                'user_id'       => $tx?->user_id,
-                'worker_slug'   => $tx?->worker_slug,
-                'stage_key'     => $stageKey,
-                'event'         => 'completed',
-                'duration_ms'   => $durationMs,
-                'attempt'       => self::currentAttempt($txId, $stageKey),
-                'created_at'    => now(),
-            ]);
-        } catch (\Throwable $e) {
-            Log::warning('StageLog completed write failed', ['tx_id' => $txId, 'error' => $e->getMessage()]);
-        }
-    }
-
-    private static function logStageFailed(string $txId, string $stageKey, string $errorSummary = 'failed'): void
-    {
-        try {
-            $started = DB::table('transaction_stage_log')
-                ->where('tx_id', $txId)
-                ->where('stage_key', $stageKey)
-                ->where('event', 'started')
-                ->latest('id')
-                ->first();
-
-            $durationMs = $started
-                ? max(0, (int) \Carbon\Carbon::parse($started->created_at)->diffInMilliseconds(now()))
-                : null;
-
-            $tx = DB::table('transactions')->where('tx_id', $txId)
-                ->select('deployment_id', 'user_id', 'worker_slug')
-                ->first();
-
-            DB::table('transaction_stage_log')->insert([
-                'tx_id'         => $txId,
-                'deployment_id' => $tx?->deployment_id,
-                'user_id'       => $tx?->user_id,
-                'worker_slug'   => $tx?->worker_slug,
-                'stage_key'     => $stageKey,
-                'event'         => 'failed',
-                'duration_ms'   => $durationMs,
-                'error_summary' => $errorSummary,
-                'attempt'       => self::currentAttempt($txId, $stageKey),
-                'created_at'    => now(),
-            ]);
-        } catch (\Throwable $e) {
-            Log::warning('StageLog failed write failed', ['tx_id' => $txId, 'error' => $e->getMessage()]);
-        }
-    }
-
-    private static function currentAttempt(string $txId, string $stageKey): int
-    {
-        return (int) DB::table('transaction_stage_log')
-            ->where('tx_id', $txId)
-            ->where('stage_key', $stageKey)
-            ->where('event', 'started')
-            ->count() + 1;
+        // See Internal\StageLog's own docblock — the transaction_stage_log
+        // audit trail (started/completed/failed, with duration and attempt
+        // number) was only ever a private, internal-only concern of this
+        // class; extracted with no public API change.
+        match ($mapped['event']) {
+            'started'   => (new Internal\StageLog())->started($txId, $stageKey),
+            'completed' => (new Internal\StageLog())->completed($txId, $stageKey),
+            'failed'    => (new Internal\StageLog())->failed($txId, $stageKey, $status),
+            default     => null,
+        };
     }
 
     // ─────────────────────────────────────────────────────────────────────
