@@ -4,7 +4,7 @@ AVA is UNIT's first deployed worker. She is a Gmail-connected AI agent that moni
 
 **Worker slug:** `ava`
 **Class:** `App\Workers\AVA\AvaWorker`
-**Contract version:** `1.0` (declared in `identity()` — see **Note on versioning** at the end of the Changelog; the contract has grown substantially without a corresponding version bump)
+**Contract version:** `2.0` (declared in `identity()`)
 
 ---
 
@@ -330,28 +330,27 @@ Pro and Enterprise plans unlock per-deployment prompt overrides (see Per-Deploym
 
 ## Changelog
 
-| Date | Summary |
-|---|---|
-| 2026-08-02 | Approve & proceed (skip remaining reminder cadence for deals closed outside AVA); NotifyCustomerJob respects it too |
-| 2026-08-02 | Fixed: Human Trigger / watch-synthesized transactions never set `transactions.category`/`.priority` — showed "Processing..." forever |
-| 2026-08-02 | Fix Dates: bulk-set renewal date + cadence per asset group |
-| 2026-08-02 | Renew Group Now — group-level Human Trigger; Transaction Center + Archive PDF bundle visibility |
-| 2026-08-02 | `{{line_items}}` draft placeholder — bundled transactions itemize every asset in the client-facing draft, not just the group label |
-| 2026-08-02 | Asset Groups: `renews_together` flag, `AssetTransactionSynthesizer::createForGroup()`, clustered watch detection |
-| ~2026-08-01 | Full gating architecture: `deployment_stage_settings`, AVA Settings page, `gateEnabled()`, Human Trigger ("Renew Now") |
-| ~2026-08-01 | `notify_customer` stage — opt-in client-facing closing message, default off |
-| earlier | Full fulfillment pipeline added: `human_decide` → `request_invoice` → `request_documents` → `confirm_payment` → `update_renewal_date` → `notify_stakeholders` → `archive_evidence` → `schedule_next_watch` |
-| earlier | Client reminder cadence (30/15/0-day, `ClientReminderCycleJob`) |
-| earlier | `personas()` — 4 ICP personas driving onboarding/memory copy |
-| earlier | Classification accuracy improvements; FDNY added as recognized org |
-| earlier | Branches added: `not_relevant` terminate, `high_priority` fast-path |
-| earlier | Per-deployment prompt overrides added (Pro/Enterprise) |
-| earlier | Fast Track test mode added |
-| earlier | Subscription tiers declared in contract |
-| earlier | Multi-inbox support; `deployment_credentials` many-to-many |
-| earlier | Initial release |
-
-**Note on versioning:** `identity()['version']` currently reports `'1.0'`, unchanged despite all of the above. Per `WORKER.md`'s versioning rule, every new pipeline stage, branch change, and `output_shape` change should bump this — the fulfillment pipeline, gating, bundling, and personas work above all qualify. This is a real discrepancy worth deciding on (bump to reflect the accumulated changes, or treat contract version as tracking prompt/output-shape churn specifically rather than every shipped feature) rather than something this doc should silently paper over.
+| Version | Date | Summary |
+|---|---|---|
+| **2.0** | **2026-08-02** | **Version bump reflecting everything below** — the 8-stage drafting pipeline is now the front half of a full 17-stage renewal lifecycle, with two new no-email ingest paths, per-deployment gating, asset bundling, personas, and Approve & proceed. Breaking: `output_shape`/`pipeline()` structure changed past the old `draft_ready` terminal point, and new gate keys were introduced in `deployment_stage_settings`. **Not breaking for existing deployments in practice** — every new gate defaults "on" (matching pre-2.0 behavior) except `notify_customer`, which defaults off and must be opted into. See `versionChangelog()` for full upgrade notes. |
+| — | 2026-08-02 | Approve & proceed (skip remaining reminder cadence for deals closed outside AVA); NotifyCustomerJob respects it too |
+| — | 2026-08-02 | Fixed: Human Trigger / watch-synthesized transactions never set `transactions.category`/`.priority` — showed "Processing..." forever |
+| — | 2026-08-02 | Fix Dates: bulk-set renewal date + cadence per asset group |
+| — | 2026-08-02 | Renew Group Now — group-level Human Trigger; Transaction Center + Archive PDF bundle visibility |
+| — | 2026-08-02 | `{{line_items}}` draft placeholder — bundled transactions itemize every asset in the client-facing draft, not just the group label |
+| — | 2026-08-02 | Asset Groups: `renews_together` flag, `AssetTransactionSynthesizer::createForGroup()`, clustered watch detection |
+| — | ~2026-08-01 | Full gating architecture: `deployment_stage_settings`, AVA Settings page, `gateEnabled()`, Human Trigger ("Renew Now") |
+| — | ~2026-08-01 | `notify_customer` stage — opt-in client-facing closing message, default off |
+| — | earlier | Full fulfillment pipeline added: `human_decide` → `request_invoice` → `request_documents` → `confirm_payment` → `update_renewal_date` → `notify_stakeholders` → `archive_evidence` → `schedule_next_watch` |
+| — | earlier | Client reminder cadence (30/15/0-day, `ClientReminderCycleJob`) |
+| — | earlier | `personas()` — 4 ICP personas driving onboarding/memory copy |
+| — | earlier | Classification accuracy improvements; FDNY added as recognized org |
+| — | earlier | Branches added: `not_relevant` terminate, `high_priority` fast-path |
+| — | earlier | Per-deployment prompt overrides added (Pro/Enterprise) |
+| — | earlier | Fast Track test mode added |
+| — | earlier | Subscription tiers declared in contract |
+| — | earlier | Multi-inbox support; `deployment_credentials` many-to-many |
+| **1.0** | earlier | Initial release |
 
 ---
 

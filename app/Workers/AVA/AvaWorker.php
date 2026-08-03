@@ -24,8 +24,8 @@ class AvaWorker implements WorkerContract
         return [
             'name'        => 'AVA Email Worker',
             'slug'        => 'ava',
-            'version'     => '1.0',
-            'description' => 'Monitors your Gmail inbox, classifies renewal and subscription emails, and drafts responses using your contacts, assets, and rules.',
+            'version'     => '2.0',
+            'description' => 'Monitors your Gmail inbox and asset registry, classifies renewal and subscription requests, drafts responses using your contacts, assets, and rules, and carries approved renewals through invoicing, payment confirmation, and a signed closeout archive.',
         ];
     }
 
@@ -712,6 +712,33 @@ class AvaWorker implements WorkerContract
                 'breaking'        => false,
                 'breaking_reason' => '',
                 'upgrade_steps'   => [],
+            ],
+            [
+                'version'  => '2.0',
+                'date'     => '2026-08-02',
+                'notes'    => 'The 8-stage drafting pipeline is now the front half of a full 17-stage renewal '
+                            . 'lifecycle: human_decide, request_invoice, request_documents, confirm_payment, '
+                            . 'update_renewal_date, notify_stakeholders, notify_customer, archive_evidence, and '
+                            . 'schedule_next_watch. Two new ingest paths (Human Trigger and the daily Asset Expiry '
+                            . 'Watch scan) can start a transaction with no inbound email at all. Every fulfillment '
+                            . 'trigger/stage/message is individually toggleable per deployment (AVA Settings). '
+                            . 'Asset Groups can be flagged renews_together and bundled into one multi-line-item '
+                            . 'transaction. 4 personas declared, driving onboarding and memory copy. '
+                            . 'Approve & proceed lets a tenant skip the remaining reminder cadence for renewals '
+                            . 'already closed with the client outside AVA.',
+                'breaking' => true,
+                'breaking_reason' => 'New pipeline stages added (output_shape and pipeline() structure both '
+                            . 'changed substantially past the old draft_ready terminal point); new gate keys '
+                            . 'introduced in deployment_stage_settings.',
+                'upgrade_steps' => [
+                    'No action required for existing deployments — every new gate defaults to "on," matching '
+                    . 'pre-2.0 behavior, except notify_customer (client-facing closing email), which defaults '
+                    . 'off and must be opted into from AVA Settings.',
+                    'Review AVA Settings to see the new per-stage/per-message gates and adjust defaults if '
+                    . 'the pre-2.0 all-or-nothing behavior isn\'t what you want going forward.',
+                    'Optional: use Asset Groups + renews_together if you bill or manage any assets as one '
+                    . 'bundled service rather than tracking them independently.',
+                ],
             ],
         ];
     }
