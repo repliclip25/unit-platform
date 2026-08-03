@@ -22,21 +22,38 @@ use Illuminate\Support\Facades\Log;
 final class UnitPlatform
 {
     // ── Stage → DB column map ─────────────────────────────────────────────
-    private const STAGE_COLUMNS = [
-        'read'              => 'read_output',
-        'classify'          => 'classify_output',
-        'memory'            => 'memory_output',
-        'template'          => 'template_output',
-        'draft'             => 'draft_output',
-        'request_invoice'   => 'invoice_output',
-        'request_documents' => 'documents_output',
-        'confirm_payment'   => 'payment_output',
-        'update_renewal_date' => 'renewal_output',
-        'archive_evidence'  => 'archive_output',
-        'notify_stakeholders' => 'notify_output',
-        'notify_customer'   => 'notify_customer_output',
-        'schedule_next_watch' => 'watch_output',
-    ];
+    // Was a hand-maintained const, independent of AvaWorker::pipelineStages()
+    // — the two were supposed to always agree and silently didn't, twice
+    // (schedule_next_watch's column was missing entirely at one point, and
+    // this map drifted from pipelineStages() elsewhere too). Derived now, so
+    // the same class of bug is structurally impossible: add a stage with a
+    // real output_column to pipelineStages() and this map picks it up for
+    // free, exactly like prompts() already derives from the same source.
+    //
+    // Six stages from the original synchronous drafting chain commit under a
+    // short stage name ('read', 'template', 'draft', ...) that differs from
+    // their pipelineStages() key ('read_email', 'select_template',
+    // 'draft_email', ...) — every stage already declares this exact alias in
+    // its own 'log_stage_key' field (originally added for the Desk activity
+    // feed), so it doubles as the map key here with no new data needed.
+    private static ?array $stageColumnsCache = null;
+
+    private static function stageColumns(): array
+    {
+        if (self::$stageColumnsCache !== null) {
+            return self::$stageColumnsCache;
+        }
+
+        $stages = \App\Platform\Services\WorkerRegistry::resolve('ava')->pipelineStages();
+
+        $map = [];
+        foreach ($stages as $stage) {
+            if (empty($stage['output_column'])) continue;
+            $map[$stage['log_stage_key'] ?? $stage['key']] = $stage['output_column'];
+        }
+
+        return self::$stageColumnsCache = $map;
+    }
 
     // ── Transaction status → (stage_key, event) for stage log ────────────
     private const STATUS_STAGE_MAP = [
@@ -72,7 +89,7 @@ final class UnitPlatform
 
         // Accumulated stage outputs (decoded once here, not in every job)
         $stages = [];
-        foreach (self::STAGE_COLUMNS as $name => $col) {
+        foreach (self::stageColumns() as $name => $col) {
             if (!empty($tx->{$col})) {
                 $stages[$name] = json_decode($tx->{$col}, true) ?? [];
             }
@@ -295,8 +312,9 @@ final class UnitPlatform
             $update['status'] = $output->status;
         }
 
-        if (isset(self::STAGE_COLUMNS[$output->stage])) {
-            $col          = self::STAGE_COLUMNS[$output->stage];
+        $stageColumns = self::stageColumns();
+        if (isset($stageColumns[$output->stage])) {
+            $col          = $stageColumns[$output->stage];
             $update[$col] = json_encode($output->data, JSON_INVALID_UTF8_SUBSTITUTE);
         }
 

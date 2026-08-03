@@ -57,7 +57,7 @@ class AvaWorkerStageConsistencyTest extends TestCase
      * Guards a second, distinct silent-drift bug found in this same
      * session: ScheduleNextWatchJob was given a real output_column
      * ('watch_output') in pipelineStages() so its Transaction Center card
-     * would stop rendering empty — but UnitPlatform::commitOutput() writes
+     * would stop rendering empty — but UnitPlatform::commitOutput() wrote
      * through a *different*, separately-maintained map
      * (UnitPlatform::STAGE_COLUMNS), which never got the matching entry.
      * The job ran successfully, logged success, advanced the pipeline —
@@ -66,37 +66,42 @@ class AvaWorkerStageConsistencyTest extends TestCase
      * the Transaction Center (which had been verified earlier using a
      * hand-set value, not a real job run).
      *
-     * Every fulfillment stage from human_decide onward uses its full
-     * pipelineStages() key verbatim in STAGE_COLUMNS (no short alias) —
-     * the six original synchronous stages (read_email, classify, memory,
-     * select_template, draft_email, push_draft) are the only ones with
-     * deliberately different short internal keys, so they're excluded here.
+     * UnitPlatform::stageColumns() is now derived from pipelineStages()
+     * directly (see its own docblock) rather than hand-maintained, which
+     * makes this specific class of drift structurally impossible — this
+     * test instead guards the derivation logic itself: every stage with a
+     * real output_column must end up in the derived map, keyed by its
+     * log_stage_key alias where one is declared (the six original
+     * synchronous stages — read_email, classify, memory, select_template,
+     * draft_email, push_draft — commit under a short name that differs
+     * from their pipelineStages() key), or by its own key otherwise.
      */
-    public function test_every_fulfillment_stage_output_column_is_wired_in_stage_columns(): void
+    public function test_every_stage_output_column_is_derived_correctly(): void
     {
-        $shortAliased = ['read_email', 'classify', 'memory', 'select_template', 'draft_email', 'push_draft', 'webhook', 'log_entry'];
-
         $worker = new AvaWorker();
+
         $reflection = new \ReflectionClass(\App\Platform\SDK\UnitPlatform::class);
-        $stageColumns = $reflection->getConstant('STAGE_COLUMNS');
+        $method = $reflection->getMethod('stageColumns');
+        $method->setAccessible(true);
+        $stageColumns = $method->invoke(null);
 
         foreach ($worker->pipelineStages() as $stage) {
-            if (empty($stage['output_column']) || in_array($stage['key'], $shortAliased, true)) {
-                continue;
-            }
+            if (empty($stage['output_column'])) continue;
+
+            $mapKey = $stage['log_stage_key'] ?? $stage['key'];
 
             $this->assertArrayHasKey(
-                $stage['key'],
+                $mapKey,
                 $stageColumns,
                 "pipelineStages() stage '{$stage['key']}' declares output_column '{$stage['output_column']}', " .
-                "but UnitPlatform::STAGE_COLUMNS has no entry for it — commitOutput() would silently write nowhere."
+                "but the derived stageColumns() map has no entry under '{$mapKey}' — commitOutput() would silently write nowhere."
             );
 
             $this->assertSame(
                 $stage['output_column'],
-                $stageColumns[$stage['key']],
+                $stageColumns[$mapKey],
                 "pipelineStages() stage '{$stage['key']}' declares output_column '{$stage['output_column']}', " .
-                "but STAGE_COLUMNS maps it to '{$stageColumns[$stage['key']]}' instead — these must match."
+                "but the derived map has '{$stageColumns[$mapKey]}' under '{$mapKey}' instead — these must match."
             );
         }
     }

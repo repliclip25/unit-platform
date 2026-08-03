@@ -201,7 +201,13 @@ class AvaWorker implements WorkerContract
             ['key' => 'log_entry',      'label' => 'Log Transaction', 'sub' => 'Write to register',              'icon' => 'log',      'job_class' => 'LogTransactionJob',
                 'output_column' => null,             'group' => 'verified', 'group_label' => 'Verified', 'group_color' => '#8b5cf6', 'image' => '/images/ava-stand.png', 'log_stage_key' => 'log'],
             ['key' => 'select_template','label' => 'Select Template', 'sub' => 'Pick best-match template',       'icon' => 'template', 'job_class' => 'SelectTemplateJob',
-                'output_column' => null,             'group' => 'prepared', 'group_label' => 'Prepared', 'group_color' => '#f97316', 'image' => '/images/ava-desk.png', 'log_stage_key' => 'template'],
+                // Was incorrectly null — SelectTemplateJob commits real data
+                // here (stage: 'template', matching log_stage_key below) and
+                // DraftEmailJob reads it back via $input->stage('template'),
+                // but the Transaction Center's buildStageList() only renders
+                // a stage's content via this exact field, so its card has
+                // silently shown nothing since this stage was added.
+                'output_column' => 'template_output',  'group' => 'prepared', 'group_label' => 'Prepared', 'group_color' => '#f97316', 'image' => '/images/ava-desk.png', 'log_stage_key' => 'template'],
             ['key' => 'draft_email',    'label' => 'Draft Email',     'sub' => 'AI-personalised draft',          'icon' => 'draft',    'job_class' => 'DraftEmailJob',
                 'output_column' => 'draft_output',    'group' => 'prepared', 'group_label' => 'Prepared', 'group_color' => '#f97316', 'image' => '/images/ava-desk.png', 'log_stage_key' => 'draft',
                 'uses_ai' => true, 'model' => null, 'max_tokens' => 1024, 'output_format' => 'text',
