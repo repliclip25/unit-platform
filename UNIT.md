@@ -95,7 +95,9 @@ received → [worker-defined pipeline stages] → draft_ready
 | `dismissed` | Tenant dismissed without deciding — removed from active queue |
 | `blocked` | Billing or policy block stopped the pipeline before completion |
 
-**Key principle:** The platform records human decisions but does not act on them. When a tenant approves a transaction, the output (e.g. a Gmail draft) stays in the destination for the tenant to review and send themselves. The platform never sends, submits, or transmits on the tenant's behalf. This is intentional — the human always has the final action.
+**Key principle:** The platform records human decisions but does not act on them by default. When a tenant approves a transaction, the output (e.g. a Gmail draft) stays in the destination for the tenant to review and send themselves. This is intentional — the human always has the final action, unless the tenant explicitly opts in otherwise.
+
+**The one opt-in exception:** a per-deployment `send_mode` setting (`'draft'` default, or `'direct'`) lets a tenant tell the platform to send an approved draft immediately instead of leaving it for them to send manually. This is a deliberate tenant choice, not a platform default — approval still always requires an explicit human decision, `send_mode` only changes what happens the instant after that decision is made.
 
 Human decision notes are recorded at review time and will feed worker memory enrichment in a future release.
 
@@ -257,7 +259,7 @@ The ceiling is plan-proportional — a higher-tier subscriber produces a higher 
 
 ## Admin Capabilities
 
-Block/unblock tenants, set spend caps, reset trials, reset passwords, send platform messages, manage influencer partners, void invoices, set billing status, build and publish new workers via the Worker Builder, manage platform AI prompts, review pipeline health, inspect platform events audit log.
+Block/unblock tenants, set spend caps, reset trials, reset passwords, send platform messages, manage influencer partners, void invoices, set billing status, build and publish new workers via the Worker Builder, manage platform AI prompts, review pipeline health, inspect platform events audit log, manage worker reviews (approve/reject), manage marketing messaging templates, manage self-learn content, manage "Your Desk" card definitions, manage tenant-requested new workers.
 
 ---
 
