@@ -137,49 +137,41 @@ final class UnitPlatform
         $pipelineConfig = array_replace_recursive($defaultConfig, $savedConfig);
 
         $depConfig = json_decode($dep?->config ?? '{}', true) ?: [];
+        $tenantOverrideModel = $depConfig['ai_model'] ?? null;
 
-        // ── Plan-driven model resolution ──────────────────────────────────
-        // Priority: tenant custom model (depConfig) → stage_models JSON → classify/draft legacy → platform default
-        $classifyModel = 'claude-haiku-4-5-20251001';
-        $draftModel    = 'claude-sonnet-4-6';
-        $stageModels   = [];
+        // Billing/plan lookups only run when there's no tenant override —
+        // the decision itself (priority order, threshold downgrade) is pure
+        // logic in Internal\ModelResolver; see its own docblock for why.
+        $billingUnitCount = null;
+        $plan             = null;
 
-        if (!empty($depConfig['ai_model'])) {
-            // Tenant custom model override — applies to every stage
-            $classifyModel = $depConfig['ai_model'];
-            $draftModel    = $depConfig['ai_model'];
-        } else {
+        if (empty($tenantOverrideModel)) {
             $billing = $tx->deployment_id
                 ? DB::table('deployment_billing')->where('deployment_id', $tx->deployment_id)->first()
                 : null;
 
             if ($billing?->plan_slug) {
-                $plan = DB::table('worker_pricing')
+                $billingUnitCount = $billing->unit_count;
+                $planRow = DB::table('worker_pricing')
                     ->where('worker_slug', $slug)
                     ->where('plan_slug', $billing->plan_slug)
                     ->first();
 
-                if ($plan) {
-                    // Per-stage model map (new system — takes priority)
-                    if (!empty($plan->stage_models)) {
-                        $stageModels = json_decode($plan->stage_models, true) ?: [];
-                    }
-
-                    // Legacy two-model fields (fallback when stage_models not set)
-                    $classifyModel = $plan->classify_model ?: $classifyModel;
-                    $draftModel    = $plan->draft_model    ?: $draftModel;
-
-                    // Threshold check — downgrade draft stage to classify model to protect margin
-                    if (empty($stageModels) && $plan->draft_model_threshold && $billing->unit_count >= $plan->draft_model_threshold) {
-                        $draftModel = $classifyModel;
-                    }
-                    if (!empty($stageModels) && $plan->draft_model_threshold && $billing->unit_count >= $plan->draft_model_threshold) {
-                        $downgrade = $stageModels['classify'] ?? $stageModels['read'] ?? $classifyModel;
-                        $stageModels['draft'] = $downgrade;
-                    }
+                if ($planRow) {
+                    $plan = [
+                        'stage_models'          => $planRow->stage_models,
+                        'classify_model'        => $planRow->classify_model,
+                        'draft_model'           => $planRow->draft_model,
+                        'draft_model_threshold' => $planRow->draft_model_threshold,
+                    ];
                 }
             }
         }
+
+        $resolvedModels = (new Internal\ModelResolver())->resolve($tenantOverrideModel, $billingUnitCount, $plan);
+        $classifyModel  = $resolvedModels['classifyModel'];
+        $draftModel     = $resolvedModels['draftModel'];
+        $stageModels    = $resolvedModels['stageModels'];
 
         return new WorkerInput(
             txId:           $txId,
