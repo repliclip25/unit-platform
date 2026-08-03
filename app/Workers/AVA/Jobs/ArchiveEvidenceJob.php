@@ -57,10 +57,13 @@ class ArchiveEvidenceJob implements ShouldQueue
         // reads very differently depending on why: cadence still in
         // progress vs. a tenant deliberately cutting it short because the
         // renewal was already closed with the client outside AVA.
-        $skippedCadence = DB::table('platform_events')
-            ->where('tx_id', $this->txId)->where('event', 'human_decide_skip_cadence')->exists();
+        // Read directly off the transaction row, not platform_events —
+        // UnitPlatform::log() writes to the Laravel log file, not that
+        // table, so a platform_events query for this event never matched
+        // and this banner never actually fired until now.
+        $skippedCadence = (bool) $tx->cadence_skipped;
 
-        $avaVersion = \App\Platform\Services\WorkerRegistry::resolve($input->workerSlug)->identity()['version'] ?? '—';
+        $avaVersion = \App\Platform\Services\WorkerRegistry::resolveActive($input->workerSlug)->identity()['version'] ?? '—';
 
         $esc  = fn ($v) => htmlspecialchars((string) ($v ?? '—'), ENT_QUOTES);
         $when = fn ($v) => $v ? \Carbon\Carbon::parse($v)->format('M j, Y · g:i A') : '—';

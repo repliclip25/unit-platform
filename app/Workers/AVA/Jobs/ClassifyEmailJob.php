@@ -42,7 +42,7 @@ class ClassifyEmailJob implements ShouldQueue
         // a single hardcoded list — an insurance broker's renewals should
         // never be force-fit into "Domain Renewal." Falls back to the
         // IT-agency list (AVA's original/default persona) if none is set.
-        $contract      = \App\Platform\Services\WorkerRegistry::resolve($input->workerSlug);
+        $contract      = \App\Platform\Services\WorkerRegistry::resolveActive($input->workerSlug);
         $personaDef    = $contract->personas()[$input->persona] ?? $contract->personas()['it_agency'] ?? [];
         $renewalCategories = $personaDef['categories'] ?? ['Domain Renewal', 'SSL Expiry', 'Hosting Invoice', 'SaaS Renewal', 'Failed Payment'];
         $categoryList  = implode("\n", array_map(fn($c) => "- {$c}", $renewalCategories))
