@@ -122,7 +122,7 @@
 
 <nav class="auth-nav px-6 py-4 flex items-center justify-between">
     <a href="{{ url('/') }}" class="flex items-center gap-2.5">
-        <img src="/logo.png" alt="UNIT" class="w-8 h-8 rounded-md">
+        <img src="/favicon.png" alt="UNIT" class="w-8 h-8 rounded-md">
         <span style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.1rem;color:var(--accent-text,var(--accent))">UNIT</span>
     </a>
     <div class="flex items-center gap-3">

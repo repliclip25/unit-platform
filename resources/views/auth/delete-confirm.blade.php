@@ -17,7 +17,7 @@
 <body>
 <div class="card">
     <div class="logo">
-        <img src="/logo.png" alt="UNIT">
+        <img src="/favicon.png" alt="UNIT">
         <span class="logo-text">UNIT</span>
     </div>
 

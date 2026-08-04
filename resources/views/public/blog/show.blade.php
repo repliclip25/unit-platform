@@ -22,7 +22,7 @@
     'publisher'        => [
         '@type' => 'Organization',
         'name'  => 'UNIT',
-        'logo'  => ['@type' => 'ImageObject', 'url' => asset('logo.png')],
+        'logo'  => ['@type' => 'ImageObject', 'url' => asset('favicon.png')],
     ],
     'mainEntityOfPage' => url()->current(),
 ]), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}</script>

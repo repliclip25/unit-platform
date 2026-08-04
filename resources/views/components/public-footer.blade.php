@@ -28,7 +28,7 @@
     '@type'       => 'Organization',
     'name'        => 'UNIT',
     'url'         => url('/'),
-    'logo'        => asset('logo.png'),
+    'logo'        => asset('favicon.png'),
     'description' => 'UNIT is an AI agent platform that helps businesses deploy specialized AI Workers to manage recurring business workflows, automate operations, and complete real work.',
 ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}</script>
 <script type="application/ld+json">{!! json_encode([

@@ -360,7 +360,7 @@
 {{-- Mobile top bar --}}
 <div id="mob-bar" class="lg:hidden fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-4 py-3" style="backdrop-filter:blur(14px)">
     <a href="{{ route('app.dashboard') }}" class="flex items-center gap-2.5">
-        <img src="/logo.png" alt="UNIT" class="w-7 h-7 rounded-md">
+        <img src="/favicon.png" alt="UNIT" class="w-7 h-7 rounded-md">
         <span class="font-display font-bold text-base">UNIT</span>
     </a>
     <button id="mob-toggle" class="p-1.5 rounded-md" style="background:rgba(128,128,128,0.1)">
@@ -376,7 +376,7 @@
 
         <div class="px-5 py-5 shrink-0" style="border-bottom:1px solid var(--border)">
             <a href="{{ route('app.dashboard') }}" class="flex items-center gap-3">
-                <img src="/logo.png" alt="UNIT" class="w-8 h-8 rounded-md">
+                <img src="/favicon.png" alt="UNIT" class="w-8 h-8 rounded-md">
                 <div>
                     <p class="font-display font-bold text-sm leading-tight" style="color:var(--text-primary)">UNIT Platform</p>
                     <p class="text-xs mt-0.5" style="color:var(--text-faint)">Employee OS</p>
