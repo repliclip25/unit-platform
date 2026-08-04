@@ -32,6 +32,7 @@ class RequestDocumentsJob implements ShouldQueue
         $output = $input->isFastTrack()
             ? ['status' => 'skipped', 'reason' => 'Fast Track always skips — no real document flow in a test run.']
             : ['status' => 'pending_decision'];
+        $output['opened_at'] = now()->toISOString();
 
         UnitPlatform::commitOutput($this->txId, new WorkerOutput(stage: 'request_documents', data: $output));
         UnitPlatform::setFulfillmentStage($this->txId, 'request_documents');
