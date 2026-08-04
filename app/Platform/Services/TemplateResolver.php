@@ -11,8 +11,17 @@ namespace App\Platform\Services;
  *   1. Tenant's own template for this category + this exact round
  *   2. Tenant's own template for this category with no round set (applies to all rounds)
  *   3. Platform default for this category + this exact round
- *   4. Platform default for this category with no round set
- *   5. Generic "Other" platform default
+ *   4. Platform default for this exact round, category-agnostic (category IS NULL)
+ *      — a generic escalating round 2/3 template, used when no category has
+ *      its own round-specific variant. Round-specificity beats category-
+ *      specificity here on purpose: every one of AVA's ~20 category
+ *      defaults previously had cadence_round always null, so round 2/3
+ *      were reading word-for-word identical to round 1 regardless of how
+ *      urgent things actually were. This step is what lets a real "your
+ *      domain has expired" tone reach round 3 without needing to hand-write
+ *      an escalating variant for every category individually.
+ *   5. Platform default for this category with no round set
+ *   6. Generic "Other" platform default
  */
 class TemplateResolver
 {
@@ -22,6 +31,9 @@ class TemplateResolver
 
         $matches = fn($t, $cat, $r) => $field($t, 'category') === $cat
             && ($r === null ? empty($field($t, 'cadence_round')) : (int) $field($t, 'cadence_round') === $r);
+
+        $matchesRoundAnyCategory = fn($t, $r) => empty($field($t, 'category'))
+            && (int) $field($t, 'cadence_round') === $r;
 
         $template = null;
 
@@ -33,6 +45,9 @@ class TemplateResolver
         }
         if (!$template && $round !== null) {
             $template = collect($defaultTemplates)->first(fn($t) => $field($t, 'is_default') && $matches($t, $category, $round));
+        }
+        if (!$template && $round !== null) {
+            $template = collect($defaultTemplates)->first(fn($t) => $field($t, 'is_default') && $matchesRoundAnyCategory($t, $round));
         }
         if (!$template) {
             $template = collect($defaultTemplates)->first(fn($t) => $field($t, 'is_default') && $matches($t, $category, null));
