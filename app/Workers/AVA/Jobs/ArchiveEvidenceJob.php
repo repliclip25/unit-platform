@@ -139,7 +139,7 @@ class ArchiveEvidenceJob implements ShouldQueue
         // section (last round's approval, or its draft time if never
         // approved) — blank if this is old data with no client_drafts at all.
         $lastDraft = $clientDrafts ? end($clientDrafts) : null;
-        $html .= $sectionTitle('1. Renewal drafts sent to client', $lastDraft['approved_at'] ?? $lastDraft['drafted_at'] ?? null);
+        $html .= $sectionTitle('1. Renewal drafts sent to client', $lastDraft['approved_at'] ?? $lastDraft['drafted_at'] ?? UnitPlatform::stageCompletedAt($this->txId, 'draft_email'));
         if ($skippedCadence) {
             $html .= '<p style="color:#b45309;font-size:13px;margin-bottom:10px">⚠ Approved via "Approve &amp; proceed" — the tenant confirmed this renewal was already closed with the client outside AVA, and the remaining reminder rounds below were deliberately skipped rather than sent.</p>';
         } elseif ($stoppedCadence) {
@@ -177,11 +177,13 @@ class ArchiveEvidenceJob implements ShouldQueue
             : '';
 
         // 2. Invoice — most recent client message wins over the stage's own
-        // opened_at (a follow-up is more "activity" than the placeholder
-        // that ran the moment this stage was entered).
+        // completion time (a follow-up is more "activity" than the moment
+        // the stage was entered). stageCompletedAt() reads transaction_stage_log
+        // — the universal, automatic completion log every stage writes to via
+        // commitOutput(), not a hand-added field on this one job's output.
         if (!empty($invoice['status']) || !empty($invoice['sample'])) {
             $lastInvoiceMsg = !empty($invoice['client_messages']) ? end($invoice['client_messages']) : null;
-            $html .= $sectionTitle('2. Invoice request', $lastInvoiceMsg['sent_at'] ?? $invoice['opened_at'] ?? null) . '<table>'
+            $html .= $sectionTitle('2. Invoice request', $lastInvoiceMsg['sent_at'] ?? UnitPlatform::stageCompletedAt($this->txId, 'request_invoice')) . '<table>'
                 . '<tr><td class="label">Status</td><td>' . $esc($invoice['status'] ?? 'not_applicable') . '</td></tr>';
             if (!empty($invoice['ocr'])) {
                 $ocr = $invoice['ocr'];
@@ -209,7 +211,7 @@ class ArchiveEvidenceJob implements ShouldQueue
         // 3. Documents
         if (!empty($documents['status']) || !empty($documents['sample'])) {
             $lastDocMsg = !empty($documents['client_messages']) ? end($documents['client_messages']) : null;
-            $html .= $sectionTitle('3. Supporting document request', $lastDocMsg['sent_at'] ?? $documents['opened_at'] ?? null) . '<table>'
+            $html .= $sectionTitle('3. Supporting document request', $lastDocMsg['sent_at'] ?? UnitPlatform::stageCompletedAt($this->txId, 'request_documents')) . '<table>'
                 . '<tr><td class="label">Status</td><td>' . $esc($documents['status'] ?? 'not_applicable') . '</td></tr>'
                 . '</table>';
             if (!empty($documents['sample'])) {
@@ -236,7 +238,7 @@ class ArchiveEvidenceJob implements ShouldQueue
             $paymentConfirmedText = ($payment['confirmed'] ?? null) === true
                 ? $when($payment['confirmed_at'] ?? null)
                 : $esc($payment['confirmed'] ?? null);
-            $html .= $sectionTitle('4. Payment &amp; renewal', $payment['confirmed_at'] ?? null) . '<table>'
+            $html .= $sectionTitle('4. Payment &amp; renewal', $payment['confirmed_at'] ?? UnitPlatform::stageCompletedAt($this->txId, 'confirm_payment')) . '<table>'
                 . '<tr><td class="label">Payment confirmed</td><td>' . $paymentConfirmedText . '</td></tr>'
                 . '<tr><td class="label">Renewal date</td><td>' . $esc($renewal['old_date'] ?? null) . ' &rarr; ' . $esc($renewal['new_date'] ?? null) . '</td></tr>'
                 . '</table>';
@@ -248,7 +250,7 @@ class ArchiveEvidenceJob implements ShouldQueue
 
         // 5. Closing message to the tenant
         if ($notify) {
-            $html .= $sectionTitle('5. Closing message to stakeholders', $notify['resolved_at'] ?? null) . '<table>'
+            $html .= $sectionTitle('5. Closing message to stakeholders', UnitPlatform::stageCompletedAt($this->txId, 'notify_stakeholders')) . '<table>'
                 . '<tr><td class="label">To</td><td>' . $esc($notify['to'] ?? null) . '</td></tr>'
                 . '<tr><td class="label">Subject</td><td>' . $esc($notify['subject'] ?? null) . '</td></tr>'
                 . '</table><div class="msg">' . nl2br($esc($notify['body'] ?? null)) . '</div>';
@@ -258,7 +260,7 @@ class ArchiveEvidenceJob implements ShouldQueue
         // (notify_customer gate); the stage still ran either way, but
         // 'sent' reflects whether anything actually went out.
         if ($notifyCustomer && !empty($notifyCustomer['sent'])) {
-            $html .= $sectionTitle('6. Closing message to client', $notifyCustomer['resolved_at'] ?? null) . '<table>'
+            $html .= $sectionTitle('6. Closing message to client', UnitPlatform::stageCompletedAt($this->txId, 'notify_customer')) . '<table>'
                 . '<tr><td class="label">To</td><td>' . $esc($notifyCustomer['to'] ?? null) . '</td></tr>'
                 . '<tr><td class="label">Subject</td><td>' . $esc($notifyCustomer['subject'] ?? null) . '</td></tr>'
                 . '<tr><td class="label">Next renewal</td><td>' . $esc($notifyCustomer['next_renewal_date'] ?? null) . '</td></tr>'

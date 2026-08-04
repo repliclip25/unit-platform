@@ -71,7 +71,7 @@ class NotifyStakeholdersJob implements ShouldQueue
 
         UnitPlatform::commitOutput($this->txId, new WorkerOutput(
             stage: 'notify_stakeholders',
-            data:  ['to' => $input->tenantEmail, 'subject' => $subject, 'body' => $body, 'sent' => $gateOn && !$input->isFastTrack(), 'resolved_at' => now()->toISOString()],
+            data:  ['to' => $input->tenantEmail, 'subject' => $subject, 'body' => $body, 'sent' => $gateOn && !$input->isFastTrack()],
         ));
         UnitPlatform::setFulfillmentStage($this->txId, 'notify_stakeholders');
         UnitPlatform::log('ava', $this->txId, 'stakeholders_notified', ['to' => $input->tenantEmail]);

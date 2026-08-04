@@ -669,6 +669,25 @@ final class UnitPlatform
         return $row ? (bool) $row->enabled : $default;
     }
 
+    // ── STAGE COMPLETED AT — real completion timestamp for any stage of any
+    // transaction, read from transaction_stage_log (see Internal\StageLog).
+    // commitOutput() already logs a 'completed' row there for every stage
+    // on every worker, so this is the universal source of truth for "when
+    // did X happen" — callers should use this instead of hand-adding a
+    // timestamp field to their own stage output, which only covers that one
+    // job and is easy to forget on the next stage or the next worker.
+    public static function stageCompletedAt(string $txId, string $stageKey): ?string
+    {
+        $row = DB::table('transaction_stage_log')
+            ->where('tx_id', $txId)
+            ->where('stage_key', $stageKey)
+            ->where('event', 'completed')
+            ->latest('id')
+            ->first();
+
+        return $row?->created_at;
+    }
+
     // ── CADENCE STATE — lets PushToGmailJob decide whether a client
     // reminder round should auto-continue (already blanket-approved once)
     // or halt and wait for the tenant's first decision, without querying

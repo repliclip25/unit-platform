@@ -40,7 +40,6 @@ class RequestInvoiceJob implements ShouldQueue
                 'sample'  => $input->raw['fast_track_invoice_sample'] ?? 'No sample invoice provided in the test scenario — this is what a tenant would attach on a real renewal.',
               ]
             : ['status' => 'not_attached'];
-        $output['opened_at'] = now()->toISOString();
 
         UnitPlatform::commitOutput($this->txId, new WorkerOutput(stage: 'request_invoice', data: $output));
         UnitPlatform::setFulfillmentStage($this->txId, 'request_invoice');
