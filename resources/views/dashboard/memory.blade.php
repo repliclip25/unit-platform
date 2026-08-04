@@ -539,7 +539,24 @@ $sidebarLinks = [
                   <div class="mem-row-sub">{{ $asset->type }}{{ $asset->vendor ? ' · '.$asset->vendor : '' }}{{ $cn ? ' · '.$cn->name : '' }}</div>
                   @if($asset->renewal_date)<div class="mem-row-sub2" style="color:{{ $urgColor }}">{{ $asset->renewal_date }} — {{ $days <= 0 ? 'expired' : $days.' days' }}</div>@endif
                 </div>
-                <div style="display:flex;gap:10px;flex-shrink:0">
+                <div style="display:flex;align-items:center;gap:10px;flex-shrink:0">
+                  <form method="POST" action="{{ route('app.workers.assets.renew-now', [$avaDeploymentId, $asset->id]) }}" onsubmit="return confirm('Push {{ addslashes($asset->name) }} into the pipeline now?')">
+                    @csrf
+                    <button type="submit" class="mem-row-action" title="Skip the watch threshold — push this asset into the transaction pipeline right now">Renew Now</button>
+                  </form>
+                  @php $assetGroupOptions = $myGroups->where('deployment_id', $avaDeploymentId); @endphp
+                  @if($assetGroupOptions->isNotEmpty())
+                  <select class="mem-select" style="width:auto;padding:4px 8px;font-size:12px"
+                    onchange="if(this.value){ var f=this.nextElementSibling; f.action='{{ url('/app/workers/'.$avaDeploymentId.'/memory/groups') }}/'+this.value+'/items'; f.submit(); } this.value=''">
+                    <option value="">+ Add to group…</option>
+                    @foreach($assetGroupOptions as $g)
+                    <option value="{{ $g->id }}">{{ $g->name }}</option>
+                    @endforeach
+                  </select>
+                  <form method="POST" style="display:none">
+                    @csrf<input type="hidden" name="asset_id" value="{{ $asset->id }}">
+                  </form>
+                  @endif
                   <button type="button" class="mem-row-action" onclick="toggleAssetEdit({{ $asset->id }})">Edit</button>
                   <form method="POST" action="{{ route('app.memory.assets.destroy', $asset->id) }}">
                     @csrf @method('DELETE')
