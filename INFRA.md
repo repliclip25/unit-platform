@@ -17,7 +17,9 @@ Update this file whenever a service is added, removed, or its pricing/status cha
 
 **"Transaction"** on UNIT = one renewal fully processed by AVA end-to-end through drafting (4 Claude API calls: read, classify, memory, draft — `push` creates the Gmail draft via API and does not call AI). A transaction started via **Human Trigger** or the **Asset Expiry Watch** daily scan (see `AVA.md`) skips `read`/`classify` entirely — those stages are synthesized directly from the asset record — so it's 2 AI calls, not 4, for those.
 
-**Not included in the per-transaction estimate below:** if a tenant attaches an invoice at the `request_invoice` fulfillment stage, `InvoiceOcrService` makes one additional on-demand Claude call to extract amount/currency/dates. This only happens for transactions that reach fulfillment and get an invoice attached — it's real cost, just not flat-rate enough to fold into the per-transaction average below.
+**Not included in the per-transaction estimate below:**
+- If a tenant attaches an invoice at the `request_invoice` fulfillment stage, `InvoiceOcrService` makes one additional on-demand Claude call to extract amount/currency/dates. This only happens for transactions that reach fulfillment and get an invoice attached — it's real cost, just not flat-rate enough to fold into the per-transaction average below.
+- **Reminder cadence previews** (see `AVA.md`'s "Client Reminder Cadence" — approving round 1 now authorizes the whole 30/15/0-day cadence in one shot): `DraftEmailJob` generates preview content for rounds 2 and 3 alongside round 1's real draft, using the same logic — which means the *same* per-round fallback to a real Claude call (template body under 100 chars, or a low-confidence memory match) can fire up to 3 times at drafting instead of once. Not guaranteed on every transaction (most template-filled drafts never touch Claude at all — the fallback is the exception, not the rule), and skipped entirely for Fast Track and when `client_cadence` is off. Real cost when it happens, just not deterministic enough to fold into the flat estimate below.
 
 ---
 
@@ -164,4 +166,4 @@ When a new third-party service is integrated:
 
 ---
 
-*Last updated: 2026-08-03 — corrected the per-transaction Claude call count (4, not 5 — `push` never calls AI) and noted the invoice-OCR call and the reduced call count for Human Trigger / Asset Expiry Watch transactions. See `AVA.md` for the full pipeline; nothing else here (services, pricing, infra) has changed since 2026-07-04.*
+*Last updated: 2026-08-04 — noted the reminder-cadence preview cost (up to 2 extra Claude calls at drafting, when the low-confidence/short-template fallback fires, now that round 1's approval generates rounds 2/3 as previews too). Previous pass (2026-08-03) corrected the per-transaction Claude call count (4, not 5 — `push` never calls AI) and noted the invoice-OCR call and the reduced call count for Human Trigger / Asset Expiry Watch transactions. See `AVA.md` for the full pipeline; nothing else here (services, pricing, infra) has changed since 2026-07-04.*
