@@ -152,6 +152,20 @@ body{font-family:'Inter',sans-serif;background:var(--db-bg);color:var(--db-text)
 .mem-row-empty{padding:36px 18px;text-align:center;font-size:13.5px;color:var(--db-text-muted)}
 .mem-row-action{font-size:12.5px;font-weight:600;color:var(--db-text-muted);background:none;border:none;cursor:pointer;font-family:inherit;text-decoration:none}
 .mem-row-action:hover{color:var(--db-text)}
+.mem-row-actions{display:flex;align-items:center;gap:10px;flex-shrink:0}
+.mem-row-menu-wrap{position:relative}
+.mem-row-kebab{width:28px;height:28px;border-radius:8px;border:1px solid var(--db-border);background:var(--db-card);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--db-text-muted);flex-shrink:0}
+.mem-row-kebab:hover{color:var(--db-text);background:var(--db-chip)}
+.mem-row-kebab svg{width:14px;height:14px;stroke:currentColor;stroke-width:1.8;fill:none}
+/* Opens upward, not downward — .mem-list clips overflow (for its rounded
+   corners), so a menu opening below the last row has nowhere to render
+   into and gets cut off. Opening into space already occupied by earlier
+   rows within the same container stays inside its clipped bounds. */
+.mem-row-menu{position:absolute;bottom:calc(100% + 6px);right:0;min-width:130px;background:var(--db-card);border:1px solid var(--db-border);border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.18);padding:6px;z-index:20;display:none}
+.mem-row-menu.open{display:block}
+.mem-row-menu-item{display:block;width:100%;text-align:left;padding:7px 10px;border-radius:7px;font-size:12.5px;font-weight:600;color:var(--db-text);background:none;border:none;cursor:pointer;font-family:inherit}
+.mem-row-menu-item:hover{background:var(--db-chip)}
+.mem-row-menu-item.danger{color:#ef4444}
 .mem-badge{font-size:10.5px;font-weight:700;padding:2px 7px;border-radius:99px;margin-left:6px}
 
 .mem-form-card{background:transparent;border:1px solid var(--db-border);border-radius:16px;overflow:hidden}
@@ -212,6 +226,9 @@ body{font-family:'Inter',sans-serif;background:var(--db-bg);color:var(--db-text)
   .mem-stats{grid-template-columns:repeat(2,1fr)}
   .mem-field-row{grid-template-columns:1fr}
   .mem-tabs{-webkit-overflow-scrolling:touch}
+  .mem-row{flex-direction:column;align-items:stretch;gap:10px}
+  .mem-row-actions{width:100%;flex-wrap:wrap}
+  .mem-row-actions select.mem-select{flex:1;min-width:0}
 }
 </style>
 <script>
@@ -527,7 +544,7 @@ $sidebarLinks = [
             <div class="mem-list">
               @forelse($assets as $asset)
               @php
-                $days     = $asset->renewal_date ? now()->diffInDays($asset->renewal_date, false) : null;
+                $days     = $asset->renewal_date ? (int) now()->diffInDays($asset->renewal_date, false) : null;
                 $urgColor = $days === null ? 'var(--db-text-muted)' : ($days <= 0 ? '#ef4444' : ($days <= 30 ? '#f59e0b' : 'var(--db-text-muted)'));
                 $cn       = $clients->firstWhere('id', $asset->client_id);
               @endphp
@@ -539,7 +556,7 @@ $sidebarLinks = [
                   <div class="mem-row-sub">{{ $asset->type }}{{ $asset->vendor ? ' · '.$asset->vendor : '' }}{{ $cn ? ' · '.$cn->name : '' }}</div>
                   @if($asset->renewal_date)<div class="mem-row-sub2" style="color:{{ $urgColor }}">{{ $asset->renewal_date }} — {{ $days <= 0 ? 'expired' : $days.' days' }}</div>@endif
                 </div>
-                <div style="display:flex;align-items:center;gap:10px;flex-shrink:0">
+                <div class="mem-row-actions">
                   <form method="POST" action="{{ route('app.workers.assets.renew-now', [$avaDeploymentId, $asset->id]) }}" onsubmit="return confirm('Push {{ addslashes($asset->name) }} into the pipeline now?')">
                     @csrf
                     <button type="submit" class="mem-row-action" title="Skip the watch threshold — push this asset into the transaction pipeline right now">Renew Now</button>
@@ -557,11 +574,22 @@ $sidebarLinks = [
                     @csrf<input type="hidden" name="asset_id" value="{{ $asset->id }}">
                   </form>
                   @endif
-                  <button type="button" class="mem-row-action" onclick="toggleAssetEdit({{ $asset->id }})">Edit</button>
-                  <form method="POST" action="{{ route('app.memory.assets.destroy', $asset->id) }}">
-                    @csrf @method('DELETE')
-                    <button class="mem-row-action" onclick="return confirm('Remove {{ addslashes($asset->name) }}?')">Remove</button>
-                  </form>
+                  {{-- Edit/Remove tucked behind a kebab menu — always-visible
+                       Remove buttons on every one of 50 rows reads as an
+                       invitation to accidentally delete memory, not a
+                       routine action like Renew Now. --}}
+                  <div class="mem-row-menu-wrap">
+                    <button type="button" class="mem-row-kebab" onclick="toggleAssetMenu({{ $asset->id }})" aria-label="More actions">
+                      <svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.5" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none"/><circle cx="12" cy="19" r="1.5" fill="currentColor" stroke="none"/></svg>
+                    </button>
+                    <div class="mem-row-menu" id="asset-menu-{{ $asset->id }}">
+                      <button type="button" class="mem-row-menu-item" onclick="toggleAssetMenu({{ $asset->id }});toggleAssetEdit({{ $asset->id }})">Edit</button>
+                      <form method="POST" action="{{ route('app.memory.assets.destroy', $asset->id) }}">
+                        @csrf @method('DELETE')
+                        <button type="submit" class="mem-row-menu-item danger" onclick="return confirm('Remove {{ addslashes($asset->name) }}?')">Remove</button>
+                      </form>
+                    </div>
+                  </div>
                 </div>
               </div>
               <div id="asset-edit-{{ $asset->id }}" class="mem-edit-panel" style="display:none">
@@ -991,6 +1019,18 @@ function toggleAssetEdit(id) {
   var el = document.getElementById('asset-edit-' + id);
   el.style.display = el.style.display === 'none' ? 'block' : 'none';
 }
+
+function toggleAssetMenu(id) {
+  var target = document.getElementById('asset-menu-' + id);
+  var wasOpen = target.classList.contains('open');
+  document.querySelectorAll('.mem-row-menu.open').forEach(function (el) { el.classList.remove('open'); });
+  if (!wasOpen) target.classList.add('open');
+}
+document.addEventListener('click', function (e) {
+  if (!e.target.closest('.mem-row-menu-wrap')) {
+    document.querySelectorAll('.mem-row-menu.open').forEach(function (el) { el.classList.remove('open'); });
+  }
+});
 
 function toggleEdit(key) {
   var el = document.getElementById('edit-' + key);
