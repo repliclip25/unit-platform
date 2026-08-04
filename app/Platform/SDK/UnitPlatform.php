@@ -688,6 +688,21 @@ final class UnitPlatform
         return $row?->created_at;
     }
 
+    // ── STAGE STARTED — logs a 'started' row so the matching commitOutput()
+    // call's 'completed' row gets a real duration_ms (StageLog::completed()
+    // computes it from the most recent 'started' row for the same stage_key
+    // — with none logged, duration is always null). The drafting chain
+    // already gets this for free from setStatus()'s STATUS_STAGE_MAP; the
+    // fulfillment stages (request_invoice onward) only ever call
+    // commitOutput() directly, so they never had a 'started' row until now.
+    // Deliberately NOT routed through setStatus() — that also writes
+    // transactions.status/current_stage, which fulfillment jobs shouldn't
+    // have overwritten just to get a timing log; this is a pure log write.
+    public static function stageStarted(string $txId, string $stageKey): void
+    {
+        (new Internal\StageLog())->started($txId, $stageKey);
+    }
+
     // ── CADENCE STATE — lets PushToGmailJob decide whether a client
     // reminder round should auto-continue (already blanket-approved once)
     // or halt and wait for the tenant's first decision, without querying

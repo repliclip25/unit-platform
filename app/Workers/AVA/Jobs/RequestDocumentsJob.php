@@ -27,6 +27,8 @@ class RequestDocumentsJob implements ShouldQueue
 
     public function handle(): void
     {
+        UnitPlatform::stageStarted($this->txId, 'request_documents');
+
         $input = UnitPlatform::getInput($this->txId);
 
         $output = $input->isFastTrack()

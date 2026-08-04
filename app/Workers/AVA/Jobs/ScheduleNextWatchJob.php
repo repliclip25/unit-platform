@@ -32,6 +32,8 @@ class ScheduleNextWatchJob implements ShouldQueue
 
     public function handle(): void
     {
+        UnitPlatform::stageStarted($this->txId, 'schedule_next_watch');
+
         $input  = UnitPlatform::getInput($this->txId);
         $memory = $input->stage('memory');
 

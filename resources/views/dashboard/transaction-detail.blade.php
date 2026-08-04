@@ -587,8 +587,14 @@ $statusColor = $statusColors[$tx->status] ?? ['bg'=>'var(--db-chip)','color'=>'v
               {{-- Reuses the sub-label's space, which otherwise goes blank
                    once a stage is done — sourced from transaction_stage_log
                    (see UnitPlatform::stageCompletedAt()), the same universal
-                   completion log the archive PDF's timestamps read from. --}}
-              <div class="tc-stage-sub" title="{{ \Carbon\Carbon::parse($stage['completed_at'])->format('M j, Y \a\t g:i A') }}">completed {{ \Carbon\Carbon::parse($stage['completed_at'])->diffForHumans() }}</div>
+                   completion log the archive PDF's timestamps read from.
+                   duration_ms is only present for stages that log a
+                   'started' row (UnitPlatform::stageStarted()) — older
+                   transactions and a few gate-driven stages (human_decide,
+                   confirm_payment) legitimately show no duration, since
+                   there's nothing to time for a synchronous human action. --}}
+              @php $durMs = $stage['duration_ms'] ?? null; @endphp
+              <div class="tc-stage-sub" title="{{ \Carbon\Carbon::parse($stage['completed_at'])->format('M j, Y \a\t g:i A') }}">completed {{ \Carbon\Carbon::parse($stage['completed_at'])->diffForHumans() }}@if($durMs) &middot; took {{ $durMs < 1000 ? $durMs.'ms' : ($durMs < 60000 ? round($durMs/1000, 1).'s' : round($durMs/60000, 1).'m') }}@endif</div>
               @endif
             </div>
             @if(!empty($stage['skipped_by_gate']))<span class="tc-stage-tag skipped">skipped — disabled in settings</span>@endif

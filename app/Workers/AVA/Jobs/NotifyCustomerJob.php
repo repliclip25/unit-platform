@@ -36,6 +36,8 @@ class NotifyCustomerJob implements ShouldQueue
 
     public function handle(): void
     {
+        UnitPlatform::stageStarted($this->txId, 'notify_customer');
+
         $input   = UnitPlatform::getInput($this->txId);
         $memory  = $input->stage('memory');
         $renewal = $input->stage('update_renewal_date');

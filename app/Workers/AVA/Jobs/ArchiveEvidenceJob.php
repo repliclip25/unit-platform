@@ -36,6 +36,8 @@ class ArchiveEvidenceJob implements ShouldQueue
 
     public function handle(): void
     {
+        UnitPlatform::stageStarted($this->txId, 'archive_evidence');
+
         $tx = DB::table('transactions')->where('tx_id', $this->txId)->first();
 
         $input     = UnitPlatform::getInput($this->txId);

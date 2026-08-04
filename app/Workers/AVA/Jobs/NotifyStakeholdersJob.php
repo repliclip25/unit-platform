@@ -29,6 +29,8 @@ class NotifyStakeholdersJob implements ShouldQueue
 
     public function handle(): void
     {
+        UnitPlatform::stageStarted($this->txId, 'notify_stakeholders');
+
         $input  = UnitPlatform::getInput($this->txId);
         $memory = $input->stage('memory');
 

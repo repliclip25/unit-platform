@@ -29,6 +29,8 @@ class RequestInvoiceJob implements ShouldQueue
 
     public function handle(): void
     {
+        UnitPlatform::stageStarted($this->txId, 'request_invoice');
+
         $input = UnitPlatform::getInput($this->txId);
 
         // Fast Track previews the outcome (a sample invoice, if the test

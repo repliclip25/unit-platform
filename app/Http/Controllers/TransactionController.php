@@ -91,22 +91,29 @@ class TransactionController extends Controller
         $reminders    = json_decode($tx->reminders ?? '[]', true) ?: [];
         $clientDrafts = json_decode($tx->client_drafts ?? '[]', true) ?: [];
 
-        // One bulk query for every stage's completion time, keyed by each
-        // stage's log_stage_key (transaction_stage_log uses each job's own
-        // short internal alias — e.g. 'draft' for the 'draft_email' stage —
-        // not the full pipelineStages() key; log_stage_key is the contract's
-        // own declared mapping between the two, already used by
-        // UnitPlatform::stageColumns() for the same reconciliation).
-        // Latest row per stage_key wins — orderBy('id') then last-write-wins
-        // in the loop below, cheaper than a query per stage.
-        $completedAtByLogKey = [];
+        // One bulk query for every stage's completion time + duration, keyed
+        // by each stage's log_stage_key (transaction_stage_log uses each
+        // job's own short internal alias — e.g. 'draft' for the
+        // 'draft_email' stage — not the full pipelineStages() key;
+        // log_stage_key is the contract's own declared mapping between the
+        // two, already used by UnitPlatform::stageColumns() for the same
+        // reconciliation). Latest row per stage_key wins — orderBy('id')
+        // then last-write-wins in the loop below, cheaper than a query per
+        // stage. duration_ms is only non-null for stages that log a
+        // 'started' row (UnitPlatform::stageStarted()) before completing —
+        // the drafting chain always has one via setStatus(); the fulfillment
+        // stages only got one recently, so older transactions show a
+        // timestamp with no duration, which is honest, not a bug.
+        $completedAtByLogKey  = [];
+        $durationMsByLogKey   = [];
         foreach (
             DB::table('transaction_stage_log')
                 ->where('tx_id', $tx->tx_id)->where('event', 'completed')
-                ->orderBy('id')->get(['stage_key', 'created_at'])
+                ->orderBy('id')->get(['stage_key', 'created_at', 'duration_ms'])
             as $row
         ) {
             $completedAtByLogKey[$row->stage_key] = $row->created_at;
+            $durationMsByLogKey[$row->stage_key]  = $row->duration_ms;
         }
 
         // Show the full cadence up front, not just what's happened so far —
@@ -142,7 +149,7 @@ class TransactionController extends Controller
             usort($clientDrafts, fn($a, $b) => ($a['reminder_number'] ?? 0) <=> ($b['reminder_number'] ?? 0));
         }
 
-        return collect($rawStages)->map(function ($stage, $i) use ($tx, $currentIdx, $reminders, $clientDrafts, $routeOverrides, $completedAtByLogKey) {
+        return collect($rawStages)->map(function ($stage, $i) use ($tx, $currentIdx, $reminders, $clientDrafts, $routeOverrides, $completedAtByLogKey, $durationMsByLogKey) {
             $state = $i < $currentIdx ? 'done' : ($i === $currentIdx ? 'active' : 'pending');
 
             // Not every worker's pipelineStages() declares output_column on
@@ -172,6 +179,7 @@ class TransactionController extends Controller
                 'skipped_by_gate'=> $skippedByGate,
                 'reminders'      => $stageReminders,
                 'completed_at'   => $completedAtByLogKey[$stage['log_stage_key'] ?? $stage['key']] ?? null,
+                'duration_ms'    => $durationMsByLogKey[$stage['log_stage_key'] ?? $stage['key']] ?? null,
                 // Draft Email and human_decide both show the same up-to-3
                 // client drafts — one tenant reviews every cadence message
                 // once, instead of hunting across two stage cards for it.

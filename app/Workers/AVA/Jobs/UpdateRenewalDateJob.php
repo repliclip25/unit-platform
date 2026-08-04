@@ -31,6 +31,8 @@ class UpdateRenewalDateJob implements ShouldQueue
 
     public function handle(): void
     {
+        UnitPlatform::stageStarted($this->txId, 'update_renewal_date');
+
         $input  = UnitPlatform::getInput($this->txId);
         $memory = $input->stage('memory');
 

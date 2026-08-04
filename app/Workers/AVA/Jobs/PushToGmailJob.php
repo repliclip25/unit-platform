@@ -38,6 +38,8 @@ class PushToGmailJob implements ShouldQueue
 
     public function handle(): void
     {
+        UnitPlatform::stageStarted($this->txId, 'push');
+
         $input  = UnitPlatform::getInput($this->txId);
         $draft  = $input->stage('draft');
         $memory = $input->stage('memory');
