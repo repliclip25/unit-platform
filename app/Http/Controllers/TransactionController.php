@@ -390,7 +390,7 @@ class TransactionController extends Controller
 
         if (!$isFinalReminder) {
             \App\Platform\SDK\UnitPlatform::log('ava', $txId, 'client_reminder_approved', ['reminder_number' => $reminderNumber]);
-            return "✓ {$txId} approved — draft is in your Gmail, ready to review and send.";
+            return $this->approvedMessage($txId, $tx);
         }
 
         $autoSentDirect = $skipCadence ? false : $this->maybeSendDirect($tx, $dep, $credential, $txId);
@@ -409,11 +409,24 @@ class TransactionController extends Controller
 
         \App\Platform\SDK\UnitPlatform::advance($txId, 'human_decide');
 
-        return $skipCadence
-            ? "✓ {$txId} approved — remaining reminders skipped, moved straight to fulfillment."
-            : ($autoSentDirect
-                ? "✓ {$txId} approved and sent."
-                : "✓ {$txId} approved — draft is in your Gmail, ready to review and send.");
+        if ($skipCadence) {
+            return "✓ {$txId} approved — remaining reminders skipped, moved straight to fulfillment.";
+        }
+
+        return $autoSentDirect ? "✓ {$txId} approved and sent." : $this->approvedMessage($txId, $tx);
+    }
+
+    // PushToGmailJob skips the Gmail API entirely when no inbox is
+    // connected (in_app_only) — gmail_draft_id is the definitive signal for
+    // that on this row (no dedicated output_column exists for the push
+    // stage to persist in_app_only itself). Telling a tenant "draft is in
+    // your Gmail" when no Gmail was ever connected sends them to check an
+    // inbox that has nothing in it.
+    private function approvedMessage(string $txId, object $tx): string
+    {
+        return $tx->gmail_draft_id
+            ? "✓ {$txId} approved — draft is in your Gmail, ready to review and send."
+            : "✓ {$txId} approved — no Gmail connected, so copy the draft or open it in your email client below.";
     }
 
     // send_mode = 'direct' — the tenant has opted for UNIT to send the
