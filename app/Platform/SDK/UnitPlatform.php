@@ -555,7 +555,7 @@ final class UnitPlatform
     // STATUS — lightweight status-only update (also drives stage log)
     // ─────────────────────────────────────────────────────────────────────
 
-    public static function setStatus(string $txId, string $status): void
+    public static function setStatus(string $txId, string $status, ?string $errorMessage = null): void
     {
         self::maybeIncrementTrialUsage($txId, $status);
 
@@ -582,10 +582,15 @@ final class UnitPlatform
         // audit trail (started/completed/failed, with duration and attempt
         // number) was only ever a private, internal-only concern of this
         // class; extracted with no public API change.
+        // $errorMessage carries the real exception text (job's failed($e)
+        // handler passes $e->getMessage()) instead of falling back to the
+        // generic $status literal ('failed'/'blocked') that error_summary
+        // used to always contain — a status string told you THAT it failed,
+        // never WHY.
         match ($mapped['event']) {
             'started'   => (new Internal\StageLog())->started($txId, $stageKey),
             'completed' => (new Internal\StageLog())->completed($txId, $stageKey),
-            'failed'    => (new Internal\StageLog())->failed($txId, $stageKey, $status),
+            'failed'    => (new Internal\StageLog())->failed($txId, $stageKey, $errorMessage ?? $status),
             default     => null,
         };
     }
@@ -701,6 +706,17 @@ final class UnitPlatform
     public static function stageStarted(string $txId, string $stageKey): void
     {
         (new Internal\StageLog())->started($txId, $stageKey);
+    }
+
+    // ── STAGE FAILED — for jobs whose failed() handler never calls
+    // setStatus('failed') at all (the fulfillment stages — a failure there
+    // is absorbed and the pipeline advances anyway, so transactions.status
+    // deliberately isn't touched). Without this, those failures never
+    // reached transaction_stage_log at all — not just with a weak error
+    // message, but with zero record of the failure existing.
+    public static function stageFailed(string $txId, string $stageKey, string $errorMessage): void
+    {
+        (new Internal\StageLog())->failed($txId, $stageKey, $errorMessage);
     }
 
     // ── CADENCE STATE — lets PushToGmailJob decide whether a client

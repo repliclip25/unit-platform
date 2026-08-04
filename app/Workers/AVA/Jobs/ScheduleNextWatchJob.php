@@ -80,6 +80,7 @@ class ScheduleNextWatchJob implements ShouldQueue
 
     public function failed(\Throwable $e): void
     {
+        UnitPlatform::stageFailed($this->txId, 'schedule_next_watch', $e->getMessage());
         UnitPlatform::log('ava', $this->txId, 'job_failed', ['job' => 'ScheduleNextWatchJob', 'error' => $e->getMessage()], 'error');
     }
 }

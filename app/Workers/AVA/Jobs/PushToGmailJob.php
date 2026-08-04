@@ -216,12 +216,12 @@ class PushToGmailJob implements ShouldQueue
     public function failed(\Throwable $e): void
     {
         if ($e instanceof \App\Platform\Exceptions\BillingException) {
-            UnitPlatform::setStatus($this->txId, 'blocked');
+            UnitPlatform::setStatus($this->txId, 'blocked', $e->getMessage());
             UnitPlatform::log('ava', $this->txId, 'billing_blocked', ['code' => $e->billingCode, 'reason' => $e->getMessage()], 'warning');
             $this->delete();
             return;
         }
-        UnitPlatform::setStatus($this->txId, 'failed');
+        UnitPlatform::setStatus($this->txId, 'failed', $e->getMessage());
         UnitPlatform::log('ava', $this->txId, 'job_failed', [
             'job' => 'PushToGmailJob', 'error' => $e->getMessage(),
         ], 'error');

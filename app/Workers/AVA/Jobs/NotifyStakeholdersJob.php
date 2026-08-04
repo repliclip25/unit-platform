@@ -83,6 +83,7 @@ class NotifyStakeholdersJob implements ShouldQueue
 
     public function failed(\Throwable $e): void
     {
+        UnitPlatform::stageFailed($this->txId, 'notify_stakeholders', $e->getMessage());
         UnitPlatform::log('ava', $this->txId, 'job_failed', ['job' => 'NotifyStakeholdersJob', 'error' => $e->getMessage()], 'error');
         UnitPlatform::advance($this->txId, 'notify_stakeholders');
     }

@@ -337,6 +337,7 @@ class ArchiveEvidenceJob implements ShouldQueue
 
     public function failed(\Throwable $e): void
     {
+        UnitPlatform::stageFailed($this->txId, 'archive_evidence', $e->getMessage());
         UnitPlatform::log('ava', $this->txId, 'job_failed', ['job' => 'ArchiveEvidenceJob', 'error' => $e->getMessage()], 'error');
         // Never block the loop closing over an archival failure — continue.
         UnitPlatform::advance($this->txId, 'archive_evidence');

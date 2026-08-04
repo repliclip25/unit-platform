@@ -133,6 +133,7 @@ class UpdateRenewalDateJob implements ShouldQueue
 
     public function failed(\Throwable $e): void
     {
+        UnitPlatform::stageFailed($this->txId, 'update_renewal_date', $e->getMessage());
         UnitPlatform::log('ava', $this->txId, 'job_failed', ['job' => 'UpdateRenewalDateJob', 'error' => $e->getMessage()], 'error');
     }
 }

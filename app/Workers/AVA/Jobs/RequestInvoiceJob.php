@@ -52,6 +52,7 @@ class RequestInvoiceJob implements ShouldQueue
 
     public function failed(\Throwable $e): void
     {
+        UnitPlatform::stageFailed($this->txId, 'request_invoice', $e->getMessage());
         UnitPlatform::log('ava', $this->txId, 'job_failed', ['job' => 'RequestInvoiceJob', 'error' => $e->getMessage()], 'error');
         UnitPlatform::advance($this->txId, 'request_invoice');
     }

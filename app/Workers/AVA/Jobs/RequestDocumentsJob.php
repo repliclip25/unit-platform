@@ -44,6 +44,7 @@ class RequestDocumentsJob implements ShouldQueue
 
     public function failed(\Throwable $e): void
     {
+        UnitPlatform::stageFailed($this->txId, 'request_documents', $e->getMessage());
         UnitPlatform::log('ava', $this->txId, 'job_failed', ['job' => 'RequestDocumentsJob', 'error' => $e->getMessage()], 'error');
         UnitPlatform::advance($this->txId, 'request_documents');
     }

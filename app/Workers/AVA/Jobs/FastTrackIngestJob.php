@@ -94,7 +94,7 @@ class FastTrackIngestJob implements ShouldQueue
 
     public function failed(\Throwable $e): void
     {
-        UnitPlatform::setStatus($this->txId, 'failed');
+        UnitPlatform::setStatus($this->txId, 'failed', $e->getMessage());
         UnitPlatform::log('ava', $this->txId, 'job_failed', [
             'job'   => 'FastTrackIngestJob',
             'error' => $e->getMessage(),
