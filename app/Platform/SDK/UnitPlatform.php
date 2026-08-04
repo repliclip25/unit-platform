@@ -677,13 +677,18 @@ final class UnitPlatform
     public static function getCadenceState(string $txId): array
     {
         $tx = DB::table('transactions')->where('tx_id', $txId)
-            ->select('human_decision', 'client_reminder_number', TransactionColumns::CADENCE_STOPPED)
+            ->select('deployment_id', 'human_decision', 'client_reminder_number', TransactionColumns::CADENCE_STOPPED)
             ->first();
 
+        $sendModeDirect = $tx?->deployment_id
+            ? DB::table('worker_deployments')->where('id', $tx->deployment_id)->value('send_mode') === 'direct'
+            : false;
+
         return [
-            'approvedOnce'   => $tx?->human_decision === 'approved',
-            'reminderNumber' => (int) ($tx?->client_reminder_number ?? 0),
-            'cadenceStopped' => (bool) ($tx?->{TransactionColumns::CADENCE_STOPPED} ?? false),
+            'approvedOnce'    => $tx?->human_decision === 'approved',
+            'reminderNumber'  => (int) ($tx?->client_reminder_number ?? 0),
+            'cadenceStopped'  => (bool) ($tx?->{TransactionColumns::CADENCE_STOPPED} ?? false),
+            'sendModeDirect'  => $sendModeDirect,
         ];
     }
 
@@ -852,13 +857,17 @@ final class UnitPlatform
 
         // Route to all active deployments whose worker blueprint subscribes to this event
         // Scoped to the same tenant (user_id) so events never cross tenant boundaries
-        $subscribers = DB::table('worker_deployments as wd')
-            ->join('workers as w', 'w.slug', '=', 'wd.worker_slug')
-            ->where('wd.user_id', $tx?->user_id)
-            ->where('wd.status', 'active')
-            ->whereRaw("JSON_CONTAINS(JSON_EXTRACT(w.blueprint, '$.subscribes'), ?)", ['"' . $event->name . '"'])
-            ->select('wd.id', 'wd.worker_slug')
-            ->get();
+        // JSON_CONTAINS/JSON_EXTRACT are MySQL-only — no subscriber routing under the
+        // SQLite test suite (nothing currently subscribes to any event in tests).
+        $subscribers = DB::getDriverName() === 'sqlite'
+            ? collect()
+            : DB::table('worker_deployments as wd')
+                ->join('workers as w', 'w.slug', '=', 'wd.worker_slug')
+                ->where('wd.user_id', $tx?->user_id)
+                ->where('wd.status', 'active')
+                ->whereRaw("JSON_CONTAINS(JSON_EXTRACT(w.blueprint, '$.subscribes'), ?)", ['"' . $event->name . '"'])
+                ->select('wd.id', 'wd.worker_slug')
+                ->get();
 
         $routedTo = [];
         foreach ($subscribers as $sub) {

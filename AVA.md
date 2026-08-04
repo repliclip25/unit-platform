@@ -39,7 +39,9 @@ Both synthetic paths call `AssetTransactionSynthesizer`, which builds `read`/`cl
 
 ## Pipeline (17 Stages)
 
-The pipeline has two halves: a fast synchronous **drafting chain** (stages 0–7, same job dispatches the next one), and a slower, event-driven **fulfillment continuation** (stages 8–16) that waits on human action and can span days or weeks.
+The pipeline has two halves: a fast synchronous **drafting chain** (stages 0–6, same job dispatches the next one), and a slower, event-driven **fulfillment continuation** (stages 7–16) that waits on human action and can span days or weeks.
+
+As of contract version 2.1, `human_decide` sits **before** `push_draft` — a human reviews the draft on the Transaction Center card itself and decides first; only then does AVA actually create the Gmail draft (or surface it in-app) and, if `send_mode = direct`, send it. This matches how a human coordinator actually works (write, review, then send) and means Reject never has anything to delete — nothing is created until after a decision. See the `2.1` entry in **Contract Versioning** below for the full reasoning and what moved.
 
 ```
 Gmail Pub/Sub Webhook  ─┐
@@ -58,12 +60,12 @@ Asset Expiry Watch      ─┘
         ↓
 [ 5] SelectTemplateJob        ← Score and pick best-match template
         ↓
-[ 6] DraftEmailJob            ← AI-personalized draft via Claude
-        ↓
-[ 7] PushToGmailJob           ← Create Gmail draft → status: draft_ready
+[ 6] DraftEmailJob            ← AI-personalized draft via Claude → status: draft_ready
         ↓
 ── FULFILLMENT (event-driven — waits on human action) ──
-[ 8] human_decide             ← HARD GATE. Approve & send / Approve & proceed / Reject
+[ 7] human_decide             ← HARD GATE. Approve & send / Approve & proceed / Reject — reviewed here, on this card
+        ↓
+[ 8] PushToGmailJob           ← Create Gmail draft (or surface in-app) → send immediately if send_mode = direct
         ↓
 [ 9] request_invoice          ← soft gate. Attach an invoice — never blocks the renewal
         ↓
@@ -81,6 +83,8 @@ Asset Expiry Watch      ─┘
         ↓
 [16] schedule_next_watch      ← Asset re-enters continuous monitoring
 ```
+
+Nudges (`ApprovalReminderJob`) are a separate, gate-watching daily cron — not a pipeline stage of their own. They watch `human_decide` directly (`fulfillment_stage = 'human_decide' AND human_decision IS NULL`) on a priority-scaled cadence, independent of stage order. The Transaction Center surfaces them as a small "N nudges sent" badge on the `human_decide` stage header rather than as a stage of their own.
 
 Transactions are queued on a named queue: `ava-{deployment_id}`
 
@@ -188,11 +192,11 @@ The Transaction Center shows a dashed "skipped — disabled in settings" tag on 
 
 ## Client Reminder Cadence & Human Decisions
 
-A real (non-Fast-Track) transaction can draft up to **3 client-facing reminder rounds** on a 30/15/0-day cadence, driven by `ClientReminderCycleJob` (daily at 8AM). `TransactionController::decide()` is where a human acts on each round:
+A real (non-Fast-Track) transaction can draft up to **3 client-facing reminder rounds** on a 30/15/0-day cadence, driven by `ClientReminderCycleJob` (daily at 8AM). Since 2.1, `DraftEmailJob` decides whether a round even needs a fresh decision — a first round always halts at `human_decide`; a round 2/3 redraft, once round 1 has been approved once, dispatches `PushToGmailJob` directly without asking again. `TransactionController::decide()` is where a human acts on a round that does reach the gate:
 
-- **Approve & send** — approves the current round. If it's not yet the final round (and `client_cadence` is on), the pipeline does *not* advance — it logs the approval and waits for `ClientReminderCycleJob` to draft and surface the next scheduled round. Only approving the 3rd round (or the only round, if `client_cadence` is off) unblocks fulfillment.
-- **Approve & proceed** — a second button, for when the tenant already closed the renewal with the client *outside* AVA (phone, WhatsApp, in person) and doesn't want to wait through the remaining rounds. Forces the current approval to be treated as final regardless of round number, sets `transactions.cadence_skipped = true`, and immediately advances into fulfillment. Deliberately skips the `send_mode = direct` auto-send path and later suppresses `NotifyCustomerJob`'s send too — nothing should go out over email for a deal already closed elsewhere. Logged as a distinct `human_decide_skip_cadence` event, and the Archive PDF notes it explicitly rather than silently looking like an incomplete 1-of-3 cadence.
-- **Reject** — records the decision, deletes the Gmail draft so it can't be sent accidentally. Never advances past `human_decide`.
+- **Approve & send** — approves the current round and dispatches `PushToGmailJob` to actually deliver it (create the Gmail draft, or surface in-app; send immediately if `send_mode = direct`). If it's not yet the final round (and `client_cadence` is on), fulfillment does *not* unblock — this round's draft still gets delivered, but the pipeline waits for `ClientReminderCycleJob` to draft and surface the next scheduled round. Only approving the 3rd round (or the only round, if `client_cadence` is off) unblocks fulfillment.
+- **Approve & proceed** — a second button, for when the tenant already closed the renewal with the client *outside* AVA (phone, WhatsApp, in person) and doesn't want to wait through the remaining rounds. Forces the current approval to be treated as final regardless of round number, sets `transactions.cadence_skipped = true`, and immediately advances into fulfillment *without ever creating a draft* — nothing should go out over email for a deal already closed elsewhere. Logged as a distinct `human_decide_skip_cadence` event, and the Archive PDF notes it explicitly rather than silently looking like an incomplete 1-of-3 cadence.
+- **Reject** — records the decision. Nothing is ever created before a decision (since 2.1), so there's nothing to delete. Never advances past `human_decide`.
 
 `send_mode` (`draft` default, or `direct`) is a per-deployment setting: `direct` means UNIT sends the approved draft immediately via Gmail instead of leaving it for the tenant to send themselves. Never applies to Fast Track, `skip_cadence` approvals, or when there's no draft/credential to send.
 
@@ -304,7 +308,7 @@ Used for Fast Track test runs — sets up the synthetic email payload before han
 | `templating` | `SelectTemplateJob` |
 | `drafting` | `DraftEmailJob` |
 
-**`billing()`** — `trial_transactions: 25`, `trial_days: 14`, `billing_unit: 'email'`, `unit_label: 'email processed'`.
+**`billing()`** — `trial_transactions: 25`, `trial_days: 30`, `billing_unit: 'email'`, `unit_label: 'email processed'`.
 
 **`defaultPlan()`** — `'starter'`.
 
@@ -332,6 +336,7 @@ Pro and Enterprise plans unlock per-deployment prompt overrides (see Per-Deploym
 
 | Version | Date | Summary |
 |---|---|---|
+| **2.1** | **2026-08-04** | **`human_decide` moved ahead of `push_draft`** — a human now reviews the draft on the Transaction Center card itself and decides *before* AVA creates anything in Gmail, matching how a coordinator actually works (write, review, then send). Reject no longer has anything to delete. Approve & proceed now means no draft is ever created, not just "created but left unsent." Nudges required zero changes — already fully decoupled from stage order. Breaking: any transaction in-flight at the old post-`push_draft` `human_decide` position should be canceled, not resumed. |
 | **2.0** | **2026-08-02** | **Version bump reflecting everything below** — the 8-stage drafting pipeline is now the front half of a full 17-stage renewal lifecycle, with two new no-email ingest paths, per-deployment gating, asset bundling, personas, and Approve & proceed. Breaking: `output_shape`/`pipeline()` structure changed past the old `draft_ready` terminal point, and new gate keys were introduced in `deployment_stage_settings`. **Not breaking for existing deployments in practice** — every new gate defaults "on" (matching pre-2.0 behavior) except `notify_customer`, which defaults off and must be opted into. See `versionChangelog()` for full upgrade notes. |
 | — | 2026-08-02 | Approve & proceed (skip remaining reminder cadence for deals closed outside AVA); NotifyCustomerJob respects it too |
 | — | 2026-08-02 | Fixed: Human Trigger / watch-synthesized transactions never set `transactions.category`/`.priority` — showed "Processing..." forever |
@@ -645,11 +650,13 @@ Rules:
 
 A bundle-aware note is appended to this prompt when `memory.line_items` is present, instructing Claude to acknowledge multiple services renewing together in prose without itemizing them individually — the itemized list is appended to the body separately.
 
+Since 2.1, this job also resolves `approval_required` (template flag, matched rule, or low-confidence match — any one is enough) and decides what happens next: no approval needed at all → dispatch `PushToGmailJob` immediately (auto-send, continue into fulfillment); cadence already approved once (round 2/3) → dispatch `PushToGmailJob` without asking again; otherwise → set status `draft_ready` and halt at `human_decide` for a genuine first decision. Fast Track is exempt from the no-approval-needed bypass — it always demonstrates the full human-decide flow.
+
 ---
 
-### Stage 7 — Push to Gmail
+### Stage 8 — Push to Gmail
 **Uses AI:** No
-Creates a Gmail draft via the Gmail API. Sets transaction status to `draft_ready`. The draft is deposited in the tenant's Gmail Drafts folder and waits for a human decision (see **Client Reminder Cadence & Human Decisions**).
+Creates a Gmail draft via the Gmail API (or surfaces it in-app if no inbox is connected). Runs *after* `human_decide` since 2.1 — dispatched by `DraftEmailJob` or `TransactionController::decide()` with explicit `autoSend`/`advanceAfter` flags, rather than deciding delivery/gating itself. Sends immediately if `autoSend` is true (no approval was needed, or `send_mode = direct`); otherwise the draft sits for the tenant to open and send themselves.
 
 ---
 
@@ -685,7 +692,7 @@ INVOICE TEXT:
 
 ---
 
-### Stages 8, 10–16 — Human Decide, Request Documents, Confirm Payment, Update Renewal Date, Notify Stakeholders, Notify Customer, Archive Evidence, Schedule Next Watch
+### Stages 7, 10–16 — Human Decide, Request Documents, Confirm Payment, Update Renewal Date, Notify Stakeholders, Notify Customer, Archive Evidence, Schedule Next Watch
 **Uses AI:** No
 
 These are the remaining fulfillment stages — none call an LLM. `human_decide` and `confirm_payment` are hard human gates; `request_documents` is a skippable branch; the rest (`update_renewal_date`, `notify_stakeholders`, `notify_customer`, `archive_evidence`, `schedule_next_watch`) are fully automated once their preceding gate clears. See **Pipeline (17 Stages)** and **Gating Architecture** above for what each does and how it's individually toggleable.

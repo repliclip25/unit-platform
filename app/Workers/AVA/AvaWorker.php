@@ -24,7 +24,7 @@ class AvaWorker implements WorkerContract
         return [
             'name'        => 'AVA Email Worker',
             'slug'        => 'ava',
-            'version'     => '2.0',
+            'version'     => '2.1',
             'description' => 'Monitors your Gmail inbox and asset registry, classifies renewal and subscription requests, drafts responses using your contacts, assets, and rules, and carries approved renewals through invoicing, payment confirmation, and a signed closeout archive.',
         ];
     }
@@ -214,15 +214,19 @@ class AvaWorker implements WorkerContract
                 'output_shape' => 'Professional email body addressed to the contact, referencing the asset and due date, signed by the tenant.',
                 'system' => 'You are Ava, a professional email coordinator. Return only the email body — no subject line, no JSON, no extra text.',
                 'user'   => "Write an email body using the template structure below.\n\nTemplate style: {TEMPLATE_NAME}\nTone: {TONE}\nTemplate body to follow:\n{BODY_TEMPLATE}\n\nFill in:\n- Contact first name: {FIRST_NAME}\n- Asset: {ASSET}\n- Client: {CLIENT}\n- Due date: {DUE_DATE}\n- Category: {CATEGORY}\n- Approval required: {APPROVAL_REQUIRED}\n- Sign as: {SENDER_NAME}\n\nRules:\n- Keep it concise\n- Do not promise work is done\n- Ask for approval when required\n- Return only the email body"],
-            ['key' => 'push_draft',     'label' => 'Push to Gmail',   'sub' => 'Create draft in inbox',          'icon' => 'send',     'job_class' => 'PushToGmailJob',
-                'output_column' => null,             'group' => 'delivered','group_label' => 'Delivered','group_color' => '#06b6d4', 'image' => '/images/ava-life.png', 'log_stage_key' => 'push'],
-
-            // ── Fulfillment (stages 9-16 of the renewal lifecycle) — a slower,
-            // event-driven continuation of the same transaction, not a fast
-            // synchronous chain like the stages above. `gate_type` classifies
-            // how each stage relates to human action, generically enough that
-            // any future worker can declare its own gates and get the same
-            // Transaction Center UI with no new UI code:
+            // ── human_decide moved ahead of push_draft (was after it, when
+            // AVA was 7-8 stages long and the tenant was expected to review
+            // the draft inside Gmail itself, not inside UNIT). The actual
+            // review surface has been inside UNIT for a while now (draft
+            // content renders directly on this card, Copy/mailto live
+            // here too) — reviewing before delivery matches how a human
+            // coordinator actually works (write, review, then send), and
+            // means Reject no longer needs to delete an already-created
+            // Gmail draft, since nothing's created until after a decision.
+            // `gate_type` classifies how each fulfillment stage relates to
+            // human action, generically enough that any future worker can
+            // declare its own gates and get the same Transaction Center UI
+            // with no new UI code:
             //   'hard'      — advance() halts here entirely. Nothing auto-
             //                 dispatches the next job until a human acts (via
             //                 TransactionController::decide()/confirmRenewal()/
@@ -239,6 +243,8 @@ class AvaWorker implements WorkerContract
             // delivered real value at the stages it did complete.
             ['key' => 'human_decide',   'label' => 'Approve & Send',  'sub' => 'You decide — AVA never sends without this', 'icon' => 'check', 'job_class' => null, 'gate_type' => 'hard',
                 'output_column' => null,             'group' => 'approved', 'group_label' => 'Approved', 'group_color' => '#F5C518', 'image' => '/images/ava-life.png', 'log_stage_key' => 'human_decide'],
+            ['key' => 'push_draft',     'label' => 'Push to Gmail',   'sub' => 'Create draft in inbox',          'icon' => 'send',     'job_class' => 'PushToGmailJob',
+                'output_column' => null,             'group' => 'delivered','group_label' => 'Delivered','group_color' => '#06b6d4', 'image' => '/images/ava-life.png', 'log_stage_key' => 'push'],
             ['key' => 'request_invoice',    'label' => 'Request Invoice',   'sub' => 'Attach one if you have it — never blocks the renewal', 'icon' => 'receipt', 'job_class' => 'RequestInvoiceJob', 'gate_type' => 'soft',
                 'output_column' => 'invoice_output',   'group' => 'fulfilled', 'group_label' => 'Fulfilled', 'group_color' => '#0ea5e9', 'image' => '/images/ava-life.png', 'log_stage_key' => 'request_invoice',
                 // The stage's own job (RequestInvoiceJob) never calls AI — this
@@ -744,6 +750,28 @@ class AvaWorker implements WorkerContract
                     . 'the pre-2.0 all-or-nothing behavior isn\'t what you want going forward.',
                     'Optional: use Asset Groups + renews_together if you bill or manage any assets as one '
                     . 'bundled service rather than tracking them independently.',
+                ],
+            ],
+            [
+                'version'  => '2.1',
+                'date'     => '2026-08-04',
+                'notes'    => 'human_decide moved ahead of push_draft. Was after it, when AVA was 7-8 stages long '
+                            . 'and the tenant reviewed drafts inside Gmail itself; UNIT has been the real review '
+                            . 'surface for a while (draft content, Copy, and mailto all render on the Transaction '
+                            . 'Center card), so reviewing before delivery now matches how a human coordinator '
+                            . 'actually works — write, review, then send. Reject no longer has anything to delete '
+                            . '(nothing is created until after a decision). Approve & proceed (skip_cadence) now '
+                            . 'means no draft is ever created, not just "created but left unsent." Nudges '
+                            . '(ApprovalReminderJob) were already fully decoupled from stage order and needed no '
+                            . 'changes.',
+                'breaking' => true,
+                'breaking_reason' => 'Stage order changed: human_decide now precedes push_draft in '
+                            . 'pipelineStages(). Any in-flight transaction paused at the old post-push_draft '
+                            . 'human_decide position should be canceled rather than resumed under the new order.',
+                'upgrade_steps' => [
+                    'Cancel any in-flight transactions currently paused at human_decide before deploying — '
+                    . 'they were queued under the old stage meaning and should not be resumed.',
+                    'No settings changes required — gate keys and toggles are unchanged, only their sequence.',
                 ],
             ],
         ];

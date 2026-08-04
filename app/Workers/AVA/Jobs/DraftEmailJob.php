@@ -101,7 +101,35 @@ class DraftEmailJob implements ShouldQueue
             }
         }
 
-        UnitPlatform::advance($this->txId, 'draft_email');
+        // human_decide now sits right after this stage (was after push_draft
+        // — see AvaWorker::pipelineStages()'s comment on why that moved).
+        // This job is the one that decides whether the gate should even
+        // halt: no approval needed at all, cadence already authorized by an
+        // earlier round, or a genuine first decision is required.
+        $cadence = UnitPlatform::getCadenceState($this->txId);
+
+        if (!$drafted['approvalRequired'] && !$input->isFastTrack()) {
+            // No human ever needs to see this — push immediately (auto-sends
+            // inside PushToGmailJob) and continue straight into fulfillment.
+            // Fast Track is exempt regardless of the computed value — it
+            // always demonstrates the full human-decide flow, never
+            // auto-sends to a real contact during a test run.
+            PushToGmailJob::dispatch($this->txId, autoSend: true, advanceAfter: true)->onQueue($input->queue);
+        } elseif ($cadence['approvedOnce']) {
+            // Cadence already authorized by round 1's approval — push this
+            // round without asking again. Only continue into fulfillment if
+            // this is the final round; earlier rounds deliver and wait for
+            // the next threshold (see ClientReminderCycleJob).
+            $isFinalRound = $cadence['reminderNumber'] >= 3;
+            PushToGmailJob::dispatch($this->txId, autoSend: $cadence['sendModeDirect'], advanceAfter: $isFinalRound)->onQueue($input->queue);
+        } else {
+            // Genuinely needs a first decision — mark ready for review (the
+            // status a human sees while it waits at the gate; PushToGmailJob
+            // no longer runs before a decision, so nothing sets this label
+            // otherwise now) and halt.
+            UnitPlatform::setStatus($this->txId, 'draft_ready');
+            UnitPlatform::advance($this->txId, 'draft_email');
+        }
     }
 
     /**
@@ -147,12 +175,22 @@ class DraftEmailJob implements ShouldQueue
             ? "⚠️ LOW CONFIDENCE MATCH ({$memory['confidence']}%). {$lowConfidenceWarning} Review carefully before sending."
             : 'Review before sending. No work has been confirmed or promised.';
 
+        // Relocated from PushToGmailJob — now that human_decide sits right
+        // after this stage instead of after push_draft, this job is the one
+        // that has to decide whether the gate should even halt. Any one of
+        // the three is enough to force human review; none can be overridden
+        // by the others.
+        $approvalRequired = (bool) ($template['approval_required'] ?? true)
+            || (bool) ($memory['rule_requires_approval'] ?? false)
+            || $lowConfidence;
+
         return [
-            'to'            => $memory['primary_contact_email'] ?? '',
-            'subject'       => $subject,
-            'body'          => $body,
-            'reviewNote'    => $reviewNote,
-            'lowConfidence' => $lowConfidence,
+            'to'               => $memory['primary_contact_email'] ?? '',
+            'subject'          => $subject,
+            'body'             => $body,
+            'reviewNote'       => $reviewNote,
+            'lowConfidence'    => $lowConfidence,
+            'approvalRequired' => $approvalRequired,
         ];
     }
 

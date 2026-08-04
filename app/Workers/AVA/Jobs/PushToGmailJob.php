@@ -20,7 +20,21 @@ class PushToGmailJob implements ShouldQueue
     public int $tries   = 3;
     public int $timeout = 60;
 
-    public function __construct(public string $txId) {}
+    /**
+     * @param autoSend      Send immediately after creating the draft — true
+     *                      when no approval was ever required (the old
+     *                      "structurally auto-send" case), or when a human
+     *                      already approved AND the deployment's send_mode
+     *                      is 'direct' (the old maybeSendDirect() case,
+     *                      absorbed here now that creation and sending are
+     *                      one step instead of two).
+     * @param advanceAfter  Continue the pipeline scan past this stage once
+     *                      delivery is done. False for a non-final cadence
+     *                      round — this round's draft still needs to reach
+     *                      the tenant, but fulfillment shouldn't start until
+     *                      the cadence actually finishes.
+     */
+    public function __construct(public string $txId, public bool $autoSend = false, public bool $advanceAfter = false) {}
 
     public function handle(): void
     {
@@ -41,21 +55,23 @@ class PushToGmailJob implements ShouldQueue
             return;
         }
 
-        $draftId  = null;
-        $autoSent = false;
+        $draftId = null;
 
         // No Gmail inbox connected for this deployment — e.g. a tenant who
         // only maintains their asset registry and never granted inbox access
         // (see AssetExpiryWatchJob). Surface the draft in-app for review
         // instead of attempting a Gmail API call with no credential.
         if (!$input->credential) {
+            // 'approved' not 'draft_ready' — this job never runs before a
+            // decision now (human_decide precedes push_draft), so it should
+            // never regress the status a decision already advanced to.
             UnitPlatform::commitOutput($this->txId, new WorkerOutput(
                 stage:  'push',
-                status: 'draft_ready',
+                status: 'approved',
                 data:   ['to' => $to, 'in_app_only' => true],
             ));
 
-            UnitPlatform::register($this->txId, ['status' => 'Draft Ready']);
+            UnitPlatform::register($this->txId, ['status' => 'Approved']);
 
             UnitPlatform::log('ava', $this->txId, 'draft_ready_in_app', [
                 'to' => $to, 'reason' => 'No Gmail credential connected',
@@ -64,14 +80,15 @@ class PushToGmailJob implements ShouldQueue
             // Credential fetched fresh by UnitPlatform — never from queue payload
             $gmail = new GmailService($input->credential);
 
-            // Fast track: create a draft only — never send to real contacts during testing
+            // Fast track: create a draft only — never send to real contacts
+            // during testing, regardless of $this->autoSend.
             $subject = '[Fast Track Test] ' . ($draft['subject'] ?? 'AVA Test');
             $body    = "⚡ Fast Track Test — no real email was sent.\n\nAVA drafted this reply for your review:\n\n" . ($draft['body'] ?? '');
             $draftId = $gmail->createDraft(to: $to, subject: $subject, body: $body);
 
             UnitPlatform::commitOutput($this->txId, new WorkerOutput(
                 stage:        'push',
-                status:       'draft_ready',
+                status:       'approved',
                 data:         ['gmail_draft_id' => $draftId, 'to' => $to, 'fast_track' => true],
                 gmailDraftId: $draftId,
             ));
@@ -83,25 +100,16 @@ class PushToGmailJob implements ShouldQueue
             // Credential fetched fresh by UnitPlatform — never from queue payload
             $gmail = new GmailService($input->credential);
 
-            $template = $input->stage('template');
-
-            // Hard gate: approval is required if ANY of these say so — the template,
-            // the specific rule MemoryLookupJob matched (its real DB value, not the AI's
-            // own claim), or a low-confidence memory match. Any one of them is enough to
-            // force human review; none of them can be overridden by the others.
-            $approvalRequired = (bool) ($template['approval_required'] ?? true)
-                || (bool) ($memory['rule_requires_approval'] ?? false)
-                || (bool) ($draft['low_confidence'] ?? false);
-
             $draftId = $gmail->createDraft(
                 to:      $to,
                 subject: $draft['subject'] ?? '',
                 body:    $draft['body']    ?? '',
             );
 
-            if (!$approvalRequired) {
-                // Auto-send: send immediately and mark as sent — no human review needed
-                $autoSent = true;
+            if ($this->autoSend) {
+                // Whether to send at all was already decided by the caller
+                // (DraftEmailJob or TransactionController::decide()) — this
+                // job only handles delivery, not whether it's warranted.
                 $gmail->sendDraft($draftId);
                 $gmail->deleteDraft($draftId); // clean up now-sent draft
 
@@ -118,15 +126,14 @@ class PushToGmailJob implements ShouldQueue
                     'to' => $to,
                 ]);
             } else {
-                // Hold for human review
                 UnitPlatform::commitOutput($this->txId, new WorkerOutput(
                     stage:        'push',
-                    status:       'draft_ready',
+                    status:       'approved',
                     data:         ['gmail_draft_id' => $draftId, 'to' => $to],
                     gmailDraftId: $draftId,
                 ));
 
-                UnitPlatform::register($this->txId, ['draft_id' => $draftId, 'status' => 'Draft Ready']);
+                UnitPlatform::register($this->txId, ['draft_id' => $draftId, 'status' => 'Approved']);
 
                 UnitPlatform::log('ava', $this->txId, 'draft_pushed_to_gmail', [
                     'gmail_draft_id' => $draftId, 'human_review_note' => $draft['human_review_note'] ?? null,
@@ -191,48 +198,17 @@ class PushToGmailJob implements ShouldQueue
         // while they're still engaged, reinforcing what just happened before they close the tab.
         UnitNotifier::maybeFirstRealRenewal($this->txId);
 
-        // Fast Track now runs the real fulfillment stages too (guarded
-        // per-job against real vendor/tenant emails and real asset writes)
-        // so a tenant can preview the full lifecycle end-to-end, not just
-        // the draft. It always lands here via the draft_ready branch above
-        // (never auto-sent), so this always stops at the human_decide pause
-        // point — TransactionController::decide() resumes it either way.
-        if ($autoSent) {
-            // Already decided structurally (no approval was required) —
-            // advance FROM the pause stage itself, skipping straight past
-            // it into fulfillment instead of stopping there.
-            UnitPlatform::advance($this->txId, 'human_decide');
-            return;
+        // Whether to continue into fulfillment now was already decided by
+        // whoever dispatched this job (DraftEmailJob for the no-approval-
+        // needed and cadence-auto-continue cases, TransactionController::
+        // decide() for a human's own approval) — this job only handles
+        // delivery, not pipeline sequencing decisions. false means a
+        // non-final cadence round: this round's draft still needed to
+        // reach the tenant, but fulfillment shouldn't start until the
+        // cadence actually finishes.
+        if ($this->advanceAfter) {
+            UnitPlatform::advance($this->txId, 'push_draft');
         }
-
-        // Client reminder cadence: approving round 1 authorizes the whole
-        // cadence, not just that message (see ClientReminderCycleJob's own
-        // docblock) — so a round 2/3 redraft reaching here should never
-        // make the tenant approve again. approvedOnce is true exactly when
-        // that first decision has already happened; ClientReminderCycleJob
-        // no longer resets it between rounds.
-        $cadence = UnitPlatform::getCadenceState($this->txId);
-
-        if ($cadence['approvedOnce'] && $cadence['reminderNumber'] > 1) {
-            if ($cadence['reminderNumber'] >= 3) {
-                // Final round redrafted and pushed — resume from the pause
-                // stage itself, same as the auto-sent path above, straight
-                // into fulfillment with no further click needed.
-                UnitPlatform::advance($this->txId, 'human_decide');
-            }
-            // Not yet the final round — nothing more to do. This round's
-            // draft is visible for the tenant to see; the next threshold
-            // (or the tenant stopping the cadence) is what moves this
-            // forward next, not another approval.
-            return;
-        }
-
-        // draft_ready (Gmail, in-app-only, or Fast Track) — advance FROM
-        // push_draft so it correctly stops AT the human_decide pause point,
-        // which marks fulfillment_stage for accurate display without
-        // dispatching anything. This is round 1's first-ever draft, or a
-        // deployment with client_cadence off treating this as the only round.
-        UnitPlatform::advance($this->txId, 'push_draft');
     }
 
     public function failed(\Throwable $e): void

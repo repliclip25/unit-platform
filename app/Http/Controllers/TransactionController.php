@@ -317,13 +317,9 @@ class TransactionController extends Controller
         $decision = $request->input('decision'); // 'approved' | 'rejected'
         $dep      = DB::table('worker_deployments')->where('id', $tx->deployment_id)->first();
 
-        $credential = $dep?->credential_id
-            ? DB::table('user_gmail_credentials')->where('id', $dep->credential_id)->first()
-            : null;
-
         $msg = $decision === 'rejected'
-            ? $this->rejectTransaction($tx, $credential, $txId, $request)
-            : $this->approveTransaction($tx, $dep, $credential, $txId, $request);
+            ? $this->rejectTransaction($tx, $txId, $request)
+            : $this->approveTransaction($tx, $dep, $txId, $request);
 
         // Approving/rejecting doesn't end the transaction's story — more
         // gates and cadence rounds can still follow. Stay on the Transaction
@@ -331,31 +327,21 @@ class TransactionController extends Controller
         return redirect()->route('app.transactions.show', ['slug' => $tx->worker_slug, 'txId' => $txId])->with('success', $msg);
     }
 
-    // ── Reject: delete the Gmail draft so it can't be sent accidentally ──
-    private function rejectTransaction(object $tx, ?object $credential, string $txId, Request $request): string
+    // human_decide now sits BEFORE push_draft (see AvaWorker::pipelineStages()'s
+    // comment on why that moved) — nothing is ever created in Gmail before a
+    // decision is made, so rejecting no longer means deleting anything.
+    private function rejectTransaction(object $tx, string $txId, Request $request): string
     {
-        if ($tx->gmail_draft_id) {
-            try {
-                if ($credential?->refresh_token) {
-                    $gmail = new \App\Platform\Services\Gmail\GmailService($credential);
-                    $gmail->deleteDraft($tx->gmail_draft_id);
-                }
-            } catch (\Throwable $e) {
-                Log::warning('Draft delete failed on reject', [
-                    'tx_id' => $txId, 'error' => $e->getMessage(),
-                ]);
-                // Non-fatal — decision is still recorded
-            }
-        }
-
         $this->recordDecision($txId, 'rejected', $request->input('notes'));
 
-        return "✗ {$txId} rejected — draft deleted.";
+        return "✗ {$txId} rejected — nothing was sent.";
     }
 
-    // ── Approve: draft stays in Gmail — tenant reviews and sends themselves,
-    // unless send_mode/skip_cadence say otherwise. Decision is recorded for
-    // memory enrichment and audit purposes regardless of what happens next.
+    // ── Approve: records the decision, then dispatches PushToGmailJob to
+    // actually deliver the draft (Gmail, or in-app if no inbox connected) —
+    // approval is what triggers delivery now, not the other way around.
+    // Decision is recorded for memory enrichment and audit purposes
+    // regardless of what happens next.
     //
     // Approval is what unblocks the fulfillment stages (invoice, documents,
     // payment confirmation, reschedule) — advance() stops at the
@@ -366,19 +352,38 @@ class TransactionController extends Controller
     // writes when the transaction is a test run.
     //
     // A real transaction's client draft is sent up to 3 times on the
-    // 30/15/0-day cadence (see ClientReminderCycleJob) — approving reminder
-    // 1 or 2 just sends that reminder and waits for the next scheduled one;
-    // only approving the 3rd (final) reminder actually unblocks fulfillment.
-    // Fast Track never simulates real calendar days, so it always treats its
-    // one draft as final. Approve & Proceed (skip_cadence) is the human
-    // override for "already closed this outside AVA" — see maybeSendDirect()
-    // and the skip_cadence branch below for what it changes.
-    private function approveTransaction(object $tx, ?object $dep, ?object $credential, string $txId, Request $request): string
+    // 30/15/0-day cadence (see ClientReminderCycleJob) — approving any round
+    // now delivers that round's draft (it has to reach the tenant either
+    // way), but only the 3rd (final) round's approval unblocks true
+    // fulfillment (invoice/payment). Fast Track never simulates real
+    // calendar days, so it always treats its one draft as final.
+    // Approve & Proceed (skip_cadence) is the human override for "already
+    // closed this outside AVA" — no draft is ever created for it at all,
+    // since nothing needs to go out over email for a deal closed elsewhere.
+    private function approveTransaction(object $tx, ?object $dep, string $txId, Request $request): string
     {
         $this->recordDecision($txId, 'approved', $request->input('notes'));
         \App\Platform\SDK\UnitPlatform::markLatestClientDraftApproved($txId);
 
         $skipCadence = (bool) $request->boolean('skip_cadence');
+
+        if ($skipCadence) {
+            // Persisted (not just logged) so NotifyCustomerJob — which may
+            // run much later, after invoice/documents/payment — can also
+            // skip its own client-facing send. A deal closed outside AVA
+            // shouldn't get an AVA-generated "your renewal is complete"
+            // email either, and no draft should ever be created for this
+            // round or any later one.
+            DB::table('transactions')->where('tx_id', $txId)->update([TransactionColumns::CADENCE_SKIPPED => true]);
+            \App\Platform\SDK\UnitPlatform::log('ava', $txId, 'human_decide_skip_cadence', [
+                'reason' => 'Closed outside AVA — remaining reminder rounds skipped',
+            ]);
+            // Resume the scan from AFTER push_draft — skips delivery
+            // entirely and goes straight into fulfillment.
+            \App\Platform\SDK\UnitPlatform::advance($txId, 'push_draft');
+
+            return "✓ {$txId} approved — remaining reminders skipped, moved straight to fulfillment.";
+        }
 
         // Message gate — "Send Reminders (3 cadence)" master switch on AVA
         // Settings. Off means every transaction behaves like Fast Track: the
@@ -386,78 +391,39 @@ class TransactionController extends Controller
         // tenant chose a single-shot draft from the start.
         $cadenceOn       = \App\Platform\SDK\UnitPlatform::gateEnabled($tx->deployment_id, 'client_cadence', true);
         $reminderNumber  = (int) $tx->client_reminder_number;
-        $isFinalReminder = $skipCadence || $tx->is_test || !$cadenceOn || $reminderNumber === 0 || $reminderNumber >= 3;
+        $isFinalReminder = $tx->is_test || !$cadenceOn || $reminderNumber === 0 || $reminderNumber >= 3;
 
-        if (!$isFinalReminder) {
-            \App\Platform\SDK\UnitPlatform::log('ava', $txId, 'client_reminder_approved', ['reminder_number' => $reminderNumber]);
-            return $this->approvedMessage($txId, $tx);
-        }
+        // send_mode = 'direct' — the tenant has opted for UNIT to send the
+        // moment they approve, instead of leaving the Gmail draft for them
+        // to open and send themselves (the 'draft' default). Same OAuth
+        // scope either way — gmail.compose already covers sending, not just
+        // drafting; this is a behavior toggle, not a permissions change.
+        // Never applies to Fast Track (no real recipient) — PushToGmailJob
+        // itself already exempts Fast Track from ever really sending.
+        $autoSend = !$tx->is_test && ($dep->send_mode ?? 'draft') === 'direct';
 
-        $autoSentDirect = $skipCadence ? false : $this->maybeSendDirect($tx, $dep, $credential, $txId);
+        \App\Workers\AVA\Jobs\PushToGmailJob::dispatch($txId, autoSend: $autoSend, advanceAfter: $isFinalReminder)
+            ->onQueue(\App\Platform\SDK\UnitPlatform::getInput($txId)->queue);
 
-        if ($skipCadence) {
-            // Persisted (not just logged) so NotifyCustomerJob — which may
-            // run much later, after invoice/documents/payment — can also
-            // skip its own client-facing send. A deal closed outside AVA
-            // shouldn't get an AVA-generated "your renewal is complete"
-            // email either, same reasoning as skipping direct-send above.
-            DB::table('transactions')->where('tx_id', $txId)->update([TransactionColumns::CADENCE_SKIPPED => true]);
-            \App\Platform\SDK\UnitPlatform::log('ava', $txId, 'human_decide_skip_cadence', [
-                'reminder_number' => $reminderNumber, 'reason' => 'Closed outside AVA — remaining reminder rounds skipped',
-            ]);
-        }
+        \App\Platform\SDK\UnitPlatform::log('ava', $txId, 'client_reminder_approved', ['reminder_number' => $reminderNumber, 'final' => $isFinalReminder]);
 
-        \App\Platform\SDK\UnitPlatform::advance($txId, 'human_decide');
-
-        if ($skipCadence) {
-            return "✓ {$txId} approved — remaining reminders skipped, moved straight to fulfillment.";
-        }
-
-        return $autoSentDirect ? "✓ {$txId} approved and sent." : $this->approvedMessage($txId, $tx);
+        return $autoSend ? "✓ {$txId} approved and sent." : $this->approvedMessage($txId);
     }
 
-    // PushToGmailJob skips the Gmail API entirely when no inbox is
-    // connected (in_app_only) — gmail_draft_id is the definitive signal for
-    // that on this row (no dedicated output_column exists for the push
-    // stage to persist in_app_only itself). Telling a tenant "draft is in
-    // your Gmail" when no Gmail was ever connected sends them to check an
-    // inbox that has nothing in it.
-    private function approvedMessage(string $txId, object $tx): string
+    // PushToGmailJob skips the Gmail API entirely when no inbox is connected
+    // (in_app_only) — checked here via the same credential resolution
+    // PushToGmailJob itself uses (UnitPlatform::getInput()'s fallback chain:
+    // explicit credential_id in raw_input → deployment's credential_id →
+    // any credential for this user), not a narrower deployment-only lookup,
+    // since the draft doesn't exist yet at this point to check gmail_draft_id
+    // against — delivery is dispatched, not synchronous, under this order.
+    private function approvedMessage(string $txId): string
     {
-        return $tx->gmail_draft_id
+        $credential = \App\Platform\SDK\UnitPlatform::getInput($txId)->credential;
+
+        return $credential?->refresh_token
             ? "✓ {$txId} approved — draft is in your Gmail, ready to review and send."
             : "✓ {$txId} approved — no Gmail connected, so copy the draft or open it in your email client below.";
-    }
-
-    // send_mode = 'direct' — the tenant has opted for UNIT to send the
-    // moment they approve, instead of leaving the Gmail draft for them to
-    // open and send themselves (the 'draft' default). Same OAuth scope
-    // either way — gmail.compose already covers sending, not just drafting;
-    // this is a behavior toggle, not a permissions change. Never applies to
-    // Fast Track (no real recipient) or when there's no draft/credential to
-    // send. The caller skips calling this entirely when skip_cadence fired
-    // (already closed outside AVA — an email going out now would be
-    // redundant or confusing), so this method doesn't need to know about it.
-    private function maybeSendDirect(object $tx, ?object $dep, ?object $credential, string $txId): bool
-    {
-        if (($dep->send_mode ?? 'draft') !== 'direct' || $tx->is_test || !$tx->gmail_draft_id || !$credential?->refresh_token) {
-            return false;
-        }
-
-        try {
-            $gmail = new \App\Platform\Services\Gmail\GmailService($credential);
-            $gmail->sendDraft($tx->gmail_draft_id);
-            DB::table('transactions')->where('tx_id', $txId)->update(['status' => 'sent', 'updated_at' => now()]);
-            \App\Platform\SDK\UnitPlatform::log('ava', $txId, 'draft_sent_direct', ['gmail_draft_id' => $tx->gmail_draft_id]);
-            return true;
-        } catch (\Throwable $e) {
-            Log::warning('Direct send failed on approve — draft left in Gmail', [
-                'tx_id' => $txId, 'error' => $e->getMessage(),
-            ]);
-            // Non-fatal — falls back to the normal draft-stays-in-Gmail
-            // outcome, same as if send_mode were 'draft'.
-            return false;
-        }
     }
 
     private function recordDecision(string $txId, string $decision, ?string $notes): void

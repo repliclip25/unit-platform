@@ -587,6 +587,12 @@ $statusColor = $statusColors[$tx->status] ?? ['bg'=>'var(--db-chip)','color'=>'v
             @if($stage['gate_type'] === 'hard')<span class="tc-stage-tag blocks">blocks renewal</span>@endif
             @if($stage['gate_type'] === 'soft')<span class="tc-stage-tag soft">optional · won't block</span>@endif
             @if($stage['gate_type'] === 'skippable')<span class="tc-stage-tag skippable">skippable</span>@endif
+            {{-- Nudges are a separate, gate-watching cron (ApprovalReminderJob) —
+                 not a pipeline stage of their own — so they're surfaced here as a
+                 small collapsed badge on the gate they watch, not as a stage. --}}
+            @if($stage['key'] === 'human_decide' && !empty($stage['reminders']))
+            <span class="tc-stage-tag soft" title="Sent because you hadn't decided yet — see below">{{ count($stage['reminders']) }} nudge{{ count($stage['reminders']) === 1 ? '' : 's' }} sent</span>
+            @endif
           </div>
 
           @if(!empty($stage['skipped_by_gate']))
