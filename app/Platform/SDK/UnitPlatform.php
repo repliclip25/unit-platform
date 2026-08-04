@@ -4,6 +4,7 @@ namespace App\Platform\SDK;
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use App\Platform\SDK\Columns\TransactionColumns;
 
 /**
  * The single gateway between a worker and the UNIT platform.
@@ -454,12 +455,16 @@ final class UnitPlatform
     //    anything still reading it directly. ────────────────────────────────
     public static function recordClientDraft(string $txId, string $to, string $subject, string $body, ?int $daysBeforeExpiry = null): int
     {
-        $tx     = DB::table('transactions')->where('tx_id', $txId)->first(['client_drafts']);
+        $tx     = DB::table('transactions')->where('tx_id', $txId)->first(['client_drafts', 'client_reminder_number']);
         $drafts = json_decode($tx->client_drafts ?? '[]', true) ?: [];
 
-        $reminderNumber = count($drafts) + 1;
+        // Counted off the column, not count($drafts) — a preview (see
+        // recordClientDraftPreview()) can already occupy a slot in the
+        // array for a round that hasn't really happened yet, so array
+        // length alone would overcount.
+        $reminderNumber = (int) $tx->client_reminder_number + 1;
 
-        $drafts[] = [
+        $entry = [
             'reminder_number'    => $reminderNumber,
             'days_before_expiry' => $daysBeforeExpiry,
             'to'                 => $to,
@@ -469,6 +474,18 @@ final class UnitPlatform
             'approved_at'        => null,
         ];
 
+        // A preview already generated for this exact round (see below) gets
+        // replaced in place with the real thing instead of duplicated.
+        $previewIdx = collect($drafts)->search(
+            fn($d) => ($d['reminder_number'] ?? null) === $reminderNumber && !empty($d['preview'])
+        );
+
+        if ($previewIdx !== false) {
+            $drafts[$previewIdx] = $entry;
+        } else {
+            $drafts[] = $entry;
+        }
+
         DB::table('transactions')->where('tx_id', $txId)->update([
             'client_drafts'           => json_encode($drafts, JSON_INVALID_UTF8_SUBSTITUTE),
             'client_reminder_number'  => $reminderNumber,
@@ -476,6 +493,43 @@ final class UnitPlatform
         ]);
 
         return $reminderNumber;
+    }
+
+    // ── CLIENT DRAFT PREVIEWS — generated once, upfront, alongside round 1
+    //    (see DraftEmailJob), so approving round 1 means approving a
+    //    realistic sense of the whole cadence, not a blank "not drafted
+    //    yet" placeholder for rounds 2/3. A preview is explicitly NOT what
+    //    gets sent later — ClientReminderCycleJob still regenerates each
+    //    round fresh against whatever's true when its real threshold hits,
+    //    via recordClientDraft() above, which replaces the preview in place.
+    public static function recordClientDraftPreview(string $txId, int $reminderNumber, ?int $daysBeforeExpiry, string $to, string $subject, string $body): void
+    {
+        $tx     = DB::table('transactions')->where('tx_id', $txId)->first(['client_drafts']);
+        $drafts = json_decode($tx->client_drafts ?? '[]', true) ?: [];
+
+        // Never overwrite a round that's already real (or already
+        // previewed) — this only ever fills a genuinely empty slot.
+        if (collect($drafts)->contains(fn($d) => ($d['reminder_number'] ?? null) === $reminderNumber)) {
+            return;
+        }
+
+        $drafts[] = [
+            'reminder_number'    => $reminderNumber,
+            'days_before_expiry' => $daysBeforeExpiry,
+            'to'                 => $to,
+            'subject'            => $subject,
+            'body'               => $body,
+            'drafted_at'         => now()->toISOString(),
+            'approved_at'        => null,
+            'preview'            => true,
+        ];
+
+        usort($drafts, fn($a, $b) => ($a['reminder_number'] ?? 0) <=> ($b['reminder_number'] ?? 0));
+
+        DB::table('transactions')->where('tx_id', $txId)->update([
+            'client_drafts' => json_encode($drafts, JSON_INVALID_UTF8_SUBSTITUTE),
+            'updated_at'    => now(),
+        ]);
     }
 
     // Marks the most recent client draft as approved — called from
@@ -613,6 +667,24 @@ final class UnitPlatform
             ->first();
 
         return $row ? (bool) $row->enabled : $default;
+    }
+
+    // ── CADENCE STATE — lets PushToGmailJob decide whether a client
+    // reminder round should auto-continue (already blanket-approved once)
+    // or halt and wait for the tenant's first decision, without querying
+    // DB directly (jobs may only reach the transactions table through
+    // UnitPlatform — see this class's own docblock).
+    public static function getCadenceState(string $txId): array
+    {
+        $tx = DB::table('transactions')->where('tx_id', $txId)
+            ->select('human_decision', 'client_reminder_number', TransactionColumns::CADENCE_STOPPED)
+            ->first();
+
+        return [
+            'approvedOnce'   => $tx?->human_decision === 'approved',
+            'reminderNumber' => (int) ($tx?->client_reminder_number ?? 0),
+            'cadenceStopped' => (bool) ($tx?->{TransactionColumns::CADENCE_STOPPED} ?? false),
+        ];
     }
 
     // ─────────────────────────────────────────────────────────────────────

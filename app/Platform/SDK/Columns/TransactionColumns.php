@@ -28,4 +28,13 @@ final class TransactionColumns
     // Written by NotifyCustomerJob, read by the Transaction Center and
     // ArchiveEvidenceJob's "sent" check.
     public const NOTIFY_CUSTOMER_OUTPUT = 'notify_customer_output';
+
+    // Set by TransactionController::stopCadence() — the tenant explicitly
+    // stopped the remaining client reminder rounds after already approving
+    // the cadence once. Read by ClientReminderCycleJob (skip this
+    // transaction) and ArchiveEvidenceJob (explain why the cadence is
+    // incomplete). Distinct from CADENCE_SKIPPED: skipped means "closed
+    // outside AVA, jump straight to fulfillment"; stopped means "just don't
+    // send any more reminders" — fulfillment isn't touched either way.
+    public const CADENCE_STOPPED = 'cadence_stopped';
 }

@@ -611,12 +611,14 @@ $statusColor = $statusColors[$tx->status] ?? ['bg'=>'var(--db-chip)','color'=>'v
               @endforeach
 
               @php
-                // A round is only "awaiting decision" if it's drafted and
-                // not yet approved — once the current round is approved,
-                // the pipeline is correctly waiting on the next scheduled
-                // cadence date (see ClientReminderCycleJob), not stuck.
-                $awaitingDecision = collect($stage['client_drafts'])
-                    ->contains(fn($c) => empty($c['placeholder']) && empty($c['approved_at']));
+                // Approving round 1 authorizes the whole cadence now, not
+                // just that message (see ClientReminderCycleJob /
+                // PushToGmailJob) — human_decision is set once and never
+                // reset between rounds, so it alone (not any individual
+                // draft's approved_at) is what "still needs a first
+                // decision" means. Rounds 2/3 legitimately never get their
+                // own approved_at anymore; that's expected, not stuck.
+                $awaitingDecision = empty($tx->human_decision);
               @endphp
               @if($stage['state'] === 'active' && $tx->status !== 'rejected')
                 @if($awaitingDecision)
@@ -631,24 +633,33 @@ $statusColor = $statusColors[$tx->status] ?? ['bg'=>'var(--db-chip)','color'=>'v
                 <div class="tc-btn-row">
                   <form method="POST" action="{{ route('app.transactions.decide', $tx->tx_id) }}" style="flex:1">
                     @csrf<input type="hidden" name="decision" value="approved">
-                    <button type="submit" class="tc-btn tc-btn-primary" style="width:100%">Approve &amp; send</button>
+                    <button type="submit" class="tc-btn tc-btn-primary" style="width:100%">Approve — continue this cadence</button>
                   </form>
                   <form method="POST" action="{{ route('app.transactions.decide', $tx->tx_id) }}" style="flex:1" onclick="return confirm('Reject and delete the Gmail draft?')">
                     @csrf<input type="hidden" name="decision" value="rejected">
                     <button type="submit" class="tc-btn tc-btn-ghost" style="width:100%">Reject</button>
                   </form>
                 </div>
+                <p style="font-size:11.5px;color:var(--db-text-muted);margin-top:6px">Approving once covers all 3 rounds — no need to come back and approve rounds 2 and 3 separately. You can stop the remaining reminders at any time.</p>
                 <form method="POST" action="{{ route('app.transactions.decide', $tx->tx_id) }}" style="margin-top:6px" onclick="return confirm('This skips the remaining reminder rounds and moves straight to fulfillment (invoice, documents, payment). Use this only if you already closed this renewal with the client outside AVA.\n\nContinue?')">
                   @csrf<input type="hidden" name="decision" value="approved"><input type="hidden" name="skip_cadence" value="1">
                   <button type="submit" class="td-link-underline" style="width:100%;text-align:center;padding:6px 0">Approve &amp; proceed <span style="opacity:.7">— already closed this outside AVA, skip remaining reminders</span></button>
                 </form>
+                @elseif($tx->cadence_skipped)
+                <p style="font-size:12px;color:var(--db-text-muted);margin-top:8px">
+                  ✓ Approved via "Approve &amp; proceed" — remaining reminders were skipped, moved straight to fulfillment.
+                </p>
+                @elseif($tx->cadence_stopped)
+                <p style="font-size:12px;color:var(--db-text-muted);margin-top:8px">
+                  ■ Remaining reminders stopped. The renewal itself is unaffected — this only stopped further client nudges.
+                </p>
                 @else
                 <p style="font-size:12px;color:var(--db-text-muted);margin-top:8px">
-                  ✓ Approved — waiting for the next scheduled reminder before this can advance further.
+                  ✓ Approved — this cadence continues automatically. Waiting for the next scheduled reminder.
                 </p>
-                <form method="POST" action="{{ route('app.transactions.decide', $tx->tx_id) }}" style="margin-top:6px" onclick="return confirm('This skips the remaining reminder rounds and moves straight to fulfillment (invoice, documents, payment). Use this only if you already closed this renewal with the client outside AVA.\n\nContinue?')">
-                  @csrf<input type="hidden" name="decision" value="approved"><input type="hidden" name="skip_cadence" value="1">
-                  <button type="submit" class="td-link-underline" style="width:100%;text-align:center;padding:6px 0">Approve &amp; proceed <span style="opacity:.7">— already closed this outside AVA, skip remaining reminders</span></button>
+                <form method="POST" action="{{ route('app.transactions.stop-cadence', $tx->tx_id) }}" style="margin-top:6px" onclick="return confirm('Stop sending the remaining reminders for this renewal? The renewal itself stays open — this only stops AVA from nudging the client further.\n\nContinue?')">
+                  @csrf
+                  <button type="submit" class="td-link-underline" style="width:100%;text-align:center;padding:6px 0">Stop remaining reminders</button>
                 </form>
                 @endif
               @endif

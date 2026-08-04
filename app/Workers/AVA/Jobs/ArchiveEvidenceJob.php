@@ -62,6 +62,13 @@ class ArchiveEvidenceJob implements ShouldQueue
         // table, so a platform_events query for this event never matched
         // and this banner never actually fired until now.
         $skippedCadence = (bool) $tx->cadence_skipped;
+        $stoppedCadence = (bool) $tx->cadence_stopped;
+
+        // Previews (rounds 2/3 generated upfront alongside round 1, see
+        // DraftEmailJob) never actually went anywhere — the archive is a
+        // record of what happened, not what was planned, so they're
+        // excluded here rather than misleadingly listed as sent drafts.
+        $clientDrafts = array_values(array_filter($clientDrafts, fn ($cd) => empty($cd['preview'])));
 
         $avaVersion = \App\Platform\Services\WorkerRegistry::resolveActive($input->workerSlug)->identity()['version'] ?? '—';
 
@@ -110,6 +117,8 @@ class ArchiveEvidenceJob implements ShouldQueue
         $html .= '<h2>1. Renewal drafts sent to client</h2>';
         if ($skippedCadence) {
             $html .= '<p style="color:#b45309;font-size:13px;margin-bottom:10px">⚠ Approved via "Approve &amp; proceed" — the tenant confirmed this renewal was already closed with the client outside AVA, and the remaining reminder rounds below were deliberately skipped rather than sent.</p>';
+        } elseif ($stoppedCadence) {
+            $html .= '<p style="color:#b45309;font-size:13px;margin-bottom:10px">⚠ The tenant stopped the remaining reminder rounds after this point — the renewal itself was not affected, AVA was just told to stop nudging the client about it.</p>';
         }
         if ($clientDrafts) {
             foreach ($clientDrafts as $cd) {

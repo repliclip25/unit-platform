@@ -30,12 +30,12 @@ class DraftEmailJob implements ShouldQueue
 
     public function handle(ClaudeService $claude): void
     {
-        $input    = UnitPlatform::getInput($this->txId);
+        $input        = UnitPlatform::getInput($this->txId);
         $claude->configure($input->modelFor('draft'), $input->userId, $input->workerSlug);
-        $memory   = $input->stage('memory');
-        $classify = $input->stage('classify');
-        $template = $input->stage('template');
-        $read     = $input->stage('read');
+        $memory       = $input->stage('memory');
+        $classify     = $input->stage('classify');
+        $baseTemplate = $input->stage('template');
+        $read         = $input->stage('read');
 
         // Rounds 2/3 (dispatched by ClientReminderCycleJob with the next
         // cadence threshold) re-resolve the template instead of reusing
@@ -46,14 +46,80 @@ class DraftEmailJob implements ShouldQueue
             0       => 3,
             default => 1,
         };
+
+        UnitPlatform::setStatus($this->txId, 'drafting');
+
+        $drafted = $this->draftForRound($roundNumber, $claude, $input, $memory, $classify, $read, $baseTemplate);
+
+        $output = [
+            'to'                 => $drafted['to'],
+            'subject'            => $drafted['subject'],
+            'body'               => $drafted['body'],
+            'human_review_note'  => $drafted['reviewNote'],
+            'gmail_draft_action' => 'Create Gmail draft only',
+            'low_confidence'     => $drafted['lowConfidence'],
+        ];
+
+        UnitPlatform::commitOutput($this->txId, new WorkerOutput(
+            stage:  'draft',
+            status: 'drafting',
+            data:   $output,
+        ));
+
+        // Full history of every client-facing reminder drafted for this
+        // transaction — up to 3, on the 30/15/0-day cadence. draft_output
+        // above stays as "most recent" for anything still reading it directly.
+        $reminderNumber = UnitPlatform::recordClientDraft(
+            $this->txId, $output['to'], $output['subject'], $output['body'], $this->daysBeforeExpiry
+        );
+
+        UnitPlatform::log('ava', $this->txId, 'draft_created', [
+            'to'              => $output['to'],
+            'subject'         => $output['subject'],
+            'low_confidence'  => $drafted['lowConfidence'],
+            'reminder_number' => $reminderNumber,
+        ]);
+
+        // Round 1's first-ever draft — approving it now authorizes the
+        // whole cadence (see ClientReminderCycleJob / PushToGmailJob), so
+        // generate rounds 2 and 3 as previews right now too, using what's
+        // known today. Not what actually gets sent later — each round
+        // still regenerates fresh against real conditions when its real
+        // threshold hits (recordClientDraft() replaces the preview in
+        // place). Skipped for Fast Track (no real calendar days to preview
+        // against) and when client_cadence is off (round 1 is the only
+        // round, there's nothing to preview).
+        if ($roundNumber === 1
+            && !$input->isFastTrack()
+            && UnitPlatform::gateEnabled($input->deploymentId, 'client_cadence', true)
+        ) {
+            foreach ([2 => 15, 3 => 0] as $previewRound => $previewThreshold) {
+                $preview = $this->draftForRound($previewRound, $claude, $input, $memory, $classify, $read, $baseTemplate);
+                UnitPlatform::recordClientDraftPreview(
+                    $this->txId, $previewRound, $previewThreshold, $preview['to'], $preview['subject'], $preview['body']
+                );
+            }
+        }
+
+        UnitPlatform::advance($this->txId, 'draft_email');
+    }
+
+    /**
+     * Drafts one round's subject/body — round 1's real draft, a later
+     * round's real redraft (dispatched by ClientReminderCycleJob), or a
+     * round 2/3 preview generated alongside round 1. Same logic either
+     * way; the caller decides what to do with the result (commit as real
+     * output, or store as a preview).
+     */
+    private function draftForRound(int $roundNumber, ClaudeService $claude, \App\Platform\SDK\WorkerInput $input, array $memory, array $classify, array $read, array $baseTemplate): array
+    {
+        $template = $baseTemplate;
         if ($roundNumber > 1) {
             $roundTemplate = \App\Platform\Services\TemplateResolver::resolve(
                 $classify['category'] ?? 'Other', $input->memory['templates'], $input->memory['templates_default'], $roundNumber
             );
             if ($roundTemplate) $template = $roundTemplate;
         }
-
-        UnitPlatform::setStatus($this->txId, 'drafting');
 
         $lowConfidence        = !empty($memory['low_confidence_warning']);
         $lowConfidenceWarning = $memory['low_confidence_warning'] ?? null;
@@ -81,36 +147,13 @@ class DraftEmailJob implements ShouldQueue
             ? "⚠️ LOW CONFIDENCE MATCH ({$memory['confidence']}%). {$lowConfidenceWarning} Review carefully before sending."
             : 'Review before sending. No work has been confirmed or promised.';
 
-        $output = [
-            'to'                 => $memory['primary_contact_email'] ?? '',
-            'subject'            => $subject,
-            'body'               => $body,
-            'human_review_note'  => $reviewNote,
-            'gmail_draft_action' => 'Create Gmail draft only',
-            'low_confidence'     => $lowConfidence,
+        return [
+            'to'            => $memory['primary_contact_email'] ?? '',
+            'subject'       => $subject,
+            'body'          => $body,
+            'reviewNote'    => $reviewNote,
+            'lowConfidence' => $lowConfidence,
         ];
-
-        UnitPlatform::commitOutput($this->txId, new WorkerOutput(
-            stage:  'draft',
-            status: 'drafting',
-            data:   $output,
-        ));
-
-        // Full history of every client-facing reminder drafted for this
-        // transaction — up to 3, on the 30/15/0-day cadence. draft_output
-        // above stays as "most recent" for anything still reading it directly.
-        $reminderNumber = UnitPlatform::recordClientDraft(
-            $this->txId, $output['to'], $output['subject'], $output['body'], $this->daysBeforeExpiry
-        );
-
-        UnitPlatform::log('ava', $this->txId, 'draft_created', [
-            'to'              => $output['to'],
-            'subject'         => $output['subject'],
-            'low_confidence'  => $lowConfidence,
-            'reminder_number' => $reminderNumber,
-        ]);
-
-        UnitPlatform::advance($this->txId, 'draft_email');
     }
 
     private function fillPlaceholders(string $tpl, array $memory, array $read, string $firstName): string

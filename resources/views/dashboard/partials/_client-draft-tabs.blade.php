@@ -15,7 +15,7 @@
 <div class="tc-draft-tabs">
   @foreach($clientDrafts as $idx => $cd)
   <button type="button"
-    class="tc-draft-tab {{ !empty($cd['approved_at']) ? 'consumed' : '' }} {{ !empty($cd['placeholder']) ? 'upcoming' : '' }} {{ $idx === $defaultIdx ? 'active' : '' }}"
+    class="tc-draft-tab {{ !empty($cd['approved_at']) ? 'consumed' : '' }} {{ !empty($cd['placeholder']) ? 'upcoming' : '' }} {{ !empty($cd['preview']) ? 'upcoming' : '' }} {{ $idx === $defaultIdx ? 'active' : '' }}"
     onclick="document.querySelectorAll('#{{ $wrapId }} .tc-draft-pane').forEach(function(el){el.style.display='none'});
              document.getElementById('{{ $wrapId }}-{{ $idx }}').style.display='block';
              this.parentElement.querySelectorAll('.tc-draft-tab').forEach(function(el){el.classList.remove('active')});
@@ -38,17 +38,24 @@
     <div class="tc-msg-meta">
       <strong>{{ ['1st','2nd','3rd'][($cd['reminder_number'] ?? 1) - 1] ?? ($cd['reminder_number'] . 'th') }} reminder</strong>
       @if(!empty($cd['days_before_expiry']))· {{ $cd['days_before_expiry'] }} days before expiry @endif
-      @if(!empty($cd['approved_at']))· approved {{ \Carbon\Carbon::parse($cd['approved_at'])->format('M j, g:i A') }} — consumed @else · drafted, not yet approved @endif
+      @if(!empty($cd['preview']))
+        · preview — approving round 1 authorizes this cadence; the real message is regenerated closer to the date, so wording may shift
+      @elseif(!empty($cd['approved_at']))
+        · approved {{ \Carbon\Carbon::parse($cd['approved_at'])->format('M j, g:i A') }} — consumed
+      @else
+        · drafted, not yet approved
+      @endif
     </div>
     <div class="tc-msg"><strong>{{ $cd['subject'] ?? '' }}</strong>{{ "\n\n" }}{{ $cd['body'] ?? '' }}</div>
 
-    {{-- No Gmail connected for this deployment — PushToGmailJob skips the
-         API call entirely and this draft only ever exists in UNIT (see
-         its own docblock, 'in_app_only'). The tenant still needs a way to
-         actually send it: copy the text, or hand off to whatever email
+    {{-- A preview isn't real yet — nothing to copy or send. No Gmail
+         connected for this deployment — PushToGmailJob skips the API call
+         entirely and this draft only ever exists in UNIT (see its own
+         docblock, 'in_app_only'). The tenant still needs a way to actually
+         send a REAL draft: copy the text, or hand off to whatever email
          client is already configured on their device via mailto:, neither
          of which needs any Gmail connection at all. --}}
-    @if(!$tx->gmail_draft_id)
+    @if(empty($cd['preview']) && !$tx->gmail_draft_id)
     <div style="display:flex;gap:8px;margin-top:8px">
       <button type="button" class="tc-btn tc-btn-ghost" style="width:auto;display:inline-flex;align-items:center;gap:6px;padding:6px 12px"
         onclick="navigator.clipboard.writeText({{ \Illuminate\Support\Js::from(($cd['subject'] ?? '') . "\n\n" . ($cd['body'] ?? '')) }}); var el=this.querySelector('.tc-copy-label'); var prev=el.textContent; el.textContent='Copied'; setTimeout(function(){el.textContent=prev}, 1500)">

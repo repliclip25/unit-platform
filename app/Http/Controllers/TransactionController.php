@@ -627,6 +627,25 @@ class TransactionController extends Controller
         return back()->with('success', "▶ {$txId} — reminders resumed.");
     }
 
+    // Approving round 1 authorizes the whole 30/15/0-day cadence, not just
+    // that one message (see ClientReminderCycleJob/PushToGmailJob) — this
+    // is the off-switch. Available at any point after that approval, distinct
+    // from Reject: rejecting deletes the draft and blocks fulfillment
+    // entirely, this only stops further reminders. Fulfillment (invoice,
+    // payment, etc.) is untouched — the renewal itself is still open, AVA
+    // just stops nudging the client about it.
+    public function stopCadence(string $txId)
+    {
+        DB::table('transactions')->where('tx_id', $txId)->where('user_id', auth()->id())->firstOrFail();
+        DB::table('transactions')->where('tx_id', $txId)->update([
+            TransactionColumns::CADENCE_STOPPED => true,
+            'updated_at'                        => now(),
+        ]);
+        \App\Platform\SDK\UnitPlatform::log('ava', $txId, 'client_reminder_cadence_stopped', ['stopped_by' => auth()->id()]);
+
+        return back()->with('success', "■ {$txId} — remaining reminders stopped.");
+    }
+
     public function downloadArchive(string $txId)
     {
         $tx = DB::table('transactions')->where('tx_id', $txId)->where('user_id', auth()->id())->firstOrFail();

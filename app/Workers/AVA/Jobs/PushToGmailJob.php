@@ -202,13 +202,37 @@ class PushToGmailJob implements ShouldQueue
             // advance FROM the pause stage itself, skipping straight past
             // it into fulfillment instead of stopping there.
             UnitPlatform::advance($this->txId, 'human_decide');
-        } else {
-            // draft_ready (Gmail, in-app-only, or Fast Track) — advance FROM
-            // push_draft so it correctly stops AT the human_decide pause
-            // point, which marks fulfillment_stage for accurate display
-            // without dispatching anything.
-            UnitPlatform::advance($this->txId, 'push_draft');
+            return;
         }
+
+        // Client reminder cadence: approving round 1 authorizes the whole
+        // cadence, not just that message (see ClientReminderCycleJob's own
+        // docblock) — so a round 2/3 redraft reaching here should never
+        // make the tenant approve again. approvedOnce is true exactly when
+        // that first decision has already happened; ClientReminderCycleJob
+        // no longer resets it between rounds.
+        $cadence = UnitPlatform::getCadenceState($this->txId);
+
+        if ($cadence['approvedOnce'] && $cadence['reminderNumber'] > 1) {
+            if ($cadence['reminderNumber'] >= 3) {
+                // Final round redrafted and pushed — resume from the pause
+                // stage itself, same as the auto-sent path above, straight
+                // into fulfillment with no further click needed.
+                UnitPlatform::advance($this->txId, 'human_decide');
+            }
+            // Not yet the final round — nothing more to do. This round's
+            // draft is visible for the tenant to see; the next threshold
+            // (or the tenant stopping the cadence) is what moves this
+            // forward next, not another approval.
+            return;
+        }
+
+        // draft_ready (Gmail, in-app-only, or Fast Track) — advance FROM
+        // push_draft so it correctly stops AT the human_decide pause point,
+        // which marks fulfillment_stage for accurate display without
+        // dispatching anything. This is round 1's first-ever draft, or a
+        // deployment with client_cadence off treating this as the only round.
+        UnitPlatform::advance($this->txId, 'push_draft');
     }
 
     public function failed(\Throwable $e): void

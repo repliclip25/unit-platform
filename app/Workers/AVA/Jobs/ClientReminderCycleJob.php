@@ -3,6 +3,7 @@
 namespace App\Workers\AVA\Jobs;
 
 use App\Platform\SDK\UnitPlatform;
+use App\Platform\SDK\Columns\TransactionColumns;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -13,13 +14,15 @@ use Illuminate\Support\Facades\DB;
 /**
  * Runs daily per active AVA deployment. The client-facing renewal draft is
  * sent up to 3 times on a real calendar cadence — 30, 15, and 0 days before
- * the asset expires — not once. This job watches transactions that have
- * approved their current reminder and are waiting on the next threshold;
- * once the asset's renewal_date crosses it, re-drafts (DraftEmailJob,
- * reused as-is) and reopens the Approve & Send gate for that next round.
- * Fast Track never reaches here — it always treats its one draft as final
- * (see TransactionController::decide()), since it doesn't simulate real
- * calendar days.
+ * the asset expires — not once. Approving round 1 authorizes the whole
+ * cadence, not just that one message — this job watches every transaction
+ * that's been approved once and is waiting on the next threshold; once the
+ * asset's renewal_date crosses it, re-drafts (DraftEmailJob, reused as-is)
+ * and lets PushToGmailJob decide whether to continue automatically or halt
+ * (see that job's own docblock — it checks human_decision itself, this job
+ * no longer resets it). Fast Track never reaches here — it always treats
+ * its one draft as final (see TransactionController::decide()), since it
+ * doesn't simulate real calendar days.
  */
 class ClientReminderCycleJob implements ShouldQueue
 {
@@ -51,6 +54,7 @@ class ClientReminderCycleJob implements ShouldQueue
             ->where('deployment_id', $this->deploymentId)
             ->where('fulfillment_stage', 'human_decide')
             ->where('human_decision', 'approved')
+            ->where(TransactionColumns::CADENCE_STOPPED, false)
             ->where('is_test', false)
             ->whereIn('client_reminder_number', [1, 2])
             ->get();
@@ -70,15 +74,15 @@ class ClientReminderCycleJob implements ShouldQueue
             $daysLeft = (int) now()->startOfDay()->diffInDays(\Carbon\Carbon::parse($asset->renewal_date)->startOfDay(), false);
             if ($daysLeft > $nextThreshold) continue; // not time yet
 
-            // Reopen the gate for a fresh round — reset to draft_ready so it
-            // looks and behaves exactly like a transaction awaiting its
-            // first decision, then let the normal pipeline machinery
-            // (DraftEmailJob -> advance -> PushToGmailJob -> advance) redraft
-            // and re-halt at human_decide on its own.
+            // human_decision stays 'approved' — that one decision authorizes
+            // the whole cadence now, not just this round. status is still
+            // reset so this round's redraft looks fresh while it's in
+            // flight; PushToGmailJob (not this job) decides afterward
+            // whether to auto-continue or, for the final round, resume
+            // advance() into fulfillment.
             DB::table('transactions')->where('id', $tx->id)->update([
-                'status'         => 'draft_ready',
-                'human_decision' => null,
-                'updated_at'     => now(),
+                'status'     => 'draft_ready',
+                'updated_at' => now(),
             ]);
 
             $queue = UnitPlatform::getInput($tx->tx_id)->queue;
