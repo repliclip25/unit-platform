@@ -139,7 +139,10 @@ class ArchiveEvidenceJob implements ShouldQueue
         // section (last round's approval, or its draft time if never
         // approved) — blank if this is old data with no client_drafts at all.
         $lastDraft = $clientDrafts ? end($clientDrafts) : null;
-        $html .= $sectionTitle('1. Renewal drafts sent to client', $lastDraft['approved_at'] ?? $lastDraft['drafted_at'] ?? UnitPlatform::stageCompletedAt($this->txId, 'draft_email'));
+        // Note: transaction_stage_log stores each job's own short internal
+        // alias, not the pipelineStages() key — DraftEmailJob logs itself as
+        // 'draft', not 'draft_email' (see that stage's log_stage_key).
+        $html .= $sectionTitle('1. Renewal drafts sent to client', $lastDraft['approved_at'] ?? $lastDraft['drafted_at'] ?? UnitPlatform::stageCompletedAt($this->txId, 'draft'));
         if ($skippedCadence) {
             $html .= '<p style="color:#b45309;font-size:13px;margin-bottom:10px">⚠ Approved via "Approve &amp; proceed" — the tenant confirmed this renewal was already closed with the client outside AVA, and the remaining reminder rounds below were deliberately skipped rather than sent.</p>';
         } elseif ($stoppedCadence) {

@@ -581,7 +581,15 @@ $statusColor = $statusColors[$tx->status] ?? ['bg'=>'var(--db-chip)','color'=>'v
             </span>
             <div style="min-width:0">
               <div class="tc-stage-label">{{ $stage['label'] }}</div>
-              @if($stage['state'] !== 'done')<div class="tc-stage-sub">{{ $stage['sub'] }}</div>@endif
+              @if($stage['state'] !== 'done')
+              <div class="tc-stage-sub">{{ $stage['sub'] }}</div>
+              @elseif(!empty($stage['completed_at']))
+              {{-- Reuses the sub-label's space, which otherwise goes blank
+                   once a stage is done — sourced from transaction_stage_log
+                   (see UnitPlatform::stageCompletedAt()), the same universal
+                   completion log the archive PDF's timestamps read from. --}}
+              <div class="tc-stage-sub" title="{{ \Carbon\Carbon::parse($stage['completed_at'])->format('M j, Y \a\t g:i A') }}">completed {{ \Carbon\Carbon::parse($stage['completed_at'])->diffForHumans() }}</div>
+              @endif
             </div>
             @if(!empty($stage['skipped_by_gate']))<span class="tc-stage-tag skipped">skipped — disabled in settings</span>@endif
             @if($stage['gate_type'] === 'hard')<span class="tc-stage-tag blocks">blocks renewal</span>@endif
