@@ -36,6 +36,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'referred_by_code',
         'onboarding_completed_at',
         'onboarding_skipped',
+        'presale_worker',
     ];
 
     /**
@@ -71,5 +72,10 @@ class User extends Authenticatable implements MustVerifyEmail
     public function isAdmin(): bool
     {
         return $this->role === 'admin';
+    }
+
+    public function isPresale(): bool
+    {
+        return !empty($this->presale_worker);
     }
 }

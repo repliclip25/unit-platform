@@ -82,6 +82,12 @@ return [
         'admin_email'   => env('UNIT_ADMIN_EMAIL', 'hello@unit.report'),
     ],
 
+    'google_drive' => [
+        'client_id'     => env('GMAIL_CLIENT_ID'),
+        'client_secret' => env('GMAIL_CLIENT_SECRET'),
+        'redirect_uri'  => env('GDRIVE_REDIRECT_URI'),
+    ],
+
     'gmail' => [
         'client_id'            => env('GMAIL_CLIENT_ID'),
         'client_secret'        => env('GMAIL_CLIENT_SECRET'),

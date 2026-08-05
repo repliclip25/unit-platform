@@ -12,6 +12,10 @@ class DashboardController extends Controller
 {
     public function index()
     {
+        if (auth()->user()->isPresale()) {
+            return redirect()->route('presale.dashboard');
+        }
+
         $userId = auth()->id();
 
         // ── Raw pipeline counts (fed into DeskService context) ────────────────

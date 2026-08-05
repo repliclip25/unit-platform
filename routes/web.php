@@ -589,4 +589,20 @@ Route::middleware(['auth', 'verified'])->prefix('hire/ava')->name('hire.ava.')->
     Route::post('/onshift/run', [\App\Http\Controllers\OnboardingController::class, 'runAvaOnShift'])->name('onshift.run');
 });
 
+// ── Presale: brand-video worker (not yet built) — signup + Brand Memory bundle ──
+Route::middleware('guest')->group(function () {
+    Route::get('/presale/signup',  [\App\Http\Controllers\PresaleController::class, 'create'])->name('presale.signup');
+    Route::post('/presale/signup', [\App\Http\Controllers\PresaleController::class, 'store'])->name('presale.signup.store');
+});
+
+// Deliberately NOT in the 'onboarded' group above — same reasoning as the
+// hire/ava group: these accounts skip platform verification and the AVA wizard.
+Route::middleware(['auth', 'verified'])->prefix('presale')->name('presale.')->group(function () {
+    Route::get('/dashboard',         [\App\Http\Controllers\PresaleController::class, 'dashboard'])->name('dashboard');
+    Route::post('/dashboard/profile',[\App\Http\Controllers\PresaleController::class, 'saveProfile'])->name('profile.save');
+    Route::get('/drive/authorize',   [\App\Http\Controllers\PresaleDriveController::class, 'authorize'])->name('drive.authorize');
+    Route::get('/drive/callback',    [\App\Http\Controllers\PresaleDriveController::class, 'callback'])->name('drive.callback');
+    Route::post('/drive/upload',     [\App\Http\Controllers\PresaleDriveController::class, 'upload'])->name('drive.upload');
+});
+
 require __DIR__.'/auth.php';
