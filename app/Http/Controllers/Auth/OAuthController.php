@@ -69,6 +69,15 @@ class OAuthController extends Controller
             }
         }
 
+        // Worker intent set by redirect() before the OAuth round-trip (e.g.
+        // /register?worker=brand-video -> Continue with Google). Presale-stage
+        // workers (not yet built, collecting early signups) need this at
+        // creation time to branch the account correctly — same check
+        // RegisteredUserController uses for the email/password path.
+        $workerIntent = session('oauth_worker_intent');
+        session()->forget('oauth_worker_intent');
+        $isPresale = \App\Http\Controllers\PresaleController::isPresaleWorker($workerIntent);
+
         // 3. New user — register them
         $isNewUser = false;
         if (!$user) {
@@ -78,17 +87,23 @@ class OAuthController extends Controller
 
             $isNewUser = true;
             $user = User::create([
-                'name'              => $name,
-                'email'             => $email,
-                'password'          => Hash::make(Str::random(32)), // OAuth users — random unguessable placeholder
-                'email_verified_at' => now(), // OAuth = email already verified
-                'referral_code'     => ReferralService::generateCode(0, $email),
-                $idColumn           => $socialId,
-                'avatar'            => $social->getAvatar(),
+                'name'                    => $name,
+                'email'                   => $email,
+                'password'                => Hash::make(Str::random(32)), // OAuth users — random unguessable placeholder
+                'email_verified_at'       => now(), // OAuth = email already verified
+                'referral_code'           => ReferralService::generateCode(0, $email),
+                $idColumn                 => $socialId,
+                'avatar'                  => $social->getAvatar(),
+                'presale_worker'          => $isPresale ? $workerIntent : null,
+                'onboarding_completed_at' => $isPresale ? now() : null,
             ]);
 
             // Assign proper referral code with real user ID
             $user->update(['referral_code' => ReferralService::generateCode($user->id, $user->email)]);
+
+            if ($isPresale) {
+                \App\Http\Controllers\PresaleController::seedDefaultCategories($user->id);
+            }
 
             // Do NOT fire Registered — it triggers SendEmailVerificationNotification.
             // OAuth users are already verified by Google; fire Verified instead so
@@ -113,8 +128,8 @@ class OAuthController extends Controller
             DB::table('fast_track_leads')->insertOrIgnore([
                 'name'        => $user->name,
                 'email'       => $user->email,
-                'worker_slug' => 'platform',
-                'source'      => 'oauth_' . $provider,
+                'worker_slug' => $isPresale ? $workerIntent : 'platform',
+                'source'      => $isPresale ? 'presale_signup' : ('oauth_' . $provider),
                 'user_id'     => $user->id,
                 'subscribed'  => true,
                 'flags'       => json_encode(['type' => 'tenant', 'provider' => $provider]),
@@ -126,15 +141,17 @@ class OAuthController extends Controller
 
         Auth::login($user, remember: true);
 
-        // Capture worker intent (from session or query param saved before redirect)
-        $workerIntent = session('oauth_worker_intent');
-        session()->forget('oauth_worker_intent');
-        if ($workerIntent && in_array($workerIntent, ['ava', 'nova', 'rex', 'lena'])) {
+        if (!$isPresale && $workerIntent && in_array($workerIntent, ['ava', 'nova', 'rex', 'lena'])) {
             session(['onboarding_intent_worker' => $workerIntent]);
         }
 
         if ($isNewUser) {
             \App\Platform\Services\EmailDispatcher::send('welcome_tenant', $user->email, $user->name, $user->id);
+
+            if ($isPresale) {
+                return redirect()->route('presale.memory');
+            }
+
             // Same consolidation as RegisteredUserController::store() — new
             // signups land in the v2 onboarding flow, not the old dispatcher,
             // unless intended() already has a better URL saved (e.g. they
