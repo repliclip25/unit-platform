@@ -5,12 +5,19 @@
     /* No brand-video worker art exists yet — a plain light panel reads better
        than the fade-to-nothing look the shell assumes an illustration fills. */
     .ob-hero{background:#F4F3F1}
-    .pm-hero-content{max-width:560px;margin:0 auto}
+    /* Left-aligned like the heading above it, not centered with dead margin
+       on both sides — the hero column got proportionally narrower once the
+       profile column widened, so centering read as randomly offset. */
+    .pm-hero-content{max-width:680px;margin:0}
 
     /* Give the right (profile/coverage) column more room — card structure and
-       shadow untouched, just the hero/profile split within it. */
+       shadow untouched, just the hero/profile split within it. The seam
+       border the shell draws there by default sits in dead space rather than
+       against the actual panel edge, so it reads as a stray line — the
+       background color change (hero vs. white profile) is demarcation enough. */
     @media(min-width:1025px){
         .ob-card{grid-template-columns:1fr 420px}
+        .ob-profile{border-left:none}
     }
     .pm-flash{display:flex;align-items:center;gap:8px;border-radius:10px;padding:10px 14px;margin-bottom:14px;font-size:12.5px;font-weight:600;flex-shrink:0}
     .pm-flash.success{background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.22);color:#16a34a}
