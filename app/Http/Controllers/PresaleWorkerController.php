@@ -51,4 +51,10 @@ class PresaleWorkerController extends Controller
 
         return view('presale.worker-landing', compact('worker'));
     }
+
+    /** All presale-stage worker slugs — used by registration to detect intent. */
+    public static function slugs(): array
+    {
+        return array_keys(self::$workers);
+    }
 }

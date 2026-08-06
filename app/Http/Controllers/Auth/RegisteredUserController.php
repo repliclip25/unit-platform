@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\AdminMessagingController;
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\PresaleController;
 use App\Models\User;
 use App\Platform\Services\InfluencerService;
 use App\Platform\Services\ReferralService;
@@ -75,12 +76,30 @@ class RegisteredUserController extends Controller
             }
         }
 
+        // Capture worker intent from form (passed from /register?worker=ava or
+        // /register?worker=brand-video). Presale-stage workers (not yet built,
+        // collecting early signups) branch this account onto the presale path
+        // instead of the normal AVA hire flow — one shared registration form
+        // for the whole platform, not a separate signup page per worker.
+        $workerIntent = $request->input('worker');
+        $isPresale    = PresaleController::isPresaleWorker($workerIntent);
+
+        if ($isPresale) {
+            $user->update([
+                'presale_worker'          => $workerIntent,
+                'onboarding_completed_at' => now(),
+            ]);
+            PresaleController::seedDefaultCategories($user->id);
+        } elseif ($workerIntent && in_array($workerIntent, ['ava', 'nova', 'rex', 'lena'])) {
+            session(['onboarding_intent_worker' => $workerIntent]);
+        }
+
         // Register in leads funnel on signup — source: signup, subscribed by default
         DB::table('fast_track_leads')->insertOrIgnore([
             'name'        => $user->name,
             'email'       => $user->email,
-            'worker_slug' => 'platform',
-            'source'      => 'signup',
+            'worker_slug' => $isPresale ? $workerIntent : 'platform',
+            'source'      => $isPresale ? 'presale_signup' : 'signup',
             'user_id'     => $user->id,
             'subscribed'  => true,
             'flags'       => json_encode(['type' => 'tenant']),
@@ -95,15 +114,13 @@ class RegisteredUserController extends Controller
             '{bonus_tx}' => (string) \App\Platform\Services\ReferralService::REFEREE_BONUS_TX,
         ]);
 
-        // Capture worker intent from form (passed from /register?worker=ava)
-        $workerIntent = $request->input('worker');
-        if ($workerIntent && in_array($workerIntent, ['ava', 'nova', 'rex', 'lena'])) {
-            session(['onboarding_intent_worker' => $workerIntent]);
-        }
-
         // One-time GA4 conversion event, consumed and cleared on the next
         // page load — see resources/views/onboarding/ava/step-1-welcome.blade.php
         session(['ga4_signup_completed' => true]);
+
+        if ($isPresale) {
+            return redirect()->route('presale.memory');
+        }
 
         // If user arrived via a hire flow (e.g. /hire/ava/welcome), intended()
         // sends them back there. Otherwise (direct /register link, an ad

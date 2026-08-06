@@ -2,72 +2,41 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
 use App\Platform\Services\GoogleDrive\DriveService;
-use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Validation\Rules;
 use Illuminate\View\View;
 
 class PresaleController extends Controller
 {
     // Starting point only — customers add, rename, or remove categories freely
     // from the Memory Training page, so this is not a fixed taxonomy.
-    private const DEFAULT_CATEGORIES = ['Images', 'Videos', 'Presentations', 'Mockups', 'Avatars'];
+    public const DEFAULT_CATEGORIES = ['Images', 'Videos', 'Presentations', 'Mockups', 'Avatars'];
 
-    public function create(): View
+    /**
+     * Presale signup goes through the platform's one shared registration
+     * form (RegisteredUserController), not a separate page — this is what
+     * that controller calls to check a `?worker=` intent against the
+     * presale roster before branching a new account into the presale path.
+     */
+    public static function isPresaleWorker(?string $slug): bool
     {
-        return view('presale.signup');
+        return $slug && in_array($slug, PresaleWorkerController::slugs(), true);
     }
 
-    public function store(Request $request): RedirectResponse
+    public static function seedDefaultCategories(int $userId): void
     {
-        $request->validate([
-            'name'     => ['required', 'string', 'max:255'],
-            'email'    => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            'company'  => ['nullable', 'string', 'max:255'],
-        ]);
-
-        $user = User::create([
-            'name'                    => $request->name,
-            'email'                   => $request->email,
-            'password'                => Hash::make($request->password),
-            'presale_worker'          => 'brand-video',
-            'onboarding_completed_at' => now(),
-        ]);
-
-        event(new Registered($user));
-        Auth::login($user);
-
-        DB::table('fast_track_leads')->insertOrIgnore([
-            'name'        => $user->name,
-            'email'       => $user->email,
-            'worker_slug' => 'brand-video',
-            'source'      => 'presale_signup',
-            'user_id'     => $user->id,
-            'subscribed'  => true,
-            'flags'       => json_encode(['company' => $request->input('company')]),
-            'created_at'  => now(),
-            'updated_at'  => now(),
-        ]);
-
         foreach (self::DEFAULT_CATEGORIES as $i => $name) {
             DB::table('brand_memory_categories')->insert([
-                'user_id'    => $user->id,
+                'user_id'    => $userId,
                 'name'       => $name,
                 'sort_order' => $i,
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
         }
-
-        return redirect()->route('presale.memory');
     }
 
     public function memory(): View

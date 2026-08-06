@@ -191,10 +191,10 @@ body{font-family:var(--font-b);color:var(--text);background:var(--bg);-webkit-fo
 
 <x-public-nav :links="\App\Support\PublicNav::links()">
   <x-slot:cta>
-    <a href="{{ route('presale.signup') }}" class="btn-cta">Reserve Early Access <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+    <a href="{{ route('register', ['worker' => $worker['slug']]) }}" class="btn-cta">Reserve Early Access <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
   </x-slot>
   <x-slot:mobileCta>
-    <a href="{{ route('presale.signup') }}" class="btn-cta" style="justify-content:center">Reserve Early Access →</a>
+    <a href="{{ route('register', ['worker' => $worker['slug']]) }}" class="btn-cta" style="justify-content:center">Reserve Early Access →</a>
   </x-slot>
 </x-public-nav>
 
@@ -206,7 +206,7 @@ body{font-family:var(--font-b);color:var(--text);background:var(--bg);-webkit-fo
       <h1 class="hero-page-h">The AI Agent for <em>{{ $worker['name'] }}</em>, coming to UNIT.</h1>
       <p class="hero-page-p">{{ $worker['tagline'] }} It isn't built yet, but its memory can start training now.</p>
       <div class="lp-cta-row">
-        <a href="{{ route('presale.signup') }}" class="btn-lp-main">Reserve Early Access <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+        <a href="{{ route('register', ['worker' => $worker['slug']]) }}" class="btn-lp-main">Reserve Early Access <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
       </div>
       <div class="lp-note">No credit card required. Free to start training its memory today.</div>
     </div>
@@ -350,7 +350,7 @@ body{font-family:var(--font-b);color:var(--text);background:var(--bg);-webkit-fo
         <p class="cta-foot-sub">Reserve your spot now — your brand profile and assets will be ready the moment it launches.</p>
       </div>
       <div class="cta-foot-right">
-        <a href="{{ route('presale.signup') }}" class="btn-cta-main">
+        <a href="{{ route('register', ['worker' => $worker['slug']]) }}" class="btn-cta-main">
           Reserve Early Access
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
         </a>

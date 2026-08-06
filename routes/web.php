@@ -589,12 +589,9 @@ Route::middleware(['auth', 'verified'])->prefix('hire/ava')->name('hire.ava.')->
     Route::post('/onshift/run', [\App\Http\Controllers\OnboardingController::class, 'runAvaOnShift'])->name('onshift.run');
 });
 
-// ── Presale: worker candidates not yet built — landing page + signup + Brand Memory bundle ──
-Route::middleware('guest')->group(function () {
-    Route::get('/presale/signup',  [\App\Http\Controllers\PresaleController::class, 'create'])->name('presale.signup');
-    Route::post('/presale/signup', [\App\Http\Controllers\PresaleController::class, 'store'])->name('presale.signup.store');
-});
-
+// ── Presale: worker candidates not yet built — Brand Memory bundle ──
+// Signup goes through the platform's one shared registration form
+// (/register?worker={slug}), not a separate page — see RegisteredUserController.
 // Deliberately NOT in the 'onboarded' group above — same reasoning as the
 // hire/ava group: these accounts skip platform verification and the AVA wizard.
 Route::middleware(['auth', 'verified'])->prefix('presale')->name('presale.')->group(function () {
