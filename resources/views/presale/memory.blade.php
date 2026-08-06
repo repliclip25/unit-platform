@@ -6,6 +6,25 @@
        than the fade-to-nothing look the shell assumes an illustration fills. */
     .ob-hero{background:#F4F3F1}
     .pm-hero-content{max-width:560px;margin:0 auto}
+
+    /* Three native columns instead of a floating hero+profile card. Scoped to
+       this page via display:contents on the card wrappers — the shared shell
+       markup is untouched, so AVA's real onboarding flow is unaffected. Desktop
+       only; the shell's own mobile stacking behavior is left as-is. */
+    @media(min-width:1025px){
+        .ob-page{grid-template-columns:260px 1fr 320px}
+        .ob-card-area{display:contents}
+        .ob-card{display:contents}
+        .ob-profile{background:#F4F3F1;border-left:1px solid #E5E7EB}
+    }
+
+    /* Sections sit natively on the page, matching the heading above them —
+       a top divider instead of a boxed card. */
+    .ob-form{background:transparent;border:none;border-radius:0;padding:20px 0 0;margin-bottom:20px;backdrop-filter:none;border-top:1px solid #E5E7EB}
+    .ob-form:first-of-type{border-top:none;padding-top:0}
+
+    .pm-mini-icon{width:20px;height:20px;border-radius:6px;background:#ECEAE6;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+    .pm-mini-icon svg{width:10px;height:10px;stroke:#6B7280;stroke-width:2;fill:none}
     .pm-flash{display:flex;align-items:center;gap:8px;border-radius:10px;padding:10px 14px;margin-bottom:14px;font-size:12.5px;font-weight:600;flex-shrink:0}
     .pm-flash.success{background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.22);color:#16a34a}
     .pm-flash.error{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.22);color:#dc2626}
@@ -217,7 +236,13 @@
         <div class="ob-clients-title">Uploaded so far</div>
         @forelse ($assets->take(5) as $asset)
             <div class="ob-client-row">
-                <span class="ob-client-dot"></span>
+                <span class="pm-mini-icon">
+                    @if ($asset->kind === 'video')
+                        <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10l4.55-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.45.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                    @else
+                        <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14M14 8h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                    @endif
+                </span>
                 <span class="ob-client-name">{{ $asset->name }}</span>
             </div>
         @empty
