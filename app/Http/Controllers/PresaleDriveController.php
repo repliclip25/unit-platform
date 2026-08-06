@@ -68,7 +68,10 @@ class PresaleDriveController extends Controller
         );
 
         $credential = DB::table('user_drive_credentials')->where('user_id', $user->id)->first();
-        app(DriveService::class, ['credential' => $credential])->ensureFolder($user->name);
+        $drive      = app(DriveService::class, ['credential' => $credential]);
+        $rootFolder = $drive->ensureFolder($user->name);
+
+        $this->backfillCategoryFolders($drive, $user->id, $rootFolder['id']);
 
         return redirect()->route('presale.dashboard')->with('success', "Google Drive connected: {$email}");
     }
@@ -76,7 +79,8 @@ class PresaleDriveController extends Controller
     public function upload(Request $request)
     {
         $request->validate([
-            'asset' => ['required', 'file', 'mimes:jpg,jpeg,png,gif,webp,mp4,mov,webm', 'max:204800'], // 200MB
+            'asset'       => ['required', 'file', 'mimes:jpg,jpeg,png,gif,webp,mp4,mov,webm,pdf,ppt,pptx,key', 'max:204800'], // 200MB
+            'category_id' => ['required', 'integer'],
         ]);
 
         $user       = auth()->user();
@@ -86,13 +90,36 @@ class PresaleDriveController extends Controller
             return redirect()->route('presale.dashboard')->with('error', 'Connect Google Drive before uploading assets.');
         }
 
+        $category = DB::table('brand_memory_categories')
+            ->where('id', $request->input('category_id'))
+            ->where('user_id', $user->id)
+            ->first();
+
+        if (!$category) {
+            return redirect()->route('presale.dashboard')->with('error', 'Choose a valid category before uploading.');
+        }
+
+        $drive = app(DriveService::class, ['credential' => $credential]);
+
+        $folderId = $category->drive_folder_id;
+        if (!$folderId) {
+            $root     = $drive->ensureFolder($user->name);
+            $folder   = $drive->createSubfolder($root['id'], $category->name);
+            $folderId = $folder['id'];
+
+            DB::table('brand_memory_categories')->where('id', $category->id)->update([
+                'drive_folder_id'  => $folder['id'],
+                'drive_folder_url' => $folder['url'],
+                'updated_at'       => now(),
+            ]);
+        }
+
         $file   = $request->file('asset');
-        $drive  = app(DriveService::class, ['credential' => $credential]);
-        $folder = $drive->ensureFolder($user->name);
-        $result = $drive->uploadFile($file, $folder['id']);
+        $result = $drive->uploadFile($file, $folderId);
 
         DB::table('brand_assets')->insert([
             'user_id'       => $user->id,
+            'category_id'   => $category->id,
             'drive_file_id' => $result['id'],
             'name'          => $result['name'],
             'mime_type'     => $result['mimeType'] ?? $file->getMimeType(),
@@ -103,6 +130,28 @@ class PresaleDriveController extends Controller
             'updated_at'    => now(),
         ]);
 
-        return redirect()->route('presale.dashboard')->with('success', "Uploaded {$result['name']} to your Drive.");
+        return redirect()->route('presale.dashboard')->with('success', "Uploaded {$result['name']} to {$category->name}.");
+    }
+
+    /**
+     * Any category created before Drive was connected (or before this feature
+     * shipped) won't have a Drive folder yet — create the missing ones now.
+     */
+    private function backfillCategoryFolders(DriveService $drive, int $userId, string $rootFolderId): void
+    {
+        $missing = DB::table('brand_memory_categories')
+            ->where('user_id', $userId)
+            ->whereNull('drive_folder_id')
+            ->get();
+
+        foreach ($missing as $category) {
+            $folder = $drive->createSubfolder($rootFolderId, $category->name);
+
+            DB::table('brand_memory_categories')->where('id', $category->id)->update([
+                'drive_folder_id'  => $folder['id'],
+                'drive_folder_url' => $folder['url'],
+                'updated_at'       => now(),
+            ]);
+        }
     }
 }

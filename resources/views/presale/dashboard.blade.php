@@ -77,6 +77,15 @@ body{font-family:'Inter',sans-serif;background:var(--db-bg);color:var(--db-text)
 .bm-row-link{margin-left:auto;font-size:12.5px;color:var(--db-text-muted);text-decoration:none;flex-shrink:0}
 .bm-row-link:hover{color:var(--db-text)}
 .bm-empty{padding:24px 0;text-align:center;font-size:13px;color:var(--db-text-muted)}
+
+.bm-cat-list{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.bm-cat-chip{display:inline-flex;align-items:center;gap:8px;padding:6px 8px 6px 14px;border-radius:99px;background:var(--db-chip);font-size:12.5px;font-weight:600;color:var(--db-text)}
+.bm-cat-chip form{display:flex}
+.bm-cat-remove{width:16px;height:16px;border-radius:50%;border:none;background:transparent;color:var(--db-text-muted);cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0}
+.bm-cat-remove:hover{color:var(--db-text);background:var(--db-border)}
+.bm-cat-remove svg{width:10px;height:10px;stroke:currentColor;stroke-width:2.4;fill:none}
+.bm-cat-add{display:flex;gap:8px}
+.bm-select{width:100%;border-radius:10px;padding:10px 13px;font-size:13.5px;background:var(--db-bg);border:1px solid var(--db-border);color:var(--db-text);font-family:inherit}
 </style>
 <script>
 (function () {
@@ -176,15 +185,46 @@ body{font-family:'Inter',sans-serif;background:var(--db-bg);color:var(--db-text)
     </div>
   </div>
 
+  {{-- Categories --}}
+  <div class="bm-section">
+    <div class="bm-section-title">Folders</div>
+    <div class="bm-section-sub">These become real folders inside your Drive brand folder. Add whatever you need, rename or remove anytime.</div>
+    <div class="bm-card">
+      <div class="bm-cat-list">
+        @forelse ($categories as $category)
+          <span class="bm-cat-chip">
+            {{ $category->name }}
+            <form method="POST" action="{{ route('presale.categories.destroy', $category->id) }}" onsubmit="return confirm('Remove the &quot;{{ $category->name }}&quot; folder from this list? Files already in Drive are not deleted.')">
+              @csrf @method('DELETE')
+              <button type="submit" class="bm-cat-remove" title="Remove"><svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg></button>
+            </form>
+          </span>
+        @empty
+          <span class="bm-row-sub">No folders yet.</span>
+        @endforelse
+      </div>
+      <form method="POST" action="{{ route('presale.categories.store') }}" class="bm-cat-add">
+        @csrf
+        <input class="bm-input" type="text" name="name" placeholder="e.g. B-roll, Testimonials, Product shots" required maxlength="100" style="flex:1">
+        <button type="submit" class="bm-btn-secondary" style="flex-shrink:0">Add folder</button>
+      </form>
+    </div>
+  </div>
+
   {{-- Assets --}}
   <div class="bm-section">
     <div class="bm-section-title">Brand assets</div>
-    <div class="bm-section-sub">Upload logos, images, and sample videos. They're stored in your connected Drive folder.</div>
+    <div class="bm-section-sub">Upload into any folder above. Files go straight into the matching Drive subfolder.</div>
     <div class="bm-card">
       @if ($credential)
         <form method="POST" action="{{ route('presale.drive.upload') }}" enctype="multipart/form-data" style="display:flex;gap:10px;align-items:center;margin-bottom:{{ $assets->isEmpty() ? '0' : '16px' }}">
           @csrf
-          <input type="file" name="asset" accept="image/*,video/*" required class="bm-input" style="flex:1">
+          <select name="category_id" required class="bm-select" style="max-width:180px;flex-shrink:0">
+            @foreach ($categories as $category)
+              <option value="{{ $category->id }}">{{ $category->name }}</option>
+            @endforeach
+          </select>
+          <input type="file" name="asset" accept="image/*,video/*,.pdf,.ppt,.pptx,.key" required class="bm-input" style="flex:1">
           <button type="submit" class="bm-btn" style="flex-shrink:0">Upload</button>
         </form>
         @error('asset')<div class="bm-status error">{{ $message }}</div>@enderror
@@ -201,7 +241,7 @@ body{font-family:'Inter',sans-serif;background:var(--db-bg);color:var(--db-text)
           </div>
           <div>
             <div class="bm-row-name">{{ $asset->name }}</div>
-            <div class="bm-row-sub">{{ $asset->kind }} &middot; uploaded {{ \Illuminate\Support\Carbon::parse($asset->uploaded_at)->diffForHumans() }}</div>
+            <div class="bm-row-sub">{{ $asset->category_name ?? 'Uncategorized' }} &middot; uploaded {{ \Illuminate\Support\Carbon::parse($asset->uploaded_at)->diffForHumans() }}</div>
           </div>
           @if ($asset->web_view_link)
             <a href="{{ $asset->web_view_link }}" target="_blank" rel="noopener" class="bm-row-link">Open in Drive</a>

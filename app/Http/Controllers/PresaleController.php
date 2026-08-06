@@ -14,6 +14,10 @@ use Illuminate\View\View;
 
 class PresaleController extends Controller
 {
+    // Starting point only — customers add, rename, or remove categories freely
+    // from the dashboard, so this is not a fixed taxonomy.
+    private const DEFAULT_CATEGORIES = ['Images', 'Videos', 'Presentations', 'Mockups', 'Avatars'];
+
     public function create(): View
     {
         return view('presale.signup');
@@ -51,6 +55,16 @@ class PresaleController extends Controller
             'updated_at'  => now(),
         ]);
 
+        foreach (self::DEFAULT_CATEGORIES as $i => $name) {
+            DB::table('brand_memory_categories')->insert([
+                'user_id'    => $user->id,
+                'name'       => $name,
+                'sort_order' => $i,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
+
         return redirect()->route('presale.dashboard');
     }
 
@@ -61,9 +75,15 @@ class PresaleController extends Controller
 
         $profile    = DB::table('brand_profiles')->where('user_id', $user->id)->first();
         $credential = DB::table('user_drive_credentials')->where('user_id', $user->id)->first();
-        $assets     = DB::table('brand_assets')->where('user_id', $user->id)->orderByDesc('uploaded_at')->get();
+        $categories = DB::table('brand_memory_categories')->where('user_id', $user->id)->orderBy('sort_order')->get();
+        $assets     = DB::table('brand_assets')
+            ->leftJoin('brand_memory_categories', 'brand_assets.category_id', '=', 'brand_memory_categories.id')
+            ->where('brand_assets.user_id', $user->id)
+            ->orderByDesc('brand_assets.uploaded_at')
+            ->select('brand_assets.*', 'brand_memory_categories.name as category_name')
+            ->get();
 
-        return view('presale.dashboard', compact('profile', 'credential', 'assets'));
+        return view('presale.dashboard', compact('profile', 'credential', 'categories', 'assets'));
     }
 
     public function saveProfile(Request $request): RedirectResponse

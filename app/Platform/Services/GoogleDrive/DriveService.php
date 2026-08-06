@@ -62,6 +62,32 @@ class DriveService
     }
 
     /**
+     * Creates a named subfolder under the given parent (the tenant's root brand
+     * folder). Used for customer-defined categories (Images, Videos, Mockups...)
+     * rather than a fixed set — the category list itself lives in the DB.
+     */
+    public function createSubfolder(string $parentFolderId, string $name): array
+    {
+        $response = Http::withToken($this->accessToken)
+            ->post('https://www.googleapis.com/drive/v3/files', [
+                'name'     => $name,
+                'mimeType' => 'application/vnd.google-apps.folder',
+                'parents'  => [$parentFolderId],
+            ]);
+
+        if ($response->failed()) {
+            throw new \RuntimeException('Drive subfolder creation failed: ' . $response->body());
+        }
+
+        $folderId = $response->json('id');
+
+        return [
+            'id'  => $folderId,
+            'url' => "https://drive.google.com/drive/folders/{$folderId}",
+        ];
+    }
+
+    /**
      * Uploads a file straight into the given Drive folder. Never touches our own
      * disk beyond PHP's transient upload temp file.
      *
