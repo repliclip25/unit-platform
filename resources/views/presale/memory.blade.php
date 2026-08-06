@@ -48,9 +48,21 @@
     .pm-cat-remove svg{width:9px;height:9px;stroke:currentColor;stroke-width:2.6;fill:none}
     .pm-cat-add{display:flex;gap:8px}
 
-    .pm-upload-row{display:flex;gap:8px;align-items:center;margin-bottom:12px}
+    .pm-upload-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:12px}
     .pm-select{border:1.5px solid #E5E7EB;border-radius:8px;padding:8px 10px;font-size:12.5px;font-family:inherit;color:#0D0D0D;background:#fff;outline:none;max-width:160px;flex-shrink:0}
-    .pm-file{flex:1;font-size:12px}
+    .pm-file{flex:1;font-size:12px;min-width:0}
+
+    /* Native file inputs and the drive-connected row don't shrink below their
+       content's intrinsic width — on narrow screens that forces the whole
+       page wider than the viewport unless these wrap or go full-width. */
+    @media(max-width:1024px){
+        .pm-select{max-width:none;width:100%}
+        .pm-file{width:100%}
+        .pm-upload-row .btn-add{width:100%;justify-content:center}
+        .pm-drive-connected{flex-wrap:wrap}
+        .pm-cat-add{flex-wrap:wrap}
+        .pm-cat-add input{min-width:0;width:100%}
+    }
 
     .pm-asset-row{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid #F0F0F0}
     .pm-asset-row:last-child{border-bottom:none}
