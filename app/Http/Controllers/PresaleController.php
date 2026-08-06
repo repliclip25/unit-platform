@@ -85,6 +85,10 @@ class PresaleController extends Controller
             ->select('brand_assets.*', 'brand_memory_categories.name as category_name')
             ->get();
 
+        // How many items live in each folder — the actual signal of how much
+        // training data we have access to, not just that the folder exists.
+        $assetCountsByCategory = $assets->countBy('category_id');
+
         $quota = null;
         if ($credential) {
             try {
@@ -130,7 +134,7 @@ class PresaleController extends Controller
             $steps[] = ['label' => $meta['label'], 'desc' => $meta['desc'], 'state' => $state, 'num' => $i];
         }
 
-        return view('presale.memory', compact('profile', 'credential', 'categories', 'assets', 'quota', 'steps', 'coveragePct'));
+        return view('presale.memory', compact('profile', 'credential', 'categories', 'assets', 'quota', 'steps', 'coveragePct', 'assetCountsByCategory'));
     }
 
     public function saveProfile(Request $request): RedirectResponse

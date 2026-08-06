@@ -5,17 +5,22 @@
     /* No brand-video worker art exists yet — a plain light panel reads better
        than the fade-to-nothing look the shell assumes an illustration fills. */
     .ob-hero{background:#F4F3F1}
-    /* Left-aligned like the heading above it, not centered with dead margin
-       on both sides — the hero column got proportionally narrower once the
-       profile column widened, so centering read as randomly offset. */
-    .pm-hero-content{max-width:680px;margin:0}
 
-    /* Give the right (profile/coverage) column more room — card structure and
-       shadow untouched, just the hero/profile split within it. The seam
-       border the shell draws there by default sits in dead space rather than
-       against the actual panel edge, so it reads as a stray line — the
-       background color change (hero vs. white profile) is demarcation enough. */
+    /* Desktop-only overrides. Left un-scoped, .pm-hero-content's max-width
+       previously fought the shell's own mobile reset (max-width:100%) and
+       forced horizontal overflow on small screens — every override below
+       must stay inside this query. */
     @media(min-width:1025px){
+        /* Left-aligned like the heading above it, not centered with dead
+           margin on both sides — the hero column got proportionally narrower
+           once the profile column widened, so centering read as offset. */
+        .pm-hero-content{max-width:680px;margin:0}
+
+        /* Give the right (profile/coverage) column more room — card structure
+           and shadow untouched, just the hero/profile split within it. The
+           seam border the shell draws there by default sits in dead space
+           rather than against the actual panel edge, so it reads as a stray
+           line — the background color change is demarcation enough. */
         .ob-card{grid-template-columns:1fr 420px}
         .ob-profile{border-left:none}
     }
@@ -59,6 +64,19 @@
 
     .pm-mini-icon{width:20px;height:20px;border-radius:6px;background:#ECEAE6;display:flex;align-items:center;justify-content:center;flex-shrink:0}
     .pm-mini-icon svg{width:10px;height:10px;stroke:#6B7280;stroke-width:2;fill:none}
+
+    .pm-recognized summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:10px;padding:2px 0}
+    .pm-recognized summary::-webkit-details-marker{display:none}
+    .pm-recognized-icon{width:22px;height:22px;border-radius:50%;background:rgba(34,197,94,.12);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+    .pm-recognized-icon svg{width:11px;height:11px;stroke:#16a34a;stroke-width:3;fill:none}
+    .pm-recognized-text{font-size:13px;color:#0D0D0D;flex:1}
+    .pm-recognized-edit{font-size:11.5px;font-weight:700;color:#6B7280}
+    .pm-recognized summary:hover .pm-recognized-edit{color:#0D0D0D}
+    .pm-recognized-chevron{width:9px;height:9px;stroke:#9CA3AF;stroke-width:2.4;fill:none;transition:transform .15s;flex-shrink:0}
+    .pm-recognized[open] .pm-recognized-chevron{transform:rotate(180deg)}
+    .pm-recognized-body{margin-top:16px}
+
+    .pm-cat-count{font-size:10.5px;font-weight:700;color:#9CA3AF}
     </style>
     </x-slot:styles>
 
@@ -80,43 +98,22 @@
 
             {{-- Business profile --}}
             <div class="ob-form">
-                <div class="ob-form-title">Business Profile</div>
-                <form method="POST" action="{{ route('presale.profile.save') }}">
-                    @csrf
-                    <div class="ob-form-grid">
-                        <div class="ob-field">
-                            <label>Business name</label>
-                            <input type="text" name="business_name" value="{{ old('business_name', $profile->business_name ?? '') }}" placeholder="Acme Inc.">
+                @if (!empty($profile?->business_name))
+                    <details class="pm-recognized" {{ $errors->any() ? 'open' : '' }}>
+                        <summary>
+                            <span class="pm-recognized-icon"><svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
+                            <span class="pm-recognized-text">Brand recognized: <strong>{{ $profile->business_name }}</strong></span>
+                            <span class="pm-recognized-edit">Edit</span>
+                            <svg class="pm-recognized-chevron" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                        </summary>
+                        <div class="pm-recognized-body">
+                            @include('presale.partials.profile-form')
                         </div>
-                        <div class="ob-field">
-                            <label>Tagline</label>
-                            <input type="text" name="tagline" value="{{ old('tagline', $profile->tagline ?? '') }}" placeholder="What you're known for">
-                        </div>
-                        <div class="ob-field pm-field-full pm-field">
-                            <label>Brand voice</label>
-                            <textarea name="brand_voice" placeholder="Formal, playful, technical...">{{ old('brand_voice', $profile->brand_voice ?? '') }}</textarea>
-                        </div>
-                        <div class="ob-field pm-field">
-                            <label>Primary color</label>
-                            <input type="color" name="primary_color" value="{{ old('primary_color', $profile->primary_color ?? '#0D0D0D') }}">
-                        </div>
-                        <div class="ob-field pm-field">
-                            <label>Secondary color</label>
-                            <input type="color" name="secondary_color" value="{{ old('secondary_color', $profile->secondary_color ?? '#F5C518') }}">
-                        </div>
-                        <div class="ob-field pm-field-full pm-field">
-                            <label>Reference links</label>
-                            <textarea name="reference_links" placeholder="One per line: website, existing videos, social profiles...">{{ old('reference_links', $profile->reference_links ?? '') }}</textarea>
-                        </div>
-                        <div class="ob-field pm-field-full pm-field">
-                            <label>Notes</label>
-                            <textarea name="notes" placeholder="Do's, don'ts, past feedback...">{{ old('notes', $profile->notes ?? '') }}</textarea>
-                        </div>
-                    </div>
-                    <div class="ob-form-actions">
-                        <button type="submit" class="btn-add">Save profile</button>
-                    </div>
-                </form>
+                    </details>
+                @else
+                    <div class="ob-form-title">Business Profile</div>
+                    @include('presale.partials.profile-form')
+                @endif
             </div>
 
             {{-- Google Drive --}}
@@ -147,11 +144,12 @@
 
             {{-- Folders --}}
             <div class="ob-form">
-                <div class="ob-form-title">Folders</div>
+                <div class="ob-form-title">Folders <span class="pm-cat-count" style="text-transform:none;font-weight:600">&middot; {{ $assets->count() }} item{{ $assets->count() === 1 ? '' : 's' }} saved</span></div>
                 <div class="pm-cat-list">
                     @forelse ($categories as $category)
                         <span class="pm-cat-chip">
                             {{ $category->name }}
+                            <span class="pm-cat-count">{{ $assetCountsByCategory[$category->id] ?? 0 }}</span>
                             <form method="POST" action="{{ route('presale.categories.destroy', $category->id) }}" onsubmit="return confirm('Remove the &quot;{{ $category->name }}&quot; folder from this list? Files already in Drive are not deleted.')">
                                 @csrf @method('DELETE')
                                 <button type="submit" class="pm-cat-remove" title="Remove"><svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg></button>
