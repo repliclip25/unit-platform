@@ -81,6 +81,7 @@ class PresaleDriveController extends Controller
         $request->validate([
             'asset'       => ['required', 'file', 'mimes:jpg,jpeg,png,gif,webp,mp4,mov,webm,pdf,ppt,pptx,key', 'max:204800'], // 200MB
             'category_id' => ['required', 'integer'],
+            'context'     => ['nullable', 'string', 'max:500'],
         ]);
 
         $user       = auth()->user();
@@ -122,9 +123,16 @@ class PresaleDriveController extends Controller
         }
 
         $businessName = DB::table('brand_profiles')->where('user_id', $user->id)->value('business_name') ?? $user->name;
+        $context      = $request->input('context');
+
+        // The tenant's own words about the file lead the description — that's
+        // the useful part; the auto-generated line is just supporting context.
+        $description = $context
+            ? "{$context}\n\nUploaded via UNIT Brand Memory for {$businessName} — category: {$category->name}"
+            : "Uploaded via UNIT Brand Memory for {$businessName} — category: {$category->name}";
 
         $result = $drive->uploadFile($file, $folderId, [
-            'description' => "Uploaded via UNIT Brand Memory for {$businessName} — category: {$category->name}",
+            'description' => $description,
             'properties'  => [
                 'unit_uploaded_via' => 'brand-memory-presale',
                 'unit_user_id'      => (string) $user->id,
@@ -137,6 +145,7 @@ class PresaleDriveController extends Controller
             'category_id'   => $category->id,
             'drive_file_id' => $result['id'],
             'name'          => $result['name'],
+            'context'       => $context,
             'mime_type'     => $result['mimeType'] ?? $file->getMimeType(),
             'kind'          => str_starts_with($file->getMimeType(), 'video/') ? 'video' : 'image',
             'web_view_link' => $result['webViewLink'] ?? null,

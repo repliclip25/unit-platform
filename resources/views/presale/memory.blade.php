@@ -70,6 +70,9 @@
     .pm-asset-icon svg{width:12px;height:12px;stroke:#6B7280;stroke-width:1.8;fill:none}
     .pm-asset-name{font-size:12.5px;font-weight:600;color:#0D0D0D}
     .pm-asset-sub{font-size:11px;color:#9CA3AF}
+    .pm-asset-context{font-size:11.5px;color:#6B7280;font-style:italic;margin-top:2px}
+    .pm-context-input{width:100%;border:1.5px solid #E5E7EB;border-radius:8px;padding:8px 10px;font-size:12.5px;font-family:inherit;color:#0D0D0D;background:#fff;outline:none;margin-bottom:8px}
+    .pm-context-input:focus{border-color:#0D0D0D}
     .pm-asset-link{margin-left:auto;font-size:11.5px;color:#6B7280;text-decoration:none;flex-shrink:0}
     .pm-asset-link:hover{color:#0D0D0D}
     .pm-empty-note{font-size:12px;color:#9CA3AF;padding:6px 0}
@@ -182,17 +185,21 @@
             <div class="ob-form">
                 <div class="ob-form-title">Brand Assets</div>
                 @if ($credential)
-                    <form method="POST" action="{{ route('presale.drive.upload') }}" enctype="multipart/form-data" class="pm-upload-row">
+                    <form method="POST" action="{{ route('presale.drive.upload') }}" enctype="multipart/form-data">
                         @csrf
-                        <select name="category_id" required class="pm-select">
-                            @foreach ($categories as $category)
-                                <option value="{{ $category->id }}">{{ $category->name }}</option>
-                            @endforeach
-                        </select>
-                        <input type="file" name="asset" accept="image/*,video/*,.pdf,.ppt,.pptx,.key" required class="pm-file">
-                        <button type="submit" class="btn-add" style="flex-shrink:0">Upload</button>
+                        <input type="text" name="context" maxlength="500" value="{{ old('context') }}" placeholder="What's this for? e.g. Use as the outro logo (optional)" class="pm-context-input">
+                        <div class="pm-upload-row">
+                            <select name="category_id" required class="pm-select">
+                                @foreach ($categories as $category)
+                                    <option value="{{ $category->id }}">{{ $category->name }}</option>
+                                @endforeach
+                            </select>
+                            <input type="file" name="asset" accept="image/*,video/*,.pdf,.ppt,.pptx,.key" required class="pm-file">
+                            <button type="submit" class="btn-add" style="flex-shrink:0">Upload</button>
+                        </div>
                     </form>
                     @error('asset')<div class="pm-flash error">{{ $message }}</div>@enderror
+                    @error('context')<div class="pm-flash error">{{ $message }}</div>@enderror
                 @else
                     <p class="ob-hint" style="margin-bottom:10px">Connect Google Drive above to start uploading.</p>
                 @endif
@@ -209,6 +216,9 @@
                         <div>
                             <div class="pm-asset-name">{{ $asset->name }}</div>
                             <div class="pm-asset-sub">{{ $asset->category_name ?? 'Uncategorized' }} &middot; {{ \Illuminate\Support\Carbon::parse($asset->uploaded_at)->diffForHumans() }}</div>
+                            @if ($asset->context)
+                                <div class="pm-asset-context">{{ $asset->context }}</div>
+                            @endif
                         </div>
                         @if ($asset->web_view_link)
                             <a href="{{ $asset->web_view_link }}" target="_blank" rel="noopener" class="pm-asset-link">Open</a>
