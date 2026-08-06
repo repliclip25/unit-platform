@@ -594,6 +594,10 @@ Route::middleware(['auth', 'verified'])->prefix('hire/ava')->name('hire.ava.')->
     Route::get('/memory',       [\App\Http\Controllers\AvaMemoryPreviewController::class, 'show'])->name('memory');
     Route::post('/memory',      [\App\Http\Controllers\AvaMemoryPreviewController::class, 'store'])->name('memory.store');
     Route::delete('/memory/{id}', [\App\Http\Controllers\AvaMemoryPreviewController::class, 'destroy'])->name('memory.destroy');
+    Route::post('/memory/{client}/contacts',   [\App\Http\Controllers\AvaMemoryPreviewController::class, 'storeContact'])->name('memory.contacts.store');
+    Route::delete('/memory/contacts/{id}',     [\App\Http\Controllers\AvaMemoryPreviewController::class, 'destroyContact'])->name('memory.contacts.destroy');
+    Route::post('/memory/{client}/assets',     [\App\Http\Controllers\AvaMemoryPreviewController::class, 'storeAsset'])->name('memory.assets.store');
+    Route::delete('/memory/assets/{id}',       [\App\Http\Controllers\AvaMemoryPreviewController::class, 'destroyAsset'])->name('memory.assets.destroy');
 });
 
 // ── Memory Hub — the default landing for verified users who haven't deployed

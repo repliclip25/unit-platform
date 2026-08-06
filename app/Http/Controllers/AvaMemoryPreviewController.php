@@ -24,7 +24,11 @@ class AvaMemoryPreviewController extends Controller
         $userId  = auth()->id();
         $clients = DB::table('clients')->where('user_id', $userId)->whereNull('deleted_at')->orderBy('name')->get();
 
-        return view('hire.ava-memory', compact('clients'));
+        $clientIds = $clients->pluck('id');
+        $contacts  = DB::table('contacts')->whereIn('client_id', $clientIds)->whereNull('deleted_at')->orderBy('name')->get()->groupBy('client_id');
+        $assets    = DB::table('assets')->whereIn('client_id', $clientIds)->whereNull('deleted_at')->orderBy('name')->get()->groupBy('client_id');
+
+        return view('hire.ava-memory', compact('clients', 'contacts', 'assets'));
     }
 
     public function store(Request $request): RedirectResponse
@@ -53,6 +57,68 @@ class AvaMemoryPreviewController extends Controller
     public function destroy(int $id): RedirectResponse
     {
         DB::table('clients')->where('id', $id)->where('user_id', auth()->id())->delete();
+
+        return redirect()->route('hire.ava.memory')->with('success', 'Removed.');
+    }
+
+    public function storeContact(Request $request, int $clientId): RedirectResponse
+    {
+        $client = DB::table('clients')->where('id', $clientId)->where('user_id', auth()->id())->first();
+        abort_unless($client, 404);
+
+        $data = $request->validate([
+            'name'  => ['required', 'string', 'max:255'],
+            'email' => ['required', 'email', 'max:255'],
+            'phone' => ['nullable', 'string', 'max:50'],
+        ]);
+
+        DB::table('contacts')->insert([
+            'user_id'    => auth()->id(),
+            'client_id'  => $clientId,
+            'name'       => $data['name'],
+            'email'      => $data['email'],
+            'phone'      => $data['phone'] ?? null,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        return redirect()->route('hire.ava.memory')->with('success', "Added contact {$data['name']} to {$client->name}.");
+    }
+
+    public function destroyContact(int $id): RedirectResponse
+    {
+        DB::table('contacts')->where('id', $id)->where('user_id', auth()->id())->delete();
+
+        return redirect()->route('hire.ava.memory')->with('success', 'Removed.');
+    }
+
+    public function storeAsset(Request $request, int $clientId): RedirectResponse
+    {
+        $client = DB::table('clients')->where('id', $clientId)->where('user_id', auth()->id())->first();
+        abort_unless($client, 404);
+
+        $data = $request->validate([
+            'name'         => ['required', 'string', 'max:255'],
+            'type'         => ['required', 'string', 'max:100'],
+            'renewal_date' => ['nullable', 'date'],
+        ]);
+
+        DB::table('assets')->insert([
+            'user_id'      => auth()->id(),
+            'client_id'    => $clientId,
+            'name'         => $data['name'],
+            'type'         => $data['type'],
+            'renewal_date' => $data['renewal_date'] ?: null,
+            'created_at'   => now(),
+            'updated_at'   => now(),
+        ]);
+
+        return redirect()->route('hire.ava.memory')->with('success', "Added asset {$data['name']} to {$client->name}.");
+    }
+
+    public function destroyAsset(int $id): RedirectResponse
+    {
+        DB::table('assets')->where('id', $id)->where('user_id', auth()->id())->delete();
 
         return redirect()->route('hire.ava.memory')->with('success', 'Removed.');
     }

@@ -64,6 +64,28 @@ body{font-family:'Inter',sans-serif;background:var(--db-bg);color:var(--db-text)
 .am-cta{margin-top:28px;padding:16px;border-radius:14px;background:var(--db-chip);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
 .am-cta-text{font-size:12.5px;color:var(--db-text-muted)}
 .am-cta-btn{font-size:12.5px;font-weight:700;color:var(--db-text);text-decoration:none;white-space:nowrap}
+
+.am-client{border-bottom:1px solid var(--db-border)}
+.am-client:last-child{border-bottom:none}
+.am-client summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:12px;padding:12px 0}
+.am-client summary::-webkit-details-marker{display:none}
+.am-chevron{width:11px;height:11px;stroke:var(--db-text-muted);stroke-width:2.4;fill:none;flex-shrink:0;transition:transform .15s}
+.am-client[open] .am-chevron{transform:rotate(180deg)}
+.am-client-body{padding:0 0 18px 20px}
+.am-sub-title{font-size:10.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--db-text-muted);margin-bottom:8px}
+.am-sub-title:not(:first-child){margin-top:16px}
+.am-sub-row{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--db-border)}
+.am-sub-row:last-of-type{border-bottom:none}
+.am-sub-name{font-size:12.5px;font-weight:600;color:var(--db-text)}
+.am-sub-meta{font-size:11.5px;color:var(--db-text-muted);margin-top:1px}
+.am-inline-form{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.am-input-sm{flex:1;min-width:110px;border-radius:8px;padding:8px 10px;font-size:12.5px;background:var(--db-bg);border:1px solid var(--db-border);color:var(--db-text);font-family:inherit}
+.am-input-sm:focus{border-color:var(--db-invert-bg)}
+.am-btn-sm{padding:8px 14px;border-radius:8px;border:none;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;background:var(--db-invert-bg);color:var(--db-invert-text);flex-shrink:0}
+.am-btn-sm:hover{opacity:.9}
+.am-empty-sm{font-size:12px;color:var(--db-text-muted);padding:2px 0 6px}
+.am-client-remove{margin-top:16px;font-size:11.5px;color:var(--db-text-muted);background:none;border:none;cursor:pointer;font-family:inherit}
+.am-client-remove:hover{color:#ef4444}
 </style>
 <script>
 (function () {
@@ -114,19 +136,82 @@ body{font-family:'Inter',sans-serif;background:var(--db-bg);color:var(--db-text)
   <div class="am-card">
     <div class="am-card-title">Clients added so far ({{ $clients->count() }})</div>
     @forelse ($clients as $client)
-      <div class="am-row">
-        <span class="am-row-dot"></span>
-        <div style="flex:1">
-          <div class="am-row-name">{{ $client->name }}</div>
-          @if ($client->notes)
-            <div class="am-row-notes">{{ $client->notes }}</div>
-          @endif
+      @php
+        $clientContacts = $contacts[$client->id] ?? collect();
+        $clientAssets   = $assets[$client->id] ?? collect();
+      @endphp
+      <details class="am-client">
+        <summary>
+          <span class="am-row-dot"></span>
+          <div style="flex:1">
+            <div class="am-row-name">{{ $client->name }}</div>
+            <div class="am-row-notes">
+              {{ $clientContacts->count() }} contact{{ $clientContacts->count() === 1 ? '' : 's' }} &middot; {{ $clientAssets->count() }} asset{{ $clientAssets->count() === 1 ? '' : 's' }}
+              @if ($client->notes) &middot; {{ $client->notes }} @endif
+            </div>
+          </div>
+          <svg class="am-chevron" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+        </summary>
+
+        <div class="am-client-body">
+          <div class="am-sub-title">Contacts</div>
+          @forelse ($clientContacts as $contact)
+            <div class="am-sub-row">
+              <div style="flex:1">
+                <div class="am-sub-name">{{ $contact->name }}</div>
+                <div class="am-sub-meta">{{ $contact->email }}{{ $contact->phone ? ' · '.$contact->phone : '' }}</div>
+              </div>
+              <form method="POST" action="{{ route('hire.ava.memory.contacts.destroy', $contact->id) }}">
+                @csrf @method('DELETE')
+                <button type="submit" class="am-row-remove">Remove</button>
+              </form>
+            </div>
+          @empty
+            <div class="am-empty-sm">No contacts yet.</div>
+          @endforelse
+          <form method="POST" action="{{ route('hire.ava.memory.contacts.store', $client->id) }}" class="am-inline-form">
+            @csrf
+            <input type="text" name="name" placeholder="Contact name" required class="am-input-sm">
+            <input type="email" name="email" placeholder="Email" required class="am-input-sm">
+            <input type="text" name="phone" placeholder="Phone (optional)" class="am-input-sm">
+            <button type="submit" class="am-btn-sm">Add</button>
+          </form>
+
+          <div class="am-sub-title">Assets</div>
+          @forelse ($clientAssets as $asset)
+            <div class="am-sub-row">
+              <div style="flex:1">
+                <div class="am-sub-name">{{ $asset->name }}</div>
+                <div class="am-sub-meta">{{ $asset->type }}{{ $asset->renewal_date ? ' · renews '.\Illuminate\Support\Carbon::parse($asset->renewal_date)->format('M j, Y') : '' }}</div>
+              </div>
+              <form method="POST" action="{{ route('hire.ava.memory.assets.destroy', $asset->id) }}">
+                @csrf @method('DELETE')
+                <button type="submit" class="am-row-remove">Remove</button>
+              </form>
+            </div>
+          @empty
+            <div class="am-empty-sm">No assets yet.</div>
+          @endforelse
+          <form method="POST" action="{{ route('hire.ava.memory.assets.store', $client->id) }}" class="am-inline-form">
+            @csrf
+            <input type="text" name="name" placeholder="e.g. acmecorp.com" required class="am-input-sm">
+            <select name="type" class="am-input-sm">
+              <option>Domain</option>
+              <option>SSL</option>
+              <option>Hosting</option>
+              <option>SaaS</option>
+              <option>Other</option>
+            </select>
+            <input type="date" name="renewal_date" class="am-input-sm" style="flex:0 0 140px">
+            <button type="submit" class="am-btn-sm">Add</button>
+          </form>
+
+          <form method="POST" action="{{ route('hire.ava.memory.destroy', $client->id) }}" onsubmit="return confirm('Remove {{ $client->name }} and everything under it?')">
+            @csrf @method('DELETE')
+            <button type="submit" class="am-client-remove">Remove this client</button>
+          </form>
         </div>
-        <form method="POST" action="{{ route('hire.ava.memory.destroy', $client->id) }}" onsubmit="return confirm('Remove {{ $client->name }}?')">
-          @csrf @method('DELETE')
-          <button type="submit" class="am-row-remove">Remove</button>
-        </form>
-      </div>
+      </details>
     @empty
       <div class="am-empty">No clients yet — add your first one above.</div>
     @endforelse
