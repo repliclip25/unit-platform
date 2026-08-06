@@ -17,7 +17,8 @@ class VerifyEmailController extends Controller
     public function __invoke(EmailVerificationRequest $request): RedirectResponse
     {
         if ($request->user()->hasVerifiedEmail()) {
-            // Already verified — go to onboarding if not complete, otherwise dashboard
+            // Already verified — go to onboarding if not complete, otherwise dashboard.
+            // app.dashboard itself redirects presale accounts to Memory Training.
             return $request->user()->hasCompletedOnboarding()
                 ? redirect()->route('app.dashboard')
                 : redirect()->route('hire.ava.welcome');
@@ -33,7 +34,10 @@ class VerifyEmailController extends Controller
         // Advance the active worker onboarding session past the verify-email step
         WorkerOnboardingService::advanceStepByName($request->user()->id, 'verify-email');
 
-        // Always continue to onboarding after verification
-        return redirect()->route('hire.ava.welcome');
+        // Presale accounts never enter the AVA wizard — same branch applied at
+        // registration and OAuth. Everyone else continues to onboarding.
+        return $request->user()->isPresale()
+            ? redirect()->route('presale.memory')
+            : redirect()->route('hire.ava.welcome');
     }
 }
