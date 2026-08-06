@@ -174,6 +174,18 @@ body{font-family:'Inter',sans-serif;background:var(--db-bg);color:var(--db-text)
               @endif
             </div>
           </div>
+          @if ($quota)
+            @php
+              $fmt = fn($bytes) => $bytes === null ? null : number_format($bytes / 1073741824, 1) . ' GB';
+            @endphp
+            <div class="bm-row-sub" style="text-transform:none">
+              @if ($quota['limit'] === null)
+                Unlimited storage
+              @else
+                {{ $fmt($quota['available']) }} free of {{ $fmt($quota['limit']) }}
+              @endif
+            </div>
+          @endif
         @else
           <div>
             <div class="bm-row-name">Not connected</div>

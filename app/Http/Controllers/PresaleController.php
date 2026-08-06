@@ -3,12 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Platform\Services\GoogleDrive\DriveService;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rules;
 use Illuminate\View\View;
 
@@ -83,7 +85,18 @@ class PresaleController extends Controller
             ->select('brand_assets.*', 'brand_memory_categories.name as category_name')
             ->get();
 
-        return view('presale.dashboard', compact('profile', 'credential', 'categories', 'assets'));
+        $quota = null;
+        if ($credential) {
+            try {
+                $quota = app(DriveService::class, ['credential' => $credential])->getStorageQuota();
+            } catch (\Throwable $e) {
+                // Quota is a nice-to-have — a stale/revoked token shouldn't break the whole page,
+                // but it's still worth knowing about (usually means the refresh token died).
+                Log::warning('Presale Drive quota lookup failed', ['user_id' => $user->id, 'error' => $e->getMessage()]);
+            }
+        }
+
+        return view('presale.dashboard', compact('profile', 'credential', 'categories', 'assets', 'quota'));
     }
 
     public function saveProfile(Request $request): RedirectResponse

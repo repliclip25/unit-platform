@@ -100,6 +100,13 @@ class PresaleDriveController extends Controller
         }
 
         $drive = app(DriveService::class, ['credential' => $credential]);
+        $file  = $request->file('asset');
+
+        $quota = $drive->getStorageQuota();
+        if ($quota['available'] !== null && $file->getSize() > $quota['available']) {
+            $availableMb = number_format($quota['available'] / 1048576, 1);
+            return redirect()->route('presale.dashboard')->with('error', "Not enough space in your Google Drive (only {$availableMb} MB free). Free up space or use a different Drive account.");
+        }
 
         $folderId = $category->drive_folder_id;
         if (!$folderId) {
@@ -114,7 +121,6 @@ class PresaleDriveController extends Controller
             ]);
         }
 
-        $file   = $request->file('asset');
         $result = $drive->uploadFile($file, $folderId);
 
         DB::table('brand_assets')->insert([

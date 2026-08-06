@@ -123,6 +123,31 @@ class DriveService
         return $response->json();
     }
 
+    /**
+     * Returns the customer's Drive storage quota (bytes). `limit` is null for
+     * accounts with unlimited storage (some Workspace plans) — treat that as
+     * "always room."
+     */
+    public function getStorageQuota(): array
+    {
+        $response = Http::withToken($this->accessToken)
+            ->get('https://www.googleapis.com/drive/v3/about', ['fields' => 'storageQuota']);
+
+        if ($response->failed()) {
+            throw new \RuntimeException('Drive quota lookup failed: ' . $response->body());
+        }
+
+        $quota = $response->json('storageQuota') ?? [];
+        $limit = isset($quota['limit']) ? (int) $quota['limit'] : null;
+        $usage = (int) ($quota['usage'] ?? 0);
+
+        return [
+            'limit'     => $limit,
+            'usage'     => $usage,
+            'available' => $limit === null ? null : max(0, $limit - $usage),
+        ];
+    }
+
     private function getAccessToken(string $refreshToken): string
     {
         $response = Http::asForm()->post('https://oauth2.googleapis.com/token', [
