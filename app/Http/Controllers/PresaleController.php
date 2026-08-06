@@ -17,7 +17,7 @@ use Illuminate\View\View;
 class PresaleController extends Controller
 {
     // Starting point only — customers add, rename, or remove categories freely
-    // from the dashboard, so this is not a fixed taxonomy.
+    // from the Memory Training page, so this is not a fixed taxonomy.
     private const DEFAULT_CATEGORIES = ['Images', 'Videos', 'Presentations', 'Mockups', 'Avatars'];
 
     public function create(): View
@@ -67,10 +67,10 @@ class PresaleController extends Controller
             ]);
         }
 
-        return redirect()->route('presale.dashboard');
+        return redirect()->route('presale.memory');
     }
 
-    public function dashboard(): View
+    public function memory(): View
     {
         $user = auth()->user();
         abort_unless($user->isPresale(), 404);
@@ -96,7 +96,41 @@ class PresaleController extends Controller
             }
         }
 
-        return view('presale.dashboard', compact('profile', 'credential', 'categories', 'assets', 'quota'));
+        // These four checklist items are the sidebar's "steps" data, and drive
+        // the Memory Coverage % on the right panel — same shape as any worker's
+        // hire-flow steps, just standing in for a worker that isn't built yet.
+        $stepDone = [
+            'profile'  => !empty($profile?->business_name),
+            'drive'    => (bool) $credential,
+            'folders'  => $categories->contains(fn ($c) => !empty($c->drive_folder_id)),
+            'assets'   => $assets->isNotEmpty(),
+        ];
+        $doneCount = count(array_filter($stepDone));
+        $coveragePct = (int) round(($doneCount / count($stepDone)) * 100);
+
+        $stepMeta = [
+            'profile' => ['label' => 'Business Profile', 'desc' => 'Name, voice, colors'],
+            'drive'   => ['label' => 'Connect Drive',    'desc' => 'Where your assets live'],
+            'folders' => ['label' => 'Folders',           'desc' => 'Organize by type'],
+            'assets'  => ['label' => 'Upload Assets',     'desc' => 'Logos, videos, images'],
+        ];
+        $reachedActive = false;
+        $steps = [];
+        $i = 0;
+        foreach ($stepMeta as $key => $meta) {
+            $i++;
+            if ($stepDone[$key]) {
+                $state = 'done';
+            } elseif (!$reachedActive) {
+                $state = 'active';
+                $reachedActive = true;
+            } else {
+                $state = 'pending';
+            }
+            $steps[] = ['label' => $meta['label'], 'desc' => $meta['desc'], 'state' => $state, 'num' => $i];
+        }
+
+        return view('presale.memory', compact('profile', 'credential', 'categories', 'assets', 'quota', 'steps', 'coveragePct'));
     }
 
     public function saveProfile(Request $request): RedirectResponse
@@ -119,6 +153,6 @@ class PresaleController extends Controller
             $data + ['updated_at' => now(), 'created_at' => now()]
         );
 
-        return redirect()->route('presale.dashboard')->with('success', 'Brand profile saved.');
+        return redirect()->route('presale.memory')->with('success', 'Brand profile saved.');
     }
 }

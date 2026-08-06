@@ -19,7 +19,7 @@ class EnsureOnboardingComplete
         // Presale accounts (e.g. brand-video) never enter the AVA wizard or the
         // platform verification gate — they belong on their own dashboard.
         if ($user->isPresale()) {
-            return redirect()->route('presale.dashboard');
+            return redirect()->route('presale.memory');
         }
 
         // Platform gate: all required verifications must be complete

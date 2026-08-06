@@ -13,7 +13,7 @@ class DashboardController extends Controller
     public function index()
     {
         if (auth()->user()->isPresale()) {
-            return redirect()->route('presale.dashboard');
+            return redirect()->route('presale.memory');
         }
 
         $userId = auth()->id();

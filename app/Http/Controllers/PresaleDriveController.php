@@ -28,7 +28,7 @@ class PresaleDriveController extends Controller
     {
         $code = $request->query('code');
         if (!$code) {
-            return redirect()->route('presale.dashboard')->with('error', 'Google did not return an authorization code. Please try again.');
+            return redirect()->route('presale.memory')->with('error', 'Google did not return an authorization code. Please try again.');
         }
 
         $response = Http::asForm()->post('https://oauth2.googleapis.com/token', [
@@ -40,7 +40,7 @@ class PresaleDriveController extends Controller
         ]);
 
         if ($response->failed()) {
-            return redirect()->route('presale.dashboard')->with('error', 'Google Drive connection failed: ' . $response->body());
+            return redirect()->route('presale.memory')->with('error', 'Google Drive connection failed: ' . $response->body());
         }
 
         $refreshToken = Crypt::encryptString($response->json('refresh_token'));
@@ -51,7 +51,7 @@ class PresaleDriveController extends Controller
         $email    = $userInfo->successful() ? ($userInfo->json('email') ?? null) : null;
 
         if (!$email || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            return redirect()->route('presale.dashboard')->with('error', 'Could not retrieve a valid Google account email. Please try again.');
+            return redirect()->route('presale.memory')->with('error', 'Could not retrieve a valid Google account email. Please try again.');
         }
 
         $user = auth()->user();
@@ -73,7 +73,7 @@ class PresaleDriveController extends Controller
 
         $this->backfillCategoryFolders($drive, $user->id, $rootFolder['id']);
 
-        return redirect()->route('presale.dashboard')->with('success', "Google Drive connected: {$email}");
+        return redirect()->route('presale.memory')->with('success', "Google Drive connected: {$email}");
     }
 
     public function upload(Request $request)
@@ -87,7 +87,7 @@ class PresaleDriveController extends Controller
         $credential = DB::table('user_drive_credentials')->where('user_id', $user->id)->first();
 
         if (!$credential) {
-            return redirect()->route('presale.dashboard')->with('error', 'Connect Google Drive before uploading assets.');
+            return redirect()->route('presale.memory')->with('error', 'Connect Google Drive before uploading assets.');
         }
 
         $category = DB::table('brand_memory_categories')
@@ -96,7 +96,7 @@ class PresaleDriveController extends Controller
             ->first();
 
         if (!$category) {
-            return redirect()->route('presale.dashboard')->with('error', 'Choose a valid category before uploading.');
+            return redirect()->route('presale.memory')->with('error', 'Choose a valid category before uploading.');
         }
 
         $drive = app(DriveService::class, ['credential' => $credential]);
@@ -105,7 +105,7 @@ class PresaleDriveController extends Controller
         $quota = $drive->getStorageQuota();
         if ($quota['available'] !== null && $file->getSize() > $quota['available']) {
             $availableMb = number_format($quota['available'] / 1048576, 1);
-            return redirect()->route('presale.dashboard')->with('error', "Not enough space in your Google Drive (only {$availableMb} MB free). Free up space or use a different Drive account.");
+            return redirect()->route('presale.memory')->with('error', "Not enough space in your Google Drive (only {$availableMb} MB free). Free up space or use a different Drive account.");
         }
 
         $folderId = $category->drive_folder_id;
@@ -136,7 +136,7 @@ class PresaleDriveController extends Controller
             'updated_at'    => now(),
         ]);
 
-        return redirect()->route('presale.dashboard')->with('success', "Uploaded {$result['name']} to {$category->name}.");
+        return redirect()->route('presale.memory')->with('success', "Uploaded {$result['name']} to {$category->name}.");
     }
 
     /**

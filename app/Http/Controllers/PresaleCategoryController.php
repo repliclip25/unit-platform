@@ -24,7 +24,7 @@ class PresaleCategoryController extends Controller
             ->exists();
 
         if ($exists) {
-            return redirect()->route('presale.dashboard')->with('error', "You already have a \"{$data['name']}\" category.");
+            return redirect()->route('presale.memory')->with('error', "You already have a \"{$data['name']}\" category.");
         }
 
         $nextOrder = (int) DB::table('brand_memory_categories')->where('user_id', $user->id)->max('sort_order') + 1;
@@ -51,7 +51,7 @@ class PresaleCategoryController extends Controller
             ]);
         }
 
-        return redirect()->route('presale.dashboard')->with('success', "Added \"{$data['name']}\" category.");
+        return redirect()->route('presale.memory')->with('success', "Added \"{$data['name']}\" category.");
     }
 
     public function destroy(int $id): RedirectResponse
@@ -61,6 +61,6 @@ class PresaleCategoryController extends Controller
 
         DB::table('brand_memory_categories')->where('id', $id)->where('user_id', $user->id)->delete();
 
-        return redirect()->route('presale.dashboard')->with('success', 'Category removed. Any files already in Drive are untouched.');
+        return redirect()->route('presale.memory')->with('success', 'Category removed. Any files already in Drive are untouched.');
     }
 }
