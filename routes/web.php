@@ -590,6 +590,9 @@ Route::middleware(['auth', 'verified'])->prefix('hire/ava')->name('hire.ava.')->
 });
 
 // ── Presale: brand-video worker (not yet built) — signup + Brand Memory bundle ──
+// Public landing page — no auth restriction, same as any /ai-workers page.
+Route::view('/presale/brand-video', 'presale.landing')->name('presale.landing');
+
 Route::middleware('guest')->group(function () {
     Route::get('/presale/signup',  [\App\Http\Controllers\PresaleController::class, 'create'])->name('presale.signup');
     Route::post('/presale/signup', [\App\Http\Controllers\PresaleController::class, 'store'])->name('presale.signup.store');
