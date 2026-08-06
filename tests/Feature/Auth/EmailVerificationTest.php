@@ -38,8 +38,9 @@ class EmailVerificationTest extends TestCase
 
         Event::assertDispatched(Verified::class);
         $this->assertTrue($user->fresh()->hasVerifiedEmail());
-        // After verification, users land on onboarding (not dashboard) until setup is complete
-        $response->assertRedirect(route('hire.ava.welcome', absolute: false));
+        // After verification, a fresh user with no active onboarding session
+        // lands on the Memory Hub, not the AVA wizard, until they pick a path.
+        $response->assertRedirect(route('hire.memory', absolute: false));
     }
 
     public function test_email_is_not_verified_with_invalid_hash(): void

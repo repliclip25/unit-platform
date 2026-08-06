@@ -26,11 +26,11 @@ class RegistrationTest extends TestCase
         ]);
 
         $this->assertAuthenticated();
-        // New registrations redirect into the v2 onboarding flow (not the
-        // dashboard, and not the old onboarding.step dispatcher, which is
-        // being retired in favor of one consolidated flow) — unless they
-        // arrived via an intended /hire/ava/* URL, which redirect()->intended()
-        // honors instead.
-        $response->assertRedirect(route('hire.ava.welcome', absolute: false));
+        // New registrations default to the Memory Hub (not the AVA wizard,
+        // not the dashboard) — training memory is zero-commitment and the
+        // platform's easy route to collect investment before asking for the
+        // harder "deploy a worker" decision — unless they arrived via an
+        // intended /hire/ava/* URL, which redirect()->intended() honors instead.
+        $response->assertRedirect(route('hire.memory', absolute: false));
     }
 }

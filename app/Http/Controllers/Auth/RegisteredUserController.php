@@ -124,9 +124,10 @@ class RegisteredUserController extends Controller
 
         // If user arrived via a hire flow (e.g. /hire/ava/welcome), intended()
         // sends them back there. Otherwise (direct /register link, an ad
-        // landing straight on signup, etc.) fall back to the v2 onboarding
-        // flow — not the old onboarding.step dispatcher, which is being
-        // retired in favor of one consolidated flow.
-        return redirect()->intended(route('hire.ava.welcome'));
+        // landing straight on signup, etc.) the default is the Memory Hub,
+        // not the AVA wizard — training memory is zero-commitment and the
+        // platform's easy route to collect real investment before asking
+        // for the harder "deploy a worker" decision.
+        return redirect()->intended(route('hire.memory'));
     }
 }

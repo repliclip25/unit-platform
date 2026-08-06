@@ -153,10 +153,10 @@ class OAuthController extends Controller
             }
 
             // Same consolidation as RegisteredUserController::store() — new
-            // signups land in the v2 onboarding flow, not the old dispatcher,
-            // unless intended() already has a better URL saved (e.g. they
-            // clicked "Continue with Google" from within /hire/ava/welcome).
-            return redirect()->intended(route('hire.ava.welcome'));
+            // signups default to the Memory Hub, not the AVA wizard, unless
+            // intended() already has a better URL saved (e.g. they clicked
+            // "Continue with Google" from within /hire/ava/welcome).
+            return redirect()->intended(route('hire.memory'));
         }
 
         return redirect()->intended(route('app.dashboard'));

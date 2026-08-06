@@ -587,6 +587,23 @@ Route::middleware(['auth', 'verified'])->prefix('hire/ava')->name('hire.ava.')->
     Route::post('/assignment/continue', [\App\Http\Controllers\OnboardingController::class, 'advanceAvaMemory'])->name('assignment.continue');
     Route::get('/onshift',      [\App\Http\Controllers\OnboardingController::class, 'showAvaOnShift'])->name('onshift');
     Route::post('/onshift/run', [\App\Http\Controllers\OnboardingController::class, 'runAvaOnShift'])->name('onshift.run');
+
+    // Pre-deployment memory entry — zero commitment, no Gmail connection or
+    // persona required. Same clients table the real /workers/ava/memory page
+    // reads once deployed, so nothing entered here is thrown away.
+    Route::get('/memory',       [\App\Http\Controllers\AvaMemoryPreviewController::class, 'show'])->name('memory');
+    Route::post('/memory',      [\App\Http\Controllers\AvaMemoryPreviewController::class, 'store'])->name('memory.store');
+    Route::delete('/memory/{id}', [\App\Http\Controllers\AvaMemoryPreviewController::class, 'destroy'])->name('memory.destroy');
+});
+
+// ── Memory Hub — the default landing for verified users who haven't deployed
+// a worker yet. Training memory is zero-commitment (no Gmail, no billing),
+// so it's the platform's easy route to collect real investment ahead of the
+// harder "deploy a worker" decision. Same auth/verified-only tier as the
+// hire/ava and presale groups above.
+Route::middleware(['auth', 'verified'])->prefix('hire')->name('hire.')->group(function () {
+    Route::get('/memory',            [\App\Http\Controllers\MemoryHubController::class, 'show'])->name('memory');
+    Route::post('/memory/{slug}/start', [\App\Http\Controllers\MemoryHubController::class, 'start'])->name('memory.start');
 });
 
 // ── Presale: worker candidates not yet built — Brand Memory bundle ──

@@ -21,7 +21,7 @@ class VerifyEmailController extends Controller
             // app.dashboard itself redirects presale accounts to Memory Training.
             return $request->user()->hasCompletedOnboarding()
                 ? redirect()->route('app.dashboard')
-                : redirect()->route('hire.ava.welcome');
+                : redirect()->route($this->landingRoute($request->user()));
         }
 
         if ($request->user()->markEmailAsVerified()) {
@@ -35,9 +35,23 @@ class VerifyEmailController extends Controller
         WorkerOnboardingService::advanceStepByName($request->user()->id, 'verify-email');
 
         // Presale accounts never enter the AVA wizard — same branch applied at
-        // registration and OAuth. Everyone else continues to onboarding.
+        // registration and OAuth. Everyone else lands on whichever route makes
+        // sense given their current state.
         return $request->user()->isPresale()
             ? redirect()->route('presale.memory')
-            : redirect()->route('hire.ava.welcome');
+            : redirect()->route($this->landingRoute($request->user()));
+    }
+
+    /**
+     * Someone already mid-way through the AVA wizard (an active onboarding
+     * session exists) resumes it rather than getting bounced to the Memory
+     * Hub — the hub is the default for undecided/fresh users, not a detour
+     * for people who already chose a path.
+     */
+    private function landingRoute($user): string
+    {
+        return WorkerOnboardingService::activeSession($user->id)
+            ? 'hire.ava.welcome'
+            : 'hire.memory';
     }
 }
