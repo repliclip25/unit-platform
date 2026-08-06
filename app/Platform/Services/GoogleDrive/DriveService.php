@@ -25,12 +25,32 @@ class DriveService
     }
 
     /**
+     * True if the given file/folder id still exists and isn't in the trash.
+     * A trashed folder still accepts uploads via the API — they just become
+     * invisible to the customer — so this has to be checked explicitly rather
+     * than trusting an upload response.
+     */
+    public function folderExists(string $folderId): bool
+    {
+        $response = Http::withToken($this->accessToken)
+            ->get("https://www.googleapis.com/drive/v3/files/{$folderId}", ['fields' => 'id,trashed']);
+
+        if ($response->failed()) {
+            return false; // deleted, or no longer accessible
+        }
+
+        return !($response->json('trashed') ?? false);
+    }
+
+    /**
      * Ensures a per-tenant brand folder exists in the customer's Drive, creating
      * it on first use. Persists the folder id/url back onto the credential row.
+     * Self-healing: if the previously-created folder was trashed or deleted
+     * outside UNIT, a fresh one is created rather than silently reusing a dead id.
      */
     public function ensureFolder(string $ownerName): array
     {
-        if ($this->credential->root_folder_id) {
+        if ($this->credential->root_folder_id && $this->folderExists($this->credential->root_folder_id)) {
             return [
                 'id'  => $this->credential->root_folder_id,
                 'url' => $this->credential->root_folder_url,

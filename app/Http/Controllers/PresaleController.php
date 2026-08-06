@@ -58,14 +58,29 @@ class PresaleController extends Controller
         // training data we have access to, not just that the folder exists.
         $assetCountsByCategory = $assets->countBy('category_id');
 
-        $quota = null;
+        $quota       = null;
+        $driveNotice = null;
         if ($credential) {
             try {
-                $quota = app(DriveService::class, ['credential' => $credential])->getStorageQuota();
+                $drive = app(DriveService::class, ['credential' => $credential]);
+                $quota = $drive->getStorageQuota();
+
+                // Detects a folder trashed/deleted outside UNIT and recreates it —
+                // ensureFolder() already self-heals; comparing the id before/after
+                // tells us whether that happened, so we can say something about it
+                // rather than silently swapping the folder out from under the tenant.
+                $previousFolderId = $credential->root_folder_id;
+                $folder = $drive->ensureFolder($profile?->business_name ?? $user->name);
+                if ($previousFolderId && $folder['id'] !== $previousFolderId) {
+                    $driveNotice = "Your Drive brand folder was moved or deleted, so we created a new one automatically. Anything uploaded to the old folder stays there — it won't be moved.";
+                }
+                // Reflect the current folder without a second DB round-trip.
+                $credential->root_folder_id  = $folder['id'];
+                $credential->root_folder_url = $folder['url'];
             } catch (\Throwable $e) {
-                // Quota is a nice-to-have — a stale/revoked token shouldn't break the whole page,
-                // but it's still worth knowing about (usually means the refresh token died).
-                Log::warning('Presale Drive quota lookup failed', ['user_id' => $user->id, 'error' => $e->getMessage()]);
+                // A stale/revoked token shouldn't break the whole page, but it's
+                // still worth knowing about (usually means the refresh token died).
+                Log::warning('Presale Drive check failed', ['user_id' => $user->id, 'error' => $e->getMessage()]);
             }
         }
 
@@ -103,7 +118,7 @@ class PresaleController extends Controller
             $steps[] = ['label' => $meta['label'], 'desc' => $meta['desc'], 'state' => $state, 'num' => $i];
         }
 
-        return view('presale.memory', compact('profile', 'credential', 'categories', 'assets', 'quota', 'steps', 'coveragePct', 'assetCountsByCategory'));
+        return view('presale.memory', compact('profile', 'credential', 'categories', 'assets', 'quota', 'steps', 'coveragePct', 'assetCountsByCategory', 'driveNotice'));
     }
 
     public function saveProfile(Request $request): RedirectResponse

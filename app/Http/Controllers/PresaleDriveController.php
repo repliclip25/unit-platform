@@ -109,8 +109,15 @@ class PresaleDriveController extends Controller
             return redirect()->route('presale.memory')->with('error', "Not enough space in your Google Drive (only {$availableMb} MB free). Free up space or use a different Drive account.");
         }
 
-        $folderId = $category->drive_folder_id;
-        if (!$folderId) {
+        // Checked lazily here rather than on every page load like the root
+        // folder — N category checks per view isn't worth it, but it has to
+        // happen before an upload or a trashed/deleted folder swallows the
+        // file silently (the API still accepts uploads into a trashed folder).
+        $folderId  = $category->drive_folder_id;
+        $wasMissingFolder = !$folderId; // first upload for this category — not a repair, just normal
+        $recreated = $folderId && !$drive->folderExists($folderId);
+
+        if ($wasMissingFolder || $recreated) {
             $root     = $drive->ensureFolder($user->name);
             $folder   = $drive->createSubfolder($root['id'], $category->name);
             $folderId = $folder['id'];
@@ -154,7 +161,12 @@ class PresaleDriveController extends Controller
             'updated_at'    => now(),
         ]);
 
-        return redirect()->route('presale.memory')->with('success', "Uploaded {$result['name']} to {$category->name}.");
+        $message = "Uploaded {$result['name']} to {$category->name}.";
+        if ($recreated) {
+            $message .= " Note: the \"{$category->name}\" folder had been moved or deleted in Drive, so we created a new one — this file is in the new folder.";
+        }
+
+        return redirect()->route('presale.memory')->with('success', $message);
     }
 
     /**

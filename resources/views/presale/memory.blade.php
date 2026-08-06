@@ -27,6 +27,7 @@
     .pm-flash{display:flex;align-items:center;gap:8px;border-radius:10px;padding:10px 14px;margin-bottom:14px;font-size:12.5px;font-weight:600;flex-shrink:0}
     .pm-flash.success{background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.22);color:#16a34a}
     .pm-flash.error{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.22);color:#dc2626}
+    .pm-flash.warning{background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.25);color:#b45309}
 
     .pm-field-full{grid-column:1/-1}
     .pm-field textarea{width:100%;border:1.5px solid #E5E7EB;border-radius:8px;padding:8px 10px;font-size:12.5px;font-family:inherit;color:#0D0D0D;background:#fff;outline:none;resize:vertical;min-height:64px}
@@ -109,6 +110,9 @@
             @endif
             @if (session('error'))
                 <div class="pm-flash error">{{ session('error') }}</div>
+            @endif
+            @if ($driveNotice)
+                <div class="pm-flash warning">{{ $driveNotice }}</div>
             @endif
 
             {{-- Business profile --}}
