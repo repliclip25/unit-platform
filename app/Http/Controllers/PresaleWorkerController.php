@@ -22,17 +22,17 @@ class PresaleWorkerController extends Controller
             'tagline'    => "Owns your brand's video content from raw material to finished cut.",
 
             'connects_to' => [
-                ['label' => 'Google Drive', 'desc' => 'Where your brand assets and finished videos live — in your own account, not ours.'],
+                ['icon' => 'drive', 'label' => 'Google Drive', 'desc' => 'Where your brand assets and finished videos live — in your own account, not ours.'],
             ],
 
             'produces' => [
-                ['label' => 'Finished video files', 'desc' => 'Delivered straight into your Drive, organized by folder.'],
-                ['label' => 'On-brand cuts', 'desc' => 'Built from your logo, colors, and voice — not generic templates.'],
+                ['icon' => 'film',     'label' => 'Finished video files', 'desc' => 'Delivered straight into your Drive, organized by folder.'],
+                ['icon' => 'sparkles', 'label' => 'On-brand cuts',        'desc' => 'Built from your logo, colors, and voice — not generic templates.'],
             ],
 
             'memory_requirements' => [
-                ['label' => 'Business Profile', 'desc' => 'Business name, tagline, brand voice, and colors.'],
-                ['label' => 'Brand Assets', 'desc' => 'Logos, raw footage, and images, organized into folders by type.'],
+                ['icon' => 'user',   'label' => 'Business Profile', 'desc' => 'Business name, tagline, brand voice, and colors.'],
+                ['icon' => 'folder', 'label' => 'Brand Assets',     'desc' => 'Logos, raw footage, and images, organized into folders by type.'],
             ],
 
             'bullets' => [

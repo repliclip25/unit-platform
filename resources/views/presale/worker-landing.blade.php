@@ -1,10 +1,26 @@
 @php
-// icon key -> SVG path lookup. Add an entry here when a new presale worker
+// icon key -> SVG path lookup, used for the hero/feature-card icon and any
+// stroke-style detail icon. Add an entry here when a new presale worker
 // needs an icon not already covered.
 $icons = [
-    'video' => 'M15 10l4.55-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.45.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z',
+    'video'    => 'M15 10l4.55-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.45.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z',
+    'film'     => 'M15 10l4.55-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.45.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z',
+    'sparkles' => 'M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 13l-5.714 2.143L13 22l-2.286-6.857L5 13l5.714-2.143L13 2z',
+    'user'     => 'M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z',
+    'folder'   => 'M3 7a2 2 0 012-2h4l2 2h8a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V7z',
 ];
 $iconPath = $icons[$worker['icon'] ?? 'video'] ?? $icons['video'];
+
+// Google Drive gets its real logomark instead of a generic stroke icon —
+// it's an actual integration, not an abstract concept.
+$driveLogo = '<svg viewBox="0 0 87.3 78" xmlns="http://www.w3.org/2000/svg">
+    <path d="m6.6 66.85 3.85 6.65c.8 1.4 1.95 2.5 3.3 3.3l13.75-23.8h-27.5c0 1.55.4 3.1 1.2 4.5z" fill="#0066da"/>
+    <path d="m43.65 25-13.75-23.8c-1.35.8-2.5 1.9-3.3 3.3l-25.4 44a9.06 9.06 0 0 0 -1.2 4.5h27.5z" fill="#00ac47"/>
+    <path d="m73.55 76.8c1.35-.8 2.5-1.9 3.3-3.3l1.6-2.75 7.65-13.25c.8-1.4 1.2-2.95 1.2-4.5h-27.5l5.85 11.5z" fill="#ea4335"/>
+    <path d="m43.65 25 13.75-23.8c-1.35-.8-2.9-1.2-4.5-1.2h-18.5c-1.6 0-3.15.45-4.5 1.2z" fill="#00832d"/>
+    <path d="m59.8 53h-32.3l-13.75 23.8c1.35.8 2.9 1.2 4.5 1.2h50.8c1.6 0 3.15-.45 4.5-1.2z" fill="#2684fc"/>
+    <path d="m73.4 26.5-12.7-22c-.8-1.4-1.95-2.5-3.3-3.3l-13.75 23.8 16.15 28h27.45c0-1.55-.4-3.1-1.2-4.5z" fill="#ffba00"/>
+</svg>';
 @endphp
 <!DOCTYPE html>
 <html lang="en">
@@ -48,6 +64,10 @@ ul{list-style:none}
 [data-theme="dark"] .lp-card-sec{background:#0D0D0D}
 [data-theme="dark"] .lp-detail-sec{background:#0D0D0D}
 [data-theme="dark"] .lp-detail-row{border-color:#2D2D2D}
+[data-theme="dark"] .lp-detail-icon svg{stroke:#F3F4F6}
+[data-theme="dark"] .icon-diary{stroke:#F3F4F6}
+[data-theme="dark"] .wk-check{background:#F3F4F6}
+[data-theme="dark"] .wk-check svg{stroke:#0D0D0D}
 [data-theme="dark"] .wk-card{background:#111;border-color:#2D2D2D}
 [data-theme="dark"] .wk-quote{color:#D1D5DB}
 [data-theme="dark"] .wk-bullet{color:#D1D5DB}
@@ -88,7 +108,7 @@ body{font-family:var(--font-b);color:var(--text);background:var(--bg);-webkit-fo
 .badge-txt{font-size:13px;font-weight:700;color:var(--text);line-height:1.45}
 
 /* ── SECTION ATOMS ── */
-.sec-eye{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#0D0D0D;text-align:center;margin-bottom:12px}
+.sec-eye{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text);text-align:center;margin-bottom:12px}
 .sec-h{font-family:var(--font-h);font-size:clamp(1.6rem,3vw,2.2rem);font-weight:800;line-height:1.15;letter-spacing:-.03em;color:var(--text);text-align:center;margin-bottom:36px}
 
 /* ── FEATURE CARD (overview bullets) ── */
@@ -96,9 +116,9 @@ body{font-family:var(--font-b);color:var(--text);background:var(--bg);-webkit-fo
 .lp-card-wrap{max-width:760px;margin:0 auto}
 .wk-card{background:#fff;border:1px solid var(--border);border-radius:20px;padding:clamp(28px,4vw,40px);border-top:3px solid #0D0D0D}
 .wk-head{display:flex;align-items:center;gap:12px;margin-bottom:6px}
-.wk-icon{width:42px;height:42px;border-radius:11px;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.07);flex-shrink:0}
-.wk-icon svg{width:20px;height:20px}
-.wk-name{font-family:var(--font-h);font-size:1.5rem;font-weight:800;letter-spacing:-.04em;color:#0D0D0D}
+.wk-icon{width:42px;height:42px;border-radius:11px;display:flex;align-items:center;justify-content:center;background:var(--soft);flex-shrink:0}
+.wk-icon svg{width:20px;height:20px;stroke:var(--text)}
+.wk-name{font-family:var(--font-h);font-size:1.5rem;font-weight:800;letter-spacing:-.04em;color:var(--text)}
 .lp-soon-tag{display:inline-block;margin-left:8px;padding:3px 10px;border-radius:99px;background:rgba(245,197,24,.15);color:#8a6a06;font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;vertical-align:middle}
 .wk-role{font-size:12px;font-weight:600;color:var(--t3);letter-spacing:.05em;text-transform:uppercase;margin-bottom:16px}
 .wk-quote{font-size:15px;font-weight:600;color:var(--t2);line-height:1.65;margin-bottom:22px}
@@ -113,8 +133,8 @@ body{font-family:var(--font-b);color:var(--text);background:var(--bg);-webkit-fo
 .lp-detail-h{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--t3);margin-bottom:16px}
 .lp-detail-row{display:flex;align-items:flex-start;gap:12px;padding:12px 0;border-bottom:1px solid var(--border)}
 .lp-detail-col .lp-detail-row:last-child{border-bottom:none}
-.lp-detail-icon{width:32px;height:32px;border-radius:9px;background:var(--soft);display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.lp-detail-icon svg{width:15px;height:15px;stroke:#0D0D0D;stroke-width:1.8;fill:none}
+.lp-detail-icon{width:44px;height:44px;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.lp-detail-icon svg{width:44px;height:44px;stroke:#0D0D0D;stroke-width:1.4;fill:none}
 .lp-detail-label{font-size:13.5px;font-weight:700;color:var(--text);line-height:1.3}
 .lp-detail-desc{font-size:12.5px;color:var(--t3);line-height:1.5;margin-top:2px}
 
@@ -213,7 +233,7 @@ body{font-family:var(--font-b);color:var(--text);background:var(--bg);-webkit-fo
       <div class="wk-card">
         <div class="wk-head">
           <div class="wk-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#0D0D0D" stroke-width="2" stroke-linecap="round"><path d="{{ $iconPath }}"/></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="{{ $iconPath }}"/></svg>
           </div>
           <div class="wk-name">{{ $worker['name'] }} <span class="lp-soon-tag">Early Access</span></div>
         </div>
@@ -237,7 +257,13 @@ body{font-family:var(--font-b);color:var(--text);background:var(--bg);-webkit-fo
         <div class="lp-detail-h">Connects to</div>
         @foreach ($worker['connects_to'] as $item)
           <div class="lp-detail-row">
-            <div class="lp-detail-icon"><svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg></div>
+            <div class="lp-detail-icon">
+              @if (($item['icon'] ?? null) === 'drive')
+                {!! $driveLogo !!}
+              @else
+                <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $icons[$item['icon'] ?? 'folder'] ?? $icons['folder'] }}"/></svg>
+              @endif
+            </div>
             <div>
               <div class="lp-detail-label">{{ $item['label'] }}</div>
               <div class="lp-detail-desc">{{ $item['desc'] }}</div>
@@ -249,7 +275,7 @@ body{font-family:var(--font-b);color:var(--text);background:var(--bg);-webkit-fo
         <div class="lp-detail-h">What it produces</div>
         @foreach ($worker['produces'] as $item)
           <div class="lp-detail-row">
-            <div class="lp-detail-icon"><svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div>
+            <div class="lp-detail-icon"><svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $icons[$item['icon'] ?? 'folder'] ?? $icons['folder'] }}"/></svg></div>
             <div>
               <div class="lp-detail-label">{{ $item['label'] }}</div>
               <div class="lp-detail-desc">{{ $item['desc'] }}</div>
@@ -261,7 +287,7 @@ body{font-family:var(--font-b);color:var(--text);background:var(--bg);-webkit-fo
         <div class="lp-detail-h">Memory requirements</div>
         @foreach ($worker['memory_requirements'] as $item)
           <div class="lp-detail-row">
-            <div class="lp-detail-icon"><svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div>
+            <div class="lp-detail-icon"><svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $icons[$item['icon'] ?? 'folder'] ?? $icons['folder'] }}"/></svg></div>
             <div>
               <div class="lp-detail-label">{{ $item['label'] }}</div>
               <div class="lp-detail-desc">{{ $item['desc'] }}</div>
@@ -283,7 +309,7 @@ body{font-family:var(--font-b);color:var(--text);background:var(--bg);-webkit-fo
     </div>
     <div class="behind-grid">
       <div class="behind-item">
-        <div class="behind-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#0D0D0D" stroke-width="2" stroke-linecap="round"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4z"/></svg></div>
+        <div class="behind-icon"><svg class="icon-diary" viewBox="0 0 24 24" fill="none" stroke="#0D0D0D" stroke-width="2" stroke-linecap="round"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4z"/></svg></div>
         <div>
           <div class="behind-h">They keep a diary.</div>
           <p class="behind-p">Every worker writes about their day: what they did, what they learned, and what's next. You always know what happened.</p>
