@@ -589,10 +589,7 @@ Route::middleware(['auth', 'verified'])->prefix('hire/ava')->name('hire.ava.')->
     Route::post('/onshift/run', [\App\Http\Controllers\OnboardingController::class, 'runAvaOnShift'])->name('onshift.run');
 });
 
-// ── Presale: brand-video worker (not yet built) — signup + Brand Memory bundle ──
-// Public landing page — no auth restriction, same as any /ai-workers page.
-Route::view('/presale/brand-video', 'presale.landing')->name('presale.landing');
-
+// ── Presale: worker candidates not yet built — landing page + signup + Brand Memory bundle ──
 Route::middleware('guest')->group(function () {
     Route::get('/presale/signup',  [\App\Http\Controllers\PresaleController::class, 'create'])->name('presale.signup');
     Route::post('/presale/signup', [\App\Http\Controllers\PresaleController::class, 'store'])->name('presale.signup.store');
@@ -611,5 +608,9 @@ Route::middleware(['auth', 'verified'])->prefix('presale')->name('presale.')->gr
     Route::post('/categories',        [\App\Http\Controllers\PresaleCategoryController::class, 'store'])->name('categories.store');
     Route::delete('/categories/{id}', [\App\Http\Controllers\PresaleCategoryController::class, 'destroy'])->name('categories.destroy');
 });
+
+// Public presale landing page — reusable per worker slug, registered last so
+// it doesn't shadow the literal /presale/* routes above (signup, memory, etc).
+Route::get('/presale/{slug}', [\App\Http\Controllers\PresaleWorkerController::class, 'show'])->name('presale.worker');
 
 require __DIR__.'/auth.php';
