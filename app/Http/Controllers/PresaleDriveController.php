@@ -121,7 +121,16 @@ class PresaleDriveController extends Controller
             ]);
         }
 
-        $result = $drive->uploadFile($file, $folderId);
+        $businessName = DB::table('brand_profiles')->where('user_id', $user->id)->value('business_name') ?? $user->name;
+
+        $result = $drive->uploadFile($file, $folderId, [
+            'description' => "Uploaded via UNIT Brand Memory for {$businessName} — category: {$category->name}",
+            'properties'  => [
+                'unit_uploaded_via' => 'brand-memory-presale',
+                'unit_user_id'      => (string) $user->id,
+                'unit_category'     => $category->name,
+            ],
+        ]);
 
         DB::table('brand_assets')->insert([
             'user_id'       => $user->id,

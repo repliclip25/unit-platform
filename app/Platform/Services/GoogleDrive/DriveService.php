@@ -94,15 +94,22 @@ class DriveService
      * Drive's multipart upload wants a raw `multipart/related` body (metadata part
      * + media part) — this is not the same thing as an HTML `multipart/form-data`
      * upload, so it's built by hand rather than via Http::attach().
+     *
+     * $meta: optional 'description' (shown in Drive's own UI details panel) and
+     * 'properties' (string => string, not shown in the UI but readable via the
+     * Drive API) — without these the file has zero context if anyone inspects
+     * it directly in Drive rather than through UNIT.
      */
-    public function uploadFile(UploadedFile $file, string $folderId): array
+    public function uploadFile(UploadedFile $file, string $folderId, array $meta = []): array
     {
         $boundary = 'unit-' . bin2hex(random_bytes(16));
 
-        $metadata = json_encode([
-            'name'    => $file->getClientOriginalName(),
-            'parents' => [$folderId],
-        ]);
+        $metadata = json_encode(array_filter([
+            'name'        => $file->getClientOriginalName(),
+            'parents'     => [$folderId],
+            'description' => $meta['description'] ?? null,
+            'properties'  => $meta['properties'] ?? null,
+        ]));
 
         $body = "--{$boundary}\r\n"
             . "Content-Type: application/json; charset=UTF-8\r\n\r\n"
