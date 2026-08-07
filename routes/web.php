@@ -623,6 +623,7 @@ Route::middleware(['auth', 'verified'])->prefix('presale')->name('presale.')->gr
     Route::get('/drive/authorize',   [\App\Http\Controllers\PresaleDriveController::class, 'authorize'])->name('drive.authorize');
     Route::get('/drive/callback',    [\App\Http\Controllers\PresaleDriveController::class, 'callback'])->name('drive.callback');
     Route::post('/drive/upload',     [\App\Http\Controllers\PresaleDriveController::class, 'upload'])->name('drive.upload');
+    Route::delete('/drive/assets/{id}', [\App\Http\Controllers\PresaleDriveController::class, 'destroyAsset'])->name('drive.assets.destroy');
     Route::post('/categories',        [\App\Http\Controllers\PresaleCategoryController::class, 'store'])->name('categories.store');
     Route::delete('/categories/{id}', [\App\Http\Controllers\PresaleCategoryController::class, 'destroy'])->name('categories.destroy');
 });

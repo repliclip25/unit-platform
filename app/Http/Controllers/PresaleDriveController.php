@@ -170,6 +170,18 @@ class PresaleDriveController extends Controller
     }
 
     /**
+     * Untracks an asset from UNIT — never deletes the actual file from the
+     * tenant's Drive. It's their file in their Drive; only they should
+     * delete it there, same principle as removing a category.
+     */
+    public function destroyAsset(int $id)
+    {
+        DB::table('brand_assets')->where('id', $id)->where('user_id', auth()->id())->delete();
+
+        return redirect()->route('presale.memory')->with('success', 'Removed from your list. The file stays in your Drive.');
+    }
+
+    /**
      * Any category created before Drive was connected (or before this feature
      * shipped) won't have a Drive folder yet — create the missing ones now.
      */

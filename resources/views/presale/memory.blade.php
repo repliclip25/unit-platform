@@ -93,6 +93,20 @@
     .pm-recognized-body{margin-top:16px}
 
     .pm-cat-count{font-size:10.5px;font-weight:700;color:#9CA3AF}
+
+    .pm-folder{border-bottom:1px solid #F0F0F0}
+    .pm-folder:last-of-type{border-bottom:none}
+    .pm-folder summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:10px;padding:12px 0}
+    .pm-folder summary::-webkit-details-marker{display:none}
+    .pm-folder-name{font-size:13px;font-weight:600;color:#0D0D0D}
+    .pm-folder-meta{font-size:12px;color:#9CA3AF;margin-top:1px}
+    .pm-folder-chevron{width:11px;height:11px;stroke:#9CA3AF;stroke-width:2.4;fill:none;flex-shrink:0;transition:transform .15s;margin-left:auto}
+    .pm-folder[open] .pm-folder-chevron{transform:rotate(180deg)}
+    .pm-folder-body{padding:0 0 18px 20px}
+    .pm-folder-remove{margin-top:14px;font-size:11.5px;color:#9CA3AF;background:none;border:none;cursor:pointer;font-family:inherit}
+    .pm-folder-remove:hover{color:#dc2626}
+    .pm-folder-add{display:flex;gap:8px;margin-top:4px}
+    .pm-folder-add input{flex:1;border:1.5px solid #E5E7EB;border-radius:8px;padding:8px 10px;font-size:12.5px;font-family:inherit}
     </style>
     </x-slot:styles>
 
@@ -161,76 +175,79 @@
                 @endif
             </div>
 
-            {{-- Folders --}}
+            {{-- Folders, each expandable to its own assets --}}
             <div class="ob-form">
                 <div class="ob-form-title">Folders <span class="pm-cat-count" style="text-transform:none;font-weight:600">&middot; {{ $assets->count() }} item{{ $assets->count() === 1 ? '' : 's' }} saved</span></div>
-                <div class="pm-cat-list">
-                    @forelse ($categories as $category)
-                        <span class="pm-cat-chip">
-                            {{ $category->name }}
-                            <span class="pm-cat-count">{{ $assetCountsByCategory[$category->id] ?? 0 }}</span>
+                @error('asset')<div class="pm-flash error">{{ $message }}</div>@enderror
+                @error('context')<div class="pm-flash error">{{ $message }}</div>@enderror
+
+                @forelse ($categories as $category)
+                    <details class="pm-folder">
+                        <summary>
+                            <div>
+                                <div class="pm-folder-name">{{ $category->name }}</div>
+                                <div class="pm-folder-meta">{{ $assetCountsByCategory[$category->id] ?? 0 }} item{{ ($assetCountsByCategory[$category->id] ?? 0) === 1 ? '' : 's' }}</div>
+                            </div>
+                            <svg class="pm-folder-chevron" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                        </summary>
+                        <div class="pm-folder-body">
+                            @forelse (($assetsByCategory[$category->id] ?? collect()) as $asset)
+                                <div class="pm-asset-row">
+                                    <div class="pm-asset-icon">
+                                        @if ($asset->kind === 'video')
+                                            <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10l4.55-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.45.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                                        @else
+                                            <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14M14 8h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                        @endif
+                                    </div>
+                                    <div>
+                                        <div class="pm-asset-name">{{ $asset->name }}</div>
+                                        <div class="pm-asset-sub">{{ \Illuminate\Support\Carbon::parse($asset->uploaded_at)->diffForHumans() }}</div>
+                                        @if ($asset->context)
+                                            <div class="pm-asset-context">{{ $asset->context }}</div>
+                                        @endif
+                                    </div>
+                                    @if ($asset->web_view_link)
+                                        <a href="{{ $asset->web_view_link }}" target="_blank" rel="noopener" class="pm-asset-link">Open</a>
+                                    @endif
+                                    <form method="POST" action="{{ route('presale.drive.assets.destroy', $asset->id) }}" onsubmit="return confirm('Remove this from your list? The file stays in your Drive.')">
+                                        @csrf @method('DELETE')
+                                        <button type="submit" class="pm-cat-remove" title="Remove"><svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg></button>
+                                    </form>
+                                </div>
+                            @empty
+                                <p class="pm-empty-note">No assets in this folder yet.</p>
+                            @endforelse
+
+                            @if ($credential)
+                                <form method="POST" action="{{ route('presale.drive.upload') }}" enctype="multipart/form-data" style="margin-top:12px">
+                                    @csrf
+                                    <input type="hidden" name="category_id" value="{{ $category->id }}">
+                                    <input type="text" name="context" maxlength="500" placeholder="What's this for? (optional)" class="pm-context-input">
+                                    <div class="pm-upload-row" style="margin-bottom:0">
+                                        <input type="file" name="asset" accept="image/*,video/*,.pdf,.ppt,.pptx,.key" required class="pm-file">
+                                        <button type="submit" class="btn-add" style="flex-shrink:0">Upload</button>
+                                    </div>
+                                </form>
+                            @else
+                                <p class="ob-hint" style="margin:10px 0 0">Connect Google Drive above to start uploading.</p>
+                            @endif
+
                             <form method="POST" action="{{ route('presale.categories.destroy', $category->id) }}" onsubmit="return confirm('Remove the &quot;{{ $category->name }}&quot; folder from this list? Files already in Drive are not deleted.')">
                                 @csrf @method('DELETE')
-                                <button type="submit" class="pm-cat-remove" title="Remove"><svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg></button>
+                                <button type="submit" class="pm-folder-remove">Remove this folder</button>
                             </form>
-                        </span>
-                    @empty
-                        <span class="ob-hint">No folders yet.</span>
-                    @endforelse
-                </div>
-                <form method="POST" action="{{ route('presale.categories.store') }}" class="pm-cat-add">
+                        </div>
+                    </details>
+                @empty
+                    <span class="ob-hint">No folders yet.</span>
+                @endforelse
+
+                <form method="POST" action="{{ route('presale.categories.store') }}" class="pm-cat-add" style="margin-top:14px">
                     @csrf
                     <input type="text" name="name" placeholder="e.g. B-roll, Testimonials" required maxlength="100" style="flex:1;border:1.5px solid #E5E7EB;border-radius:8px;padding:8px 10px;font-size:12.5px;font-family:inherit">
                     <button type="submit" class="btn-add" style="flex-shrink:0">Add</button>
                 </form>
-            </div>
-
-            {{-- Assets --}}
-            <div class="ob-form">
-                <div class="ob-form-title">Brand Assets</div>
-                @if ($credential)
-                    <form method="POST" action="{{ route('presale.drive.upload') }}" enctype="multipart/form-data">
-                        @csrf
-                        <input type="text" name="context" maxlength="500" value="{{ old('context') }}" placeholder="What's this for? e.g. Use as the outro logo (optional)" class="pm-context-input">
-                        <div class="pm-upload-row">
-                            <select name="category_id" required class="pm-select">
-                                @foreach ($categories as $category)
-                                    <option value="{{ $category->id }}">{{ $category->name }}</option>
-                                @endforeach
-                            </select>
-                            <input type="file" name="asset" accept="image/*,video/*,.pdf,.ppt,.pptx,.key" required class="pm-file">
-                            <button type="submit" class="btn-add" style="flex-shrink:0">Upload</button>
-                        </div>
-                    </form>
-                    @error('asset')<div class="pm-flash error">{{ $message }}</div>@enderror
-                    @error('context')<div class="pm-flash error">{{ $message }}</div>@enderror
-                @else
-                    <p class="ob-hint" style="margin-bottom:10px">Connect Google Drive above to start uploading.</p>
-                @endif
-
-                @forelse ($assets as $asset)
-                    <div class="pm-asset-row">
-                        <div class="pm-asset-icon">
-                            @if ($asset->kind === 'video')
-                                <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10l4.55-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.45.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
-                            @else
-                                <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14M14 8h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                            @endif
-                        </div>
-                        <div>
-                            <div class="pm-asset-name">{{ $asset->name }}</div>
-                            <div class="pm-asset-sub">{{ $asset->category_name ?? 'Uncategorized' }} &middot; {{ \Illuminate\Support\Carbon::parse($asset->uploaded_at)->diffForHumans() }}</div>
-                            @if ($asset->context)
-                                <div class="pm-asset-context">{{ $asset->context }}</div>
-                            @endif
-                        </div>
-                        @if ($asset->web_view_link)
-                            <a href="{{ $asset->web_view_link }}" target="_blank" rel="noopener" class="pm-asset-link">Open</a>
-                        @endif
-                    </div>
-                @empty
-                    <p class="pm-empty-note">No assets uploaded yet.</p>
-                @endforelse
             </div>
         </div>
     </x-slot:hero>
