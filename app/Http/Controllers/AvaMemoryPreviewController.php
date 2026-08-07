@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Platform\Services\Memory\AvaMemoryCoverageService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -28,7 +29,9 @@ class AvaMemoryPreviewController extends Controller
         $contacts  = DB::table('contacts')->whereIn('client_id', $clientIds)->whereNull('deleted_at')->orderBy('name')->get()->groupBy('client_id');
         $assets    = DB::table('assets')->whereIn('client_id', $clientIds)->whereNull('deleted_at')->orderBy('name')->get()->groupBy('client_id');
 
-        return view('hire.ava-memory', compact('clients', 'contacts', 'assets'));
+        $coverage = AvaMemoryCoverageService::score($userId);
+
+        return view('hire.ava-memory', compact('clients', 'contacts', 'assets', 'coverage'));
     }
 
     public function store(Request $request): RedirectResponse

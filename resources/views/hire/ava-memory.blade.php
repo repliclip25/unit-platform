@@ -38,6 +38,14 @@ body{font-family:'Inter',sans-serif;background:var(--db-bg);color:var(--db-text)
 .am-h1{font-size:1.6rem;font-weight:900;letter-spacing:-.04em;color:var(--db-text)}
 .am-sub{font-size:13.5px;color:var(--db-text-muted);margin-top:4px;max-width:520px}
 
+.am-coverage{margin-top:20px;padding:16px 18px;border:1px solid var(--db-border);border-radius:14px;background:var(--db-card)}
+.am-coverage-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.am-coverage-label{font-size:10.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--db-text-muted)}
+.am-coverage-pct{font-size:13px;font-weight:700;color:var(--db-text)}
+.am-coverage-track{height:6px;border-radius:99px;background:var(--db-chip);overflow:hidden}
+.am-coverage-fill{height:100%;border-radius:99px;background:#22c55e;transition:width .2s ease}
+.am-coverage-hint{font-size:11.5px;color:var(--db-text-muted);margin-top:8px}
+
 .am-status{border-radius:12px;padding:10px 14px;font-size:13.5px;margin:20px 0}
 .am-status.success{background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.25);color:#22c55e}
 .am-status.error{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.25);color:#ef4444}
@@ -108,6 +116,21 @@ body{font-family:'Inter',sans-serif;background:var(--db-bg);color:var(--db-text)
   <div class="am-badge">Before you deploy</div>
   <div class="am-h1">AVA Memory</div>
   <div class="am-sub">Add the clients AVA will manage renewals for. Nothing here requires connecting Gmail — do that whenever you're ready to actually deploy.</div>
+
+  <div class="am-coverage">
+    <div class="am-coverage-top">
+      <span class="am-coverage-label">Memory coverage</span>
+      <span class="am-coverage-pct">{{ $coverage['score'] }}%</span>
+    </div>
+    <div class="am-coverage-track"><div class="am-coverage-fill" style="width:{{ $coverage['score'] }}%"></div></div>
+    <div class="am-coverage-hint">
+      @if ($coverage['healthy'])
+        AVA has everything it needs from {{ $coverage['complete'] }} client{{ $coverage['complete'] === 1 ? '' : 's' }}.
+      @else
+        {{ $coverage['needed'] }} more client{{ $coverage['needed'] === 1 ? '' : 's' }} need a name, a contact with an email, and an asset with a renewal date to count as fully covered.
+      @endif
+    </div>
+  </div>
 
   @if (session('success'))
     <div class="am-status success">{{ session('success') }}</div>

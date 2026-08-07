@@ -48,9 +48,16 @@ body{background:var(--db-bg);color:var(--db-text)}
 .mh-card-badge{display:inline-block;align-self:flex-start;font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:3px 10px;border-radius:99px;background:rgba(245,197,24,.15);color:#8a6a06;margin-bottom:10px}
 .mh-card-name{font-size:1.25rem;font-weight:800;letter-spacing:-.03em;color:var(--db-text);margin-bottom:2px}
 .mh-card-role{font-size:12px;font-weight:600;color:var(--db-text-muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:12px}
-.mh-card-desc{font-size:13px;color:var(--db-text-muted);line-height:1.6;margin-bottom:20px;flex:1}
+.mh-card-desc{font-size:13px;color:var(--db-text-muted);line-height:1.6;margin-bottom:16px;flex:1}
 .mh-card-cta{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:700;color:var(--db-text)}
 .mh-card-cta svg{width:13px;height:13px;stroke:currentColor;stroke-width:2.5;fill:none}
+
+.mh-card-progress{margin-bottom:16px}
+.mh-card-progress-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.mh-card-progress-label{font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--db-text-muted)}
+.mh-card-progress-pct{font-size:11.5px;font-weight:700;color:var(--db-text)}
+.mh-card-progress-track{height:5px;border-radius:99px;background:var(--db-chip);overflow:hidden}
+.mh-card-progress-fill{height:100%;border-radius:99px;background:#22c55e}
 
 .mh-skip{margin-top:32px;font-size:12.5px;color:var(--db-text-muted);text-decoration:none}
 .mh-skip:hover{color:var(--db-text)}
@@ -91,7 +98,14 @@ body{background:var(--db-bg);color:var(--db-text)}
           <div class="mh-card-name">{{ $class['name'] }}</div>
           <div class="mh-card-role">{{ $class['role'] }}</div>
           <div class="mh-card-desc">{{ $class['desc'] }}</div>
-          <span class="mh-card-cta">Start training <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg></span>
+          <div class="mh-card-progress">
+            <div class="mh-card-progress-top">
+              <span class="mh-card-progress-label">Memory coverage</span>
+              <span class="mh-card-progress-pct">{{ $class['coverage']['score'] }}%</span>
+            </div>
+            <div class="mh-card-progress-track"><div class="mh-card-progress-fill" style="width:{{ $class['coverage']['score'] }}%"></div></div>
+          </div>
+          <span class="mh-card-cta">{{ $class['coverage']['score'] > 0 ? 'Continue training' : 'Start training' }} <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg></span>
         </button>
       </form>
     @endforeach

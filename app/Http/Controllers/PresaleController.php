@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Platform\Services\GoogleDrive\DriveService;
+use App\Platform\Services\Memory\BrandMemoryCoverageService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -85,17 +86,11 @@ class PresaleController extends Controller
             }
         }
 
-        // These four checklist items are the sidebar's "steps" data, and drive
-        // the Memory Coverage % on the right panel — same shape as any worker's
-        // hire-flow steps, just standing in for a worker that isn't built yet.
-        $stepDone = [
-            'profile'  => !empty($profile?->business_name),
-            'drive'    => (bool) $credential,
-            'folders'  => $categories->contains(fn ($c) => !empty($c->drive_folder_id)),
-            'assets'   => $assets->isNotEmpty(),
-        ];
-        $doneCount = count(array_filter($stepDone));
-        $coveragePct = (int) round(($doneCount / count($stepDone)) * 100);
+        // Brand Memory's own formula (doesn't fit the clients/contacts/assets
+        // shape) — the checklist drives the sidebar's "steps" data, the score
+        // drives the Memory Coverage % on the right panel.
+        $coverage = BrandMemoryCoverageService::score($user->id);
+        $coveragePct = $coverage['score'];
 
         $stepMeta = [
             'profile' => ['label' => 'Business Profile', 'desc' => 'Name, voice, colors'],
@@ -108,7 +103,7 @@ class PresaleController extends Controller
         $i = 0;
         foreach ($stepMeta as $key => $meta) {
             $i++;
-            if ($stepDone[$key]) {
+            if ($coverage['checklist'][$key]) {
                 $state = 'done';
             } elseif (!$reachedActive) {
                 $state = 'active';
