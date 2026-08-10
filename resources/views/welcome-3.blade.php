@@ -1036,12 +1036,12 @@ body{
   <div class="hero-left">
     <div class="hero-left-inner">
       <h1 class="hero-h">
-        Deploy AI Agents<br>
-        that complete<br>
-        <em>real business work.</em>
+        Deploy AI Workers<br>
+        that get real<br>
+        <em>business work done.</em>
       </h1>
       <p class="hero-p">
-        UNIT is an AI agent platform where every AI agent is designed as a specialized AI Worker. Instead of answering questions, UNIT agents monitor, execute, and complete entire business workflows, from renewals and documents to publishing and compliance, while keeping your team in control.
+        UNIT AI Workers are specialized AI agents that monitor, execute, and complete recurring business workflows from start to finish.
       </p>
       <div class="hero-btns">
         <a href="#workers" class="btn-hero">

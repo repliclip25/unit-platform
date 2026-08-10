@@ -15,12 +15,12 @@
 <script type="application/ld+json">{!! json_encode([
     '@@context' => 'https://schema.org',
     '@type'    => 'ItemList',
-    'name'     => 'UNIT AI Agents',
+    'name'     => 'UNIT AI Workers',
     'itemListElement' => [
-        ['@type' => 'ListItem', 'position' => 1, 'item' => ['@type' => 'Service', 'name' => 'AVA', 'serviceType' => 'AI Renewal Agent', 'url' => route('public.workers.show', 'ava')]],
-        ['@type' => 'ListItem', 'position' => 2, 'item' => ['@type' => 'Service', 'name' => 'DOX', 'serviceType' => 'AI Document Agent']],
-        ['@type' => 'ListItem', 'position' => 3, 'item' => ['@type' => 'Service', 'name' => 'MOX', 'serviceType' => 'AI Brand Intelligence Agent']],
-        ['@type' => 'ListItem', 'position' => 4, 'item' => ['@type' => 'Service', 'name' => 'NUX', 'serviceType' => 'AI Publishing Agent']],
+        ['@type' => 'ListItem', 'position' => 1, 'item' => ['@type' => 'Service', 'name' => 'AVA', 'serviceType' => 'AI Renewal Worker', 'url' => route('public.workers.show', 'ava')]],
+        ['@type' => 'ListItem', 'position' => 2, 'item' => ['@type' => 'Service', 'name' => 'DOX', 'serviceType' => 'AI Document Worker']],
+        ['@type' => 'ListItem', 'position' => 3, 'item' => ['@type' => 'Service', 'name' => 'MOX', 'serviceType' => 'AI Brand Intelligence Worker']],
+        ['@type' => 'ListItem', 'position' => 4, 'item' => ['@type' => 'Service', 'name' => 'NUX', 'serviceType' => 'AI Publishing Worker']],
     ],
 ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -369,9 +369,9 @@ body{font-family:var(--font-b);color:var(--text);background:var(--bg);-webkit-fo
 <section class="hero-page">
   <div class="hero-page-left">
     <div class="hero-page-inner">
-      <div class="page-eye">Meet the AI Agents</div>
-      <h1 class="hero-page-h">Specialized AI Agents.<br>Complete Business<br><em>Workflows.</em></h1>
-      <p class="hero-page-p">Every UNIT AI Worker owns one operational responsibility from start to finish. Instead of doing a little of everything, each worker becomes exceptional at one business workflow.</p>
+      <div class="page-eye">Meet the AI Workers</div>
+      <h1 class="hero-page-h">Specialized AI Workers.<br><em>Built for specific jobs.</em></h1>
+      <p class="hero-page-p">Every UNIT Worker is a specialized AI agent designed to own one recurring business workflow from start to finish.</p>
       <div class="hero-proof">
         <div class="proof-avs">
           <img src="/images/ava.png" alt="AVA">
@@ -464,7 +464,7 @@ body{font-family:var(--font-b);color:var(--text);background:var(--bg);-webkit-fo
             </div>
             <div class="wk-name" style="color:#0D0D0D">AVA</div>
           </div>
-          <div class="wk-role">AI Renewal Agent</div>
+          <div class="wk-role">AI Renewal Worker</div>
           <p class="wk-quote">Owns your complete renewal lifecycle.</p>
           <div class="wk-bullets">
             <div class="wk-bullet"><div class="wk-check" style="background:#0D0D0D"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>Tracks upcoming expirations</div>
@@ -502,7 +502,7 @@ body{font-family:var(--font-b);color:var(--text);background:var(--bg);-webkit-fo
             </div>
             <div class="wk-name" style="color:#0D0D0D">DOX <span style="display:inline-block;margin-left:6px;padding:2px 8px;border-radius:99px;background:rgba(245,197,24,.15);color:#8a6a06;font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;vertical-align:middle">Coming Soon</span></div>
           </div>
-          <div class="wk-role">AI Document Agent</div>
+          <div class="wk-role">AI Document Worker</div>
           <p class="wk-quote">Owns document organization, retrieval, and structured workflows.</p>
           <div class="wk-bullets">
             <div class="wk-bullet"><div class="wk-check" style="background:#0D0D0D"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>Organizes files</div>
@@ -528,7 +528,7 @@ body{font-family:var(--font-b);color:var(--text);background:var(--bg);-webkit-fo
             </div>
             <div class="wk-name" style="color:#0D0D0D">MOX <span style="display:inline-block;margin-left:6px;padding:2px 8px;border-radius:99px;background:rgba(245,197,24,.15);color:#8a6a06;font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;vertical-align:middle">Coming Soon</span></div>
           </div>
-          <div class="wk-role">AI Brand Intelligence Agent</div>
+          <div class="wk-role">AI Brand Intelligence Worker</div>
           <p class="wk-quote">Finds high-value brand opportunities worth acting on.</p>
           <div class="wk-bullets">
             <div class="wk-bullet"><div class="wk-check" style="background:#0D0D0D"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>Finds brand moments</div>
@@ -554,7 +554,7 @@ body{font-family:var(--font-b);color:var(--text);background:var(--bg);-webkit-fo
             </div>
             <div class="wk-name" style="color:#0D0D0D">NUX <span style="display:inline-block;margin-left:6px;padding:2px 8px;border-radius:99px;background:rgba(245,197,24,.15);color:#8a6a06;font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;vertical-align:middle">Coming Soon</span></div>
           </div>
-          <div class="wk-role">AI Publishing Agent</div>
+          <div class="wk-role">AI Publishing Worker</div>
           <p class="wk-quote">Owns your publishing workflow from draft to distribution.</p>
           <div class="wk-bullets">
             <div class="wk-bullet"><div class="wk-check" style="background:#0D0D0D"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>Creates content</div>
