@@ -1,6 +1,6 @@
 @extends('layouts.public')
-@section('title', 'Blog')
-@section('description', 'Insights on workflow automation, AI workers, and operations, from the team building UNIT.')
+@section('title', 'AI Agents for Business: Guides & Workflows | UNIT')
+@section('description', 'Practical guides on AI agents, AI Workers, agent Memory, workflow automation, and how specialized agents complete real operational work.')
 
 @section('head')
 <style>

@@ -20,7 +20,7 @@ class WorkerPublicController extends Controller
                 'slug'       => 'ava',
                 'role'       => 'AI Renewal Worker',
                 'category'   => 'Renewal Automation',
-                'meta_desc'  => "AVA is UNIT's AI Renewal Worker. She watches your inbox and renewal calendar, drafts every renewal, and closes the loop, with human approval built in.",
+                'meta_desc'  => "AVA is an AI Renewal Worker that monitors renewals, uses your business Memory, prepares follow-ups, tracks approvals, and maintains the renewal record.",
 
                 // Hero video metadata - drives both the <video> element and
                 // the VideoObject schema. duration_iso/upload_date come from

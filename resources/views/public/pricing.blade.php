@@ -1,6 +1,6 @@
 @extends('layouts.public')
-@section('title', 'Pricing')
-@section('description', 'Each UNIT AI Worker is priced for the specific workflow it owns. Start free on any AI Worker, no card required.')
+@section('title', 'AI Agent Platform Pricing | UNIT')
+@section('description', 'Deploy UNIT AI Workers with tenant-specific Memory, workflow automation, connected tools, human approvals, and transparent activity records.')
 
 @section('body')
 

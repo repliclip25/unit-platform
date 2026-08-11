@@ -3,12 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>{{ $worker['name'] }}: AI Renewal Worker | UNIT</title>
+<title>AI Renewal Agent | Meet AVA by UNIT</title>
 <meta name="description" content="{{ $worker['meta_desc'] }}">
 <link rel="icon" type="image/png" href="/favicon.png">
 <link rel="apple-touch-icon" href="/favicon.png">
 @include('partials.seo-meta', [
-    'title'       => $worker['name'] . ': AI Renewal Worker | UNIT',
+    'title'       => 'AI Renewal Agent | Meet AVA by UNIT',
     'description' => $worker['meta_desc'],
     'image'       => asset('images/ava-skyline-og.png'),
 ])

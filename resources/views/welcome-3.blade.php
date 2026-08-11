@@ -3,13 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>UNIT: AI Workers That Complete Real Business Work</title>
-<meta name="description" content="Deploy specialized AI Workers that own complete business workflows. UNIT AI Workers manage renewals, documents, publishing, compliance, and more while keeping humans in control.">
+<title>AI Agent Platform for Business | UNIT AI Workers</title>
+<meta name="description" content="Deploy specialized AI Workers trained on your organization's Memory to monitor, execute, and complete recurring business workflows.">
 <link rel="icon" type="image/png" href="/favicon.png">
 <link rel="apple-touch-icon" href="/favicon.png">
 @include('partials.seo-meta', [
-    'title'       => 'UNIT: AI Workers That Complete Real Business Work',
-    'description' => 'Deploy specialized AI Workers that own complete business workflows. UNIT AI Workers manage renewals, documents, publishing, compliance, and more while keeping humans in control.',
+    'title'       => 'AI Agent Platform for Business | UNIT AI Workers',
+    'description' => "Deploy specialized AI Workers trained on your organization's Memory to monitor, execute, and complete recurring business workflows.",
     'image'       => asset('images/hero-team-2.png'),
 ])
 <link rel="preconnect" href="https://fonts.googleapis.com">

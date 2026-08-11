@@ -1,6 +1,6 @@
 @extends('layouts.public')
-@section('title', 'Renewal Operations Software for Agencies — AVA by UNIT')
-@section('description', "AVA is renewal operations software built for IT and digital agencies — tracking domain, hosting, and vendor renewals across every client, catching them even when the reminder email never arrives.")
+@section('title', 'AI Renewal Agent for Digital Agencies | AVA by UNIT')
+@section('description', "AVA tracks domain, hosting, software, and vendor renewals across clients, prepares follow-ups, and keeps your agency's renewal workflow moving.")
 @section('og_type', 'website')
 
 @php

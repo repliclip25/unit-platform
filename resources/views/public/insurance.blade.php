@@ -1,6 +1,6 @@
 @extends('layouts.public')
-@section('title', 'Insurance License Renewal Software — AVA by UNIT')
-@section('description', "AVA is AI-powered insurance license renewal software — monitoring your agency's inbox, tracking producer license and policy renewal dates, and preparing every response for human review before it sends.")
+@section('title', 'AI Agent for Insurance License Renewals | AVA by UNIT')
+@section('description', "AVA monitors license and policy renewal activity, uses your organization's Memory, prepares renewal work, and keeps humans in control of approvals.")
 @section('og_type', 'website')
 
 @php

@@ -1,6 +1,6 @@
 @extends('layouts.public')
-@section('title', 'About UNIT')
-@section('description', 'UNIT is an AI agent platform built by operators who ran these workflows themselves before automating them. Meet the team and the mission behind AVA and UNIT\'s AI Workers.')
+@section('title', 'About UNIT | AI Agents Built for Real Business Work')
+@section('description', 'UNIT turns specialized AI agents into AI Workers trained on organizational Memory and responsible for complete business workflows.')
 
 @section('head')
 <style>

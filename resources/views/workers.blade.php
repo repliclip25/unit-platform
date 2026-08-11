@@ -3,13 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Meet the Team: UNIT AI Workers</title>
-<meta name="description" content="Meet UNIT's AI Workers, each a specialized AI agent trained for one job. AVA, our AI Renewal Worker, is live; more AI Workers are coming soon.">
+<title>AI Workers for Business | Specialized AI Agents by UNIT</title>
+<meta name="description" content="Meet UNIT AI Workers: specialized AI agents trained on your Memory, connected to your tools, and built to own specific business workflows.">
 <link rel="icon" type="image/png" href="/favicon.png">
 <link rel="apple-touch-icon" href="/favicon.png">
 @include('partials.seo-meta', [
-    'title'       => 'Meet the Team: UNIT AI Workers',
-    'description' => "Meet UNIT's AI Workers, each a specialized AI agent trained for one job. AVA, our AI Renewal Worker, is live; more AI Workers are coming soon.",
+    'title'       => 'AI Workers for Business | Specialized AI Agents by UNIT',
+    'description' => "Meet UNIT AI Workers: specialized AI agents trained on your Memory, connected to your tools, and built to own specific business workflows.",
     'image'       => asset('images/hero-team-2.png'),
 ])
 <script type="application/ld+json">{!! json_encode([
