@@ -135,7 +135,7 @@
         <div class="wf-img"><img src="{{ asset('images/ava-stand.png') }}" alt="AVA"></div>
         <div class="wf-body">
           <div class="wf-name">AVA</div>
-          <div class="wf-role">AI Renewal Agent</div>
+          <div class="wf-role">AI Renewal Worker</div>
           <p class="wf-quote">Owns your complete renewal lifecycle.</p>
         </div>
       </a>
@@ -143,7 +143,7 @@
         <div class="wf-img"><img src="{{ asset('images/dox.png') }}" alt="DOX"></div>
         <div class="wf-body">
           <div class="wf-name">DOX <span class="wf-badge">Coming Soon</span></div>
-          <div class="wf-role">AI Document Agent</div>
+          <div class="wf-role">AI Document Worker</div>
           <p class="wf-quote">Owns document organization, retrieval, and structured workflows.</p>
         </div>
       </div>
@@ -151,7 +151,7 @@
         <div class="wf-img"><img src="{{ asset('images/mox.png') }}" alt="MOX"></div>
         <div class="wf-body">
           <div class="wf-name">MOX <span class="wf-badge">Coming Soon</span></div>
-          <div class="wf-role">AI Brand Intelligence Agent</div>
+          <div class="wf-role">AI Brand Intelligence Worker</div>
           <p class="wf-quote">Finds high-value brand opportunities worth acting on.</p>
         </div>
       </div>
@@ -159,7 +159,7 @@
         <div class="wf-img"><img src="{{ asset('images/nux.png') }}" alt="NUX"></div>
         <div class="wf-body">
           <div class="wf-name">NUX <span class="wf-badge">Coming Soon</span></div>
-          <div class="wf-role">AI Publishing Agent</div>
+          <div class="wf-role">AI Publishing Worker</div>
           <p class="wf-quote">Owns your publishing workflow from draft to distribution.</p>
         </div>
       </div>
