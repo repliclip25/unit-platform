@@ -3,12 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>{{ $worker['name'] }}: AI Agent for Renewals | UNIT</title>
+<title>{{ $worker['name'] }}: AI Renewal Worker | UNIT</title>
 <meta name="description" content="{{ $worker['meta_desc'] }}">
 <link rel="icon" type="image/png" href="/favicon.png">
 <link rel="apple-touch-icon" href="/favicon.png">
 @include('partials.seo-meta', [
-    'title'       => $worker['name'] . ': AI Agent for Renewals | UNIT',
+    'title'       => $worker['name'] . ': AI Renewal Worker | UNIT',
     'description' => $worker['meta_desc'],
     'image'       => asset('images/ava-skyline-og.png'),
 ])
@@ -16,7 +16,7 @@
     $__serviceSchema = [
         '@context'    => 'https://schema.org',
         '@type'       => 'Service',
-        'name'        => $worker['name'] . ': AI Renewal Agent',
+        'name'        => $worker['name'] . ': AI Renewal Worker',
         'serviceType' => $worker['category'] ?? $worker['role'],
         'description' => $worker['meta_desc'],
         'image'       => asset('images/ava-skyline-og.png'),
@@ -1018,7 +1018,7 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
       <div class="hero-copy" id="avaHeroCopy">
         <div class="hero-eye">UNIT's AI Renewal Worker</div>
         <h1 class="hero-h">She never<br>forgets a <span class="hl">renewal.</span></h1>
-        <p class="hero-p">An AI agent that watches your inbox <em>and</em> your renewal calendar, drafts every renewal, and keeps a human in control of every send.</p>
+        <p class="hero-p">An AI Worker that watches your inbox <em>and</em> your renewal calendar, drafts every renewal, and keeps a human in control of every send.</p>
       </div>
       <div class="hero-btns">
         @if($avaHasDesk)
@@ -1161,7 +1161,7 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
   <div class="w">
     <div class="meet-grid">
       <div class="meet-img-wrap">
-        <img src="/images/ava-selfie.png" alt="AVA, UNIT's AI Renewal Agent, speaking directly to camera">
+        <img src="/images/ava-selfie.png" alt="AVA, UNIT's AI Renewal Worker, speaking directly to camera">
       </div>
       <div>
         <div class="sec-eye">In her own words</div>
@@ -1171,7 +1171,7 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
           <p>Then I wait. Nothing goes to your client until you say so. But I won't let it sit forgotten. If you go quiet, I'll remind you, a little more each time, until you act.</p>
           <p>When it's done, I move the renewal date forward, write up a signed record of everything that happened, and start watching for the next one. That's the job. I don't get tired of it.</p>
         </div>
-        <div class="meet-sig">AVA, UNIT's AI Renewal Agent</div>
+        <div class="meet-sig">AVA, UNIT's AI Renewal Worker</div>
         <a href="#day-in-life" class="btn-prob-cta" style="margin-top:20px">
           See AVA in Action
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
