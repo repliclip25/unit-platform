@@ -3,13 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Meet the Team: UNIT AI Agents</title>
-<meta name="description" content="Meet UNIT's AI agents, each an AI worker trained for one job. AVA, our AI renewal coordinator, is live; more AI agents are coming soon.">
+<title>Meet the Team: UNIT AI Workers</title>
+<meta name="description" content="Meet UNIT's AI Workers, each a specialized AI agent trained for one job. AVA, our AI Renewal Worker, is live; more AI Workers are coming soon.">
 <link rel="icon" type="image/png" href="/favicon.png">
 <link rel="apple-touch-icon" href="/favicon.png">
 @include('partials.seo-meta', [
-    'title'       => 'Meet the Team: UNIT AI Agents',
-    'description' => "Meet UNIT's AI agents, each an AI worker trained for one job. AVA, our AI renewal coordinator, is live; more AI agents are coming soon.",
+    'title'       => 'Meet the Team: UNIT AI Workers',
+    'description' => "Meet UNIT's AI Workers, each a specialized AI agent trained for one job. AVA, our AI Renewal Worker, is live; more AI Workers are coming soon.",
     'image'       => asset('images/hero-team-2.png'),
 ])
 <script type="application/ld+json">{!! json_encode([
@@ -619,7 +619,7 @@ body{font-family:var(--font-b);color:var(--text);background:var(--bg);-webkit-fo
     <div class="cta-foot-inner">
       <div class="cta-foot-left">
         <div class="cta-eyebrow">Ready to grow?</div>
-        <h2 class="cta-foot-h">Ready to deploy your first AI Agent?</h2>
+        <h2 class="cta-foot-h">Ready to deploy your first AI Worker?</h2>
         <p class="cta-foot-sub">Start with one specialized AI Worker. Add more as your business grows.</p>
       </div>
       <div class="cta-foot-right">

@@ -3,13 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>UNIT: AI Agents That Complete Real Business Work</title>
-<meta name="description" content="Deploy specialized AI agents that own complete business workflows. UNIT AI Workers manage renewals, documents, publishing, compliance, and more while keeping humans in control.">
+<title>UNIT: AI Workers That Complete Real Business Work</title>
+<meta name="description" content="Deploy specialized AI Workers that own complete business workflows. UNIT AI Workers manage renewals, documents, publishing, compliance, and more while keeping humans in control.">
 <link rel="icon" type="image/png" href="/favicon.png">
 <link rel="apple-touch-icon" href="/favicon.png">
 @include('partials.seo-meta', [
-    'title'       => 'UNIT: AI Agents That Complete Real Business Work',
-    'description' => 'Deploy specialized AI agents that own complete business workflows. UNIT AI Workers manage renewals, documents, publishing, compliance, and more while keeping humans in control.',
+    'title'       => 'UNIT: AI Workers That Complete Real Business Work',
+    'description' => 'Deploy specialized AI Workers that own complete business workflows. UNIT AI Workers manage renewals, documents, publishing, compliance, and more while keeping humans in control.',
     'image'       => asset('images/hero-team-2.png'),
 ])
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1045,7 +1045,7 @@ body{
       </p>
       <div class="hero-btns">
         <a href="#workers" class="btn-hero">
-          Meet the AI Agents
+          Meet the AI Workers
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
         </a>
         <a href="{{ route('hire.ava.welcome') }}" class="btn-hero-ghost">
@@ -1195,7 +1195,7 @@ body{
   <div class="w">
     <div style="margin-bottom:0;max-width:640px">
       <div class="sec-eye">Problems we solve</div>
-      <h2 class="sec-h">The Problems UNIT AI Agents Solve</h2>
+      <h2 class="sec-h">The Problems UNIT AI Workers Solve</h2>
       <p class="sec-p">Before you evaluate a product, you're trying to name a problem. These are the ones UNIT AI Workers are built to own.</p>
     </div>
     <div class="problems-layout">
@@ -1302,8 +1302,8 @@ body{
 <section class="workers sec" id="workers">
   <div class="w">
     <div class="center" style="margin-bottom:clamp(36px,5vw,56px)">
-      <div class="sec-eye">Meet the AI agents</div>
-      <h2 class="sec-h">Specialized AI Agents.<br>Complete Business Workflows.</h2>
+      <div class="sec-eye">Meet the AI Workers</div>
+      <h2 class="sec-h">Specialized AI Workers.<br>Complete Business Workflows.</h2>
       <p class="sec-p">Every UNIT AI Worker owns one operational responsibility from start to finish. Instead of doing a little of everything, each worker becomes exceptional at one business workflow.</p>
     </div>
 
@@ -1321,7 +1321,7 @@ body{
             </div>
             <div class="wk-name">AVA</div>
           </div>
-          <div class="wk-role">AI Renewal Agent</div>
+          <div class="wk-role">AI Renewal Worker</div>
           <p class="wk-quote">Owns your complete renewal lifecycle.</p>
           <div class="wk-bullets">
             <div class="wk-bullet"><div class="wk-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>Tracks upcoming expirations</div>
@@ -1359,7 +1359,7 @@ body{
             </div>
             <div class="wk-name">DOX <span style="display:inline-block;margin-left:6px;padding:2px 8px;border-radius:99px;background:rgba(245,197,24,.15);color:#8a6a06;font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;vertical-align:middle">Coming Soon</span></div>
           </div>
-          <div class="wk-role">AI Document Agent</div>
+          <div class="wk-role">AI Document Worker</div>
           <p class="wk-quote">Owns document organization, retrieval, and structured workflows.</p>
           <div class="wk-bullets">
             <div class="wk-bullet"><div class="wk-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>Organizes files</div>
@@ -1385,7 +1385,7 @@ body{
             </div>
             <div class="wk-name">MOX <span style="display:inline-block;margin-left:6px;padding:2px 8px;border-radius:99px;background:rgba(245,197,24,.15);color:#8a6a06;font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;vertical-align:middle">Coming Soon</span></div>
           </div>
-          <div class="wk-role">AI Brand Intelligence Agent</div>
+          <div class="wk-role">AI Brand Intelligence Worker</div>
           <p class="wk-quote">Finds high-value brand opportunities worth acting on.</p>
           <div class="wk-bullets">
             <div class="wk-bullet"><div class="wk-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>Finds brand moments</div>
@@ -1411,7 +1411,7 @@ body{
             </div>
             <div class="wk-name">NUX <span style="display:inline-block;margin-left:6px;padding:2px 8px;border-radius:99px;background:rgba(245,197,24,.15);color:#8a6a06;font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;vertical-align:middle">Coming Soon</span></div>
           </div>
-          <div class="wk-role">AI Publishing Agent</div>
+          <div class="wk-role">AI Publishing Worker</div>
           <p class="wk-quote">Owns your publishing workflow from draft to distribution.</p>
           <div class="wk-bullets">
             <div class="wk-bullet"><div class="wk-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>Creates content</div>
@@ -1482,7 +1482,7 @@ body{
   <div class="w">
     <div class="center">
       <div class="sec-eye">A day inside UNIT</div>
-      <h2 class="sec-h">While You Grow Your Business,<br>Your AI Agents Keep Working.</h2>
+      <h2 class="sec-h">While You Grow Your Business,<br>Your AI Workers Keep Working.</h2>
     </div>
     <div class="tl">
       <div class="tl-item">
@@ -1777,7 +1777,7 @@ body{
 <!-- FEATURES -->
 <section class="features">
   <div class="w">
-    <h2 class="feat-h">Why Businesses Trust UNIT AI Agents</h2>
+    <h2 class="feat-h">Why Businesses Trust UNIT AI Workers</h2>
     <div class="feat-grid">
       <div class="feat-item">
         <div class="feat-icon" style="background:#ECFDF5">
@@ -1928,7 +1928,7 @@ body{
           <svg viewBox="0 0 24 24" fill="none" stroke="#0D0D0D" stroke-width="1.5" stroke-linecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
         </div>
         <div class="cta-text">
-          <h2>Ready to Deploy Your First AI Agent?</h2>
+          <h2>Ready to Deploy Your First AI Worker?</h2>
           <p>Start with one specialized AI Worker. Add more as your business grows.</p>
         </div>
       </div>
