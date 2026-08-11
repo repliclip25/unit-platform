@@ -1,6 +1,6 @@
 @extends('layouts.public')
 @section('title', 'Pricing')
-@section('description', 'Each UNIT AI agent is priced for the specific workflow it owns. Start free on any AI Worker, no card required.')
+@section('description', 'Each UNIT AI Worker is priced for the specific workflow it owns. Start free on any AI Worker, no card required.')
 
 @section('body')
 
@@ -122,8 +122,8 @@
 
 <div class="w pub-hero" style="text-align:center">
     <div class="eyebrow">Pricing</div>
-    <h1>An AI agent for every workflow.</h1>
-    <p style="font-size:16px;color:var(--t3);max-width:480px;margin:0 auto;line-height:1.7">Each UNIT AI agent is priced for what it automates, and what that's worth to your team. Start free, no card required.</p>
+    <h1>An AI Worker for every workflow.</h1>
+    <p style="font-size:16px;color:var(--t3);max-width:480px;margin:0 auto;line-height:1.7">Each UNIT AI Worker is priced for what it automates, and what that's worth to your team. Start free, no card required.</p>
 </div>
 
 <div class="w" style="max-width:1040px;margin:0 auto;padding:0 24px 96px">
