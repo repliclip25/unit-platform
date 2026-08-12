@@ -113,6 +113,7 @@ class NotifyCustomerJob implements ShouldQueue
                 'next_renewal_date' => $nextRenewalDate,
                 'sent'              => $shouldSend && !$input->isFastTrack() && (bool) $clientEmail,
                 'cadence_skipped'   => $cadenceSkipped,
+                'template_id'       => $template['id'] ?? null,
             ],
         ));
         UnitPlatform::setFulfillmentStage($this->txId, 'notify_customer');

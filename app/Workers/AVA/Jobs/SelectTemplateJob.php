@@ -34,14 +34,26 @@ class SelectTemplateJob implements ShouldQueue
         // this job only ever runs once, at the start of the transaction.
         $template = \App\Platform\Services\TemplateResolver::resolve($category, $userTemplates, $defaultTemplates, 1);
 
+        // NOT "does a round-2/3 template exist for this category" — the
+        // round-2/3 templates that actually exist are mostly the generic
+        // empty-category fallback (matches every category via
+        // TemplateResolver's matchesRoundAnyCategory), so that check is
+        // almost always true and tells the tenant nothing. The real
+        // question is whether THIS transaction will actually go through
+        // more than one round — same condition DraftEmailJob already uses
+        // to decide whether to generate round 2/3 previews at all.
+        $hasCadenceRounds = !$input->isFastTrack()
+            && UnitPlatform::gateEnabled($input->deploymentId, 'client_cadence', true);
+
         $output = [
-            'template_id'       => $template['id']               ?? null,
-            'template_name'     => $template['name']             ?? 'Generic Response',
-            'tone'              => $template['tone']             ?? 'Professional, concise',
-            'subject_template'  => $template['subject_template'] ?? 'Action Required: {{asset}}',
-            'body_template'     => $template['body_template']    ?? '',
-            'approval_required' => $template['approval_required'] ?? true,
-            'low_confidence'    => !empty($memory['low_confidence_warning']),
+            'template_id'        => $template['id']               ?? null,
+            'template_name'      => $template['name']             ?? 'Generic Response',
+            'tone'               => $template['tone']             ?? 'Professional, concise',
+            'subject_template'   => $template['subject_template'] ?? 'Action Required: {{asset}}',
+            'body_template'      => $template['body_template']    ?? '',
+            'approval_required'  => $template['approval_required'] ?? true,
+            'low_confidence'     => !empty($memory['low_confidence_warning']),
+            'has_cadence_rounds' => $hasCadenceRounds,
         ];
 
         UnitPlatform::commitOutput($this->txId, new WorkerOutput(

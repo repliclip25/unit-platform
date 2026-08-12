@@ -58,6 +58,7 @@ class DraftEmailJob implements ShouldQueue
             'human_review_note'  => $drafted['reviewNote'],
             'gmail_draft_action' => 'Create Gmail draft only',
             'low_confidence'     => $drafted['lowConfidence'],
+            'template_id'        => $drafted['templateId'],
         ];
 
         UnitPlatform::commitOutput($this->txId, new WorkerOutput(
@@ -70,7 +71,7 @@ class DraftEmailJob implements ShouldQueue
         // transaction — up to 3, on the 30/15/0-day cadence. draft_output
         // above stays as "most recent" for anything still reading it directly.
         $reminderNumber = UnitPlatform::recordClientDraft(
-            $this->txId, $output['to'], $output['subject'], $output['body'], $this->daysBeforeExpiry
+            $this->txId, $output['to'], $output['subject'], $output['body'], $this->daysBeforeExpiry, $drafted['templateId']
         );
 
         UnitPlatform::log('ava', $this->txId, 'draft_created', [
@@ -96,7 +97,7 @@ class DraftEmailJob implements ShouldQueue
             foreach ([2 => 15, 3 => 0] as $previewRound => $previewThreshold) {
                 $preview = $this->draftForRound($previewRound, $claude, $input, $memory, $classify, $read, $baseTemplate);
                 UnitPlatform::recordClientDraftPreview(
-                    $this->txId, $previewRound, $previewThreshold, $preview['to'], $preview['subject'], $preview['body']
+                    $this->txId, $previewRound, $previewThreshold, $preview['to'], $preview['subject'], $preview['body'], $preview['templateId']
                 );
             }
         }
@@ -184,6 +185,13 @@ class DraftEmailJob implements ShouldQueue
             || (bool) ($memory['rule_requires_approval'] ?? false)
             || $lowConfidence;
 
+        // Round 1 uses $baseTemplate (select_template's own output, keyed
+        // 'template_id'); round 2/3 reassign $template to a raw
+        // email_templates row (keyed 'id') via TemplateResolver::resolve()
+        // above — whichever key is present is the real template used for
+        // this specific round, not necessarily the same row as round 1's.
+        $templateId = $template['id'] ?? $template['template_id'] ?? null;
+
         return [
             'to'               => $memory['primary_contact_email'] ?? '',
             'subject'          => $subject,
@@ -191,6 +199,7 @@ class DraftEmailJob implements ShouldQueue
             'reviewNote'       => $reviewNote,
             'lowConfidence'    => $lowConfidence,
             'approvalRequired' => $approvalRequired,
+            'templateId'       => $templateId,
         ];
     }
 

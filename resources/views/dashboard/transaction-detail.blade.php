@@ -799,6 +799,9 @@ $statusColor = $statusColors[$tx->status] ?? ['bg'=>'var(--db-chip)','color'=>'v
                      its template, and only needs to approve once below. --}}
                 @include('dashboard.partials._client-draft-tabs', ['clientDrafts' => $stage['client_drafts'], 'wrapId' => 'cd-draft-' . $tx->tx_id])
               @elseif($stage['key'] === 'notify_stakeholders')
+                @if(!empty($c['template_id']))
+                <div style="text-align:right;margin-bottom:4px"><a href="{{ route('app.workers.templates', $tx->worker_slug) }}#template-{{ $c['template_id'] }}" style="font-size:11px;color:var(--accent-text,var(--db-text));text-decoration:underline">Edit template</a></div>
+                @endif
                 <div class="tc-msg">{{ $c['subject'] ?? '' }}{{ "\n\n" }}{{ $c['body'] ?? '' }}</div>
               @elseif($stage['key'] === 'notify_customer')
                 @if(!empty($c['sent']))
@@ -810,7 +813,30 @@ $statusColor = $statusColors[$tx->status] ?? ['bg'=>'var(--db-chip)','color'=>'v
                 @else
                   <div class="tc-msg-meta" style="color:var(--db-text-muted)">Drafted, not sent — "Renewal Complete Notice to Client" is off in AVA Settings</div>
                 @endif
+                @if(!empty($c['template_id']))
+                <div style="text-align:right;margin-bottom:4px"><a href="{{ route('app.workers.templates', $tx->worker_slug) }}#template-{{ $c['template_id'] }}" style="font-size:11px;color:var(--accent-text,var(--db-text));text-decoration:underline">Edit template</a></div>
+                @endif
                 <div class="tc-msg">{{ $c['subject'] ?? '' }}{{ "\n\n" }}{{ $c['body'] ?? '' }}</div>
+              @elseif($stage['key'] === 'select_template')
+                @if(!empty($c['has_cadence_rounds']))
+                <span class="tc-stage-tag soft" style="margin-bottom:8px;display:inline-block">Part of a 3-round cadence</span>
+                @endif
+                <div class="tc-field-row">
+                  @foreach($c as $k => $v)
+                    @continue($k === 'has_cadence_rounds' || $k === 'body_template')
+                    @if(is_bool($v))
+                    <div class="tc-field"><span class="lbl">{{ ucwords(str_replace('_',' ',$k)) }}</span>{{ $v ? 'Yes' : 'No' }}</div>
+                    @elseif(is_scalar($v) && $v !== null && $v !== '')
+                    <div class="tc-field"><span class="lbl">{{ ucwords(str_replace('_',' ',$k)) }}</span>{{ $v }}</div>
+                    @endif
+                  @endforeach
+                </div>
+                @if(!empty($c['body_template']))
+                <div class="tc-msg" style="margin-top:8px">{{ $c['body_template'] }}</div>
+                @endif
+                @if(!empty($c['template_id']))
+                <div style="margin-top:8px"><a href="{{ route('app.workers.templates', $tx->worker_slug) }}#template-{{ $c['template_id'] }}" style="font-size:11px;color:var(--accent-text,var(--db-text));text-decoration:underline">View template →</a></div>
+                @endif
               @elseif($stage['key'] === 'archive_evidence' && !empty($c['path']))
                 <a href="{{ route('app.transactions.archive-download', $tx->tx_id) }}" class="tc-btn tc-btn-ghost" style="display:inline-block;width:auto">Download PDF archive →</a>
               @elseif($stage['key'] === 'schedule_next_watch')

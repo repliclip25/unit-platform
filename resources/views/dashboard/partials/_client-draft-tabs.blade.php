@@ -35,15 +35,24 @@
     </div>
     <p style="font-size:12px;color:var(--db-text-muted);font-style:italic">Nothing consumed here yet.</p>
     @else
-    <div class="tc-msg-meta">
-      <strong>{{ ['1st','2nd','3rd'][($cd['reminder_number'] ?? 1) - 1] ?? ($cd['reminder_number'] . 'th') }} reminder</strong>
-      @if(!empty($cd['days_before_expiry']))· {{ $cd['days_before_expiry'] }} days before expiry @endif
-      @if(!empty($cd['preview']))
-        · preview — approving round 1 authorizes this cadence; the real message is regenerated closer to the date, so wording may shift
-      @elseif(!empty($cd['approved_at']))
-        · approved {{ \Carbon\Carbon::parse($cd['approved_at'])->format('M j, g:i A') }} — consumed
-      @else
-        · drafted, not yet approved
+    <div class="tc-msg-meta" style="display:flex;align-items:baseline;justify-content:space-between;gap:8px">
+      <span>
+        <strong>{{ ['1st','2nd','3rd'][($cd['reminder_number'] ?? 1) - 1] ?? ($cd['reminder_number'] . 'th') }} reminder</strong>
+        @if(!empty($cd['days_before_expiry']))· {{ $cd['days_before_expiry'] }} days before expiry @endif
+        @if(!empty($cd['preview']))
+          · preview — approving round 1 authorizes this cadence; the real message is regenerated closer to the date, so wording may shift
+        @elseif(!empty($cd['approved_at']))
+          · approved {{ \Carbon\Carbon::parse($cd['approved_at'])->format('M j, g:i A') }} — consumed
+        @else
+          · drafted, not yet approved
+        @endif
+      </span>
+      {{-- Round 2/3 can resolve to a different email_templates row than
+           round 1 — each round's own template_id (see DraftEmailJob /
+           UnitPlatform::recordClientDraft()) links here, not always
+           round 1's. --}}
+      @if(!empty($cd['template_id']))
+      <a href="{{ route('app.workers.templates', $tx->worker_slug) }}#template-{{ $cd['template_id'] }}" style="font-size:11px;color:var(--accent-text,var(--db-text));text-decoration:underline;white-space:nowrap">Edit template</a>
       @endif
     </div>
     <div class="tc-msg"><strong>{{ $cd['subject'] ?? '' }}</strong>{{ "\n\n" }}{{ $cd['body'] ?? '' }}</div>

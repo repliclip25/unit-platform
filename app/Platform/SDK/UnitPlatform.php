@@ -453,7 +453,7 @@ final class UnitPlatform
     //    instead of once. Each occurrence's full content is preserved here;
     //    draft_output stays as "most recent" for backward compatibility with
     //    anything still reading it directly. ────────────────────────────────
-    public static function recordClientDraft(string $txId, string $to, string $subject, string $body, ?int $daysBeforeExpiry = null): int
+    public static function recordClientDraft(string $txId, string $to, string $subject, string $body, ?int $daysBeforeExpiry = null, ?int $templateId = null): int
     {
         $tx     = DB::table('transactions')->where('tx_id', $txId)->first(['client_drafts', 'client_reminder_number']);
         $drafts = json_decode($tx->client_drafts ?? '[]', true) ?: [];
@@ -472,6 +472,11 @@ final class UnitPlatform
             'body'               => $body,
             'drafted_at'         => now()->toISOString(),
             'approved_at'        => null,
+            // Each cadence round can resolve to a different email_templates
+            // row (round 2/3 templates are separate rows from round 1's) —
+            // capture which one so the Transaction Center can link each
+            // round to its own template, not just round 1's.
+            'template_id'        => $templateId,
         ];
 
         // A preview already generated for this exact round (see below) gets
@@ -502,7 +507,7 @@ final class UnitPlatform
     //    gets sent later — ClientReminderCycleJob still regenerates each
     //    round fresh against whatever's true when its real threshold hits,
     //    via recordClientDraft() above, which replaces the preview in place.
-    public static function recordClientDraftPreview(string $txId, int $reminderNumber, ?int $daysBeforeExpiry, string $to, string $subject, string $body): void
+    public static function recordClientDraftPreview(string $txId, int $reminderNumber, ?int $daysBeforeExpiry, string $to, string $subject, string $body, ?int $templateId = null): void
     {
         $tx     = DB::table('transactions')->where('tx_id', $txId)->first(['client_drafts']);
         $drafts = json_decode($tx->client_drafts ?? '[]', true) ?: [];
@@ -522,6 +527,7 @@ final class UnitPlatform
             'drafted_at'         => now()->toISOString(),
             'approved_at'        => null,
             'preview'            => true,
+            'template_id'        => $templateId,
         ];
 
         usort($drafts, fn($a, $b) => ($a['reminder_number'] ?? 0) <=> ($b['reminder_number'] ?? 0));
