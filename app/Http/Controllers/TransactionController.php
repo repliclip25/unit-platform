@@ -67,13 +67,32 @@ class TransactionController extends Controller
         // same way, no new UI code required.
         $stages = $this->buildStageList($tx, $rawStages);
 
+        // TX- selector — lets the tenant jump to any other transaction that
+        // entered this deployment's pipeline without going back to the list
+        // view first. Same deployment scope as index(), same noise filter
+        // (hide dismissed/filtered — nothing a tenant would deliberately
+        // look for by number here).
+        $otherTransactions = DB::table('transactions')
+            ->where('deployment_id', $tx->deployment_id)
+            ->whereNotIn('status', ['dismissed', 'filtered_out'])
+            ->orderByDesc('id')
+            ->limit(100)
+            ->get(['tx_id', 'category', 'status', 'created_at']);
+
+        // Log Transaction (stage 'log_entry') has no output_column of its
+        // own — nothing renders on that card today. The right panel is the
+        // first place this data appears: the actual renewal_register row
+        // this stage wrote, not a re-derivation of it.
+        $renewalRegisterRow = DB::table('renewal_register')->where('tx_id', $txId)->first();
+
         $shell = \App\Platform\Services\WorkerShellService::build(auth()->id(), '');
         extract($shell); // workerCatalog, registryRows, registryRow, profileImg, coverImg, tokenTotal
         $firstName = explode(' ', trim(auth()->user()->name))[0];
 
         return view('dashboard.transaction-detail', compact(
             'tx', 'nuxRegister', 'stagesByKey', 'stages', 'dep',
-            'workerCatalog', 'tokenTotal', 'firstName'
+            'workerCatalog', 'tokenTotal', 'firstName',
+            'otherTransactions', 'renewalRegisterRow'
         ));
     }
 
@@ -130,10 +149,20 @@ class TransactionController extends Controller
         // reading a raw source string.
         $source          = json_decode($tx->raw_input ?? '{}', true)['source'] ?? null;
         $isDetectRoute   = $source === 'asset_watch';
-        $routeOverrides  = $isDetectRoute ? [
-            'webhook'    => ['label' => 'Detected — Asset Watch', 'sub' => 'Renewal date crossed a watch threshold in your asset registry'],
-            'read_email' => ['label' => 'Asset Data',             'sub' => 'No inbound email — pulled directly from the asset registry'],
-        ] : [];
+        $isHumanTrigger  = $source === 'human_trigger';
+        $routeOverrides  = match (true) {
+            $isDetectRoute  => [
+                'webhook'    => ['label' => 'Detected — Asset Watch', 'sub' => 'Renewal date crossed a watch threshold in your asset registry'],
+                'read_email' => ['label' => 'Asset Data',             'sub' => 'No inbound email — pulled directly from the asset registry'],
+            ],
+            // "Renew Now" — a tenant manually starting a renewal from the
+            // asset/group view, no email and no watch threshold involved.
+            $isHumanTrigger => [
+                'webhook'    => ['label' => 'Detected — Manual Push', 'sub' => 'Started manually from the asset registry ("Renew Now")'],
+                'read_email' => ['label' => 'Asset Data',             'sub' => 'No inbound email — pulled directly from the asset registry'],
+            ],
+            default         => [],
+        };
 
         $daysBeforeExpiryByRound = [1 => 30, 2 => 15, 3 => 0];
         if (!$tx->is_test) {

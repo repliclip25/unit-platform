@@ -37,6 +37,13 @@ class NotifyStakeholdersJob implements ShouldQueue
         $asset        = $memory['asset'] ?? $this->txId;
         $clientSuffix = $memory['matched_client'] ? " ({$memory['matched_client']})" : '';
 
+        // This notifies the TENANT, not the client — their own name, not
+        // the matched contact's. Not on WorkerInput today (only tenantEmail
+        // is), so read directly rather than expanding that contract for one
+        // job's greeting.
+        $tenantName      = DB::table('users')->where('id', $input->userId)->value('name');
+        $tenantFirstName = $tenantName ? explode(' ', trim($tenantName))[0] : 'there';
+
         $userTemplates = DB::table('email_templates')
             ->where('user_id', $input->userId)->where('worker_slug', $input->workerSlug)
             ->where('stage_key', 'notify_stakeholders')->where('active', true)->get()->all();
@@ -47,9 +54,9 @@ class NotifyStakeholdersJob implements ShouldQueue
 
         $subject = str_replace('{{asset}}', $asset, $template['subject_template'] ?? "Renewal complete — {$asset}");
         $body    = str_replace(
-            ['{{asset}}', '{{client_suffix}}'],
-            [$asset, $clientSuffix],
-            $template['body_template'] ?? "Hi,\n\nThe renewal for {$asset}{$clientSuffix} is complete. The next cycle is already being watched.\n\n— AVA"
+            ['{{asset}}', '{{client_suffix}}', '{{tenant_first_name}}'],
+            [$asset, $clientSuffix, $tenantFirstName],
+            $template['body_template'] ?? "Hi {$tenantFirstName},\n\nThe renewal for {$asset}{$clientSuffix} is complete. The next cycle is already being watched.\n\n— AVA"
         );
 
         // Message gate — defaults enabled, preserving today's live behavior.
@@ -64,7 +71,7 @@ class NotifyStakeholdersJob implements ShouldQueue
             EmailDispatcher::send(
                 'ava_renewal_complete',
                 $input->tenantEmail,
-                'there',
+                $tenantName ?? 'there',
                 $input->userId,
                 ['{asset}' => $memory['asset'] ?? 'your renewal', '{client}' => $memory['matched_client'] ?? ''],
                 ['subject' => $subject, 'body' => $body]

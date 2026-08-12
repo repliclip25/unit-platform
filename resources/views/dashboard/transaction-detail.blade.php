@@ -85,6 +85,9 @@ body{font-family:'Inter',sans-serif;background:var(--db-bg);color:var(--db-text)
 .ob-security p{font-size:11.5px;color:var(--db-text-muted);line-height:1.55}
 
 .mem-right{background:var(--db-card);border-left:1px solid var(--db-border);overflow-y:auto}
+.tc-panel-empty{padding:24px 20px;font-size:12.5px;color:var(--db-text-muted)}
+.tc-panel{padding:20px}
+.tc-panel-head{font-size:13px;font-weight:700;color:var(--db-text);margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--db-border)}
 
 /* ── CONTENT ── */
 .mem-main{overflow-y:auto;padding:28px 32px 60px}
@@ -108,6 +111,8 @@ body{font-family:'Inter',sans-serif;background:var(--db-bg);color:var(--db-text)
 .td-meta-sm{font-size:11px;color:var(--db-text-muted);margin-top:4px}
 .td-gmail-id{font-size:11px;color:var(--db-text-muted);margin-bottom:2px}
 .td-gmail-val{font-size:11px;font-family:monospace;color:var(--db-text);word-break:break-all}
+.td-tx-select{font-size:11px;font-family:monospace;color:var(--db-text);background:transparent;border:1px solid var(--db-border);border-radius:6px;padding:2px 6px;max-width:280px;cursor:pointer}
+.td-tx-select:hover{border-color:var(--db-text-muted)}
 .td-gmail-saved{font-size:11px;color:#22c55e;margin-top:2px}
 
 .td-banner{border-radius:14px;padding:16px 18px;margin-bottom:16px}
@@ -160,6 +165,7 @@ body{font-family:'Inter',sans-serif;background:var(--db-bg);color:var(--db-text)
    hard gate, a lighter tag otherwise), pending (dimmed, no content). ── */
 .tc-list{display:flex;flex-direction:column;gap:8px;margin-bottom:16px}
 .tc-stage{border:1px solid var(--db-border);border-radius:12px;padding:13px 16px;opacity:.4;transition:opacity .2s}
+.tc-stage-active{box-shadow:0 0 0 2px var(--accent-text,var(--accent)) inset}
 .tc-stage.is-done,.tc-stage.is-active{opacity:1}
 .tc-stage.is-active.gate-hard{border-color:#F5C518;background:rgba(245,197,24,.08)}
 .tc-stage-head{display:flex;align-items:center;gap:10px}
@@ -245,7 +251,9 @@ $source   = $rawInput['source'] ?? 'unknown';
 $sourceLabels = [
     'gmail_webhook'    => 'Fetched from Gmail',
     'asset_watch'      => 'Detected from asset registry',
+    'human_trigger'    => 'Started manually ("Renew Now")',
     'fast_track_test'  => 'Fast Track test run',
+    'manual_test'      => 'Manual test run',
     'public_demo'      => 'Public demo run',
 ];
 $sourceLabel = $sourceLabels[$source] ?? $source;
@@ -395,7 +403,16 @@ $statusColor = $statusColors[$tx->status] ?? ['bg'=>'var(--db-chip)','color'=>'v
         <div style="display:flex;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;gap:12px">
           <div style="min-width:0">
             <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
-              <span class="td-gmail-val">{{ $tx->tx_id }}</span>
+              {{-- TX- selector — jump to any other transaction in this
+                   deployment's pipeline without going back to the list. --}}
+              <select id="tx-selector" class="td-tx-select" title="Switch transaction">
+                <option value="" disabled selected>{{ $tx->tx_id }}</option>
+                @foreach($otherTransactions as $other)
+                  @if($other->tx_id !== $tx->tx_id)
+                  <option value="{{ route('app.transactions.show', ['slug' => $tx->worker_slug, 'txId' => $other->tx_id]) }}">{{ $other->tx_id }} — {{ $other->category ?? 'Processing' }} ({{ $other->status }})</option>
+                  @endif
+                @endforeach
+              </select>
               @if($tx->priority)
               <span class="td-badge td-badge-priority {{ in_array($tx->priority, ['High','Critical']) ? 'high' : '' }}">{{ $tx->priority }}</span>
               @endif
@@ -574,7 +591,7 @@ $statusColor = $statusColors[$tx->status] ?? ['bg'=>'var(--db-chip)','color'=>'v
           $isGate = !empty($stage['gate_type']);
           $classes = 'tc-stage is-' . $stage['state'] . ($isGate ? ' gate-' . $stage['gate_type'] : '') . (!empty($stage['skipped_by_gate']) ? ' is-skipped' : '');
         @endphp
-        <div class="{{ $classes }}">
+        <div class="{{ $classes }}" data-stage-key="{{ $stage['key'] }}" onclick="tcShowPanel('{{ $stage['key'] }}')" style="cursor:pointer">
           <div class="tc-stage-head">
             <span class="tc-stage-icon">
               @if(!empty($stage['skipped_by_gate']))–@elseif($stage['state'] === 'done')✓@else{{ $stage['i'] + 1 }}@endif
@@ -761,6 +778,7 @@ $statusColor = $statusColors[$tx->status] ?? ['bg'=>'var(--db-chip)','color'=>'v
                   </form>
                 </div>
                 @endif
+                <p style="font-size:12px;color:var(--db-text-muted);margin-bottom:10px">Confirm that payment has been received for this transaction.</p>
                 <div class="tc-btn-row">
                   <form method="POST" action="{{ route('app.transactions.confirm-renewal', $tx->tx_id) }}" style="flex:1">
                     @csrf<button type="submit" class="tc-btn tc-btn-primary" style="width:100%">Confirm payment</button>
@@ -843,7 +861,68 @@ $statusColor = $statusColors[$tx->status] ?? ['bg'=>'var(--db-chip)','color'=>'v
     </div>
   </main>
 
-  <aside class="mem-right"></aside>
+  <aside class="mem-right" id="tc-right-panel">
+    {{-- One panel per stage, pre-rendered server-side (buildStageList()
+         already computed everything) and toggled with plain JS on stage-
+         card click — matches this page's existing vanilla-JS pattern
+         (theme toggle, menu dropdown), no new framework. Only stages with
+         real additional detail get real content; the rest fall through to
+         a neutral placeholder rather than being wired up empty. --}}
+    <div class="tc-panel-empty" id="tc-panel-placeholder">
+      <p>Click a stage to see its details here.</p>
+    </div>
+    @foreach($stages as $panelStage)
+    <div class="tc-panel" id="tc-panel-{{ $panelStage['key'] }}" style="display:none">
+      <div class="tc-panel-head">{{ $panelStage['label'] }}</div>
+      @switch($panelStage['key'])
+        @case('webhook')
+          <div class="tc-field-row">
+            <div class="tc-field"><span class="lbl">Detected via</span>{{ $panelStage['label'] }}</div>
+            <div class="tc-field"><span class="lbl">When</span>{{ \Carbon\Carbon::parse($tx->created_at)->format('M j, Y · g:i A') }}</div>
+          </div>
+          <p style="font-size:12px;color:var(--db-text-muted);margin-top:8px">{{ $panelStage['sub'] }}</p>
+          @break
+
+        @case('read_email')
+          @php $readContent = $panelStage['content'] ?? []; @endphp
+          @if($readContent)
+            <div class="tc-field-row">
+              @foreach($readContent as $k => $v)
+                @if(is_scalar($v) && $v !== null && $v !== '')
+                <div class="tc-field"><span class="lbl">{{ ucwords(str_replace('_',' ',$k)) }}</span>{{ is_bool($v) ? ($v ? 'Yes' : 'No') : $v }}</div>
+                @endif
+              @endforeach
+            </div>
+          @else
+            <p style="font-size:12px;color:var(--db-text-muted)">Not reached yet.</p>
+          @endif
+          @break
+
+        @case('log_entry')
+          @if($renewalRegisterRow)
+            <div class="tc-field-row">
+              <div class="tc-field"><span class="lbl">Category</span>{{ $renewalRegisterRow->category }}</div>
+              <div class="tc-field"><span class="lbl">Asset</span>{{ $renewalRegisterRow->asset }}</div>
+              <div class="tc-field"><span class="lbl">Client</span>{{ $renewalRegisterRow->client }}</div>
+              <div class="tc-field"><span class="lbl">Contact</span>{{ $renewalRegisterRow->contact }}</div>
+              <div class="tc-field"><span class="lbl">Priority</span>{{ $renewalRegisterRow->priority }}</div>
+              <div class="tc-field"><span class="lbl">Status</span>{{ $renewalRegisterRow->status }}</div>
+              @if($renewalRegisterRow->due_date)
+              <div class="tc-field"><span class="lbl">Due Date</span>{{ \Carbon\Carbon::parse($renewalRegisterRow->due_date)->format('M j, Y') }}</div>
+              @endif
+            </div>
+            <p style="font-size:11px;color:var(--db-text-muted);margin-top:8px">This is the actual renewal_register row this stage wrote.</p>
+          @else
+            <p style="font-size:12px;color:var(--db-text-muted)">Not reached yet.</p>
+          @endif
+          @break
+
+        @default
+          <p style="font-size:12px;color:var(--db-text-muted)">No additional detail for this stage yet.</p>
+      @endswitch
+    </div>
+    @endforeach
+  </aside>
   </div>
 
 </div>{{-- ob-page --}}
@@ -868,7 +947,27 @@ $statusColor = $statusColors[$tx->status] ?? ['bg'=>'var(--db-chip)','color'=>'v
       menuDropdown.classList.remove('open');
     }
   });
+
+  var txSelector = document.getElementById('tx-selector');
+  if (txSelector) {
+    txSelector.addEventListener('change', function () {
+      if (this.value) window.location.href = this.value;
+    });
+  }
 })();
+
+// Every stage's panel is already rendered server-side (buildStageList()
+// computed it) — this just shows the one that matches the clicked stage
+// and hides the rest, plus highlights the active card. No AJAX round-trip.
+function tcShowPanel(stageKey) {
+  document.getElementById('tc-panel-placeholder').style.display = 'none';
+  document.querySelectorAll('.tc-panel').forEach(function (el) {
+    el.style.display = (el.id === 'tc-panel-' + stageKey) ? 'block' : 'none';
+  });
+  document.querySelectorAll('[data-stage-key]').forEach(function (el) {
+    el.classList.toggle('tc-stage-active', el.dataset.stageKey === stageKey);
+  });
+}
 </script>
 
 @include('partials.tracking')

@@ -44,6 +44,11 @@ class NotifyCustomerJob implements ShouldQueue
 
         $asset        = $memory['asset'] ?? $this->txId;
         $clientEmail  = $memory['primary_contact_email'] ?? null;
+        $contactName  = $memory['primary_contact_name'] ?? null;
+        // Same placeholder name DraftEmailJob's fillPlaceholders() already
+        // uses for this — keeps the convention consistent across every
+        // client-facing template, not just the drafting stage's.
+        $contactFirstName = $contactName ? explode(' ', trim($contactName))[0] : 'there';
 
         $nextRenewalDate = $renewal['new_date'] ?? null;
         $nextReminderDate = $nextRenewalDate
@@ -63,13 +68,14 @@ class NotifyCustomerJob implements ShouldQueue
 
         $placeholders = [
             '{{asset}}'              => $asset,
+            '{{contact_first_name}}' => $contactFirstName,
             '{{next_renewal_date}}'  => $nextRenewalDateFmt,
             '{{next_reminder_date}}' => $nextReminderDate ?? 'closer to renewal',
             '{{sender_name}}'        => 'Franklin',
         ];
 
         $subject = str_replace(array_keys($placeholders), array_values($placeholders), $template['subject_template'] ?? "Your renewal for {$asset} is complete");
-        $body    = str_replace(array_keys($placeholders), array_values($placeholders), $template['body_template'] ?? "Hi,\n\nThis confirms the renewal for {$asset} is complete. Your next renewal is due {$nextRenewalDateFmt}.\n\nBest regards,\nFranklin");
+        $body    = str_replace(array_keys($placeholders), array_values($placeholders), $template['body_template'] ?? "Hi {$contactFirstName},\n\nThis confirms the renewal for {$asset} is complete. Your next renewal is due {$nextRenewalDateFmt}.\n\nBest regards,\nFranklin");
 
         // Message gate — off by default (opt-in), unlike every other gate
         // in this pipeline which defaults on. See class docblock.
