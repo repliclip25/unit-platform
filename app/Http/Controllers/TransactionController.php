@@ -135,6 +135,26 @@ class TransactionController extends Controller
             $durationMsByLogKey[$row->stage_key]  = $row->duration_ms;
         }
 
+        // Which model actually answered each AI call — usage_events already
+        // logs this for every real call (it's what billing/cost is computed
+        // from), so this is genuine historical record, not current config.
+        // The prompt text itself is never persisted anywhere (no per-call
+        // snapshot exists — deployment_prompt_overrides is live config, not
+        // versioned), so deliberately not attempting to show "the exact
+        // prompt used" here — that would be a current-state guess dressed
+        // up as a historical fact. Same log_stage_key reconciliation as the
+        // stage_log lookups above (usage_events.stage uses the same short
+        // aliases — 'read', 'classify', 'memory', 'draft').
+        $modelByLogKey = [];
+        foreach (
+            DB::table('usage_events')
+                ->where('tx_id', $tx->tx_id)
+                ->orderBy('id')->get(['stage', 'model'])
+            as $row
+        ) {
+            $modelByLogKey[$row->stage] = $row->model;
+        }
+
         // Show the full cadence up front, not just what's happened so far —
         // real (non-Fast-Track) transactions get up to 3 rounds, so a
         // not-yet-drafted 2nd/3rd round renders as an upcoming placeholder
@@ -178,7 +198,7 @@ class TransactionController extends Controller
             usort($clientDrafts, fn($a, $b) => ($a['reminder_number'] ?? 0) <=> ($b['reminder_number'] ?? 0));
         }
 
-        return collect($rawStages)->map(function ($stage, $i) use ($tx, $currentIdx, $reminders, $clientDrafts, $routeOverrides, $completedAtByLogKey, $durationMsByLogKey) {
+        return collect($rawStages)->map(function ($stage, $i) use ($tx, $currentIdx, $reminders, $clientDrafts, $routeOverrides, $completedAtByLogKey, $durationMsByLogKey, $modelByLogKey) {
             $state = $i < $currentIdx ? 'done' : ($i === $currentIdx ? 'active' : 'pending');
 
             // Not every worker's pipelineStages() declares output_column on
@@ -209,6 +229,7 @@ class TransactionController extends Controller
                 'reminders'      => $stageReminders,
                 'completed_at'   => $completedAtByLogKey[$stage['log_stage_key'] ?? $stage['key']] ?? null,
                 'duration_ms'    => $durationMsByLogKey[$stage['log_stage_key'] ?? $stage['key']] ?? null,
+                'ai_model'       => $modelByLogKey[$stage['log_stage_key'] ?? $stage['key']] ?? null,
                 // Draft Email and human_decide both show the same up-to-3
                 // client drafts — one tenant reviews every cadence message
                 // once, instead of hunting across two stage cards for it.
