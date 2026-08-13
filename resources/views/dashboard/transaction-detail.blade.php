@@ -292,6 +292,11 @@ $statusColor = $statusColors[$tx->status] ?? ['bg'=>'var(--db-chip)','color'=>'v
 // actually is. Pair it with whichever stage is currently 'active' in the
 // already-computed $stages list.
 $currentStage = collect($stages)->firstWhere('state', 'active');
+// push_draft's card needs the actual message content to offer Copy/Open-
+// in-email — that content lives on the draft_email stage's own output, not
+// push_draft's (which only records delivery outcome: to, in_app_only,
+// gmail_draft_id, fast_track, auto_sent).
+$draftEmailStage = collect($stages)->firstWhere('key', 'draft_email');
 $currentStageLabel = $currentStage['label'] ?? (collect($stages)->last()['label'] ?? null);
 
 // "SSL Expiry" as a heading with the asset in small supporting text buries
@@ -838,9 +843,12 @@ if ($tx->category && $titleAsset) {
               @endif
             @endif
 
-            {{-- Everything else — generic content dump from the contract's output_column --}}
-            @if(!in_array($stage['key'], ['human_decide','request_invoice','request_documents','confirm_payment']) && $stage['content'])
-              @php $c = $stage['content']; @endphp
+            {{-- Everything else — generic content dump from the contract's output_column.
+                 push_draft is allowed through even with empty content — transactions that
+                 completed this stage before push_output existed (see AVA 2.2 changelog)
+                 still need the gmail_draft_id fallback below, not silence. --}}
+            @if(!in_array($stage['key'], ['human_decide','request_invoice','request_documents','confirm_payment']) && ($stage['content'] || $stage['key'] === 'push_draft'))
+              @php $c = $stage['content'] ?? []; @endphp
               @if($stage['key'] === 'draft_email')
                 {{-- Same tab switcher as Approve & Send — the tenant sees
                      every cadence message here too, click a round to preview
@@ -884,6 +892,41 @@ if ($tx->category && $titleAsset) {
                 @endif
                 @if(!empty($c['template_id']))
                 <div style="margin-top:8px"><a href="{{ route('app.workers.templates', $tx->worker_slug) }}#template-{{ $c['template_id'] }}" style="font-size:11px;color:var(--accent-text,var(--db-text));text-decoration:underline">View template →</a></div>
+                @endif
+              @elseif($stage['key'] === 'push_draft')
+                @php $draftContent = $draftEmailStage['content'] ?? []; @endphp
+                @if(!empty($c['auto_sent']))
+                  <p style="font-size:12px;color:var(--db-text-muted)">Sent automatically — no approval was required for this one.</p>
+                @elseif(!empty($c['in_app_only']))
+                  {{-- No Gmail connected for this deployment — this is the
+                       only place Copy/Open-in-email lives now (moved off
+                       Draft Email, which doesn't yet know whether Gmail is
+                       connected at review time). --}}
+                  <p style="font-size:12px;color:var(--db-text-muted);margin-bottom:8px">No Gmail connected — copy the message below or open it in your email client.</p>
+                  @if($draftContent)
+                  <div class="tc-msg">{{ $draftContent['subject'] ?? '' }}{{ "\n\n" }}{{ $draftContent['body'] ?? '' }}</div>
+                  <div style="display:flex;gap:8px;margin-top:8px">
+                    <button type="button" class="tc-btn tc-btn-ghost" style="width:auto;display:inline-flex;align-items:center;gap:6px;padding:6px 12px"
+                      onclick="navigator.clipboard.writeText({{ \Illuminate\Support\Js::from(($draftContent['subject'] ?? '') . "\n\n" . ($draftContent['body'] ?? '')) }}); var el=this.querySelector('.tc-copy-label'); var prev=el.textContent; el.textContent='Copied'; setTimeout(function(){el.textContent=prev}, 1500)">
+                      <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="1.8" fill="none"><rect x="9" y="9" width="12" height="12" rx="2"/><path stroke-linecap="round" stroke-linejoin="round" d="M5 15H4a1 1 0 01-1-1V4a1 1 0 011-1h10a1 1 0 011 1v1"/></svg>
+                      <span class="tc-copy-label">Copy</span>
+                    </button>
+                    <a class="tc-btn tc-btn-ghost" style="width:auto;display:inline-flex;align-items:center;gap:6px;padding:6px 12px;text-decoration:none"
+                      href="mailto:{{ rawurlencode($c['to'] ?? '') }}?subject={{ rawurlencode($draftContent['subject'] ?? '') }}&amp;body={{ rawurlencode($draftContent['body'] ?? '') }}">
+                      <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="1.8" fill="none"><rect x="3" y="5" width="18" height="14" rx="2"/><path stroke-linecap="round" stroke-linejoin="round" d="M3 7l9 6 9-6"/></svg>
+                      Open in Email
+                    </a>
+                  </div>
+                  @endif
+                @elseif(!empty($c['gmail_draft_id']) || $tx->gmail_draft_id)
+                  <p style="font-size:12px;color:var(--db-text-muted)">Draft created in Gmail — see the Gmail Draft box above.</p>
+                @else
+                  {{-- Transaction completed push_draft before push_output
+                       existed (see AVA 2.2 changelog) — nothing was ever
+                       recorded to backfill from. Fall back to whatever's
+                       still reliable: the always-populated gmail_draft_id
+                       column, or an honest "no detail" note. --}}
+                  <p style="font-size:12px;color:var(--db-text-muted)">{{ $tx->gmail_draft_id ? 'Draft created in Gmail — see the Gmail Draft box above.' : 'No delivery detail recorded for this transaction.' }}</p>
                 @endif
               @elseif($stage['key'] === 'archive_evidence' && !empty($c['path']))
                 <a href="{{ route('app.transactions.archive-download', $tx->tx_id) }}" class="tc-btn tc-btn-ghost" style="display:inline-block;width:auto">Download PDF archive →</a>

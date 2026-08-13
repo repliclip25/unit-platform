@@ -24,7 +24,7 @@ class AvaWorker implements WorkerContract
         return [
             'name'        => 'AVA Email Worker',
             'slug'        => 'ava',
-            'version'     => '2.1',
+            'version'     => '2.2',
             'description' => 'Monitors your Gmail inbox and asset registry, classifies renewal and subscription requests, drafts responses using your contacts, assets, and rules, and carries approved renewals through invoicing, payment confirmation, and a signed closeout archive.',
         ];
     }
@@ -244,7 +244,7 @@ class AvaWorker implements WorkerContract
             ['key' => 'human_decide',   'label' => 'Approve & Send',  'sub' => 'You decide — AVA never sends without this', 'icon' => 'check', 'job_class' => null, 'gate_type' => 'hard',
                 'output_column' => null,             'group' => 'approved', 'group_label' => 'Approved', 'group_color' => '#F5C518', 'image' => '/images/ava-life.png', 'log_stage_key' => 'human_decide'],
             ['key' => 'push_draft',     'label' => 'Push to Gmail',   'sub' => 'Create draft in inbox',          'icon' => 'send',     'job_class' => 'PushToGmailJob',
-                'output_column' => null,             'group' => 'delivered','group_label' => 'Delivered','group_color' => '#06b6d4', 'image' => '/images/ava-life.png', 'log_stage_key' => 'push'],
+                'output_column' => 'push_output',    'group' => 'delivered','group_label' => 'Delivered','group_color' => '#06b6d4', 'image' => '/images/ava-life.png', 'log_stage_key' => 'push'],
             ['key' => 'request_invoice',    'label' => 'Request Invoice',   'sub' => 'Attach one if you have it — never blocks the renewal', 'icon' => 'receipt', 'job_class' => 'RequestInvoiceJob', 'gate_type' => 'soft',
                 'output_column' => 'invoice_output',   'group' => 'fulfilled', 'group_label' => 'Fulfilled', 'group_color' => '#0ea5e9', 'image' => '/images/ava-life.png', 'log_stage_key' => 'request_invoice',
                 // The stage's own job (RequestInvoiceJob) never calls AI — this
@@ -772,6 +772,28 @@ class AvaWorker implements WorkerContract
                     'Cancel any in-flight transactions currently paused at human_decide before deploying — '
                     . 'they were queued under the old stage meaning and should not be resumed.',
                     'No settings changes required — gate keys and toggles are unchanged, only their sequence.',
+                ],
+            ],
+            [
+                'version'  => '2.2',
+                'date'     => '2026-08-06',
+                'notes'    => 'push_draft now has a real output_column (push_output) — its output_column was '
+                            . 'null before, so everything PushToGmailJob committed (in_app_only, recipient, '
+                            . 'fast_track, auto_sent) was silently discarded on every run; only gmail_draft_id '
+                            . '(a separate top-level column) ever actually landed. The Transaction Center\'s '
+                            . 'push_draft card is real now instead of falling through to a raw generic field '
+                            . 'dump — shows Copy/Open-in-email when no Gmail is connected, or a plain '
+                            . 'confirmation when a real Gmail draft was created or the message auto-sent. '
+                            . 'Copy/Open-in-email moved off the Draft Email card (Stage 7) to here, since this '
+                            . 'is the stage that actually knows whether Gmail is connected.',
+                'breaking' => true,
+                'breaking_reason' => 'push_draft\'s output_shape changed from nothing to a real shape '
+                            . '(to, in_app_only, gmail_draft_id, fast_track, auto_sent).',
+                'upgrade_steps' => [
+                    'No action required — this is additive. Transactions that completed push_draft before '
+                    . 'this version show no push_output data on the Transaction Center (nothing was ever '
+                    . 'recorded to backfill from); the card falls back to the always-reliable gmail_draft_id '
+                    . 'column for those. Every transaction going forward gets the full breakdown.',
                 ],
             ],
         ];

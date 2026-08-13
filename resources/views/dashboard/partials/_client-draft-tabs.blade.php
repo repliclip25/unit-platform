@@ -56,28 +56,9 @@
       @endif
     </div>
     <div class="tc-msg"><strong>{{ $cd['subject'] ?? '' }}</strong>{{ "\n\n" }}{{ $cd['body'] ?? '' }}</div>
-
-    {{-- A preview isn't real yet — nothing to copy or send. No Gmail
-         connected for this deployment — PushToGmailJob skips the API call
-         entirely and this draft only ever exists in UNIT (see its own
-         docblock, 'in_app_only'). The tenant still needs a way to actually
-         send a REAL draft: copy the text, or hand off to whatever email
-         client is already configured on their device via mailto:, neither
-         of which needs any Gmail connection at all. --}}
-    @if(empty($cd['preview']) && !$tx->gmail_draft_id)
-    <div style="display:flex;gap:8px;margin-top:8px">
-      <button type="button" class="tc-btn tc-btn-ghost" style="width:auto;display:inline-flex;align-items:center;gap:6px;padding:6px 12px"
-        onclick="navigator.clipboard.writeText({{ \Illuminate\Support\Js::from(($cd['subject'] ?? '') . "\n\n" . ($cd['body'] ?? '')) }}); var el=this.querySelector('.tc-copy-label'); var prev=el.textContent; el.textContent='Copied'; setTimeout(function(){el.textContent=prev}, 1500)">
-        <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="1.8" fill="none"><rect x="9" y="9" width="12" height="12" rx="2"/><path stroke-linecap="round" stroke-linejoin="round" d="M5 15H4a1 1 0 01-1-1V4a1 1 0 011-1h10a1 1 0 011 1v1"/></svg>
-        <span class="tc-copy-label">Copy</span>
-      </button>
-      <a class="tc-btn tc-btn-ghost" style="width:auto;display:inline-flex;align-items:center;gap:6px;padding:6px 12px;text-decoration:none"
-        href="mailto:{{ rawurlencode($cd['to'] ?? '') }}?subject={{ rawurlencode($cd['subject'] ?? '') }}&amp;body={{ rawurlencode($cd['body'] ?? '') }}">
-        <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="1.8" fill="none"><rect x="3" y="5" width="18" height="14" rx="2"/><path stroke-linecap="round" stroke-linejoin="round" d="M3 7l9 6 9-6"/></svg>
-        Open in Email
-      </a>
-    </div>
-    @endif
+    {{-- Copy/Open-in-email moved to the Push to Gmail card (see AVA 2.2
+         changelog) — that's the stage that actually knows whether Gmail is
+         connected; at review time here, nothing's been decided yet. --}}
     @endif
   </div>
   @endforeach
