@@ -764,6 +764,14 @@ if ($tx->category && $titleAsset) {
                   <div class="tc-field"><span class="lbl">Issued</span>{{ $inv['ocr']['issued_date'] ?? '—' }}</div>
                   <div class="tc-field"><span class="lbl">Due</span>{{ $inv['ocr']['due_date'] ?? '—' }}</div>
                 </div>
+                @if(!empty($inv['url']))
+                <p style="font-size:12px;margin-top:6px"><a href="{{ $inv['url'] }}" target="_blank" rel="noopener" style="color:var(--accent-text,var(--db-text));text-decoration:underline">{{ $inv['url'] }}</a></p>
+                @elseif(!empty($inv['file_path']))
+                <p style="font-size:12px;color:var(--db-text-muted);margin-top:6px">File attached — no OCR errors on this one.</p>
+                @endif
+                @if(!empty($inv['ocr']['error']))
+                <p style="font-size:12px;color:var(--db-text-muted);margin-top:6px">{{ $inv['ocr']['error'] }} The file is still attached — this only affects automatic amount/date extraction.</p>
+                @endif
                 @foreach($inv['client_messages'] ?? [] as $m)
                 <div class="tc-msg-meta"><strong>Message {{ $m['sequence'] ?? 1 }}</strong> · {{ \Carbon\Carbon::parse($m['sent_at'])->format('M j, g:i A') }}</div>
                 <div class="tc-msg">{{ $m['subject'] ?? '' }}{{ "\n\n" }}{{ $m['body'] ?? '' }}</div>
@@ -774,8 +782,12 @@ if ($tx->category && $titleAsset) {
                 <p style="font-size:12px;color:var(--db-text-muted);margin-bottom:8px">Not attached yet — this won't block the renewal either way.</p>
                 <form method="POST" action="{{ route('app.transactions.attach-invoice', $tx->tx_id) }}" enctype="multipart/form-data">
                   @csrf
-                  <input type="file" name="invoice_file" accept="application/pdf" class="tc-file-input" required>
-                  <button type="submit" class="tc-btn tc-btn-ghost">Attach invoice</button>
+                  <input type="file" name="invoice_file" accept="application/pdf,.docx" class="tc-file-input"
+                    onchange="if(this.value){document.getElementById('inv-url-{{ $tx->tx_id }}').value=''}">
+                  <div style="margin:6px 0;font-size:11px;color:var(--db-text-muted)">— or —</div>
+                  <input type="url" name="invoice_url" id="inv-url-{{ $tx->tx_id }}" placeholder="Paste an invoice link (Stripe, Xero, QuickBooks...)" class="tc-file-input"
+                    oninput="if(this.value){this.closest('form').querySelector('input[type=file]').value=''}">
+                  <button type="submit" class="tc-btn tc-btn-ghost" style="margin-top:8px">Attach invoice</button>
                 </form>
               @endif
               @foreach($stage['reminders'] as $r)

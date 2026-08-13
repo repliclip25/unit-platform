@@ -561,25 +561,42 @@ class TransactionController extends Controller
 
     // ── Stage 10 (Request Invoice, soft gate) ────────────────────────────
     // Never blocks the pipeline — this just resolves the "attach invoice"
-    // nudge whenever the tenant gets to it, real invoices assumed PDF-only.
+    // nudge whenever the tenant gets to it. Accepts a PDF/Word file (OCR'd
+    // for amount/dates) or a URL (a Stripe/Xero/QuickBooks invoice link —
+    // nothing to extract from, and fetching arbitrary external URLs
+    // server-side isn't something to do without it being asked for
+    // explicitly, so it's stored as a plain reference, OCR skipped).
     public function attachInvoice(string $txId, Request $request)
     {
         $tx = DB::table('transactions')->where('tx_id', $txId)->where('user_id', auth()->id())->firstOrFail();
-        $request->validate(['invoice_file' => 'required|file|mimes:pdf|max:10240']);
-
-        $disk = \Illuminate\Support\Facades\Storage::disk(config('filesystems.media_disk', 'public'));
-        $path = $request->file('invoice_file')->storeAs(
-            "invoices/{$txId}", 'invoice-' . now()->timestamp . '.pdf', config('filesystems.media_disk', 'public')
-        );
-
-        $ocr = \App\Platform\Services\InvoiceOcrService::extract($disk->path($path), auth()->id(), $tx->worker_slug, $txId, $tx->deployment_id);
+        $request->validate([
+            'invoice_file' => 'required_without:invoice_url|nullable|file|mimes:pdf,docx|max:10240',
+            'invoice_url'  => 'required_without:invoice_file|nullable|url|max:2048',
+        ]);
 
         $memory  = json_decode($tx->memory_output ?? '{}', true) ?: [];
         $asset   = $memory['asset'] ?? 'this renewal';
+
+        if ($request->hasFile('invoice_file')) {
+            $file      = $request->file('invoice_file');
+            $extension = strtolower($file->getClientOriginalExtension()) ?: 'pdf';
+            $disk      = \Illuminate\Support\Facades\Storage::disk(config('filesystems.media_disk', 'public'));
+            $path      = $file->storeAs(
+                "invoices/{$txId}", 'invoice-' . now()->timestamp . '.' . $extension, config('filesystems.media_disk', 'public')
+            );
+            $ocr = \App\Platform\Services\InvoiceOcrService::extract($disk->path($path), auth()->id(), $tx->worker_slug, $txId, $tx->deployment_id, $extension);
+            $referenceNote = '';
+        } else {
+            // URL case — nothing uploaded, nothing to OCR.
+            $path = null;
+            $ocr  = [];
+            $referenceNote = " — {$request->input('invoice_url')}";
+        }
+
         $subject = "Invoice received — {$asset}";
         $body    = "Hi,\n\nAttaching the invoice for {$asset}"
             . (!empty($ocr['amount']) ? " — {$ocr['amount']}" . (!empty($ocr['currency']) ? " {$ocr['currency']}" : '') : '')
-            . (!empty($ocr['due_date']) ? ", due {$ocr['due_date']}" : '') . ".\n\nBest regards,\nFranklin";
+            . (!empty($ocr['due_date']) ? ", due {$ocr['due_date']}" : '') . "{$referenceNote}.\n\nBest regards,\nFranklin";
 
         $clientEmail = $memory['primary_contact_email'] ?? null;
         if ($clientEmail && !$tx->is_test) {
@@ -592,6 +609,7 @@ class TransactionController extends Controller
         $output = [
             'status'         => 'attached',
             'file_path'      => $path,
+            'url'            => $request->input('invoice_url'),
             'ocr'            => $ocr,
             'attached_at'    => now()->toISOString(),
             'client_messages' => [[
@@ -601,7 +619,7 @@ class TransactionController extends Controller
         ];
 
         \App\Platform\SDK\UnitPlatform::commitOutput($txId, new \App\Platform\SDK\WorkerOutput(stage: 'request_invoice', data: $output));
-        \App\Platform\SDK\UnitPlatform::log('ava', $txId, 'invoice_attached', ['ocr' => $ocr]);
+        \App\Platform\SDK\UnitPlatform::log('ava', $txId, 'invoice_attached', ['ocr' => $ocr, 'url' => $request->input('invoice_url')]);
 
         return back()->with('success', "✓ Invoice attached for {$txId}.");
     }
