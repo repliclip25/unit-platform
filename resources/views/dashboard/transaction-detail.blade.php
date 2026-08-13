@@ -284,6 +284,40 @@ $statusColors = [
     'filtered_out' => ['bg'=>'rgba(107,114,128,.15)','color'=>'#9ca3af'],
 ];
 $statusColor = $statusColors[$tx->status] ?? ['bg'=>'var(--db-chip)','color'=>'var(--db-text-muted)'];
+
+// $tx->status stays a small, fixed vocabulary (approved/sent/failed/...) —
+// once a transaction moves into fulfillment it can sit on 'approved' for
+// days while fulfillment_stage marches through invoice/documents/payment/
+// etc., so the status badge alone stops reflecting where the transaction
+// actually is. Pair it with whichever stage is currently 'active' in the
+// already-computed $stages list.
+$currentStage = collect($stages)->firstWhere('state', 'active');
+$currentStageLabel = $currentStage['label'] ?? (collect($stages)->last()['label'] ?? null);
+
+// "SSL Expiry" as a heading with the asset in small supporting text buries
+// what this transaction actually is. A natural-language phrase per
+// category reads immediately as "renewal of X for Y" — falls back to the
+// raw category for anything not in this list rather than guessing.
+$categoryPhrases = [
+    'SSL Expiry'             => 'Renewal — SSL certificate for :asset',
+    'Domain Renewal'         => 'Renewal — domain :asset',
+    'Hosting Invoice'        => 'Renewal — hosting for :asset',
+    'SaaS Renewal'           => 'Renewal — subscription for :asset',
+    'Policy Renewal'         => 'Renewal — policy for :asset',
+    'Policy Lapse Warning'   => 'Policy lapse warning — :asset',
+    'Premium Payment'        => 'Premium payment for :asset',
+    'Carrier Non-Renewal'    => 'Coverage ending for :asset',
+    'Coverage Change'        => 'Coverage change for :asset',
+    'License Renewal'        => 'Renewal — license for :asset',
+    'Permit Renewal'         => 'Renewal — permit for :asset',
+    'Certification Renewal'  => 'Renewal — certification for :asset',
+    'Regulatory Notice'      => 'Regulatory deadline for :asset',
+];
+$titleAsset = $memory->asset ?? null;
+$titleText  = $tx->category ?? 'Processing...';
+if ($tx->category && $titleAsset) {
+    $titleText = str_replace(':asset', $titleAsset, $categoryPhrases[$tx->category] ?? "Renewal — {$tx->category} for :asset");
+}
 @endphp
 
 <div class="ob-shell">
@@ -417,9 +451,15 @@ $statusColor = $statusColors[$tx->status] ?? ['bg'=>'var(--db-chip)','color'=>'v
               <span class="td-badge td-badge-priority {{ in_array($tx->priority, ['High','Critical']) ? 'high' : '' }}">{{ $tx->priority }}</span>
               @endif
               <span class="td-badge" style="background:{{ $statusColor['bg'] }};color:{{ $statusColor['color'] }}">{{ $tx->status }}</span>
+              @if($currentStageLabel)
+              <span class="td-badge" style="background:var(--db-chip);color:var(--db-text-muted)" title="Current pipeline stage">→ {{ $currentStageLabel }}</span>
+              @endif
+              @if($tx->category)
+              <span class="td-badge" style="background:var(--db-chip);color:var(--db-text-muted)">{{ $tx->category }}</span>
+              @endif
               @if($isFastTrack)<span class="td-badge td-badge-ft">⚡ Fast Track Test</span>@endif
             </div>
-            <div class="td-title">{{ $tx->category ?? 'Processing...' }}</div>
+            <div class="td-title">{{ $titleText }}</div>
             @if($tx->worker_slug === 'nux' && $nuxRegister)
             <div class="td-meta">{{ strtoupper($nuxRegister->source_platform ?? '') }} → {{ implode(', ', json_decode($nuxRegister->target_channels ?? '[]', true) ?: []) }} · {{ $nuxRegister->topic ?? '—' }}</div>
             @elseif($memory)
@@ -624,6 +664,12 @@ $statusColor = $statusColors[$tx->status] ?? ['bg'=>'var(--db-chip)','color'=>'v
             @if($stage['key'] === 'human_decide' && !empty($stage['reminders']))
             <span class="tc-stage-tag soft" title="Sent because you hadn't decided yet — see below">{{ count($stage['reminders']) }} nudge{{ count($stage['reminders']) === 1 ? '' : 's' }} sent</span>
             @endif
+            {{-- Jumps to the round-1 template — each cadence round's own
+                 tab (below) links to its own template individually, this is
+                 the general one for the card itself. --}}
+            @if($stage['key'] === 'draft_email' && !empty($stage['content']['template_id']))
+            <a href="{{ route('app.workers.templates', $tx->worker_slug) }}#template-{{ $stage['content']['template_id'] }}" style="font-size:11px;color:var(--accent-text,var(--db-text));text-decoration:underline" onclick="event.stopPropagation()">Edit</a>
+            @endif
           </div>
 
           @if(!empty($stage['skipped_by_gate']))
@@ -640,8 +686,10 @@ $statusColor = $statusColors[$tx->status] ?? ['bg'=>'var(--db-chip)','color'=>'v
                  round: blue = the user actually approved/consumed that draft,
                  gray = it was drafted but superseded (never acted on). --}}
             @if($stage['key'] === 'human_decide')
-              @include('dashboard.partials._client-draft-tabs', ['clientDrafts' => $stage['client_drafts'], 'wrapId' => 'cd-decide-' . $tx->tx_id])
-
+              {{-- Message content deliberately NOT repeated here — it's
+                   already shown just above on the Draft Email card. This
+                   stage is approval only: reminders (if any decision is
+                   still pending) and the decide actions. --}}
               @foreach($stage['reminders'] as $r)
               <div class="tc-msg-meta" style="margin-top:8px"><strong>Nudge — attempt {{ $r['attempt_number'] }}</strong> · {{ \Carbon\Carbon::parse($r['sent_at'])->format('M j, g:i A') }}</div>
               <div class="tc-msg">{{ $r['subject'] }}{{ "\n\n" }}{{ $r['body'] }}</div>
