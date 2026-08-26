@@ -1,4 +1,4 @@
-@php $emailTitle = $workerName . ' is live — UNIT'; @endphp
+@php $emailTitle = $workerName . ' is live — ' . config('app.name'); @endphp
 @include('emails.partials.header')
 
 <div class="badge-green"><span class="dot" style="background:#16a34a;"></span> Live</div>
@@ -41,4 +41,4 @@
 
 <p style="font-size:13px; color:#71717a;">Next step: make sure your Gmail inbox is connected and the watch is active so {{ $workerName }} can start working for you.</p>
 
-@include('emails.partials.footer', ['footerNote' => "You're receiving this because you just deployed a worker on UNIT. Questions? Reply to this email."])
+@include('emails.partials.footer', ['footerNote' => "You're receiving this because you just deployed a worker on ".config('app.name').". Questions? Reply to this email."])

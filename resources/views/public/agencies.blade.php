@@ -1,5 +1,5 @@
 @extends('layouts.public')
-@section('title', 'AI Renewal Agent for Digital Agencies | AVA by UNIT')
+@section('title', 'AI Renewal Agent for Digital Agencies | AVA by UNITELO')
 @section('description', "AVA tracks domain, hosting, software, and vendor renewals across clients, prepares follow-ups, and keeps your agency's renewal workflow moving.")
 @section('og_type', 'website')
 
@@ -7,7 +7,7 @@
     $__faq = [
         ['q' => 'What happens if the renewal email never shows up?', 'a' => "AVA doesn't only wait on email. She also watches your asset registry directly for expiration thresholds, so a renewal still gets caught even if the notice email is lost, filtered, or never sent."],
         ['q' => 'Does AVA submit renewals automatically?', 'a' => 'No. AVA prepares and drafts the renewal, then queues it for your review. Nothing reaches your client without your explicit approval, that gate never gets skipped.'],
-        ['q' => 'Can I prove what happened, for compliance or a client dispute?', 'a' => 'Yes. Every closed renewal gets a UNIT-branded archive PDF, every draft, every reminder, every approval decision, with a QR code linking to a signed, downloadable copy for a full year.'],
+        ['q' => 'Can I prove what happened, for compliance or a client dispute?', 'a' => 'Yes. Every closed renewal gets a UNITELO-branded archive PDF, every draft, every reminder, every approval decision, with a QR code linking to a signed, downloadable copy for a full year.'],
         ['q' => 'How does AVA access my renewal inbox?', 'a' => 'AVA connects to Gmail via OAuth2 and a real-time watch webhook. You choose which inbox she monitors, and you can revoke access at any time.'],
         ['q' => 'Can I cancel my subscription?', 'a' => 'Yes, cancel any time, no questions asked. Your data stays accessible for 30 days after cancellation.'],
     ];
@@ -30,7 +30,7 @@
     'serviceType' => 'Renewal Operations for Agencies',
     'description' => "AVA tracks domain, hosting, and vendor renewals across every client an IT or digital agency manages, catching renewals even when the reminder email never arrives.",
     'url'         => url()->current(),
-    'provider'    => ['@type' => 'Organization', 'name' => 'UNIT', 'url' => url('/')],
+    'provider'    => ['@type' => 'Organization', 'name' => 'UNITELO', 'url' => url('/')],
 ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}</script>
 <script type="application/ld+json">{!! json_encode($__faqSchema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}</script>
 <script type="application/ld+json">{!! json_encode([

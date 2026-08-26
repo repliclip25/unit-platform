@@ -16,7 +16,7 @@ class PasswordChanged extends Mailable
 
     public function envelope(): Envelope
     {
-        return new Envelope(subject: 'Your UNIT Universe password was changed');
+        return new Envelope(subject: 'Your ' . config('app.name') . ' Universe password was changed');
     }
 
     public function content(): Content

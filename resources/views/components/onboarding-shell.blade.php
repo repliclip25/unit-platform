@@ -22,7 +22,7 @@
     $steps: array of ['label' => ..., 'desc' => ..., 'state' => 'done'|'active'|'pending', 'href' => optional]
 --}}
 @props([
-    'title'        => 'Onboarding — UNIT',
+    'title'        => 'Onboarding — ' . config('app.name'),
     'steps'        => [],
     'securityText' => "You're in control of what the worker can see and access.",
 ])
@@ -258,7 +258,7 @@ body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-fon
 
   {{-- ══ SIDEBAR ══ --}}
   <aside class="ob-sidebar">
-    <div class="ob-logo">UNIT</div>
+    <div class="ob-logo">{{ config('app.name') }}</div>
     <div class="ob-steps">
       @foreach($steps as $step)
       @php $tag = ($step['state'] ?? 'pending') === 'done' && !empty($step['href']) ? 'a' : 'div'; @endphp

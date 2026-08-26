@@ -507,7 +507,7 @@
 
                 {{-- Footer --}}
                 <div class="px-5 py-3 border-t border-gray-800 flex items-center gap-4 text-xs text-gray-600">
-                    <span>Built by <span class="text-gray-500">{{ $w->built_by ?? 'UNIT Platform' }}</span></span>
+                    <span>Built by <span class="text-gray-500">{{ $w->built_by ?? 'UNITELO Platform' }}</span></span>
                     <span>·</span>
                     <span>Slug: <span class="font-mono text-gray-500">{{ $w->slug }}</span></span>
                     <span>·</span>

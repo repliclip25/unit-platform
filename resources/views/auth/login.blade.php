@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="csrf-token" content="{{ csrf_token() }}">
-<title>Sign in — UNIT</title>
+<title>Sign in — UNITELO</title>
 <link rel="icon" type="image/png" href="/favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -77,14 +77,14 @@ body{background:var(--db-bg);color:var(--db-text)}
 <body>
 
 <div class="au-topbar">
-  <a href="{{ url('/') }}" class="au-logo">UNIT</a>
+  <a href="{{ url('/') }}" class="au-logo">UNITELO</a>
   <button type="button" class="au-theme-toggle" id="theme-toggle" title="Toggle dark/light mode" aria-label="Toggle theme"></button>
 </div>
 
 <div class="au-wrap">
   <div class="au-card">
     <div class="au-h1">Welcome back.</div>
-    <div class="au-sub">Sign in to your UNIT workspace</div>
+    <div class="au-sub">Sign in to your UNITELO workspace</div>
 
     @if(session('status'))
       <div class="au-status">{{ session('status') }}</div>

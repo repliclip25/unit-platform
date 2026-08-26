@@ -77,7 +77,7 @@ return [
 
     'unit' => [
         'noreply_email' => env('UNIT_NOREPLY_EMAIL', 'hello@unit.report'),
-        'noreply_name'  => env('UNIT_NOREPLY_NAME', 'UNIT'),
+        'noreply_name'  => env('UNIT_NOREPLY_NAME', config('app.name')),
         'support_email' => env('UNIT_SUPPORT_EMAIL', 'support@unit.app'),
         'admin_email'   => env('UNIT_ADMIN_EMAIL', 'hello@unit.report'),
     ],

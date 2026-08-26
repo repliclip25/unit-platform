@@ -89,7 +89,7 @@
 
 <nav class="nav">
   <div class="w nav-i">
-    <a href="{{ url('/') }}" class="logo"><span class="logo-name">UNIT</span></a>
+    <a href="{{ url('/') }}" class="logo"><span class="logo-name">{{ config('app.name') }}</span></a>
     <ul class="nav-links">
       @foreach ($links as $link)
         <li><a href="{{ $link['href'] }}" class="{{ !empty($link['active']) ? 'active' : '' }}">{{ $link['label'] }}</a></li>
@@ -128,7 +128,7 @@
 
 <div class="mob-menu" id="mob">
   <div class="mob-top">
-    <a href="{{ url('/') }}" class="logo"><span class="logo-name">UNIT</span></a>
+    <a href="{{ url('/') }}" class="logo"><span class="logo-name">{{ config('app.name') }}</span></a>
     <button class="mob-close" id="mob-close">✕</button>
   </div>
   <div class="mob-section-label">Menu</div>

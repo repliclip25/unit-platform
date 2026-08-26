@@ -3,19 +3,19 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>AI Workers for Business | Specialized AI Agents by UNIT</title>
-<meta name="description" content="Meet UNIT AI Workers: specialized AI agents trained on your Memory, connected to your tools, and built to own specific business workflows.">
+<title>AI Workers for Business | Specialized AI Agents by UNITELO</title>
+<meta name="description" content="Meet UNITELO AI Workers: specialized AI agents trained on your Memory, connected to your tools, and built to own specific business workflows.">
 <link rel="icon" type="image/png" href="/favicon.png">
 <link rel="apple-touch-icon" href="/favicon.png">
 @include('partials.seo-meta', [
-    'title'       => 'AI Workers for Business | Specialized AI Agents by UNIT',
-    'description' => "Meet UNIT AI Workers: specialized AI agents trained on your Memory, connected to your tools, and built to own specific business workflows.",
+    'title'       => 'AI Workers for Business | Specialized AI Agents by UNITELO',
+    'description' => "Meet UNITELO AI Workers: specialized AI agents trained on your Memory, connected to your tools, and built to own specific business workflows.",
     'image'       => asset('images/hero-team-2.png'),
 ])
 <script type="application/ld+json">{!! json_encode([
     '@@context' => 'https://schema.org',
     '@type'    => 'ItemList',
-    'name'     => 'UNIT AI Workers',
+    'name'     => 'UNITELO AI Workers',
     'itemListElement' => [
         ['@type' => 'ListItem', 'position' => 1, 'item' => ['@type' => 'Service', 'name' => 'AVA', 'serviceType' => 'AI Renewal Worker', 'url' => route('public.workers.show', 'ava')]],
         ['@type' => 'ListItem', 'position' => 2, 'item' => ['@type' => 'Service', 'name' => 'DOX', 'serviceType' => 'AI Document Worker']],
@@ -371,7 +371,7 @@ body{font-family:var(--font-b);color:var(--text);background:var(--bg);-webkit-fo
     <div class="hero-page-inner">
       <div class="page-eye">Meet the AI Workers</div>
       <h1 class="hero-page-h">Specialized AI Workers.<br><em>Built for specific jobs.</em></h1>
-      <p class="hero-page-p">Every UNIT Worker is a specialized AI agent designed to own one recurring business workflow from start to finish.</p>
+      <p class="hero-page-p">Every UNITELO Worker is a specialized AI agent designed to own one recurring business workflow from start to finish.</p>
       <div class="hero-proof">
         <div class="proof-avs">
           <img src="/images/ava.png" alt="AVA">
@@ -385,7 +385,7 @@ body{font-family:var(--font-b);color:var(--text);background:var(--bg);-webkit-fo
   </div>
   <div class="hero-page-right">
     <span class="hero-page-spacer" aria-hidden="true"></span>
-    <img src="/images/hero-team-2.png" alt="AVA, DOX, MOX and NUX: the UNIT AI workforce">
+    <img src="/images/hero-team-2.png" alt="AVA, DOX, MOX and NUX: the UNITELO AI workforce">
     <div class="hero-fade-page"></div>
     <div class="hero-badge">
       <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M12 2l1.5 4.5H18l-3.75 2.75 1.5 4.5L12 11l-3.75 2.75 1.5-4.5L6 6.5h4.5L12 2z" fill="#F59E0B"/></svg>
@@ -606,7 +606,7 @@ body{font-family:var(--font-b);color:var(--text);background:var(--bg);-webkit-fo
         <div class="behind-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg></div>
         <div>
           <div class="behind-h">They've never met.</div>
-          <p class="behind-p">Each worker believes they're alone at UNIT, for now. As you hire more, they'll learn to collaborate. Stay tuned.</p>
+          <p class="behind-p">Each worker believes they're alone at UNITELO, for now. As you hire more, they'll learn to collaborate. Stay tuned.</p>
         </div>
       </div>
     </div>

@@ -68,7 +68,7 @@ class EmailDispatcher
 
             $subject = str_replace(array_keys($baseVars), array_values($baseVars), $override['subject'] ?? $tpl->subject);
             $body    = str_replace(array_keys($baseVars), array_values($baseVars), $override['body']    ?? $tpl->body);
-            $from    = $tpl->from_name ?? 'UNIT Universe';
+            $from    = $tpl->from_name ?? config('app.name') . ' Universe';
 
             Mail::raw($body, fn($m) => $m
                 ->to($toEmail, $toName)

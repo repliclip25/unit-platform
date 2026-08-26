@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="csrf-token" content="{{ csrf_token() }}">
-<title>Your Team — UNIT</title>
+<title>Your Team — UNITELO</title>
 <link rel="icon" type="image/png" href="/favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -166,7 +166,7 @@ $depBySlug = $deployments->groupBy('worker_slug');
 
 {{-- ══ TOP BAR ══ --}}
 <div class="ob-topbar">
-  <a href="{{ route('app.dashboard') }}" class="ob-topbar-logo" style="text-decoration:none">UNIT</a>
+  <a href="{{ route('app.dashboard') }}" class="ob-topbar-logo" style="text-decoration:none">UNITELO</a>
   <div class="ob-topbar-right">
     <a href="{{ route('app.profile.show') }}" class="ob-topbar-name" style="text-decoration:none">{{ auth()->user()->name }}</a>
     <button class="ob-theme-toggle" id="theme-toggle" type="button" title="Toggle dark/light mode" aria-label="Toggle theme"></button>
@@ -275,7 +275,7 @@ $depBySlug = $deployments->groupBy('worker_slug');
           <div>
               <p style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--db-text-muted);margin-bottom:6px">Your Team at Work</p>
               <h1 style="font-size:24px;font-weight:900;color:var(--db-text);line-height:1.1">Meet your AI employees.</h1>
-              <p style="font-size:13px;color:var(--db-text-muted);margin-top:5px">Each worker runs independently on the UNIT platform, 24/7.</p>
+              <p style="font-size:13px;color:var(--db-text-muted);margin-top:5px">Each worker runs independently on the UNITELO platform, 24/7.</p>
           </div>
           <span style="font-size:11px;color:var(--db-text-muted);padding:5px 12px;border:1px solid var(--db-border);border-radius:20px">{{ $visibleCatalog->count() }} available</span>
       </div>

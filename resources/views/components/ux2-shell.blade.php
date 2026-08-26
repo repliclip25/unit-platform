@@ -26,7 +26,7 @@
         securityText — override the sidebar security blurb (defaults below)
 --}}
 @props([
-    'title'        => 'UNIT',
+    'title'        => config('app.name'),
     'activeSlug'    => null,
     'activeLink'    => null,
     'securityText'  => 'One Stripe invoice covers every worker.',
@@ -197,7 +197,7 @@ body{font-family:'Inter',sans-serif;background:var(--db-bg);color:var(--db-text)
 
 {{-- ══ TOP BAR ══ --}}
 <div class="ob-topbar">
-  <div class="ob-topbar-logo">UNIT</div>
+  <div class="ob-topbar-logo">{{ config('app.name') }}</div>
   <div class="ob-topbar-right">
     <a href="{{ route('app.profile.show') }}" class="ob-topbar-name" style="text-decoration:none">{{ auth()->user()->name }}</a>
     <button class="ob-theme-toggle" id="theme-toggle" type="button" title="Toggle dark/light mode" aria-label="Toggle theme"></button>

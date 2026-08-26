@@ -1,6 +1,6 @@
 @extends('layouts.public')
-@section('title', 'About UNIT | AI Agents Built for Real Business Work')
-@section('description', 'UNIT turns specialized AI agents into AI Workers trained on organizational Memory and responsible for complete business workflows.')
+@section('title', 'About UNITELO | AI Agents Built for Real Business Work')
+@section('description', 'UNITELO turns specialized AI agents into AI Workers trained on organizational Memory and responsible for complete business workflows.')
 
 @section('head')
 <style>
@@ -69,10 +69,10 @@
     <div>
       <div class="eyebrow">The Company</div>
       <h1>Built by people who ran the workflows first.</h1>
-      <p class="about-hero-p">We're operations leads and engineers who got tired of building automation that still needed people to babysit it. UNIT is what we built instead.</p>
+      <p class="about-hero-p">We're operations leads and engineers who got tired of building automation that still needed people to babysit it. UNITELO is what we built instead.</p>
     </div>
     <div class="about-hero-img">
-      <img src="{{ asset('images/hero-team-2.png') }}" alt="AVA, DOX, MOX and NUX: the UNIT AI workforce">
+      <img src="{{ asset('images/hero-team-2.png') }}" alt="AVA, DOX, MOX and NUX: the UNITELO AI workforce">
     </div>
   </div>
 </section>
@@ -86,7 +86,7 @@
     <div class="pub-body" style="padding:0">
       <p>We didn't start as a software company. We started running an IT and digital agency, tracking domain renewals, hosting renewals, and vendor contracts across every client at once. A missed renewal wasn't just an internal mistake, it was a client-facing problem. Reminder emails got buried, filtered, or never arrived at all.</p>
       <p>The tools that existed were either too generic (spreadsheets, shared inboxes) or too expensive (enterprise software built for teams far bigger than ours). So we built AVA to solve our own problem first: a worker that watched every renewal, not just the inbox, and caught the ones that would have otherwise slipped through.</p>
-      <p>UNIT is that system, made available to every team.</p>
+      <p>UNITELO is that system, made available to every team.</p>
     </div>
   </div>
 </section>
@@ -95,7 +95,7 @@
   <div class="w" style="max-width:800px">
     <div class="about-sec-h">
       <div class="slabel">What we believe</div>
-      <h2 class="sh2" style="font-size:32px">Three things every UNIT worker is built on</h2>
+      <h2 class="sh2" style="font-size:32px">Three things every UNITELO worker is built on</h2>
     </div>
     <div class="belief-list">
       <div class="belief-item">
@@ -128,7 +128,7 @@
     <div class="about-sec-h">
       <div class="slabel">Our AI workforce</div>
       <h2 class="sh2" style="font-size:32px">One live worker. Three more in development.</h2>
-      <p class="ssub" style="margin-top:10px">UNIT's first live AI Worker is AVA, an AI Renewal Coordinator built to track domain, hosting, and vendor renewals for IT &amp; digital agencies, now also serving Insurance Brokers and Compliance &amp; Licensing Firms. Each worker that follows is purpose-built for a specific workflow, not a general-purpose assistant.</p>
+      <p class="ssub" style="margin-top:10px">UNITELO's first live AI Worker is AVA, an AI Renewal Coordinator built to track domain, hosting, and vendor renewals for IT &amp; digital agencies, now also serving Insurance Brokers and Compliance &amp; Licensing Firms. Each worker that follows is purpose-built for a specific workflow, not a general-purpose assistant.</p>
     </div>
     <div class="workforce-grid">
       <a href="{{ route('public.workers.show', 'ava') }}" class="wf-card" style="text-decoration:none">
@@ -176,7 +176,7 @@
       </div>
       <div>
         <div class="stat-n">{{ number_format($liveDeployments) }}</div>
-        <div class="stat-l">Businesses running UNIT</div>
+        <div class="stat-l">Businesses running UNITELO</div>
       </div>
     </div>
   </div>

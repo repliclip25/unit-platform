@@ -3,12 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>AI Agent Platform for Business | UNIT AI Workers</title>
+<title>AI Agent Platform for Business | UNITELO AI Workers</title>
 <meta name="description" content="Deploy specialized AI Workers trained on your organization's Memory to monitor, execute, and complete recurring business workflows.">
 <link rel="icon" type="image/png" href="/favicon.png">
 <link rel="apple-touch-icon" href="/favicon.png">
 @include('partials.seo-meta', [
-    'title'       => 'AI Agent Platform for Business | UNIT AI Workers',
+    'title'       => 'AI Agent Platform for Business | UNITELO AI Workers',
     'description' => "Deploy specialized AI Workers trained on your organization's Memory to monitor, execute, and complete recurring business workflows.",
     'image'       => asset('images/hero-team-2.png'),
 ])
@@ -507,7 +507,7 @@ body{
   margin-right:-20px;
 }
 
-/* ── WHAT IS A UNIT WORKER ── */
+/* ── WHAT IS A UNITELO WORKER ── */
 .what{background:var(--soft);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
 .what-grid{display:grid;grid-template-columns:1fr 1fr;gap:clamp(40px,6vw,80px);align-items:center}
 .what-tag{
@@ -842,7 +842,7 @@ body{
 /* ── INDUSTRIES ── - a worker's card: photo of the specific worker
    on the left, their info on the right. Industries are what AVA
    serves today; once other workers are live, they get their own
-   card with their own capabilities here, not a shared UNIT-wide claim. */
+   card with their own capabilities here, not a shared UNITELO-wide claim. */
 .industries-sec{background:#fff}
 [data-theme="dark"] .industries-sec{background:#0D0D0D}
 .industries-card{
@@ -1041,7 +1041,7 @@ body{
         <em>business work done.</em>
       </h1>
       <p class="hero-p">
-        UNIT AI Workers are specialized AI agents that monitor, execute, and complete recurring business workflows from start to finish.
+        UNITELO AI Workers are specialized AI agents that monitor, execute, and complete recurring business workflows from start to finish.
       </p>
       <div class="hero-btns">
         <a href="#workers" class="btn-hero">
@@ -1063,7 +1063,7 @@ body{
   </div>
 
   <div class="hero-right">
-    <img src="/images/hero-team-2.png" alt="AVA, DOX, MOX and NUX: the UNIT AI workforce" class="hero-slide active" id="slide-0">
+    <img src="/images/hero-team-2.png" alt="AVA, DOX, MOX and NUX: the UNITELO AI workforce" class="hero-slide active" id="slide-0">
     <img src="/images/hero-team.png"   alt="AVA, DOX, MOX and NUX: selfie"                 class="hero-slide hidden" id="slide-1">
     <span class="hero-right-spacer" aria-hidden="true"></span>
     <div class="hero-fade"></div>
@@ -1195,8 +1195,8 @@ body{
   <div class="w">
     <div style="margin-bottom:0;max-width:640px">
       <div class="sec-eye">Problems we solve</div>
-      <h2 class="sec-h">The Problems UNIT AI Workers Solve</h2>
-      <p class="sec-p">Before you evaluate a product, you're trying to name a problem. These are the ones UNIT AI Workers are built to own.</p>
+      <h2 class="sec-h">The Problems UNITELO AI Workers Solve</h2>
+      <p class="sec-p">Before you evaluate a product, you're trying to name a problem. These are the ones UNITELO AI Workers are built to own.</p>
     </div>
     <div class="problems-layout">
       <div class="problems-grid">
@@ -1304,7 +1304,7 @@ body{
     <div class="center" style="margin-bottom:clamp(36px,5vw,56px)">
       <div class="sec-eye">Meet the AI Workers</div>
       <h2 class="sec-h">Specialized AI Workers.<br>Complete Business Workflows.</h2>
-      <p class="sec-p">Every UNIT AI Worker owns one operational responsibility from start to finish. Instead of doing a little of everything, each worker becomes exceptional at one business workflow.</p>
+      <p class="sec-p">Every UNITELO AI Worker owns one operational responsibility from start to finish. Instead of doing a little of everything, each worker becomes exceptional at one business workflow.</p>
     </div>
 
     <div class="wk-grid">
@@ -1461,7 +1461,7 @@ body{
         <div class="compare-col hl">
           <div class="compare-head">
             <div class="compare-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M13 2L4.09 12.11a1 1 0 00.76 1.65h5.91l-1 8.24 8.91-10.11a1 1 0 00-.76-1.65h-5.91z"/></svg></div>
-            UNIT AI Workers
+            UNITELO AI Workers
           </div>
           <div class="compare-row">Owns work proactively</div>
           <div class="compare-row">One workflow</div>
@@ -1481,7 +1481,7 @@ body{
 <section class="timeline-sec sec" id="timeline">
   <div class="w">
     <div class="center">
-      <div class="sec-eye">A day inside UNIT</div>
+      <div class="sec-eye">A day inside UNITELO</div>
       <h2 class="sec-h">While You Grow Your Business,<br>Your AI Workers Keep Working.</h2>
     </div>
     <div class="tl">
@@ -1532,7 +1532,7 @@ body{
 </section>
 
 <!-- INDUSTRIES -->
-{{-- Worker's card: AVA's photo + her info, not a generic UNIT-wide
+{{-- Worker's card: AVA's photo + her info, not a generic UNITELO-wide
      claim. Other workers get their own card here once they're live. --}}
 <section class="industries-sec sec">
   <div class="w">
@@ -1606,7 +1606,7 @@ body{
               <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 4h16v16H4z"/><path d="M4 9h16M9 4v16"/></svg>
               Whitepaper
             </span>
-            <div class="res-title">AI Agents vs. AI Workers: how UNIT turns a manual process into a deployed AI Worker</div>
+            <div class="res-title">AI Agents vs. AI Workers: how UNITELO turns a manual process into a deployed AI Worker</div>
             <div class="res-meta">6 pages · PDF download</div>
             <span class="res-link">Download <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
           </div>
@@ -1777,7 +1777,7 @@ body{
 <!-- FEATURES -->
 <section class="features">
   <div class="w">
-    <h2 class="feat-h">Why Businesses Trust UNIT AI Workers</h2>
+    <h2 class="feat-h">Why Businesses Trust UNITELO AI Workers</h2>
     <div class="feat-grid">
       <div class="feat-item">
         <div class="feat-icon" style="background:#ECFDF5">
@@ -1834,7 +1834,7 @@ body{
     <div class="center" style="margin-bottom:0">
       <div class="sec-eye">How it works</div>
       <h2 class="sec-h">Every AI Worker Follows<br>the Same Operating Loop</h2>
-      <p class="sec-p">This is the loop every UNIT AI Worker runs, whether it's managing renewals today or a new workflow tomorrow.</p>
+      <p class="sec-p">This is the loop every UNITELO AI Worker runs, whether it's managing renewals today or a new workflow tomorrow.</p>
     </div>
     <div class="ops-flow">
       <div class="ops-step"><span class="ops-step-num">1</span>Monitor</div>
@@ -1864,14 +1864,14 @@ body{
   // FAQPage JSON-LD below so schema can't drift out of sync with the
   // visible copy.
   $__faqs = [
-    ['q' => 'What is a UNIT AI Worker?', 'a' => "A UNIT AI Worker is a specialized AI agent that owns a specific business responsibility. It uses your organization's Memory, follows a defined workflow, works with approved tools, and completes recurring work with human oversight."],
-    ['q' => "What's the difference between an AI Agent and an AI Worker?", 'a' => 'AI agent describes the technology. AI Worker describes how UNIT deploys it: trained on your organization\'s Memory, equipped with tools, and responsible for a defined business workflow.'],
-    ['q' => 'What is UNIT Memory?', 'a' => 'Memory is the organizational context your Worker uses to do its job. You train it with relevant knowledge, clients, processes, preferences, templates, and history so the Worker operates within your business context instead of starting from scratch every time.'],
-    ['q' => 'How do I deploy a UNIT AI Worker?', 'a' => "First, train the Worker's Memory. Then connect the tools it needs, configure its workflow and permissions, and deploy it. Think of it as onboarding a Worker into your organization."],
-    ['q' => 'What can UNIT AI Workers actually do?', 'a' => 'Workers can monitor for work, use Memory to understand context, interact with connected tools, prepare or execute actions, follow up, maintain records, and continue recurring workflows from one cycle to the next.'],
+    ['q' => 'What is a UNITELO AI Worker?', 'a' => "A UNITELO AI Worker is a specialized AI agent that owns a specific business responsibility. It uses your organization's Memory, follows a defined workflow, works with approved tools, and completes recurring work with human oversight."],
+    ['q' => "What's the difference between an AI Agent and an AI Worker?", 'a' => 'AI agent describes the technology. AI Worker describes how UNITELO deploys it: trained on your organization\'s Memory, equipped with tools, and responsible for a defined business workflow.'],
+    ['q' => 'What is UNITELO Memory?', 'a' => 'Memory is the organizational context your Worker uses to do its job. You train it with relevant knowledge, clients, processes, preferences, templates, and history so the Worker operates within your business context instead of starting from scratch every time.'],
+    ['q' => 'How do I deploy a UNITELO AI Worker?', 'a' => "First, train the Worker's Memory. Then connect the tools it needs, configure its workflow and permissions, and deploy it. Think of it as onboarding a Worker into your organization."],
+    ['q' => 'What can UNITELO AI Workers actually do?', 'a' => 'Workers can monitor for work, use Memory to understand context, interact with connected tools, prepare or execute actions, follow up, maintain records, and continue recurring workflows from one cycle to the next.'],
     ['q' => 'How much control do humans have?', 'a' => 'You stay in control. Workers operate within defined permissions, request approval for actions that require it, and maintain activity records so you can see what was done and why.'],
     ['q' => 'Can I deploy multiple AI Workers?', 'a' => 'Yes. Each Worker specializes in one responsibility, so an organization can deploy multiple Workers across renewals, documents, publishing, brand intelligence, and other workflows.'],
-    ['q' => 'What does AVA do?', 'a' => 'AVA is UNIT\'s live AI Renewal Worker. She monitors renewal activity, uses your Memory to understand clients and history, prepares communications, follows up, tracks completion, and maintains the renewal record.'],
+    ['q' => 'What does AVA do?', 'a' => 'AVA is UNITELO\'s live AI Renewal Worker. She monitors renewal activity, uses your Memory to understand clients and history, prepares communications, follows up, tracks completion, and maintains the renewal record.'],
   ];
 @endphp
 <script type="application/ld+json">{!! json_encode([
@@ -1891,7 +1891,7 @@ body{
       <div class="faq-left">
         <div class="sec-eye">FAQ</div>
         <h2 class="what-h" style="margin-bottom:16px">Not an app.<br>Not a bot.<br><em>An AI Agent.</em></h2>
-        <p style="font-size:.975rem;color:var(--t3);line-height:1.75;margin-bottom:20px">A UNIT AI Worker is an AI agent built from your day-to-day workflow. It runs without hand-holding, handles its job end-to-end, and reports back to you, so you always know what was done and why.</p>
+        <p style="font-size:.975rem;color:var(--t3);line-height:1.75;margin-bottom:20px">A UNITELO AI Worker is an AI agent built from your day-to-day workflow. It runs without hand-holding, handles its job end-to-end, and reports back to you, so you always know what was done and why.</p>
         <a href="{{ route('hire.ava.welcome') }}" class="btn-outline">
           Get started free
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
@@ -1946,7 +1946,7 @@ body{
 <!-- TRUST BAR -->
 {{-- Relabeled: the previous version claimed a specific "4.9/5 from 1,200+
      reviews" and five review-platform badges (Capterra/G2/Google/Trustpilot/
-     GetApp) UNIT is not actually listed on, plus one AVA headshot reused
+     GetApp) UNITELO is not actually listed on, plus one AVA headshot reused
      four times with hue-rotation to fake distinct avatars. Replaced with
      verifiable trust pillars instead of fabricated social proof. --}}
 <section class="trust-bar">

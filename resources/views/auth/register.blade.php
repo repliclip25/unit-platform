@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="csrf-token" content="{{ csrf_token() }}">
-<title>Get started — UNIT</title>
+<title>Get started — UNITELO</title>
 <link rel="icon" type="image/png" href="/favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -76,7 +76,7 @@ body{background:var(--db-bg);color:var(--db-text)}
 
 @php
   $workerIntent = request()->query('worker') ?: old('worker');
-  // Current UNIT worker lineup — keep in sync with DeskController::STAGE_META catalog
+  // Current UNITELO worker lineup — keep in sync with DeskController::STAGE_META catalog
   $workerMeta = [
     'ava' => ['label' => 'AVA', 'role' => 'Renewal Specialist'],
     'dox' => ['label' => 'DOX', 'role' => 'Document Specialist'],
@@ -87,7 +87,7 @@ body{background:var(--db-bg);color:var(--db-text)}
 @endphp
 
 <div class="au-topbar">
-  <a href="{{ url('/') }}" class="au-logo">UNIT</a>
+  <a href="{{ url('/') }}" class="au-logo">UNITELO</a>
   <button type="button" class="au-theme-toggle" id="theme-toggle" title="Toggle dark/light mode" aria-label="Toggle theme"></button>
 </div>
 
@@ -101,7 +101,7 @@ body{background:var(--db-bg);color:var(--db-text)}
       @else
         <div class="au-badge"><span class="au-badge-dot"></span> AI WORKFORCE PLATFORM</div>
         <div class="au-h1">Hire your first worker</div>
-        <div class="au-sub">Create your UNIT workspace — free to start</div>
+        <div class="au-sub">Create your UNITELO workspace — free to start</div>
       @endif
     </div>
 

@@ -18,10 +18,10 @@
     'image'            => $__postImage,
     'datePublished'    => $post['published_iso'] ?? null,
     'dateModified'     => $post['modified_iso'] ?? $post['published_iso'] ?? null,
-    'author'           => ['@type' => 'Organization', 'name' => $post['author'] ?? 'UNIT'],
+    'author'           => ['@type' => 'Organization', 'name' => $post['author'] ?? 'UNITELO'],
     'publisher'        => [
         '@type' => 'Organization',
-        'name'  => 'UNIT',
+        'name'  => 'UNITELO',
         'logo'  => ['@type' => 'ImageObject', 'url' => asset('favicon.png')],
     ],
     'mainEntityOfPage' => url()->current(),
@@ -133,10 +133,10 @@
            hardcoded byline. --}}
       <div style="margin-top:56px;padding-top:32px;border-top:1px solid var(--line)">
         <div style="display:flex;align-items:center;gap:16px">
-          <div style="width:46px;height:46px;border-radius:50%;background:rgba(0,0,0,.06);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-family:var(--fd);font-weight:800;font-size:18px;color:var(--text);flex-shrink:0">{{ strtoupper(substr($post['author'] ?? 'UNIT', 0, 1)) }}</div>
+          <div style="width:46px;height:46px;border-radius:50%;background:rgba(0,0,0,.06);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-family:var(--fd);font-weight:800;font-size:18px;color:var(--text);flex-shrink:0">{{ strtoupper(substr($post['author'] ?? 'UNITELO', 0, 1)) }}</div>
           <div>
-            <div style="font-size:14px;font-weight:700;color:var(--text)">{{ $post['author'] ?? 'UNIT' }}</div>
-            <div style="font-size:13px;color:var(--t4)">UNIT</div>
+            <div style="font-size:14px;font-weight:700;color:var(--text)">{{ $post['author'] ?? 'UNITELO' }}</div>
+            <div style="font-size:13px;color:var(--t4)">UNITELO</div>
           </div>
         </div>
       </div>
@@ -144,7 +144,7 @@
       {{-- Next/prev nav --}}
       <div style="margin-top:40px;display:flex;justify-content:space-between">
         <a href="{{ route('blog') }}" class="btn-ln" style="font-size:13px">← All posts</a>
-        <a href="{{ route('register') }}" class="btn-g" style="font-size:13px">Try UNIT Free →</a>
+        <a href="{{ route('register') }}" class="btn-g" style="font-size:13px">Try UNITELO Free →</a>
       </div>
     </article>
 
@@ -184,14 +184,14 @@
       {{-- Deploy CTA --}}
       <div class="sidebar-cta">
         <h3>Deploy an AI Worker free</h3>
-        <p>Browse UNIT's AI Workers and run a live test, start free, no card required.</p>
+        <p>Browse UNITELO's AI Workers and run a live test, start free, no card required.</p>
         <a href="{{ route('public.workers.index') }}" class="btn-g" style="display:block;text-align:center;font-size:13px">Browse AI Workers →</a>
       </div>
 
       {{-- Partner program CTA --}}
       <div class="sidebar-cta">
-        <h3>Earn with UNIT</h3>
-        <p>Creators and consultants earn 20–30% recurring commission promoting UNIT to their audience.</p>
+        <h3>Earn with UNITELO</h3>
+        <p>Creators and consultants earn 20–30% recurring commission promoting UNITELO to their audience.</p>
         <a href="{{ route('influencer.apply') }}" class="btn-ln" style="display:block;text-align:center;font-size:13px">Partner Program →</a>
       </div>
 

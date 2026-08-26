@@ -1,12 +1,12 @@
 @extends('layouts.public')
-@section('title', 'AI Agent for Insurance License Renewals | AVA by UNIT')
+@section('title', 'AI Agent for Insurance License Renewals | AVA by UNITELO')
 @section('description', "AVA monitors license and policy renewal activity, uses your organization's Memory, prepares renewal work, and keeps humans in control of approvals.")
 @section('og_type', 'website')
 
 @php
     $__faq = [
         ['q' => 'Does AVA submit renewals automatically?', 'a' => 'No. AVA prepares and drafts the renewal, then queues it for your review. Nothing reaches your client without your explicit approval, that gate never gets skipped.'],
-        ['q' => 'Can I prove what happened, for compliance or a client dispute?', 'a' => 'Yes. Every closed renewal gets a UNIT-branded archive PDF, every draft, every reminder, every approval decision, with a QR code linking to a signed, downloadable copy for a full year.'],
+        ['q' => 'Can I prove what happened, for compliance or a client dispute?', 'a' => 'Yes. Every closed renewal gets a UNITELO-branded archive PDF, every draft, every reminder, every approval decision, with a QR code linking to a signed, downloadable copy for a full year.'],
         ['q' => 'How does AVA access my renewal inbox?', 'a' => 'AVA connects to Gmail via OAuth2 and a real-time watch webhook. You choose which inbox she monitors, and you can revoke access at any time.'],
         ['q' => 'Can I cancel my subscription?', 'a' => 'Yes, cancel any time, no questions asked. Your data stays accessible for 30 days after cancellation.'],
     ];
@@ -29,7 +29,7 @@
     'serviceType' => 'Insurance License Renewal',
     'description' => "AVA monitors your agency's inbox, tracks producer license and policy renewal dates, and drafts every renewal response for human review.",
     'url'         => url()->current(),
-    'provider'    => ['@type' => 'Organization', 'name' => 'UNIT', 'url' => url('/')],
+    'provider'    => ['@type' => 'Organization', 'name' => 'UNITELO', 'url' => url('/')],
 ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}</script>
 <script type="application/ld+json">{!! json_encode($__faqSchema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}</script>
 <script type="application/ld+json">{!! json_encode([

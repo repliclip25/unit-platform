@@ -1,6 +1,6 @@
 @extends('layouts.public')
-@section('title', 'AI Agent Platform Pricing | UNIT')
-@section('description', 'Deploy UNIT AI Workers with tenant-specific Memory, workflow automation, connected tools, human approvals, and transparent activity records.')
+@section('title', 'AI Agent Platform Pricing | UNITELO')
+@section('description', 'Deploy UNITELO AI Workers with tenant-specific Memory, workflow automation, connected tools, human approvals, and transparent activity records.')
 
 @section('body')
 
@@ -123,7 +123,7 @@
 <div class="w pub-hero" style="text-align:center">
     <div class="eyebrow">Pricing</div>
     <h1>An AI Worker for every workflow.</h1>
-    <p style="font-size:16px;color:var(--t3);max-width:480px;margin:0 auto;line-height:1.7">Each UNIT AI Worker is priced for what it automates, and what that's worth to your team. Start free, no card required.</p>
+    <p style="font-size:16px;color:var(--t3);max-width:480px;margin:0 auto;line-height:1.7">Each UNITELO AI Worker is priced for what it automates, and what that's worth to your team. Start free, no card required.</p>
 </div>
 
 <div class="w" style="max-width:1040px;margin:0 auto;padding:0 24px 96px">

@@ -3,12 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>AI Renewal Agent | Meet AVA by UNIT</title>
+<title>AI Renewal Agent | Meet AVA by UNITELO</title>
 <meta name="description" content="{{ $worker['meta_desc'] }}">
 <link rel="icon" type="image/png" href="/favicon.png">
 <link rel="apple-touch-icon" href="/favicon.png">
 @include('partials.seo-meta', [
-    'title'       => 'AI Renewal Agent | Meet AVA by UNIT',
+    'title'       => 'AI Renewal Agent | Meet AVA by UNITELO',
     'description' => $worker['meta_desc'],
     'image'       => asset('images/ava-skyline-og.png'),
 ])
@@ -23,7 +23,7 @@
         'url'         => url()->current(),
         'provider'    => [
             '@type' => 'Organization',
-            'name'  => 'UNIT',
+            'name'  => 'UNITELO',
             'url'   => url('/'),
         ],
     ];
@@ -58,7 +58,7 @@
     '@@context' => 'https://schema.org',
     '@type'    => 'BreadcrumbList',
     'itemListElement' => [
-        ['@type' => 'ListItem', 'position' => 1, 'name' => 'UNIT', 'item' => url('/')],
+        ['@type' => 'ListItem', 'position' => 1, 'name' => 'UNITELO', 'item' => url('/')],
         ['@type' => 'ListItem', 'position' => 2, 'name' => 'AI Workers', 'item' => route('public.workers.index')],
         ['@type' => 'ListItem', 'position' => 3, 'name' => $worker['name'], 'item' => url()->current()],
     ],
@@ -78,7 +78,7 @@
 <script type="application/ld+json">{!! json_encode([
     '@@context'     => 'https://schema.org',
     '@type'        => 'VideoObject',
-    'name'         => "Meet {$worker['name']}, UNIT's {$worker['role']}",
+    'name'         => "Meet {$worker['name']}, UNITELO's {$worker['role']}",
     'description'  => $worker['hero_video']['transcript'],
     'thumbnailUrl' => asset($worker['hero_video']['thumbnail']),
     'contentUrl'   => asset($worker['hero_video']['url']),
@@ -1016,7 +1016,7 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
     {{-- Text content over the video --}}
     <div class="hero-text">
       <div class="hero-copy" id="avaHeroCopy">
-        <div class="hero-eye">UNIT's AI Renewal Worker</div>
+        <div class="hero-eye">UNITELO's AI Renewal Worker</div>
         <h1 class="hero-h">She never<br>forgets a <span class="hl">renewal.</span></h1>
         <p class="hero-p">An AI Worker that watches your inbox <em>and</em> your renewal calendar, drafts every renewal, and keeps a human in control of every send.</p>
       </div>
@@ -1161,7 +1161,7 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
   <div class="w">
     <div class="meet-grid">
       <div class="meet-img-wrap">
-        <img src="/images/ava-selfie.png" alt="AVA, UNIT's AI Renewal Worker, speaking directly to camera">
+        <img src="/images/ava-selfie.png" alt="AVA, UNITELO's AI Renewal Worker, speaking directly to camera">
       </div>
       <div>
         <div class="sec-eye">In her own words</div>
@@ -1171,7 +1171,7 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
           <p>Then I wait. Nothing goes to your client until you say so. But I won't let it sit forgotten. If you go quiet, I'll remind you, a little more each time, until you act.</p>
           <p>When it's done, I move the renewal date forward, write up a signed record of everything that happened, and start watching for the next one. That's the job. I don't get tired of it.</p>
         </div>
-        <div class="meet-sig">AVA, UNIT's AI Renewal Worker</div>
+        <div class="meet-sig">AVA, UNITELO's AI Renewal Worker</div>
         <a href="#day-in-life" class="btn-prob-cta" style="margin-top:20px">
           See AVA in Action
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
@@ -1186,7 +1186,7 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
 
 {{-- MEMORY - the tenant-data differentiator: AVA performs based on what
      she's taught, not a generic shared model. This is a platform-wide
-     principle (see UNIT's "know the tenant first" philosophy), not just
+     principle (see UNITELO's "know the tenant first" philosophy), not just
      an AVA detail, so this section pattern belongs on every worker page. --}}
 <section class="mem-sec">
   <div class="w">
@@ -1318,7 +1318,7 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
 {{-- EDGE STATEMENTS - the differentiators most renewal tools skip.
      Each one is backed by a real screenshot of the actual feature (not a
      mockup) via "See Proof", plus a "Watch AVA Explain" slot that's real
-     infrastructure for UNIT Studio's worker-explainer videos - wired now,
+     infrastructure for UNITELO Studio's worker-explainer videos - wired now,
      showing an honest "coming soon" state until those videos exist. --}}
 <section class="edge-sec">
   <div class="w">
@@ -1385,7 +1385,7 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
   </div>
 </section>
 
-{{-- Edge-statement videos - forward-compatible: once UNIT Studio produces a
+{{-- Edge-statement videos - forward-compatible: once UNITELO Studio produces a
      real video for one of these, setting its 'video' field to a path is the
      only change needed anywhere. Nothing renders here until a video exists. --}}
 @foreach($edgeStatements as $edge)
@@ -1437,7 +1437,7 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
       body.innerHTML = '<div class="edge-modal-novideo">'
         + '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>'
         + '<div class="edge-modal-novideo-h">Video coming soon</div>'
-        + '<p class="edge-modal-novideo-p">AVA hasn\'t recorded this one yet. Every UNIT worker will eventually explain their own edge statements on camera, this is one of the first spots that video will go.</p>'
+        + '<p class="edge-modal-novideo-p">AVA hasn\'t recorded this one yet. Every UNITELO worker will eventually explain their own edge statements on camera, this is one of the first spots that video will go.</p>'
         + '</div>';
     }
     modal.classList.add('open');
@@ -1534,7 +1534,7 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
           </div>
           @endforeach
         </div>
-        <p style="font-size:12.5px;color:var(--t4);margin-top:16px">Gmail is the only third-party connection required. Everything else is UNIT's own memory layer, built specifically for renewals.</p>
+        <p style="font-size:12.5px;color:var(--t4);margin-top:16px">Gmail is the only third-party connection required. Everything else is UNITELO's own memory layer, built specifically for renewals.</p>
       </div>
       <div>
         <div class="sec-eye" style="color:rgba(255,255,255,.4)">Live Performance</div>
@@ -1608,7 +1608,7 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
           @endforeach
         </div>
         <div class="testi-more">
-          <a href="mailto:hello@unit.report?subject=My AVA Experience&body=Hi UNIT team, I'd like to share my experience with AVA...">Share your own experience →</a>
+          <a href="mailto:hello@unit.report?subject=My AVA Experience&body=Hi UNITELO team, I'd like to share my experience with AVA...">Share your own experience →</a>
         </div>
         @else
         {{-- Skeleton placeholders, not fake quotes - no invented names,
@@ -1649,7 +1649,7 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
                 Shared on our socials
               </span>
             </div>
-            <a href="mailto:hello@unit.report?subject=My AVA Experience&body=Hi UNIT team, I'd like to share my experience with AVA..." class="btn-tov">
+            <a href="mailto:hello@unit.report?subject=My AVA Experience&body=Hi UNITELO team, I'd like to share my experience with AVA..." class="btn-tov">
               Share Your Experience →
             </a>
             <div class="tov-sub">Takes 2 minutes · We reply to every submission</div>
@@ -1727,7 +1727,7 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
       <a href="{{ asset('whitepapers/unit-ai-agents-vs-ai-workers.pdf') }}" target="_blank" rel="noopener" class="res-card">
         <div class="res-tag">Whitepaper</div>
         <h3 class="res-h3">AI Agents vs. AI Workers</h3>
-        <p class="res-p">How UNIT turns a manual process into a deployed AI Worker, using AVA's real build as the example.</p>
+        <p class="res-p">How UNITELO turns a manual process into a deployed AI Worker, using AVA's real build as the example.</p>
         <span class="res-link">Download the PDF →</span>
       </a>
     </div>

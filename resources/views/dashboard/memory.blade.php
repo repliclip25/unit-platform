@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="csrf-token" content="{{ csrf_token() }}">
-<title>Memory — UNIT</title>
+<title>Memory — UNITELO</title>
 <link rel="icon" type="image/png" href="/favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -260,7 +260,7 @@ $sidebarLinks = [
 
 {{-- ══ TOP BAR ══ --}}
 <div class="ob-topbar">
-  <a href="{{ route('app.dashboard') }}" class="ob-topbar-logo" style="text-decoration:none">UNIT</a>
+  <a href="{{ route('app.dashboard') }}" class="ob-topbar-logo" style="text-decoration:none">UNITELO</a>
   <div class="ob-topbar-right">
     <a href="{{ route('app.profile.show') }}" class="ob-topbar-name" style="text-decoration:none">{{ auth()->user()->name }}</a>
     <button class="ob-theme-toggle" id="theme-toggle" type="button" title="Toggle dark/light mode" aria-label="Toggle theme"></button>
@@ -805,12 +805,12 @@ $sidebarLinks = [
         <div class="mem-form-card" style="margin-top:20px">
           <div class="mem-form-head">
             Invite a team member
-            <div style="font-size:12px;font-weight:400;color:var(--db-text-muted);margin-top:3px">They must already have a UNIT account. Enter their profile code (UNIT-XXXXX) or email.</div>
+            <div style="font-size:12px;font-weight:400;color:var(--db-text-muted);margin-top:3px">They must already have a UNITELO account. Enter their profile code (UNITELO-XXXXX) or email.</div>
           </div>
           <form method="POST" action="{{ route('app.memory.access.invite') }}" class="mem-form-body">
             @csrf
             @if($errors->any())<div class="mem-status error">{{ $errors->first() }}</div>@endif
-            <div><label class="mem-field-label">Profile code or email</label><input type="text" name="lookup" value="{{ old('lookup') }}" placeholder="UNIT-AB3XY or name@company.com" class="mem-input" style="font-family:monospace"></div>
+            <div><label class="mem-field-label">Profile code or email</label><input type="text" name="lookup" value="{{ old('lookup') }}" placeholder="UNITELO-AB3XY or name@company.com" class="mem-input" style="font-family:monospace"></div>
             <div><label class="mem-field-label">Which deployment's memory</label>
               <select name="deployment_id" class="mem-select">
                 <option value="">Select a deployment…</option>

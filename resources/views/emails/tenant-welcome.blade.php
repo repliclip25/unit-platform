@@ -1,7 +1,7 @@
-@php $emailTitle = 'Welcome to UNIT'; @endphp
+@php $emailTitle = 'Welcome to '.config('app.name'); @endphp
 @include('emails.partials.header')
 
-<h1>Welcome to UNIT, {{ $name }}</h1>
+<h1>Welcome to {{ config('app.name') }}, {{ $name }}</h1>
 <p>Your AI workforce platform is ready. Here's how to hire your first employee in the next few minutes:</p>
 
 <table class="info-table">
@@ -21,4 +21,4 @@
 
 <a href="{{ url('/app/dashboard') }}" class="btn">Go to your workspace →</a>
 
-@include('emails.partials.footer', ['footerNote' => "You're receiving this because you just created a UNIT account. Questions? Reply to this email."])
+@include('emails.partials.footer', ['footerNote' => "You're receiving this because you just created a ".config('app.name')." account. Questions? Reply to this email."])

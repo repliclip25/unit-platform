@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>UNIT — {{ $title ?? 'Command Center' }}</title>
+    <title>{{ config('app.name') }} — {{ $title ?? 'Command Center' }}</title>
     <link rel="icon" type="image/png" href="/favicon.png">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @livewireStyles
@@ -360,8 +360,8 @@
 {{-- Mobile top bar --}}
 <div id="mob-bar" class="lg:hidden fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-4 py-3" style="backdrop-filter:blur(14px)">
     <a href="{{ route('app.dashboard') }}" class="flex items-center gap-2.5">
-        <img src="/favicon.png" alt="UNIT" class="w-7 h-7 rounded-md">
-        <span class="font-display font-bold text-base">UNIT</span>
+        <img src="/favicon.png" alt="{{ config('app.name') }}" class="w-7 h-7 rounded-md">
+        <span class="font-display font-bold text-base">{{ config('app.name') }}</span>
     </a>
     <button id="mob-toggle" class="p-1.5 rounded-md" style="background:rgba(128,128,128,0.1)">
         <svg id="mob-icon-open" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
@@ -376,9 +376,9 @@
 
         <div class="px-5 py-5 shrink-0" style="border-bottom:1px solid var(--border)">
             <a href="{{ route('app.dashboard') }}" class="flex items-center gap-3">
-                <img src="/favicon.png" alt="UNIT" class="w-8 h-8 rounded-md">
+                <img src="/favicon.png" alt="{{ config('app.name') }}" class="w-8 h-8 rounded-md">
                 <div>
-                    <p class="font-display font-bold text-sm leading-tight" style="color:var(--text-primary)">UNIT Platform</p>
+                    <p class="font-display font-bold text-sm leading-tight" style="color:var(--text-primary)">{{ config('app.name') }} Platform</p>
                     <p class="text-xs mt-0.5" style="color:var(--text-faint)">Employee OS</p>
                 </div>
             </a>
@@ -621,7 +621,7 @@
             {{ $slot }}
 
             <footer class="mt-10 pt-6 pb-2 flex flex-wrap items-center gap-x-5 gap-y-1" style="border-top:1px solid var(--border)">
-                <span class="text-xs font-semibold" style="color:var(--text-faint)">&copy; {{ date('Y') }} UNIT</span>
+                <span class="text-xs font-semibold" style="color:var(--text-faint)">&copy; {{ date('Y') }} {{ config('app.name') }}</span>
                 <a href="{{ route('terms') }}" class="text-xs" style="color:var(--text-muted)" target="_blank">Terms</a>
                 <a href="{{ route('privacy') }}" class="text-xs" style="color:var(--text-muted)" target="_blank">Privacy</a>
                 <a href="mailto:hello@unit.report" class="text-xs" style="color:var(--text-muted)">Support</a>

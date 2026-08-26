@@ -33,4 +33,4 @@
 
 <a href="{{ url('/app/transactions') }}" class="btn">View all transactions →</a>
 
-@include('emails.partials.footer', ['footerNote' => "AVA · Daily Summary · You're receiving this as part of your UNIT workspace digest."])
+@include('emails.partials.footer', ['footerNote' => "AVA · Daily Summary · You're receiving this as part of your ".config('app.name')." workspace digest."])

@@ -5,18 +5,19 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 {{-- Captures the title/description sections above as strings (instead of re-declaring
      them) so every public page gets OG/Twitter tags for free without duplicating copy.
-     Pages that already ship a complete, self-branded title (contains "UNIT") are used
-     as-is; short titles (e.g. "Terms of Use") still get the ": AI Agent Platform" suffix
-     for site context. --}}
+     Pages that already ship a complete, self-branded title (contains the brand name)
+     are used as-is; short titles (e.g. "Terms of Use") still get the ": AI Agent
+     Platform" suffix for site context. --}}
 @php
     // @section('name', 'value') (the inline form every public page uses) is
     // auto-escaped by Laravel when the section is defined, so yieldContent()
     // already returns HTML-escaped text. Decode it back to raw text here so
     // the single {{ }} escape below (and the one in partials.seo-meta) is
     // the only encoding pass - otherwise apostrophes end up double-escaped.
-    $__rawTitle  = html_entity_decode(trim($__env->yieldContent('title', 'UNIT')), ENT_QUOTES);
-    $__fullTitle = str_contains($__rawTitle, 'UNIT') ? $__rawTitle : $__rawTitle . ': AI Agent Platform';
-    $__fullDesc  = html_entity_decode(trim($__env->yieldContent('description', 'UNIT is an AI agent platform that helps businesses deploy specialized AI Workers to manage recurring business workflows, automate operations, and complete real work.')), ENT_QUOTES);
+    $__brandName = config('app.name');
+    $__rawTitle  = html_entity_decode(trim($__env->yieldContent('title', $__brandName)), ENT_QUOTES);
+    $__fullTitle = str_contains($__rawTitle, $__brandName) ? $__rawTitle : $__rawTitle . ': AI Agent Platform';
+    $__fullDesc  = html_entity_decode(trim($__env->yieldContent('description', $__brandName . ' is an AI agent platform that helps businesses deploy specialized AI Workers to manage recurring business workflows, automate operations, and complete real work.')), ENT_QUOTES);
 @endphp
 <title>{{ $__fullTitle }}</title>
 <meta name="description" content="{{ $__fullDesc }}">

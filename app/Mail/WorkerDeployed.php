@@ -22,7 +22,7 @@ class WorkerDeployed extends Mailable
     public function build(): static
     {
         return $this
-            ->subject("{$this->workerName} is now live on UNIT")
+            ->subject("{$this->workerName} is now live on " . config('app.name'))
             ->view('emails.worker-deployed');
     }
 }

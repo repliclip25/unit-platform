@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Account Deletion — UNIT</title>
+    <title>Account Deletion — UNITELO</title>
     <link rel="icon" type="image/png" href="/favicon.png">
     @vite(['resources/css/app.css'])
     <style>
@@ -17,8 +17,8 @@
 <body>
 <div class="card">
     <div class="logo">
-        <img src="/favicon.png" alt="UNIT">
-        <span class="logo-text">UNIT</span>
+        <img src="/favicon.png" alt="UNITELO">
+        <span class="logo-text">UNITELO</span>
     </div>
 
     @if($invalid)
@@ -33,7 +33,7 @@
         <p class="text-gray-400 text-sm leading-relaxed mb-6">
             Account deletion confirmation links expire after 72 hours and can only be used once. If you still need to delete your account, please contact us.
         </p>
-        <a href="https://unit.report" class="block text-center text-sm text-gray-500 hover:text-gray-300 transition">← Back to UNIT</a>
+        <a href="https://unit.report" class="block text-center text-sm text-gray-500 hover:text-gray-300 transition">← Back to UNITELO</a>
     </div>
 
     @else
@@ -46,7 +46,7 @@
         </div>
         <h1 class="text-xl font-black text-white mb-2">Confirm account deletion</h1>
         <p class="text-gray-400 text-sm leading-relaxed">
-            Hi <strong class="text-white">{{ $name }}</strong> — the UNIT platform admin has requested that your account be permanently deleted.
+            Hi <strong class="text-white">{{ $name }}</strong> — the UNITELO platform admin has requested that your account be permanently deleted.
         </p>
     </div>
 
@@ -60,7 +60,7 @@
     <form method="POST" action="{{ url('/account/delete-confirm/' . $token) }}">
         @csrf
         <button type="submit"
-                onclick="return confirm('This will permanently delete your UNIT account. This cannot be undone. Are you sure?')"
+                onclick="return confirm('This will permanently delete your UNITELO account. This cannot be undone. Are you sure?')"
                 class="w-full py-3.5 rounded-xl font-bold text-sm transition-colors mb-3"
                 style="background:rgba(239,68,68,0.15);color:#f87171;border:1px solid rgba(239,68,68,0.3)">
             Yes, permanently delete my account

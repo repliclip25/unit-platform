@@ -18,7 +18,7 @@ class DeletionScheduled extends Mailable
     public function build(): static
     {
         return $this
-            ->subject('Your UNIT account is scheduled for deletion')
+            ->subject('Your ' . config('app.name') . ' account is scheduled for deletion')
             ->view('emails.deletion-scheduled');
     }
 }

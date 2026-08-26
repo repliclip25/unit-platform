@@ -1,5 +1,5 @@
 @extends('layouts.public')
-@section('title', 'AI Agents for Business: Guides & Workflows | UNIT')
+@section('title', 'AI Agents for Business: Guides & Workflows | UNITELO')
 @section('description', 'Practical guides on AI agents, AI Workers, agent Memory, workflow automation, and how specialized agents complete real operational work.')
 
 @section('head')
@@ -62,7 +62,7 @@
   @if($featured)
   <div class="blog-featured">
     <div class="blog-featured-media">
-      <div class="blog-featured-media-text">{{ strtoupper($featured->worker_slug ?? 'UNIT') }}</div>
+      <div class="blog-featured-media-text">{{ strtoupper($featured->worker_slug ?? 'UNITELO') }}</div>
     </div>
     <div class="blog-featured-body">
       <div class="blog-tag">{{ $featured->tag }}</div>
@@ -122,7 +122,7 @@
   </div>
 
   <div style="margin-top:24px;text-align:center;padding:28px 40px;background:var(--card);border:1px solid var(--line);border-radius:18px">
-    <div style="font-family:var(--fd);font-size:17px;font-weight:800;margin-bottom:6px">Write about UNIT and get paid for it</div>
+    <div style="font-family:var(--fd);font-size:17px;font-weight:800;margin-bottom:6px">Write about UNITELO and get paid for it</div>
     <p style="font-size:13.5px;color:var(--t3);margin-bottom:16px">Newsletter writers and industry creators earn 20–30% recurring commission through our Partner Program.</p>
     <a href="{{ route('influencer.apply') }}" class="btn-ln" style="display:inline-block">Partner Program →</a>
   </div>

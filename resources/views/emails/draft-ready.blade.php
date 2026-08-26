@@ -1,4 +1,4 @@
-@php $emailTitle = 'AVA draft ready — UNIT'; @endphp
+@php $emailTitle = 'AVA draft ready — '.config('app.name'); @endphp
 @include('emails.partials.header')
 
 <div class="badge-violet"><span style="font-size:10px;">✦</span> AVA · Draft Ready</div>

@@ -18,7 +18,7 @@ class AccountDeleted extends Mailable
     public function build(): static
     {
         return $this
-            ->subject('Your UNIT account has been deleted')
+            ->subject('Your ' . config('app.name') . ' account has been deleted')
             ->view('emails.account-deleted');
     }
 }

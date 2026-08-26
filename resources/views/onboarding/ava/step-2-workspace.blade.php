@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="csrf-token" content="{{ csrf_token() }}">
-<title>Ava's Workspace — UNIT</title>
+<title>Ava's Workspace — UNITELO</title>
 <link rel="icon" type="image/png" href="/favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -207,7 +207,7 @@ body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-fon
 
   {{-- ══ SIDEBAR ══ --}}
   <aside class="ob-sidebar">
-    <div class="ob-logo">UNIT</div>
+    <div class="ob-logo">UNITELO</div>
     <div class="ob-steps">
 
       <a href="{{ route('hire.ava.welcome') }}" class="ob-step done" style="text-decoration:none">

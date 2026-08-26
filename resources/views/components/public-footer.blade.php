@@ -26,23 +26,23 @@
 <script type="application/ld+json">{!! json_encode([
     '@@context'    => 'https://schema.org',
     '@type'       => 'Organization',
-    'name'        => 'UNIT',
+    'name'        => config('app.name'),
     'url'         => url('/'),
     'logo'        => asset('favicon.png'),
-    'description' => 'UNIT is an AI agent platform that helps businesses deploy specialized AI Workers to manage recurring business workflows, automate operations, and complete real work.',
+    'description' => config('app.name') . ' is an AI agent platform that helps businesses deploy specialized AI Workers to manage recurring business workflows, automate operations, and complete real work.',
 ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}</script>
 <script type="application/ld+json">{!! json_encode([
     '@@context' => 'https://schema.org',
     '@type'    => 'WebSite',
-    'name'     => 'UNIT',
+    'name'     => config('app.name'),
     'url'      => url('/'),
 ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}</script>
 <footer class="footer">
   <div class="w">
     <div class="ft-grid">
       <div>
-        <div class="ft-name">UNIT</div>
-        <p class="ft-desc">UNIT is an AI agent platform that helps businesses deploy specialized AI Workers to manage recurring business workflows, automate operations, and complete real work.</p>
+        <div class="ft-name">{{ config('app.name') }}</div>
+        <p class="ft-desc">{{ config('app.name') }} is an AI agent platform that helps businesses deploy specialized AI Workers to manage recurring business workflows, automate operations, and complete real work.</p>
       </div>
       <div>
         <div class="ft-col-h">Workers</div>
@@ -72,7 +72,7 @@
       </div>
     </div>
     <div class="ft-bottom">
-      <p>© {{ date('Y') }} UNIT. All rights reserved.</p>
+      <p>© {{ date('Y') }} {{ config('app.name') }}. All rights reserved.</p>
       <p>Built with purpose. Powered by AI.</p>
     </div>
   </div>

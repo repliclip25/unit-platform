@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="csrf-token" content="{{ csrf_token() }}">
-<title>Command Center — UNIT</title>
+<title>Command Center — UNITELO</title>
 <link rel="icon" type="image/png" href="/favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -224,7 +224,7 @@ $notifTextColors = ['error'=>'#f87171','warning'=>'#fbbf24','info'=>'var(--db-te
 
 {{-- ══ TOP BAR ══ --}}
 <div class="ob-topbar">
-  <a href="{{ route('app.dashboard') }}" class="ob-topbar-logo" style="text-decoration:none">UNIT</a>
+  <a href="{{ route('app.dashboard') }}" class="ob-topbar-logo" style="text-decoration:none">UNITELO</a>
   <div class="ob-topbar-right">
     <a href="{{ route('app.profile.show') }}" class="ob-topbar-name" style="text-decoration:none">{{ auth()->user()->name }}</a>
     <button class="ob-theme-toggle" id="theme-toggle" type="button" title="Toggle dark/light mode" aria-label="Toggle theme"></button>
@@ -361,7 +361,7 @@ $notifTextColors = ['error'=>'#f87171','warning'=>'#fbbf24','info'=>'var(--db-te
           <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
         </svg>
         <p style="flex:1;font-size:13px;color:var(--db-text-muted)">
-          Earn <strong style="color:var(--db-text)">$25 credit</strong> for every colleague you bring to UNIT.
+          Earn <strong style="color:var(--db-text)">$25 credit</strong> for every colleague you bring to UNITELO.
         </p>
         <a href="{{ route('app.referral.index') }}" class="dc-refer-btn">Refer & Earn</a>
       </div>
