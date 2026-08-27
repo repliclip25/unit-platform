@@ -197,7 +197,12 @@
             $slug        = $plan->worker_slug;
             $billing     = $userBilling[$slug] ?? null;
             $deskRoute   = \Illuminate\Support\Facades\Route::has("app.desk.{$slug}") ? route("app.desk.{$slug}") : route('app.workers.billing', $slug);
-            $billingRoute = route('app.workers.billing', $slug);
+            // Straight to Stripe Checkout for this exact plan — the pricing card
+            // already knows which plan_slug and which deployment_id, so there's no
+            // reason to route through the usage dashboard first.
+            $checkoutRoute = $billing
+                ? route('app.billing.checkout', $billing->deployment_id) . '?plan=' . $plan->plan_slug
+                : null;
 
             if (!auth()->check()) {
                 $ctaLabel = "Deploy {$shortName}";
@@ -215,11 +220,11 @@
                 $used     = (int) $billing->trial_transactions_used;
                 $limit    = (int) $billing->trial_transactions_limit;
                 $ctaLabel = "Upgrade to {$shortName}";
-                $ctaHref  = $billingRoute;
+                $ctaHref  = $checkoutRoute;
                 $banner   = "Free trial in progress: {$used}/{$limit} transactions used.";
             } elseif ($billing->status === 'trial_exhausted') {
                 $ctaLabel = "Upgrade now";
-                $ctaHref  = $billingRoute;
+                $ctaHref  = $checkoutRoute;
                 $banner   = "Your free trial is used up, upgrade to keep {$shortName} running.";
             } elseif ($billing->status === 'past_due') {
                 $ctaLabel = "Update payment method";
@@ -227,7 +232,7 @@
                 $banner   = "Payment past due on your {$shortName} subscription.";
             } elseif ($billing->status === 'canceled') {
                 $ctaLabel = "Reactivate {$shortName}";
-                $ctaHref  = $billingRoute;
+                $ctaHref  = $checkoutRoute;
                 $banner   = "Your {$shortName} subscription was canceled.";
             } else {
                 $ctaLabel = "Deploy {$shortName}";
