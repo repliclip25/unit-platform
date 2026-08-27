@@ -106,7 +106,7 @@ class WorkerRequestFollowupJob implements ShouldQueue
 
             if (!$email) return;
 
-            $senderName = DB::table('platform_settings')->where('key', 'sender_name')->value('value') ?? 'Franklin at UNIT';
+            $senderName = DB::table('platform_settings')->where('key', 'sender_name')->value('value') ?? 'Franklin at UNITELO';
 
             $lines    = explode("\n", $body);
             $htmlBody = '';
@@ -131,14 +131,14 @@ class WorkerRequestFollowupJob implements ShouldQueue
                   ->html("<!DOCTYPE html><html><body style='font-family:Inter,Arial,sans-serif;background:#f4f4f2;margin:0;padding:40px 20px'>
 <div style='max-width:580px;margin:0 auto'>
   <div style='background:#0a0a12;border-radius:12px 12px 0 0;padding:22px 32px'>
-    <span style='font-family:Arial,sans-serif;font-weight:800;font-size:18px;color:#ffffff;letter-spacing:-0.5px'>UNIT</span>
+    <span style='font-family:Arial,sans-serif;font-weight:800;font-size:18px;color:#ffffff;letter-spacing:-0.5px'>UNITELO</span>
   </div>
   <div style='background:#ffffff;padding:36px 32px;border-left:1px solid #e2e2e0;border-right:1px solid #e2e2e0'>
     <p style='margin:0 0 20px;color:#1a1a1a;font-size:15px;line-height:1.75'>Hi {$firstName},</p>
     {$htmlBody}
     <div style='margin-top:32px;padding-top:24px;border-top:1px solid #f0f0ee'>
       <p style='margin:0;color:#555555;font-size:14px'>— {$senderName}</p>
-      <p style='margin:4px 0 0;color:#999999;font-size:12px'>UNIT &middot; " . config('services.unit.noreply_email') . "</p>
+      <p style='margin:4px 0 0;color:#999999;font-size:12px'>UNITELO &middot; " . config('services.unit.noreply_email') . "</p>
     </div>
   </div>
   <div style='background:#f9f9f7;border:1px solid #e2e2e0;border-top:none;border-radius:0 0 12px 12px;padding:14px 32px'>

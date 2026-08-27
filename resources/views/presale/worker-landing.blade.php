@@ -27,12 +27,12 @@ $driveLogo = '<svg viewBox="0 0 87.3 78" xmlns="http://www.w3.org/2000/svg">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>{{ $worker['name'] }}: {{ $worker['role'] }} | UNIT (Early Access)</title>
+<title>{{ $worker['name'] }}: {{ $worker['role'] }} | UNITELO (Early Access)</title>
 <meta name="description" content="{{ $worker['meta_desc'] }}">
 <link rel="icon" type="image/png" href="/favicon.png">
 <link rel="apple-touch-icon" href="/favicon.png">
 @include('partials.seo-meta', [
-    'title'       => "{$worker['name']}: {$worker['role']} | UNIT (Early Access)",
+    'title'       => "{$worker['name']}: {$worker['role']} | UNITELO (Early Access)",
     'description' => $worker['meta_desc'],
     'image'       => asset('images/hero-team-2.png'),
 ])
@@ -203,7 +203,7 @@ body{font-family:var(--font-b);color:var(--text);background:var(--bg);-webkit-fo
   <div class="hero-page-left">
     <div class="hero-page-inner">
       <div class="lp-badge"><span class="lp-badge-dot"></span> Early Access &middot; Not Yet Live</div>
-      <h1 class="hero-page-h">The AI Agent for <em>{{ $worker['name'] }}</em>, coming to UNIT.</h1>
+      <h1 class="hero-page-h">The AI Agent for <em>{{ $worker['name'] }}</em>, coming to UNITELO.</h1>
       <p class="hero-page-p">{{ $worker['tagline'] }} It isn't built yet, but its memory can start training now.</p>
       <div class="lp-cta-row">
         <a href="{{ route('register', ['worker' => $worker['slug']]) }}" class="btn-lp-main">Reserve Early Access <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
@@ -305,7 +305,7 @@ body{font-family:var(--font-b);color:var(--text);background:var(--bg);-webkit-fo
     <div class="behind-intro">
       <div class="sec-eye">Behind every worker</div>
       <h2 class="sec-h">Real lives. Real work. Real results.</h2>
-      <p class="sec-p">Every UNIT worker operates with the same commitment: learning, improving, and reporting back after every single task.</p>
+      <p class="sec-p">Every UNITELO worker operates with the same commitment: learning, improving, and reporting back after every single task.</p>
     </div>
     <div class="behind-grid">
       <div class="behind-item">
@@ -333,7 +333,7 @@ body{font-family:var(--font-b);color:var(--text);background:var(--bg);-webkit-fo
         <div class="behind-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg></div>
         <div>
           <div class="behind-h">They've never met.</div>
-          <p class="behind-p">Each worker believes they're alone at UNIT, for now. As you hire more, they'll learn to collaborate. Stay tuned.</p>
+          <p class="behind-p">Each worker believes they're alone at UNITELO, for now. As you hire more, they'll learn to collaborate. Stay tuned.</p>
         </div>
       </div>
     </div>

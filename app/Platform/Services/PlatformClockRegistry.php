@@ -46,7 +46,7 @@ class PlatformClockRegistry
                 'prefix'  => '',
                 'subtitle'=> '{count} enrichments stored',
                 'formula' => 'sum of all records across memory types',
-                'source'  => 'Memory on UNIT grows with your workers. Every piece of data they learn — clients, contacts, assets, and future types — is stored once and reused across every interaction.',
+                'source'  => 'Memory on UNITELO grows with your workers. Every piece of data they learn — clients, contacts, assets, and future types — is stored once and reused across every interaction.',
                 'scope'   => 'user',
                 'owner'   => 'TEAM',
                 'resolver'=> fn(int $userId) => [

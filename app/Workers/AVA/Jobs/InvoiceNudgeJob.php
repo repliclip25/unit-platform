@@ -83,7 +83,7 @@ class InvoiceNudgeJob implements ShouldQueue
             $tone     = ReminderCopy::tone($attempt);
             $template = \App\Platform\Services\TemplateResolver::resolveByStage($userTemplates, $defaultTemplates, $tone);
             $subject  = str_replace('{{asset}}', $asset, $template['subject_template'] ?? "Got an invoice for {$asset}?");
-            $body     = str_replace('{{asset}}', $asset, $template['body_template']    ?? "Hi,\n\nIf you have an invoice for {$asset}, attach it in UNIT.\n\n— AVA");
+            $body     = str_replace('{{asset}}', $asset, $template['body_template']    ?? "Hi,\n\nIf you have an invoice for {$asset}, attach it in UNITELO.\n\n— AVA");
 
             EmailDispatcher::send(
                 'ava_invoice_nudge', $tenantEmail, 'there', $tx->user_id,

@@ -161,16 +161,16 @@ class PolicyEnforcer
         };
 
         $body = "Hi {$user->name},\n\n"
-            . "Your UNIT account has been automatically blocked under policy: {$policy['title']}.\n\n"
+            . "Your UNITELO account has been automatically blocked under policy: {$policy['title']}.\n\n"
             . $policy['description'] . $extras . "\n\n"
             . "How to resolve:\n{$resolution}\n\n"
             . "Log in to your account to take action:\n" . url('/app/billing') . "\n\n"
-            . "UNIT Platform";
+            . "UNITELO Platform";
 
         try {
             \Illuminate\Support\Facades\Mail::raw(
                 $body,
-                fn($m) => $m->to($user->email)->subject("Action Required: {$policy['title']} — Your UNIT account has been paused")
+                fn($m) => $m->to($user->email)->subject("Action Required: {$policy['title']} — Your UNITELO account has been paused")
             );
         } catch (\Throwable $e) {
             Log::error('PolicyEnforcer: notification email failed', [

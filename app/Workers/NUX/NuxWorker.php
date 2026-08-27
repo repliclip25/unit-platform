@@ -796,7 +796,7 @@ class NuxWorker implements WorkerContract
     {
         return [
             'type'     => 'platform',
-            'name'     => 'UNIT',
+            'name'     => 'UNITELO',
             'contact'  => config('services.unit.noreply_email'),
             'website'  => 'https://unit.report',
             'license'  => 'proprietary',

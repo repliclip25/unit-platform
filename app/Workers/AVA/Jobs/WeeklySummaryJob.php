@@ -83,7 +83,7 @@ class WeeklySummaryJob implements ShouldQueue
 
         $body .= "\nThanks for trusting Ava with your workflow.\n\n";
         $body .= "Open Dashboard: {$appUrl}/dashboard\n\n";
-        $body .= "Franklin at UNIT";
+        $body .= "Franklin at UNITELO";
 
         $subject = "Here's what Ava accomplished this week.";
 

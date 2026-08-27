@@ -403,7 +403,7 @@ class AdminTenantController extends Controller
                 $html .= '<br><br><a href="' . e($request->cta_url) . '" style="display:inline-block;background:#f3c531;color:#1a1404;font-weight:700;padding:12px 28px;border-radius:8px;text-decoration:none;font-size:14px;">' . e($request->cta_label) . '</a>';
             }
             $m->to($tenant->email, $tenant->name)
-              ->from(config('mail.from.address'), 'UNIT Platform')
+              ->from(config('mail.from.address'), 'UNITELO Platform')
               ->subject($request->subject)
               ->html($html);
         });
@@ -448,11 +448,11 @@ class AdminTenantController extends Controller
             default        => "Write a helpful, professional email.",
         };
 
-        $prompt = "You are writing an email from UNIT Platform (an AI-powered worker automation SaaS) to one of our tenants.\n\n"
+        $prompt = "You are writing an email from UNITELO Platform (an AI-powered worker automation SaaS) to one of our tenants.\n\n"
             . "Tenant context:\n{$context}\n\n"
             . "Goal: {$goalInstructions}\n\n"
             . "Return ONLY valid JSON with two fields: {\"subject\": \"...\", \"body\": \"...\"}. "
-            . "The body should use \\n for line breaks. Sign off as 'The UNIT Team'. Do not add a CTA button — that will be added separately.";
+            . "The body should use \\n for line breaks. Sign off as 'The UNITELO Team'. Do not add a CTA button — that will be added separately.";
 
         $response = Http::withToken(config('services.claude.api_key'))
             ->post('https://api.anthropic.com/v1/messages', [
@@ -760,12 +760,12 @@ class AdminTenantController extends Controller
                 $html = "
                     <div style='font-family:Inter,Arial,sans-serif;max-width:580px;margin:0 auto;color:#1a1a1a;'>
                         <div style='background:#f1d362;padding:28px 32px 20px;border-radius:12px 12px 0 0;'>
-                            <span style='font-size:22px;font-weight:700;color:#1a1404;letter-spacing:-0.5px;'>UNIT</span>
+                            <span style='font-size:22px;font-weight:700;color:#1a1404;letter-spacing:-0.5px;'>UNITELO</span>
                         </div>
                         <div style='background:#ffffff;padding:32px;border-radius:0 0 12px 12px;border:1px solid #e8e8e6;border-top:none;'>
                             <p style='margin:0 0 16px;font-size:16px;'>Hi {$tenant->name},</p>
                             <p style='margin:0 0 16px;font-size:15px;line-height:1.6;color:#444;'>
-                                Our team performed a fresh-start reset on your UNIT account. This is typically done to clear test data or give you a clean slate during onboarding.
+                                Our team performed a fresh-start reset on your UNITELO account. This is typically done to clear test data or give you a clean slate during onboarding.
                             </p>
                             <p style='margin:0 0 8px;font-size:14px;font-weight:600;color:#111;'>The following was cleared:</p>
                             <ul style='margin:0 0 20px;padding-left:20px;font-size:14px;line-height:1.7;color:#555;'>
@@ -778,13 +778,13 @@ class AdminTenantController extends Controller
                                 If you didn't expect this, or have any questions at all, just reply to this email and we'll sort it out right away.
                             </p>
                             <a href='https://unit.report/dashboard' style='display:inline-block;background:#f1d362;color:#1a1404;font-weight:700;padding:12px 28px;border-radius:8px;text-decoration:none;font-size:14px;'>Go to your dashboard →</a>
-                            <p style='margin:28px 0 0;font-size:13px;color:#888;'>— The UNIT Team</p>
+                            <p style='margin:28px 0 0;font-size:13px;color:#888;'>— The UNITELO Team</p>
                         </div>
                     </div>
                 ";
                 $m->to($tenant->email, $tenant->name)
-                  ->from(config('mail.from.address'), 'UNIT')
-                  ->subject('Your UNIT account has been reset')
+                  ->from(config('mail.from.address'), 'UNITELO')
+                  ->subject('Your UNITELO account has been reset')
                   ->html($html);
             });
         }

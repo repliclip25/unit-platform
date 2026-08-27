@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="csrf-token" content="{{ csrf_token() }}">
-<title>My Profile — UNIT</title>
+<title>My Profile — UNITELO</title>
 <link rel="icon" type="image/png" href="/favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -203,7 +203,7 @@ $sidebarLinks = [
 
 {{-- ══ TOP BAR ══ --}}
 <div class="ob-topbar">
-  <div class="ob-topbar-logo">UNIT</div>
+  <div class="ob-topbar-logo">UNITELO</div>
   <div class="ob-topbar-right">
     <a href="{{ route('app.profile.show') }}" class="ob-topbar-name" style="text-decoration:none">{{ auth()->user()->name }}</a>
     <button class="ob-theme-toggle" id="theme-toggle" type="button" title="Toggle dark/light mode" aria-label="Toggle theme"></button>

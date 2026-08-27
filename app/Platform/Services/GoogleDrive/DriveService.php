@@ -46,7 +46,7 @@ class DriveService
      * Ensures a per-tenant brand folder exists in the customer's Drive, creating
      * it on first use. Persists the folder id/url back onto the credential row.
      * Self-healing: if the previously-created folder was trashed or deleted
-     * outside UNIT, a fresh one is created rather than silently reusing a dead id.
+     * outside UNITELO, a fresh one is created rather than silently reusing a dead id.
      */
     public function ensureFolder(string $ownerName): array
     {
@@ -59,7 +59,7 @@ class DriveService
 
         $response = Http::withToken($this->accessToken)
             ->post('https://www.googleapis.com/drive/v3/files', [
-                'name'     => "UNIT Brand Memory - {$ownerName}",
+                'name'     => "UNITELO Brand Memory - {$ownerName}",
                 'mimeType' => 'application/vnd.google-apps.folder',
             ]);
 
@@ -118,7 +118,7 @@ class DriveService
      * $meta: optional 'description' (shown in Drive's own UI details panel) and
      * 'properties' (string => string, not shown in the UI but readable via the
      * Drive API) — without these the file has zero context if anyone inspects
-     * it directly in Drive rather than through UNIT.
+     * it directly in Drive rather than through UNITELO.
      */
     public function uploadFile(UploadedFile $file, string $folderId, array $meta = []): array
     {

@@ -20,7 +20,7 @@ $steps = [
     ['label' => 'On Shift',       'desc' => 'Worker starts working for you', 'state' => 'pending', 'num' => 5],
 ];
 @endphp
-<x-onboarding-shell title="Onboarding Template — UNIT" :steps="$steps">
+<x-onboarding-shell title="Onboarding Template — UNITELO" :steps="$steps">
 
     <x-slot:hero>
         <img class="ob-hero-img" src="/images/ava-stand.png" alt="Example worker illustration">

@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>{{ config('app.name', 'UNIT') }}</title>
+    <title>{{ config('app.name', 'UNITELO') }}</title>
     <link rel="icon" type="image/png" href="/favicon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -122,8 +122,8 @@
 
 <nav class="auth-nav px-6 py-4 flex items-center justify-between">
     <a href="{{ url('/') }}" class="flex items-center gap-2.5">
-        <img src="/favicon.png" alt="UNIT" class="w-8 h-8 rounded-md">
-        <span style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.1rem;color:var(--accent-text,var(--accent))">UNIT</span>
+        <img src="/favicon.png" alt="UNITELO" class="w-8 h-8 rounded-md">
+        <span style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.1rem;color:var(--accent-text,var(--accent))">UNITELO</span>
     </a>
     <div class="flex items-center gap-3">
         <span id="theme-label" class="text-xs" style="color:var(--text-faint)"></span>

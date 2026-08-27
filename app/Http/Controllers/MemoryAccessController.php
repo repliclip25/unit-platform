@@ -25,7 +25,7 @@ class MemoryAccessController extends Controller
             for ($i = 0; $i < 5; $i++) {
                 $suffix .= $chars[random_int(0, strlen($chars) - 1)];
             }
-            $code = 'UNIT-' . $suffix;
+            $code = 'UNITELO-' . $suffix;
         } while (DB::table('users')->where('profile_code', $code)->exists());
         return $code;
     }
@@ -57,7 +57,7 @@ class MemoryAccessController extends Controller
             return back()->withErrors(['lookup' => 'Deployment not found or does not belong to you.']);
         }
 
-        // Resolve grantee by profile code or email (must already have a UNIT account)
+        // Resolve grantee by profile code or email (must already have a UNITELO account)
         $grantee = DB::table('users')
             ->where(function ($q) use ($lookup) {
                 $q->where('profile_code', strtoupper($lookup))
@@ -66,7 +66,7 @@ class MemoryAccessController extends Controller
             ->first();
 
         if (!$grantee) {
-            return back()->withErrors(['lookup' => 'No UNIT account found for that profile code or email.']);
+            return back()->withErrors(['lookup' => 'No UNITELO account found for that profile code or email.']);
         }
 
         if ($grantee->id === $ownerId) {

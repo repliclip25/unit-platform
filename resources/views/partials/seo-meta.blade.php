@@ -6,7 +6,7 @@
     $__seoType      = $type ?? 'website';
 @endphp
 <link rel="canonical" href="{{ $__seoCanonical }}">
-<meta property="og:site_name" content="UNIT">
+<meta property="og:site_name" content="UNITELO">
 <meta property="og:type" content="{{ $__seoType }}">
 <meta property="og:title" content="{{ $title }}">
 <meta property="og:description" content="{{ $description }}">

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="csrf-token" content="{{ csrf_token() }}">
-<title>Start training memory - UNIT</title>
+<title>Start training memory - UNITELO</title>
 <link rel="icon" type="image/png" href="/favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -76,7 +76,7 @@ body{background:var(--db-bg);color:var(--db-text)}
 <body>
 
 <div class="mh-topbar">
-  <a href="{{ url('/') }}" class="mh-logo">UNIT</a>
+  <a href="{{ url('/') }}" class="mh-logo">UNITELO</a>
   <div class="mh-topbar-right">
     <button type="button" class="mh-theme-toggle" id="theme-toggle" title="Toggle dark/light mode" aria-label="Toggle theme"></button>
     <form method="POST" action="{{ route('logout') }}">@csrf<button type="submit" class="mh-logout">Logout</button></form>

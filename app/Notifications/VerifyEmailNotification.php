@@ -18,7 +18,7 @@ class VerifyEmailNotification extends VerifyEmail
         $url    = $appUrl . ($parsed['path'] ?? '') . (isset($parsed['query']) ? '?' . $parsed['query'] : '');
 
         return (new MailMessage)
-            ->subject('Verify your UNIT account')
+            ->subject('Verify your UNITELO account')
             ->view('emails.verify-email', ['url' => $url, 'name' => $notifiable->name]);
     }
 }

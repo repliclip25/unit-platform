@@ -135,8 +135,8 @@ class PresaleDriveController extends Controller
         // The tenant's own words about the file lead the description — that's
         // the useful part; the auto-generated line is just supporting context.
         $description = $context
-            ? "{$context}\n\nUploaded via UNIT Brand Memory for {$businessName} — category: {$category->name}"
-            : "Uploaded via UNIT Brand Memory for {$businessName} — category: {$category->name}";
+            ? "{$context}\n\nUploaded via UNITELO Brand Memory for {$businessName} — category: {$category->name}"
+            : "Uploaded via UNITELO Brand Memory for {$businessName} — category: {$category->name}";
 
         $result = $drive->uploadFile($file, $folderId, [
             'description' => $description,
@@ -170,7 +170,7 @@ class PresaleDriveController extends Controller
     }
 
     /**
-     * Untracks an asset from UNIT — never deletes the actual file from the
+     * Untracks an asset from UNITELO — never deletes the actual file from the
      * tenant's Drive. It's their file in their Drive; only they should
      * delete it there, same principle as removing a category.
      */

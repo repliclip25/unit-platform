@@ -73,7 +73,7 @@
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
       <div class="bg-gray-900 border border-gray-800 rounded-2xl p-5">
         <label class="block text-gray-500 text-xs font-semibold uppercase tracking-widest mb-2">Author</label>
-        <input type="text" name="author" value="{{ old('author', $post->author ?? 'UNIT') }}"
+        <input type="text" name="author" value="{{ old('author', $post->author ?? 'UNITELO') }}"
           class="w-full bg-gray-950 border border-gray-700 text-white rounded-xl px-3 py-2.5 text-sm outline-none focus:border-gray-500 transition"
           placeholder="Franklin">
       </div>

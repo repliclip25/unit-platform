@@ -22,9 +22,9 @@ class SyncAvaBlueprint extends Command
             'meta' => [
                 'name' => 'AVA — Renewal & Subscription Coordinator',
                 'slug' => 'ava',
-                'license' => 'UNIT Platform License',
+                'license' => 'UNITELO Platform License',
                 'version' => '1.0.0',
-                'built_by' => 'UNIT Platform',
+                'built_by' => 'UNITELO Platform',
                 'category' => 'renewal',
                 'description' => 'Monitors inboxes for renewal and subscription emails, classifies them with AI, looks up memory, generates professional response drafts, and delivers them — fully automated.',
             ],

@@ -149,7 +149,7 @@ class AdminBlogController extends Controller
             'tag'         => $request->tag,
             'excerpt'     => $request->excerpt,
             'body'        => $request->body,
-            'author'      => $request->author ?? 'UNIT',
+            'author'      => $request->author ?? 'UNITELO',
             'status'      => $request->status,
             'worker_slug' => $request->worker_slug ?: null,
         ];

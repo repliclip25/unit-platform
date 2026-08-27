@@ -421,11 +421,11 @@
             </div>
             <div>
                 <div class="tpl-lbl">From Name</div>
-                <input id="as-from" class="tpl-input" value="Franklin at UNIT">
+                <input id="as-from" class="tpl-input" value="Franklin at UNITELO">
             </div>
             <div>
                 <div class="tpl-lbl">Body</div>
-                <textarea id="as-body" class="tpl-textarea" style="min-height:140px" placeholder="Hi {name},&#10;&#10;...&#10;&#10;Franklin at UNIT"></textarea>
+                <textarea id="as-body" class="tpl-textarea" style="min-height:140px" placeholder="Hi {name},&#10;&#10;...&#10;&#10;Franklin at UNITELO"></textarea>
                 <div class="tpl-hint">Placeholders: {name} · {app_url}</div>
             </div>
         </div>

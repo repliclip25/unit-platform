@@ -177,7 +177,7 @@ class PublicPageController extends Controller
             'date'          => \Carbon\Carbon::parse($row->created_at)->format('F Y'),
             'published_iso' => \Carbon\Carbon::parse($row->created_at)->toIso8601String(),
             'modified_iso'  => \Carbon\Carbon::parse($row->updated_at)->toIso8601String(),
-            'author'        => $row->author ?? 'UNIT',
+            'author'        => $row->author ?? 'UNITELO',
             'read'          => ceil(str_word_count(strip_tags($rawBody)) / 200) . ' min',
             'body'          => $body,
             'cover_image'   => $row->cover_image ?? null,
@@ -195,7 +195,7 @@ class PublicPageController extends Controller
                 'date'          => 'June 2026',
                 'published_iso' => '2026-06-01T00:00:00+00:00',
                 'modified_iso'  => '2026-06-01T00:00:00+00:00',
-                'author'        => 'UNIT',
+                'author'        => 'UNITELO',
                 'read'    => '8 min',
                 'body'    => [
                     ['h2', 'The problem with renewal inboxes'],

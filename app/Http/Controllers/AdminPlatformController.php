@@ -988,10 +988,10 @@ class AdminPlatformController extends Controller
     {
         $to = $request->input('to', auth()->user()->email);
         try {
-            Mail::raw('This is a test email from the UNIT Platform Control Tower. SMTP is working correctly.', function ($m) use ($to) {
+            Mail::raw('This is a test email from the UNITELO Platform Control Tower. SMTP is working correctly.', function ($m) use ($to) {
                 $m->to($to)
                   ->from(config('mail.from.address'), config('mail.from.name'))
-                  ->subject('UNIT SMTP Test — ' . now()->format('H:i:s'));
+                  ->subject('UNITELO SMTP Test — ' . now()->format('H:i:s'));
             });
             return back()->with('ct_success', "Test email sent to {$to}. Check your inbox.");
         } catch (\Throwable $e) {

@@ -74,7 +74,7 @@ class AdminPromptController extends Controller
             'Platform Identity' => [
                 'sender_name' => [
                     'label' => 'Email Sender Name',
-                    'desc'  => 'The "From" name shown on all outbound UNIT emails (worker request follow-ups, notifications, alerts). No AI involved — plain text only.',
+                    'desc'  => 'The "From" name shown on all outbound UNITELO emails (worker request follow-ups, notifications, alerts). No AI involved — plain text only.',
                     'placeholders' => [],
                 ],
             ],
@@ -127,7 +127,7 @@ class AdminPromptController extends Controller
     {
         return [
             'worker_request_system' =>
-                'You are the UNIT team — a company that builds purpose-built AI workers for specific business workflows. You review incoming worker requests and write intelligent follow-up emails. Your tone is warm, direct, and expert. You read every submission carefully and tailor your questions to exactly what this person described — never generic.',
+                'You are the UNITELO team — a company that builds purpose-built AI workers for specific business workflows. You review incoming worker requests and write intelligent follow-up emails. Your tone is warm, direct, and expert. You read every submission carefully and tailor your questions to exactly what this person described — never generic.',
 
             'worker_request_user' => <<<'P'
 A person submitted a request asking us to build a custom AI worker. Read their submission carefully and write the BODY of a follow-up email (no greeting line -- start after "Hi [Name],").
@@ -154,7 +154,7 @@ STRICT FORMATTING RULES:
 P,
 
             'blog_rewrite_system' =>
-                'You are an expert content writer for UNIT, a platform for deploying purpose-built AI workers. You rewrite blog drafts into polished, well-structured articles. Your writing is clear, direct, and expert. You preserve the author\'s intent and facts but improve structure, flow, and sentence quality.',
+                'You are an expert content writer for UNITELO, a platform for deploying purpose-built AI workers. You rewrite blog drafts into polished, well-structured articles. Your writing is clear, direct, and expert. You preserve the author\'s intent and facts but improve structure, flow, and sentence quality.',
 
             'blog_rewrite_user' => <<<'P'
 Rewrite the following blog draft into a polished article. Keep all the key ideas and facts. Improve clarity, structure, and readability. Format the output in clean HTML suitable for a blog reader: use <h2> for section headings, <p> for paragraphs, <ul>/<li> for lists, and <blockquote> for pull quotes.
@@ -173,13 +173,13 @@ RULES:
 P,
 
             'newsletter_signup_system' =>
-                'You are UNIT, a platform for deploying AI workers. Write brief, warm, and professional subscriber confirmation messages.',
+                'You are UNITELO, a platform for deploying AI workers. Write brief, warm, and professional subscriber confirmation messages.',
 
             'newsletter_signup_user' =>
                 'Write a short 2-sentence confirmation message for a new blog subscriber. Their email is {email}. Tell them they are subscribed and that they will receive new posts when published. Warm but brief.',
 
             'feedback_response_system' =>
-                'You are a UNIT team member responding to user feedback. Be warm, direct, and genuine. Acknowledge specifically what they said.',
+                'You are a UNITELO team member responding to user feedback. Be warm, direct, and genuine. Acknowledge specifically what they said.',
 
             'feedback_response_user' => <<<'P'
 Write a brief response to this feedback submission.
@@ -192,7 +192,7 @@ Write 2-3 sentences. Acknowledge what they shared. Let them know it has been rec
 P,
 
             'comment_moderation_system' =>
-                'You are a content moderator for the UNIT blog. Review submitted comments and return a JSON object with: decision ("approve", "flag", or "reject") and reason (one sentence).',
+                'You are a content moderator for the UNITELO blog. Review submitted comments and return a JSON object with: decision ("approve", "flag", or "reject") and reason (one sentence).',
 
             'comment_moderation_user' => <<<'P'
 Review this comment and decide whether to approve, flag for review, or reject it.
@@ -203,7 +203,7 @@ Comment: {comment}
 Return ONLY valid JSON: {"decision": "approve|flag|reject", "reason": "one sentence explanation"}
 P,
 
-            'sender_name' => 'Franklin at UNIT',
+            'sender_name' => 'Franklin at UNITELO',
         ];
     }
 }

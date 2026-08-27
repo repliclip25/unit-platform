@@ -321,7 +321,7 @@
                         </div>
                         <div id="ai-tier-cost" style="margin-top:8px;padding:10px 12px;border-radius:9px;background:var(--bg-raised);border:1px solid var(--border);font-size:12px;color:var(--text-muted)"></div>
 
-                        {{-- UNIT ECONOMICS --}}
+                        {{-- UNITELO ECONOMICS --}}
                         <div class="wf-sep">Unit Economics</div>
                         <div id="ue-panel" style="border-radius:10px;overflow:hidden;border:1px solid var(--border)">
                             <div style="display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid var(--border)">

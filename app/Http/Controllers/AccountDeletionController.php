@@ -43,7 +43,7 @@ class AccountDeletionController extends Controller
             'email'   => $user->email,
         ]);
 
-        return redirect('/')->with('status', 'Your UNIT account has been permanently deleted. We\'re sorry to see you go.');
+        return redirect('/')->with('status', 'Your UNITELO account has been permanently deleted. We\'re sorry to see you go.');
     }
 
     private function resolveToken(string $token): ?object

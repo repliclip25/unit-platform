@@ -54,7 +54,7 @@ class DailySummaryJob implements ShouldQueue
 
         $context = json_encode(compact('today', 'logged', 'draftsReady', 'urgent', 'pendingReview', 'transactions'), JSON_PRETTY_PRINT);
 
-        $system = 'You are Ava, UNIT\'s Renewal & Subscription Coordinator. Write a concise daily summary email. No JSON — just a plain email body.';
+        $system = 'You are Ava, UNITELO\'s Renewal & Subscription Coordinator. Write a concise daily summary email. No JSON — just a plain email body.';
         $prompt = <<<PROMPT
 Generate a concise daily summary for {$user->name}.
 

@@ -18,7 +18,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
 @if(config('services.facebook_pixel_id'))
 <div id="unit-consent-banner" style="display:none;position:fixed;left:16px;right:16px;bottom:16px;z-index:9999;max-width:520px;margin:0 auto;background:#0D0D0D;color:#fff;border-radius:12px;padding:18px 20px;box-shadow:0 12px 40px rgba(0,0,0,.35);font-size:13.5px;line-height:1.5">
-    <p style="margin:0 0 12px">We use marketing cookies to measure ad performance and improve UNIT. See our <a href="{{ route('privacy') }}" style="color:#F5C518;text-decoration:underline">privacy policy</a>.</p>
+    <p style="margin:0 0 12px">We use marketing cookies to measure ad performance and improve UNITELO. See our <a href="{{ route('privacy') }}" style="color:#F5C518;text-decoration:underline">privacy policy</a>.</p>
     <div style="display:flex;gap:8px;justify-content:flex-end">
         <button type="button" id="unit-consent-decline" style="padding:8px 16px;border-radius:8px;border:1px solid rgba(255,255,255,.25);background:none;color:#fff;font-weight:600;font-size:13px;cursor:pointer">Decline</button>
         <button type="button" id="unit-consent-accept" style="padding:8px 16px;border-radius:8px;border:none;background:#F5C518;color:#0D0D0D;font-weight:700;font-size:13px;cursor:pointer">Accept</button>

@@ -45,7 +45,7 @@ class ReadEmailJob implements ShouldQueue
         // per-stage AI-model selection, a separate namespace.
         $override = UnitPlatform::getPromptOverride($input->deploymentId, 'read_email') ?? [];
 
-        $system = $override['system'] ?? 'You are Ava, UNIT\'s Subscription & Renewal Coordinator. Return valid JSON only. No extra text.';
+        $system = $override['system'] ?? 'You are Ava, UNITELO\'s Subscription & Renewal Coordinator. Return valid JSON only. No extra text.';
 
         $defaultPrompt = <<<PROMPT
 Read the email below and explain what it means.

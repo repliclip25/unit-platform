@@ -12,7 +12,7 @@
     conventions below, then carry matching fixes into desk/ava.blade.php
     and any future worker desk page. Reachable at /templates/desk.
 --}}
-<x-ux2-shell title="Desk Template — UNIT" active-slug="ava" active-link="" security-text="Example security blurb goes here.">
+<x-ux2-shell title="Desk Template — UNITELO" active-slug="ava" active-link="" security-text="Example security blurb goes here.">
 
     <x-slot:styles>
     <style>

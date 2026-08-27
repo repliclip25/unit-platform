@@ -3,13 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>UNIT — AI Agents That Never Stop Showing Up</title>
-<meta name="description" content="UNIT deploys specialized AI agents — AI workers trained for one job, not generic chat. AVA, our AI renewal coordinator, is live today.">
+<title>UNITELO — AI Agents That Never Stop Showing Up</title>
+<meta name="description" content="UNITELO deploys specialized AI agents — AI workers trained for one job, not generic chat. AVA, our AI renewal coordinator, is live today.">
 <link rel="icon" type="image/png" href="/favicon.png">
 <link rel="apple-touch-icon" href="/favicon.png">
 @include('partials.seo-meta', [
-    'title'       => 'UNIT — AI Agents That Never Stop Showing Up',
-    'description' => 'UNIT deploys specialized AI agents — AI workers trained for one job, not generic chat. AVA, our AI renewal coordinator, is live today.',
+    'title'       => 'UNITELO — AI Agents That Never Stop Showing Up',
+    'description' => 'UNITELO deploys specialized AI agents — AI workers trained for one job, not generic chat. AVA, our AI renewal coordinator, is live today.',
     'image'       => asset('images/hero-team-2.png'),
 ])
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -565,7 +565,7 @@ body{
   margin-right:-20px;
 }
 
-/* ── WHAT IS A UNIT WORKER ── */
+/* ── WHAT IS A UNITELO WORKER ── */
 .what{background:var(--soft);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
 .what-grid{display:grid;grid-template-columns:1fr 1fr;gap:clamp(40px,6vw,80px);align-items:center}
 .what-tag{
@@ -948,7 +948,7 @@ body{
         <em>showing up.</em>
       </h1>
       <p class="hero-p">
-        Every UNIT worker has one job — and does it exceptionally well. They work 24/7, improve over time, and tell their own story while helping you run your business.
+        Every UNITELO worker has one job — and does it exceptionally well. They work 24/7, improve over time, and tell their own story while helping you run your business.
       </p>
       <div class="hero-btns">
         <a href="#workers" class="btn-hero">
@@ -975,7 +975,7 @@ body{
   </div>
 
   <div class="hero-right">
-    <img src="/images/hero-team-2.png" alt="AVA, DOX, MOX and NUX — the UNIT AI workforce" class="hero-slide active" id="slide-0">
+    <img src="/images/hero-team-2.png" alt="AVA, DOX, MOX and NUX — the UNITELO AI workforce" class="hero-slide active" id="slide-0">
     <img src="/images/hero-team.png"   alt="AVA, DOX, MOX and NUX — selfie"                 class="hero-slide hidden" id="slide-1">
     <span class="hero-right-spacer" aria-hidden="true"></span>
     <div class="hero-fade"></div>
@@ -1129,7 +1129,7 @@ body{
     <div class="center" style="margin-bottom:clamp(36px,5vw,56px)">
       <div class="sec-eye">Meet the team</div>
       <h2 class="sec-h">Four workers. Four specialties.<br>One goal: your success.</h2>
-      <p class="sec-p">Each UNIT worker has one job — and does it exceptionally well. They run continuously, improve with every task, and report back on everything they do.</p>
+      <p class="sec-p">Each UNITELO worker has one job — and does it exceptionally well. They run continuously, improve with every task, and report back on everything they do.</p>
     </div>
 
     <div class="wk-grid">
@@ -1259,7 +1259,7 @@ body{
 <section class="timeline-sec sec" id="timeline">
   <div class="w">
     <div class="center">
-      <div class="sec-eye">A day inside UNIT</div>
+      <div class="sec-eye">A day inside UNITELO</div>
       <h2 class="sec-h">While you focus on growth,<br>they handle everything else.</h2>
     </div>
     <div class="tl">
@@ -1432,7 +1432,7 @@ body{
               <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4z"/></svg>
               Blog
             </span>
-            <div class="res-title">Real feedback from teams who hired their first UNIT worker</div>
+            <div class="res-title">Real feedback from teams who hired their first UNITELO worker</div>
             <div class="res-meta">8 min read · Customer stories</div>
             <span class="res-link">Read post <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
           </div>
@@ -1545,7 +1545,7 @@ body{
       <div class="faq-left">
         <div class="sec-eye">FAQ</div>
         <h2 class="what-h" style="margin-bottom:16px">Not an app.<br>Not a bot.<br><em>A worker.</em></h2>
-        <p style="font-size:.975rem;color:var(--t3);line-height:1.75;margin-bottom:20px">A UNIT worker is a system built from your day-to-day workflow. It runs without hand-holding, handles its job end-to-end, and reports back to you — so you always know what was done and why.</p>
+        <p style="font-size:.975rem;color:var(--t3);line-height:1.75;margin-bottom:20px">A UNITELO worker is a system built from your day-to-day workflow. It runs without hand-holding, handles its job end-to-end, and reports back to you — so you always know what was done and why.</p>
         <a href="{{ route('hire.ava.welcome') }}" class="btn-outline">
           Get started free
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
@@ -1554,10 +1554,10 @@ body{
       <div class="faq-list">
         <div class="faq-item open">
           <button class="faq-q">
-            What exactly is a UNIT worker?
+            What exactly is a UNITELO worker?
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
           </button>
-          <div class="faq-a">A UNIT worker is an AI system built around a specific job — like managing renewals or organizing documents. It runs autonomously using your existing workflow, handles the task end-to-end, and reports back to you. Think of it as a trained team member that never needs reminders.</div>
+          <div class="faq-a">A UNITELO worker is an AI system built around a specific job — like managing renewals or organizing documents. It runs autonomously using your existing workflow, handles the task end-to-end, and reports back to you. Think of it as a trained team member that never needs reminders.</div>
         </div>
         <div class="faq-item">
           <button class="faq-q">

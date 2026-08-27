@@ -56,7 +56,7 @@ class MemoryLookupJob implements ShouldQueue
 
         $override = UnitPlatform::getPromptOverride($input->deploymentId, 'memory') ?? [];
 
-        $system = $override['system'] ?? ('You are Ava, UNIT\'s Subscription & Renewal Coordinator. Return valid JSON only. No extra text. '
+        $system = $override['system'] ?? ('You are Ava, UNITELO\'s Subscription & Renewal Coordinator. Return valid JSON only. No extra text. '
             . 'When selecting an ava_rule, prefer rules with priority Critical > High > Medium > Low. '
             . 'Persona-specific rules (is_platform=false) take precedence over platform rules (is_platform=true) when both could apply.');
 

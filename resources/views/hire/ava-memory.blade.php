@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="csrf-token" content="{{ csrf_token() }}">
-<title>AVA Memory - UNIT</title>
+<title>AVA Memory - UNITELO</title>
 <link rel="icon" type="image/png" href="/favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -105,7 +105,7 @@ body{font-family:'Inter',sans-serif;background:var(--db-bg);color:var(--db-text)
 <body>
 
 <div class="am-topbar">
-  <a href="{{ url('/') }}" class="am-logo">UNIT</a>
+  <a href="{{ url('/') }}" class="am-logo">UNITELO</a>
   <div class="am-topbar-right">
     <span class="am-topbar-name">{{ auth()->user()->name }}</span>
     <form method="POST" action="{{ route('logout') }}">@csrf<button type="submit" class="am-logout">Logout</button></form>

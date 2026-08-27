@@ -64,7 +64,7 @@ details summary::-webkit-details-marker { display:none; }
     <div class="flex items-center justify-between mb-6">
         <div>
             <h2 class="font-semibold" style="color:var(--text-primary);font-size:18px">Platform Control Tower</h2>
-            <p style="color:var(--text-muted);font-size:12px;margin-top:2px">Full-stack view of UNIT health, configuration, and performance</p>
+            <p style="color:var(--text-muted);font-size:12px;margin-top:2px">Full-stack view of UNITELO health, configuration, and performance</p>
         </div>
         <div class="flex items-center gap-3">
             <span style="color:var(--text-faint);font-size:11px">Last refresh: {{ now()->format('H:i:s') }}</span>
@@ -1133,7 +1133,7 @@ details summary::-webkit-details-marker { display:none; }
         <div class="ct-card p-5 section-anchor">
             <p class="ct-section-title" style="margin-bottom:12px"><span class="ct-dot dot-blue" style="background:#60a5fa"></span> Platform SDK</p>
             <p style="font-size:12px;color:var(--text-muted);margin-bottom:16px">
-                Reference for integrating with the UNIT platform — webhooks, transaction API, auth flow, tenant data access.
+                Reference for integrating with the UNITELO platform — webhooks, transaction API, auth flow, tenant data access.
             </p>
             <div class="space-y-2">
                 @foreach([
@@ -1160,7 +1160,7 @@ details summary::-webkit-details-marker { display:none; }
         <div class="ct-card p-5">
             <p class="ct-section-title" style="margin-bottom:12px"><span class="ct-dot" style="background:#a78bfa"></span> Worker DNA SDK</p>
             <p style="font-size:12px;color:var(--text-muted);margin-bottom:16px">
-                Everything a third-party developer needs to build and publish a worker on UNIT.
+                Everything a third-party developer needs to build and publish a worker on UNITELO.
             </p>
             <div class="space-y-2">
                 @foreach($workerStats['workers'] as $w)
@@ -1192,7 +1192,7 @@ details summary::-webkit-details-marker { display:none; }
                 </form>
                 <a href="{{ route('admin.platform') }}" style="background:var(--bg-raised);border:1px solid var(--border);color:var(--text-secondary);font-size:12px;font-weight:600;padding:8px 16px;border-radius:8px;text-decoration:none;display:inline-block">↻ Refresh Tower</a>
                 <a href="/horizon" target="_blank" style="background:var(--bg-raised);border:1px solid var(--border);color:var(--text-secondary);font-size:12px;font-weight:600;padding:8px 16px;border-radius:8px;text-decoration:none;display:inline-block">⚡ Horizon Dashboard</a>
-                <span style="font-size:11px;color:var(--text-faint);margin-left:auto">UNIT Platform · {{ config('app.env') }} · PHP {{ phpversion() }} · Laravel {{ app()->version() }}</span>
+                <span style="font-size:11px;color:var(--text-faint);margin-left:auto">UNITELO Platform · {{ config('app.env') }} · PHP {{ phpversion() }} · Laravel {{ app()->version() }}</span>
             </div>
         </div>
     </div>

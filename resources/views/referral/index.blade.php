@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="csrf-token" content="{{ csrf_token() }}">
-<title>Refer & Earn — UNIT</title>
+<title>Refer & Earn — UNITELO</title>
 <link rel="icon" type="image/png" href="/favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -186,7 +186,7 @@ $sidebarLinks = [
 
 {{-- ══ TOP BAR ══ --}}
 <div class="ob-topbar">
-  <a href="{{ route('app.dashboard') }}" class="ob-topbar-logo" style="text-decoration:none">UNIT</a>
+  <a href="{{ route('app.dashboard') }}" class="ob-topbar-logo" style="text-decoration:none">UNITELO</a>
   <div class="ob-topbar-right">
     <a href="{{ route('app.profile.show') }}" class="ob-topbar-name" style="text-decoration:none">{{ auth()->user()->name }}</a>
     <button class="ob-theme-toggle" id="theme-toggle" type="button" title="Toggle dark/light mode" aria-label="Toggle theme"></button>
@@ -290,7 +290,7 @@ $sidebarLinks = [
     <div class="mem-wrap">
 
       <div class="rf-h1">Refer & Earn</div>
-      <div class="rf-sub">Invite colleagues to UNIT. Earn ${{ number_format($referralCreditUsd, 0) }} credit when they go paid.</div>
+      <div class="rf-sub">Invite colleagues to UNITELO. Earn ${{ number_format($referralCreditUsd, 0) }} credit when they go paid.</div>
 
       <div class="rf-stats">
         <div class="rf-stat"><div class="rf-stat-num">{{ $referral->signups }}</div><div class="rf-stat-label">Signed up</div></div>
@@ -328,7 +328,7 @@ $sidebarLinks = [
       <div class="rf-card">
         <div class="rf-card-title">Best ways to refer</div>
 
-        <a href="mailto:?subject=Tool that automates license renewals&body=Hey%2C%0A%0AI've been using UNIT Platform to automate our license renewal workflow — it handles reading the email%2C looking up the client%2C and drafting the response automatically. Saves a ton of time.%0A%0AThought you might want to try it. Use my link and you'll get double the usual free trial%3A%0A%0A{{ $referralUrl }}%0A%0A" class="rf-share-item">
+        <a href="mailto:?subject=Tool that automates license renewals&body=Hey%2C%0A%0AI've been using UNITELO Platform to automate our license renewal workflow — it handles reading the email%2C looking up the client%2C and drafting the response automatically. Saves a ton of time.%0A%0AThought you might want to try it. Use my link and you'll get double the usual free trial%3A%0A%0A{{ $referralUrl }}%0A%0A" class="rf-share-item">
           <div class="rf-share-icon" style="background:var(--db-chip)">
             <svg width="16" height="16" fill="none" stroke="var(--db-text)" viewBox="0 0 24 24" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
           </div>
@@ -344,7 +344,7 @@ $sidebarLinks = [
           <svg class="rf-chev" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
         </a>
 
-        <a href="https://twitter.com/intent/tweet?text={{ urlencode('I use UNIT Platform to automate license renewal workflows — it reads the email, looks up the client, and drafts the response. Use my link for double the free trial: ' . $referralUrl) }}" target="_blank" class="rf-share-item">
+        <a href="https://twitter.com/intent/tweet?text={{ urlencode('I use UNITELO Platform to automate license renewal workflows — it reads the email, looks up the client, and drafts the response. Use my link for double the free trial: ' . $referralUrl) }}" target="_blank" class="rf-share-item">
           <div class="rf-share-icon" style="background:var(--db-chip)">
             <svg width="16" height="16" fill="var(--db-text)" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.748l7.73-8.835L1.254 2.25H8.08l4.261 5.632zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
           </div>
@@ -394,12 +394,12 @@ $sidebarLinks = [
         </div>
         <div class="rf-step">
           <div class="rf-step-num">3</div>
-          <div><div class="rf-step-title">You earn ${{ number_format($referralCreditUsd, 0) }} credit when they subscribe</div><div class="rf-step-sub">Applied to your UNIT account automatically. No cap on earnings.</div></div>
+          <div><div class="rf-step-title">You earn ${{ number_format($referralCreditUsd, 0) }} credit when they subscribe</div><div class="rf-step-sub">Applied to your UNITELO account automatically. No cap on earnings.</div></div>
         </div>
       </div>
 
       {{-- Cross-link to the creator/influencer program — different audience,
-           worth surfacing here since both are "share UNIT, get paid" programs --}}
+           worth surfacing here since both are "share UNITELO, get paid" programs --}}
       <div class="rf-card rf-partner-strip">
         <div>
           <h3>Have an audience? Check out the Partner Program.</h3>

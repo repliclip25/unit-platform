@@ -36,7 +36,7 @@ class ClassifyEmailJob implements ShouldQueue
 
         $override = UnitPlatform::getPromptOverride($input->deploymentId, 'classify') ?? [];
 
-        $system = $override['system'] ?? 'You are Ava, UNIT\'s Subscription & Renewal Coordinator. Return valid JSON only. No extra text.';
+        $system = $override['system'] ?? 'You are Ava, UNITELO\'s Subscription & Renewal Coordinator. Return valid JSON only. No extra text.';
 
         // Category vocabulary comes from the deployment's active persona, not
         // a single hardcoded list — an insurance broker's renewals should

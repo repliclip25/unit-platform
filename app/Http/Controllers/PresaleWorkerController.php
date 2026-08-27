@@ -18,7 +18,7 @@ class PresaleWorkerController extends Controller
             'slug'       => 'brand-video',
             'role'       => 'AI Brand Video Agent',
             'category'   => 'Brand Content Creation',
-            'meta_desc'  => "Brand Video is UNIT's upcoming AI agent for turning brand assets into finished video content. Reserve early access and start training its memory today.",
+            'meta_desc'  => "Brand Video is UNITELO's upcoming AI agent for turning brand assets into finished video content. Reserve early access and start training its memory today.",
             'tagline'    => "Owns your brand's video content from raw material to finished cut.",
 
             'connects_to' => [

@@ -1,4 +1,4 @@
-<x-onboarding-shell title="Memory Training — UNIT" :steps="$steps" security-text="Your brand assets live in your own Google Drive, not on UNIT's servers.">
+<x-onboarding-shell title="Memory Training — UNITELO" :steps="$steps" security-text="Your brand assets live in your own Google Drive, not on UNITELO's servers.">
 
     <x-slot:styles>
     <style>

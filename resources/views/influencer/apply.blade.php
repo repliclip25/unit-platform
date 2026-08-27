@@ -1,6 +1,6 @@
 @extends('layouts.public')
 @section('title', 'Influencer Partner Program')
-@section('description', 'Earn 20–30% recurring MRR commission by promoting UNIT to license renewal and compliance teams. Apply for your vanity link and partner portal access.')
+@section('description', 'Earn 20–30% recurring MRR commission by promoting UNITELO to license renewal and compliance teams. Apply for your vanity link and partner portal access.')
 
 @section('head')
 <style>
@@ -161,7 +161,7 @@
   <div class="w">
     <div class="eyebrow"><span class="eyebrow-dot"></span>Influencer Partner Program</div>
     <h1>Earn recurring commission<br>every month. <span class="gold">Up to 30%.</span></h1>
-    <p class="hero-sub">Promote UNIT to your audience of contractors, compliance teams, and renewal professionals. Every paying customer you refer earns you a percentage of their monthly subscription, for as long as they stay.</p>
+    <p class="hero-sub">Promote UNITELO to your audience of contractors, compliance teams, and renewal professionals. Every paying customer you refer earns you a percentage of their monthly subscription, for as long as they stay.</p>
     <div class="hero-trust">
       <div class="htrust">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m4 12 5 5L20 6"/></svg>
@@ -249,7 +249,7 @@
           </div>
           <div class="tier-perk">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m4 12 5 5L20 6"/></svg>
-            Direct line to UNIT product team
+            Direct line to UNITELO product team
           </div>
         </div>
       </div>
@@ -258,7 +258,7 @@
     {{-- Tenant strip --}}
     <div class="tenant-strip">
       <div class="ts-text">
-        <h3>Already a UNIT customer? Try the Referral Program instead.</h3>
+        <h3>Already a UNITELO customer? Try the Referral Program instead.</h3>
         <p>Tenants earn $25 account credit per conversion, no audience required. Just share your link with another team.</p>
       </div>
       <a href="{{ route('app.referral.index') }}" class="btn-black">
@@ -438,10 +438,10 @@
         ['q'=>'When and how do I get paid?','a'=>'Commission is calculated on the 1st of every month based on the MRR of your active referred customers. Payouts are sent within 5 business days via bank transfer or PayPal. There\'s a $50 minimum payout threshold.'],
         ['q'=>'How long does commission last?','a'=>'Commission is recurring: you earn for as long as a referred customer stays subscribed. If they cancel, that commission stops. If they re-subscribe, it resumes.'],
         ['q'=>'How do tier upgrades work?','a'=>'Tiers are based on cumulative paid conversions. Once you hit the threshold (5 for Pro, 15 for Elite), your rate upgrades automatically for all future commission calculations, including existing customers.'],
-        ['q'=>'What counts as a conversion?','a'=>'A conversion is when someone you referred activates a paid UNIT subscription. Free trial sign-ups do not count until they convert to paid.'],
-        ['q'=>'Can I promote UNIT without applying first?','a'=>'You can share your referral link informally, but to get a vanity link, access the partner dashboard, and receive payouts, you need to complete the application and be approved.'],
-        ['q'=>'What\'s the difference between this and the Referral Program?','a'=>'The Referral Program is for existing UNIT customers who want to earn $25 account credit per conversion, no audience required. The Influencer Program is for creators and consultants who promote UNIT to their audience and earn 20–30% recurring MRR commission.'],
-        ['q'=>'Can I be in both programs?','a'=>'Yes. If you\'re a UNIT customer and a creator, you can earn account credit through the Referral Program and recurring commission through the Influencer Program simultaneously, with separate links.'],
+        ['q'=>'What counts as a conversion?','a'=>'A conversion is when someone you referred activates a paid UNITELO subscription. Free trial sign-ups do not count until they convert to paid.'],
+        ['q'=>'Can I promote UNITELO without applying first?','a'=>'You can share your referral link informally, but to get a vanity link, access the partner dashboard, and receive payouts, you need to complete the application and be approved.'],
+        ['q'=>'What\'s the difference between this and the Referral Program?','a'=>'The Referral Program is for existing UNITELO customers who want to earn $25 account credit per conversion, no audience required. The Influencer Program is for creators and consultants who promote UNITELO to their audience and earn 20–30% recurring MRR commission.'],
+        ['q'=>'Can I be in both programs?','a'=>'Yes. If you\'re a UNITELO customer and a creator, you can earn account credit through the Referral Program and recurring commission through the Influencer Program simultaneously, with separate links.'],
       ] as $faq)
       <div class="faq-item">
         <div class="faq-q" onclick="this.closest('.faq-item').classList.toggle('open')">
@@ -461,7 +461,7 @@
     <div class="sec-label">Apply</div>
     <div class="apply-grid">
       <div class="apply-copy">
-        <h2>Ready to partner with UNIT?</h2>
+        <h2>Ready to partner with UNITELO?</h2>
         <p>Fill out the short application. We review every submission personally and respond within 2 business days. Approved partners receive their vanity link, dashboard access, and a welcome kit by email.</p>
         <div class="apply-pts">
           @foreach(['2-day review turnaround','Vanity link + live analytics dashboard','Monthly payouts, no minimum contract','Tier upgrades are fully automatic'] as $pt)
@@ -525,7 +525,7 @@
           </div>
           <div class="form-field" style="margin-bottom:16px">
             <label>TELL US ABOUT YOUR AUDIENCE (optional)</label>
-            <textarea name="notes" rows="3" placeholder="Who do you reach? Why would UNIT resonate with them?" style="resize:vertical">{{ old('notes') }}</textarea>
+            <textarea name="notes" rows="3" placeholder="Who do you reach? Why would UNITELO resonate with them?" style="resize:vertical">{{ old('notes') }}</textarea>
           </div>
           <button type="submit" class="submit-btn">Apply to Partner →</button>
           <p class="form-note">We review all applications within 2 business days and respond by email whether approved or not.</p>

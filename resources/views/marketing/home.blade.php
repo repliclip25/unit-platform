@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UNIT — AI Workforce Platform for Construction</title>
+    <title>UNITELO — AI Workforce Platform for Construction</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
         body { background: radial-gradient(ellipse at 50% 100%, #0a2040 0%, #050c1a 55%, #020710 100%); }
@@ -23,7 +23,7 @@
             <div class="w-9 h-9 rounded flex items-center justify-center relative" class="ac-bg">
                 <div class="w-4 h-4 bg-gray-900 rounded-sm"></div>
             </div>
-            <span class="font-black text-xl tracking-tight text-white">UNIT</span>
+            <span class="font-black text-xl tracking-tight text-white">UNITELO</span>
         </div>
         <div class="hidden md:flex items-center gap-8 text-sm text-gray-400">
             <a href="#how-it-works" class="hover:text-white transition">How It Works</a>
@@ -54,7 +54,7 @@
             </h1>
 
             <p class="text-gray-400 text-lg leading-relaxed mb-3">
-                UNIT deploys specialized AI workers that handle the operational work that slows construction teams down.
+                UNITELO deploys specialized AI workers that handle the operational work that slows construction teams down.
                 Built for construction. Trained on real workflows.
             </p>
             <p class="font-bold mb-8" class="ac-text">Always in your control.</p>

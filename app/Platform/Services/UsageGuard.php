@@ -85,17 +85,17 @@ class UsageGuard
                 ));
 
                 $body = "Hi {$user->name},\n\n"
-                    . "Your UNIT account has been blocked under policy: {$policy['title']}.\n\n"
+                    . "Your UNITELO account has been blocked under policy: {$policy['title']}.\n\n"
                     . $policy['description'] . "\n\n"
                     . "How to resolve:\n{$resolution}\n\n"
                     . "Log in to take action:\n" . url('/app/billing') . "\n\n"
-                    . "UNIT Platform";
+                    . "UNITELO Platform";
 
                 try {
                     \Illuminate\Support\Facades\Mail::raw(
                         $body,
                         fn($m) => $m->to($user->email)
-                            ->subject("Your UNIT account has been paused: {$policy['title']}")
+                            ->subject("Your UNITELO account has been paused: {$policy['title']}")
                     );
                 } catch (\Throwable $e) {
                     Log::error('UsageGuard: block notification failed', ['user_id' => $userId, 'error' => $e->getMessage()]);

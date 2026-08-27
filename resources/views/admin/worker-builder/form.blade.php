@@ -282,7 +282,7 @@
                 </div>
                 <div class="wb-field">
                     <label class="wb-label">OWNER NAME</label>
-                    <input type="text" name="owner_name" value="{{ old('owner_name', $worker->owner['name'] ?? 'UNIT') }}" class="wb-input">
+                    <input type="text" name="owner_name" value="{{ old('owner_name', $worker->owner['name'] ?? 'UNITELO') }}" class="wb-input">
                 </div>
                 <div class="wb-field">
                     <label class="wb-label">LICENSE</label>

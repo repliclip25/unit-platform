@@ -383,8 +383,8 @@ class DeskService
             $count = DB::table('referral_credits')->where('referrer_id', $userId)->where('event', 'signup')->where('created_at', '>=', $weekStart)->count();
             return $count > 0 ? [
                 'text'   => $count === 1
-                    ? 'Someone just joined UNIT with your referral link'
-                    : "<strong>{$count}</strong> people joined UNIT with your referral link this week",
+                    ? 'Someone just joined UNITELO with your referral link'
+                    : "<strong>{$count}</strong> people joined UNITELO with your referral link this week",
                 'dot'    => 'green',
                 'action' => ['label' => 'View referrals', 'url' => route('app.referral.index')],
                 'always' => false,
@@ -422,7 +422,7 @@ class DeskService
             $hit   = collect([10, 25, 50, 100, 250, 500, 1000])->last(fn($m) => $hours >= $m);
             if (!$hit) return null;
             return [
-                'text'        => "🎉 You've saved over <strong>{$hit} hours</strong> with UNIT — keep going",
+                'text'        => "🎉 You've saved over <strong>{$hit} hours</strong> with UNITELO — keep going",
                 'dot'         => 'accent',
                 'action'      => ['label' => 'Share', 'url' => route('app.referral.index')],
                 'always'      => false,

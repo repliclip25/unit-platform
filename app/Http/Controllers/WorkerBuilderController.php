@@ -297,7 +297,7 @@ PHP;
         $credPhp = "[\n" . implode("\n", $credItems) . "\n        ]";
         $instancesPhp  = $phpAssoc(array_merge(['multiple'=>false,'min'=>1,'max'=>1,'label'=>'deployment','rationale'=>''], $instances));
         $tagsPhp       = $phpArray($tags);
-        $ownerPhp      = $phpAssoc(array_merge(['type'=>'platform','name'=>'UNIT','contact'=>config('services.unit.noreply_email'),'website'=>'https://unit.report','license'=>'proprietary','sla'=>'','since'=>date('Y'),'verified'=>true], $owner));
+        $ownerPhp      = $phpAssoc(array_merge(['type'=>'platform','name'=>'UNITELO','contact'=>config('services.unit.noreply_email'),'website'=>'https://unit.report','license'=>'proprietary','sla'=>'','since'=>date('Y'),'verified'=>true], $owner));
         $mediaPhp      = $phpAssoc(array_merge(['color'=>'#f1d362','quote'=>'','avatar'=>null,'banner'=>null], $media));
 
         $stub = <<<PHP
@@ -659,7 +659,7 @@ PHP;
             '_meta' => [
                 'exported_at'    => now()->toISOString(),
                 'exported_by'    => auth()->user()->email ?? 'admin',
-                'platform'       => 'UNIT',
+                'platform'       => 'UNITELO',
                 'schema_version' => '2.0',
                 'purpose'        => 'Worker blueprint — use for auditing, refactoring, or building new workers',
                 'contract_class' => $row->worker_class ?? null,
@@ -950,7 +950,7 @@ PHP;
             'tags'              => json_encode(array_values($tags)),
             'owner'             => json_encode([
                 'type'     => $request->input('owner_type', 'platform'),
-                'name'     => $request->input('owner_name', 'UNIT'),
+                'name'     => $request->input('owner_name', 'UNITELO'),
                 'contact'  => $request->input('owner_contact'),
                 'website'  => $request->input('owner_website'),
                 'license'  => $request->input('owner_license', 'proprietary'),

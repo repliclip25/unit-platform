@@ -10,7 +10,7 @@
     below, then carry matching fixes into the real pages that use this
     shape. Reachable at /templates/page.
 --}}
-<x-ux2-shell title="Page Template — UNIT" active-slug="ava" active-link="Memory" security-text="Example security blurb goes here.">
+<x-ux2-shell title="Page Template — UNITELO" active-slug="ava" active-link="Memory" security-text="Example security blurb goes here.">
 
     <x-slot:styles>
     <style>
