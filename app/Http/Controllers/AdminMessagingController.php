@@ -481,6 +481,21 @@ class AdminMessagingController extends Controller
                 'from_name'   => 'Franklin at UNITELO',
                 'sort_order'  => 4,
             ],
+            [
+                'key'         => 'billing_subscription_activated',
+                'sequence'    => 'transactional',
+                'audience'    => 'all',
+                'worker_slug' => null,
+                'label'       => 'Subscription Activated',
+                'description' => 'Sent right after a new paid subscription completes checkout.',
+                'trigger_condition' => 'checkout: billing.success',
+                'day_offset'  => null,
+                'trigger_state' => null,
+                'subject'     => "You're subscribed — {worker_name} {plan_name} is active",
+                'body'        => "Hi {name},\n\nYou're subscribed to {worker_name} {plan_name} at {price}/month.\n\n{worker_name} is fully active and processing has resumed.\n\nDashboard: {app_url}/dashboard\nManage billing: {app_url}/billing\n\nFranklin at UNITELO",
+                'from_name'   => 'Franklin at UNITELO',
+                'sort_order'  => 5,
+            ],
 
             // Inbound — worker request
             [

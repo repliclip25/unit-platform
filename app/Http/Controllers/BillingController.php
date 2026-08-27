@@ -268,6 +268,42 @@ class BillingController extends Controller
         \App\Platform\Services\ReferralService::handleConversion($user->id);
         \App\Platform\Services\InfluencerService::handleConversion($user->id);
 
+        $activatedPricing = DB::table('worker_pricing')
+            ->where('worker_slug', $deployment->worker_slug)
+            ->where('plan_slug', $planSlug)
+            ->first();
+
+        if ($activatedPricing) {
+            try {
+                $tpl = AdminMessagingController::getTemplate('billing_subscription_activated');
+                if ($tpl) {
+                    $appUrl       = config('app.url');
+                    // display_name is "AVA — Starter" — split into worker + tier
+                    // so the subject/body don't duplicate the worker name.
+                    $nameParts    = preg_split('/\s*[:—\-]\s*/u', $activatedPricing->display_name ?: '');
+                    $replacements = [
+                        '{name}'        => $user->name,
+                        '{app_url}'     => $appUrl,
+                        '{worker_name}' => trim($nameParts[0] ?? '') ?: strtoupper($deployment->worker_slug),
+                        '{plan_name}'   => trim($nameParts[1] ?? '') ?: ucfirst($planSlug),
+                        '{price}'       => '$' . number_format((float) $activatedPricing->monthly_flat_rate, 2),
+                    ];
+                    $body    = str_replace(array_keys($replacements), array_values($replacements), $tpl->body);
+                    $subject = str_replace(array_keys($replacements), array_values($replacements), $tpl->subject);
+                    \Illuminate\Support\Facades\Mail::raw($body, fn($m) => $m
+                        ->to($user->email, $user->name)
+                        ->subject($subject)
+                        ->replyTo(config('services.unit.noreply_email'), $tpl->from_name)
+                    );
+                }
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::error('Billing success: confirmation email failed', [
+                    'deployment_id' => $deploymentId,
+                    'error'         => $e->getMessage(),
+                ]);
+            }
+        }
+
         $planLabel = ucfirst($planSlug);
 
         // One-time GA4 conversion event, consumed on the next page load —
