@@ -1,6 +1,6 @@
 User-agent: *
 Disallow:
 
-Sitemap: https://unit.report/sitemap.xml
+Sitemap: https://unitelo.ai/sitemap.xml
 
-# LLMs: https://unit.report/llms.txt
+# LLMs: https://unitelo.ai/llms.txt
