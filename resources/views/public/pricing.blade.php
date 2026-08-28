@@ -5,15 +5,6 @@
 @section('body')
 
 <style>
-.pc-hero{padding:clamp(56px,8vw,88px) 0 0;overflow:hidden}
-.pc-hero-grid{display:grid;grid-template-columns:1.1fr 1fr;gap:clamp(32px,5vw,64px);align-items:center;text-align:left}
-.pc-hero-img{border-radius:20px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.12)}
-.pc-hero-img img{width:100%;display:block;object-fit:cover;object-position:center 15%;max-height:440px}
-@media(max-width:768px){
-    .pc-hero-grid{grid-template-columns:1fr}
-    .pc-hero-img{order:-1}
-}
-
 .pc-grid {
     display:grid;
     grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
@@ -129,18 +120,11 @@
 @media(max-width:680px){ .pc-grid { grid-template-columns:1fr } }
 </style>
 
-<section class="pc-hero">
-  <div class="w pc-hero-grid">
-    <div>
-      <div class="eyebrow">Pricing</div>
-      <h1>An AI Worker for every workflow.</h1>
-      <p style="font-size:16px;color:var(--t3);max-width:480px;line-height:1.7">Each UNITELO AI Worker is priced for what it automates, and what that's worth to your team. Start free, no card required.</p>
-    </div>
-    <div class="pc-hero-img">
-      <img src="{{ asset('images/pricing-hero.webp') }}" alt="AVA, DOX, MOX and NUX: the UNITELO AI workforce, each specialized in a different workflow">
-    </div>
-  </div>
-</section>
+<div class="w pub-hero" style="text-align:center">
+    <div class="eyebrow">Pricing</div>
+    <h1>An AI Worker for every workflow.</h1>
+    <p style="font-size:16px;color:var(--t3);max-width:480px;margin:0 auto;line-height:1.7">Each UNITELO AI Worker is priced for what it automates, and what that's worth to your team. Start free, no card required.</p>
+</div>
 
 <div class="w" style="max-width:1040px;margin:0 auto;padding:0 24px 96px">
 
