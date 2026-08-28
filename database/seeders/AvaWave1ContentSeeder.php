@@ -50,6 +50,25 @@ class AvaWave1ContentSeeder extends Seeder
             body: $this->page2Body(),
             faqs: $this->page2Faqs(),
         );
+
+        $this->seedPage(
+            worker: 'ava',
+            tier: 'Tier 2',
+            pageFamily: 'Asset Solution',
+            urlPath: 'assets/domains',
+            lifecycleStage: 'Detect',
+            primaryQuery: 'domain expiration monitoring',
+            secondaryQueries: ['domain renewal tracking', 'domain renewal tracker'],
+            seoTitle: 'Domain Renewal & Expiration Tracking | AVA by UNITELO',
+            metaDescription: "Track domain expiration and renewal work with AVA. Detect upcoming renewals, identify the right customer and contact, coordinate approval, record completion, and schedule the next cycle.",
+            h1: "Domain Renewal & Expiration Tracking That Doesn't Stop at an Alert",
+            ctaLabel: 'Have AVA Own Domain Renewals',
+            ctaHeadline: 'Have AVA own Domain Renewal Operations.',
+            ctaSubtext: "Your customers shouldn't depend on someone remembering a date. Your operations team shouldn't have to search through old inboxes to figure out who owns a domain. And your renewal process shouldn't end with another notification.",
+            ctaRoute: 'register',
+            body: $this->page3Body(),
+            faqs: $this->page3Faqs(),
+        );
     }
 
     private function seedPage(
@@ -408,6 +427,142 @@ HTML;
             ['How is AVA different from a spreadsheet renewal tracker?', "A spreadsheet can store renewal information, but someone still has to maintain it, interpret what needs attention, coordinate the work, follow up, record the result, and remember the next cycle. AVA is designed to own that operational responsibility."],
             ['What happens after a renewal is completed?', "AVA updates the renewal records and Renewal Register, archives supporting evidence, schedules the next renewal cycle, and re-establishes future monitoring."],
             ['Does AVA replace the people who currently manage renewals?', "AVA is designed to remove repetitive renewal coordination from their workload, not take away human decision authority. Your team retains control of financial, legal, vendor, payment, and executive decisions."],
+        ];
+    }
+
+    private function page3Body(): string
+    {
+        return <<<HTML
+<p><strong>Never let an important domain quietly expire.</strong></p>
+<p>A domain can be one of the smallest recurring expenses in a business. It can also be one of the most disruptive things to forget.</p>
+<p>Domain renewal notices arrive. Expiration dates approach. Reminders get sent. But when domain responsibility is spread across inboxes, registrar accounts, spreadsheets, calendars, customers, and individual employees, an important renewal can still be missed.</p>
+<p>AVA is an AI Worker for Renewal Operations. She helps organizations detect domain renewal work, identify the customer and domain involved, find the responsible contact, coordinate the renewal through human review and fulfillment, record the outcome, and schedule the next renewal cycle.</p>
+<p>The goal isn't another domain expiration alert. The goal is a completed domain renewal.</p>
+
+<h2>Why domain renewals still get missed</h2>
+<p>Domain renewal should be simple. A domain has an expiration date. The organization renews it before that date. Done.</p>
+<p>In practice, the operational environment around the domain can make that simple task surprisingly fragile.</p>
+<p>A renewal notice might arrive in an employee's inbox. The domain may be registered through a customer account. A digital agency may manage domains for dozens of clients. A Managed Service Provider may have renewal responsibility spread across different customer relationships.</p>
+<p>The person receiving the renewal notice may not know who owns the domain. The person who knows the domain may not have authority to approve the renewal. Another employee may handle payment. Someone else may maintain the customer record.</p>
+<p>The registrar can send a reminder. But the registrar doesn't own your internal renewal process.</p>
+<p>That's the problem AVA is designed to address.</p>
+
+<h2>What is domain renewal tracking?</h2>
+<p>Domain renewal tracking is the process of monitoring domain renewal and expiration activity so important domains can be renewed before they expire. A domain renewal tracking process may include:</p>
+<ul>
+<li>Domain name</li>
+<li>Customer or organization</li>
+<li>Expiration date</li>
+<li>Renewal date</li>
+<li>Responsible contact</li>
+<li>Renewal status</li>
+<li>Renewal reminders</li>
+<li>Supporting communications</li>
+<li>Renewal history</li>
+<li>Next renewal cycle</li>
+</ul>
+<p>At minimum, tracking gives you visibility. You know which domains exist. You know which dates are approaching. You know something needs attention.</p>
+<p>But visibility is only the first layer. Once an important domain approaches renewal, somebody still needs to own what happens next.</p>
+
+<h2>Domain expiration monitoring is not the same as domain renewal operations</h2>
+<p>Expiration monitoring answers: when does this domain expire?</p>
+<p>Renewal Operations answers: what needs to happen so this domain does not expire?</p>
+<p>Those are different responsibilities. A monitoring system can identify the deadline. An alert can tell your team the deadline is approaching. But someone may still need to understand the renewal notice, identify the correct customer, confirm the domain involved, find the responsible contact, prepare necessary communication, obtain human approval, track the renewal through fulfillment, record what happened, preserve supporting evidence, and schedule the next renewal cycle.</p>
+<p>AVA connects expiration awareness to operational ownership.</p>
+
+<h2>Meet AVA: a Renewal Operations Worker for recurring domain obligations</h2>
+<p>AVA is not a domain registrar. She does not replace the systems that register, host, or technically operate your domains. Her job is Renewal Operations. Domains are one of the renewable assets AVA supports.</p>
+<p>When domain renewal work is detected, AVA can organize that work as a renewal transaction and keep it moving through the defined lifecycle.</p>
+<p>That means your team doesn't have to treat a domain renewal notice as another disconnected email, reminder, or calendar event. It becomes accountable work.</p>
+
+<h2>How AVA manages a domain renewal</h2>
+
+<h3>1. Detect the renewal</h3>
+<p>AVA's responsibility starts when renewal work is detected. In Version 1, renewal work can enter through Gmail, Asset Watch, and Manual Trigger. A domain renewal notice arriving by email can therefore become operational work. A monitored asset approaching renewal can become operational work. And your team can manually initiate a renewal when necessary.</p>
+<p>The important change is what happens next. The renewal doesn't remain an isolated notification. It enters a lifecycle.</p>
+
+<h3>2. Understand the renewal</h3>
+<p>Domain renewal communications aren't always identical. Different vendors use different formats and terminology. The relevant information can appear in different places. AVA uses AI to interpret renewal intent and business context. The objective is to understand what this renewal is about, and what needs attention.</p>
+
+<h3>3. Identify the customer</h3>
+<p>This becomes especially important for organizations managing domains on behalf of other businesses. A Managed Service Provider may receive renewal activity for many customers. A digital agency may manage domains for dozens or hundreds of client websites. A hosting provider may have recurring obligations across customer accounts.</p>
+<p>Knowing that a domain is approaching renewal isn't enough. The renewal needs the correct organizational context. AVA's lifecycle includes customer identification so the domain renewal can be connected to the appropriate customer relationship.</p>
+
+<h3>4. Identify the domain</h3>
+<p>AVA identifies the renewable asset associated with the transaction. In this case, that asset is the domain. Connecting the renewal to a specific asset gives the transaction operational context. Instead of "domain renewal email received," the organization can work from "this renewal transaction concerns this domain for this customer." That distinction matters when renewal volume grows.</p>
+
+<h3>5. Identify the responsible contact</h3>
+<p>Knowing the customer and domain still doesn't answer who needs to be involved. AVA identifies the responsible contact associated with the renewal. This helps prevent the common situation where everyone knows a domain is approaching expiration but nobody clearly owns the next action.</p>
+
+<h3>6. Prepare the renewal communication</h3>
+<p>Some domain renewals may require communication with a customer or another responsible party. AVA can prepare personalized communication based on the context of the renewal. But AVA does not confuse preparation with authority. Customer-facing communication requires human approval.</p>
+
+<h3>7. Keep humans in control</h3>
+<p>Human review is required. AVA can coordinate the renewal process, but consequential business decisions remain with people. AVA does not own financial approval, payment authorization, vendor selection, contract negotiation, legal decisions, or executive approval. AVA also does not automatically execute payments or autonomously purchase a domain renewal.</p>
+<p><strong>AVA owns the process. Humans own the decisions.</strong></p>
+
+<h3>8. Track the domain renewal through fulfillment</h3>
+<p>A domain renewal shouldn't disappear from the operational workflow simply because someone approved it. The underlying obligation still needs to be fulfilled. AVA continues tracking the renewal.</p>
+<p>That distinction is important. An approval is not the outcome. An email is not the outcome. A reminder is not the outcome. The domain being successfully renewed is the outcome.</p>
+
+<h3>9. Record what happened</h3>
+<p>Once the renewal has been fulfilled, AVA updates the renewal records. The Renewal Register reflects the outcome. This gives the organization continuity. The next time the domain enters a renewal cycle, the organization doesn't have to reconstruct what happened from old emails, employee memory, or disconnected spreadsheets.</p>
+
+<h3>10. Archive the evidence</h3>
+<p>Supporting evidence associated with the completed renewal can be archived as part of the transaction history. This creates a more complete operational record of the renewal. The organization can see that the renewal didn't simply disappear from a task list. It reached an outcome.</p>
+
+<h3>11. Schedule the next domain renewal</h3>
+<p>A renewed domain isn't permanently finished. The current obligation may be complete. Another renewal cycle now exists in the future. AVA schedules that next cycle and re-establishes monitoring.</p>
+<p>This creates a closed loop: Detect, Understand, Coordinate, Renew, Record, Schedule, Monitor Again. The organization doesn't have to restart the process from memory next year.</p>
+
+<h2>One domain renewal. One accountable transaction.</h2>
+<p>A single domain renewal can involve a registrar notification, several email messages, multiple reminders, customer communication, an invoice, human approval, supporting documents, and different contacts.</p>
+<p>AVA keeps those interactions connected to one renewal transaction. One renewal remains one transaction. That transaction stays accountable until the renewal reaches completion.</p>
+<p>This is particularly valuable for organizations managing many domains across many customers.</p>
+
+<h2>Domain renewal tracking for Managed Service Providers</h2>
+<p>Managed Service Providers can accumulate recurring obligations across an entire customer portfolio. One client may have multiple domains, SSL certificates, hosting services, software subscriptions, licenses, and maintenance agreements.</p>
+<p>Multiply that across dozens or hundreds of customers and renewal work becomes an operational system of its own.</p>
+<p>AVA helps give each renewal a customer, an asset, a responsible contact, a lifecycle, and an outcome. Instead of asking employees to remember every recurring obligation, the renewal work has an owner.</p>
+
+<h2>Domain renewal tracking for digital agencies</h2>
+<p>Digital agencies often inherit responsibility for assets that aren't their core creative or marketing work. Domains are a good example.</p>
+<p>The agency may build the website. Someone registers the domain. Another employee receives renewal notices. A client needs to approve the expense. Years later, the person who originally set everything up may no longer be involved. Yet the domain still needs to remain active.</p>
+<p>AVA helps maintain operational continuity around that recurring obligation. The renewal belongs to the lifecycle, not to one employee's memory.</p>
+
+<h2>Manage domains and SSL renewals as connected operational obligations</h2>
+<p>Domains and SSL certificates are separate renewable assets, but they can exist within the same customer environment. A domain can remain registered while an SSL certificate expires. A certificate can be valid while a domain renewal is approaching.</p>
+<p>Each obligation therefore needs its own transaction, deadline, status, and outcome. AVA can support renewal operations for both asset types while keeping each renewal accountable.</p>
+
+<h2>Domain renewal spreadsheets work, until the work outgrows the spreadsheet</h2>
+<p>A spreadsheet can be perfectly adequate for storing domain names, customers, expiration dates, registrar information, owners, and notes.</p>
+<p>But the spreadsheet doesn't own the work represented by those fields. Someone has to keep it current. Someone has to check it. Someone has to notice approaching deadlines. Someone has to investigate changes. Someone has to communicate. Someone has to follow up. Someone has to record completion. Someone has to remember the next cycle.</p>
+<p>AVA isn't designed merely to replace those rows with another database interface. She's designed to take responsibility for the operational renewal lifecycle represented by those rows.</p>
+
+<h2>What AVA does not do with your domains</h2>
+<p>AVA's scope matters as much as her capabilities. AVA does not become your registrar. AVA does not autonomously purchase domains. AVA does not independently authorize renewal payments. AVA does not select vendors on your behalf. AVA does not negotiate contracts. AVA does not make legal decisions. AVA does not replace the people responsible for consequential business decisions.</p>
+<p>Her responsibility is narrower and clearer: own the operational renewal process.</p>
+
+<h2>The real goal isn't tracking expiration dates</h2>
+<p>The goal is keeping important domains active. Expiration monitoring is necessary because AVA needs to know when renewal work requires attention. Reminders are useful because people need visibility. Records matter because the organization needs continuity.</p>
+<p>But none of those things individually define success. AVA considers the renewal complete only when the business obligation has been successfully renewed, records accurately reflect the outcome, supporting evidence has been archived, the Renewal Register has been updated, the next renewal cycle has been scheduled, and no further operational work remains.</p>
+<p>A domain expiration alert is not success. A domain renewal reminder is not success. A completed domain renewal is success.</p>
+HTML;
+    }
+
+    private function page3Faqs(): array
+    {
+        return [
+            ['What is domain renewal tracking?', "Domain renewal tracking is the process of monitoring domain renewal and expiration information so domains can be renewed before they expire. AVA uses domain renewal tracking as the detection layer of a larger Renewal Operations lifecycle."],
+            ['Does AVA monitor domain expiration dates?', "Domains are supported renewable assets in AVA Version 1, and Asset Watch is one of AVA's supported renewal sources. The exact technical monitoring mechanisms available through Asset Watch should be described according to the implemented product capabilities rather than assumed beyond the approved scope."],
+            ['Can AVA automatically renew a domain?', "AVA's approved Version 1 scope excludes automatic payment execution, financial authorization, and autonomous purchasing. She coordinates Renewal Operations while humans retain consequential decision authority."],
+            ['Can AVA manage domains for multiple customers?', "AVA is designed for organizations managing recurring customer obligations, including Managed Service Providers, IT service companies, digital agencies, and hosting providers. Her lifecycle explicitly includes identifying the customer associated with a renewal."],
+            ['Can AVA prepare domain renewal emails?', "Yes. Draft generation and personalized communication preparation are supported capabilities. Customer-facing communication requires human approval before proceeding."],
+            ['Does AVA replace my domain registrar?', "No. AVA's responsibility is Renewal Operations, not domain registration or registrar functionality."],
+            ['What happens after the domain is renewed?', "AVA's definition of completion includes updating organizational records and the Renewal Register, archiving supporting evidence, scheduling the next renewal cycle, and ensuring no further operational work remains."],
+            ['Can AVA track SSL certificates too?', "Yes. SSL certificates are another supported Version 1 renewal asset and should be managed as their own renewal transactions."],
+            ['Is AVA just a domain expiration reminder?', "No. Detection and deadline monitoring are only the beginning of AVA's lifecycle. Her operational responsibility continues through human review, fulfillment, records, future scheduling, archive, and completion."],
+            ['Who should use AVA for domain renewals?', "AVA is designed for organizations managing recurring operational obligations. Her approved customer scope includes Managed Service Providers, IT service companies, digital agencies, hosting providers, professional service firms, compliance teams, and organizations managing recurring customer renewals."],
         ];
     }
 }
