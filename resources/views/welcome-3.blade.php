@@ -1312,7 +1312,7 @@ body{
       <!-- AVA -->
       <div class="wk-card" style="border-top:3px solid #0D0D0D">
         <div class="wk-img-bg">
-          <img src="/images/ava-stand.png" alt="AVA" style="object-position:center 10%;transform:scale(1.5);transform-origin:top center">
+          <img src="/images/ava-stand.webp" alt="AVA" style="object-position:center 10%;transform:scale(1.5);transform-origin:top center">
         </div>
         <div class="wk-content">
           <div class="wk-head">
@@ -1350,7 +1350,7 @@ body{
       <!-- DOX -->
       <div class="wk-card" style="border-top:3px solid #0D0D0D">
         <div class="wk-img-bg">
-          <img src="/images/dox.png" alt="DOX" style="object-position:center top">
+          <img src="/images/dox.webp" alt="DOX" style="object-position:center top">
         </div>
         <div class="wk-content">
           <div class="wk-head">
@@ -1376,7 +1376,7 @@ body{
       <!-- MOX -->
       <div class="wk-card" style="border-top:3px solid #0D0D0D">
         <div class="wk-img-bg">
-          <img src="/images/mox.png" alt="MOX" style="object-position:center top">
+          <img src="/images/mox.webp" alt="MOX" style="object-position:center top">
         </div>
         <div class="wk-content">
           <div class="wk-head">
@@ -1402,7 +1402,7 @@ body{
       <!-- NUX -->
       <div class="wk-card" style="border-top:3px solid #0D0D0D">
         <div class="wk-img-bg">
-          <img src="/images/nux.png" alt="NUX" style="object-position:center top">
+          <img src="/images/nux.webp" alt="NUX" style="object-position:center top">
         </div>
         <div class="wk-content">
           <div class="wk-head">
@@ -1538,7 +1538,7 @@ body{
   <div class="w">
     <div class="industries-card">
       <div class="industries-photo">
-        <img src="/images/ava-selfie.png" alt="AVA">
+        <img src="/images/ava-selfie.webp" alt="AVA">
       </div>
       <div class="industries-info">
         <div class="sec-eye">AVA · Industries served</div>
@@ -1691,7 +1691,7 @@ body{
            actually in each shot. --}}
       <div class="lc-row">
         <div class="lc-photo">
-          <img src="/images/ava-life.png" alt="AVA starting her day">
+          <img src="/images/ava-life.webp" alt="AVA starting her day">
           <div class="lc-photo-body">
             <div class="lc-photo-step" style="color:#0D0D0D">1. Wake Up</div>
             <div class="lc-photo-txt">Ready for the day at the desk.</div>
@@ -1699,7 +1699,7 @@ body{
         </div>
         <div class="lc-arrow">→</div>
         <div class="lc-photo">
-          <img src="/images/ava-running-gag-2.png" alt="AVA reviewing the renewals queue">
+          <img src="/images/ava-running-gag-2.webp" alt="AVA reviewing the renewals queue">
           <div class="lc-photo-body">
             <div class="lc-photo-step" style="color:var(--text)">2. Take Stock</div>
             <div class="lc-photo-txt">Sees exactly what's due. Nothing forgotten.</div>
@@ -1707,7 +1707,7 @@ body{
         </div>
         <div class="lc-arrow">→</div>
         <div class="lc-photo">
-          <img src="/images/ava-desk.png" alt="AVA working at her desk">
+          <img src="/images/ava-desk.webp" alt="AVA working at her desk">
           <div class="lc-photo-body">
             <div class="lc-photo-step" style="color:var(--text)">3. Do the Work</div>
             <div class="lc-photo-txt">Focus. Execute. Deliver results.</div>
@@ -1715,7 +1715,7 @@ body{
         </div>
         <div class="lc-arrow">→</div>
         <div class="lc-photo">
-          <img src="/images/ava-running-gag-1.png" alt="AVA delivering a completed renewal">
+          <img src="/images/ava-running-gag-1.webp" alt="AVA delivering a completed renewal">
           <div class="lc-photo-body">
             <div class="lc-photo-step" style="color:var(--text)">4. Close It Out</div>
             <div class="lc-photo-txt">Renewal complete, right on time.</div>

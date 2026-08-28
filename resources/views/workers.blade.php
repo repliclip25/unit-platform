@@ -375,9 +375,9 @@ body{font-family:var(--font-b);color:var(--text);background:var(--bg);-webkit-fo
       <div class="hero-proof">
         <div class="proof-avs">
           <img src="/images/ava.png" alt="AVA">
-          <img src="/images/dox.png" alt="DOX">
-          <img src="/images/mox.png" alt="MOX">
-          <img src="/images/nux.png" alt="NUX">
+          <img src="/images/dox.webp" alt="DOX">
+          <img src="/images/mox.webp" alt="MOX">
+          <img src="/images/nux.webp" alt="NUX">
         </div>
         <p class="proof-txt"><strong>United by purpose.</strong>Built for results.</p>
       </div>
@@ -455,7 +455,7 @@ body{font-family:var(--font-b);color:var(--text);background:var(--bg);-webkit-fo
       <!-- AVA -->
       <div class="wk-card" data-name="ava" data-tags="renewals" style="border-top:3px solid #0D0D0D">
         <div class="wk-img-bg">
-          <img src="/images/ava-stand.png" alt="AVA" style="object-position:center 10%;transform:scale(1.45);transform-origin:top center">
+          <img src="/images/ava-stand.webp" alt="AVA" style="object-position:center 10%;transform:scale(1.45);transform-origin:top center">
         </div>
         <div class="wk-content">
           <div class="wk-head">
@@ -493,7 +493,7 @@ body{font-family:var(--font-b);color:var(--text);background:var(--bg);-webkit-fo
       <!-- DOX -->
       <div class="wk-card" data-name="dox" data-tags="documents" style="border-top:3px solid #0D0D0D">
         <div class="wk-img-bg">
-          <img src="/images/dox.png" alt="DOX" style="object-position:center top">
+          <img src="/images/dox.webp" alt="DOX" style="object-position:center top">
         </div>
         <div class="wk-content">
           <div class="wk-head">
@@ -519,7 +519,7 @@ body{font-family:var(--font-b);color:var(--text);background:var(--bg);-webkit-fo
       <!-- MOX -->
       <div class="wk-card" data-name="mox" data-tags="brand" style="border-top:3px solid #0D0D0D">
         <div class="wk-img-bg">
-          <img src="/images/mox.png" alt="MOX" style="object-position:center top">
+          <img src="/images/mox.webp" alt="MOX" style="object-position:center top">
         </div>
         <div class="wk-content">
           <div class="wk-head">
@@ -545,7 +545,7 @@ body{font-family:var(--font-b);color:var(--text);background:var(--bg);-webkit-fo
       <!-- NUX -->
       <div class="wk-card" data-name="nux" data-tags="content" style="border-top:3px solid #0D0D0D">
         <div class="wk-img-bg">
-          <img src="/images/nux.png" alt="NUX" style="object-position:center top">
+          <img src="/images/nux.webp" alt="NUX" style="object-position:center top">
         </div>
         <div class="wk-content">
           <div class="wk-head">

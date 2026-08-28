@@ -132,7 +132,7 @@
     </div>
     <div class="workforce-grid">
       <a href="{{ route('public.workers.show', 'ava') }}" class="wf-card" style="text-decoration:none">
-        <div class="wf-img"><img src="{{ asset('images/ava-stand.png') }}" alt="AVA"></div>
+        <div class="wf-img"><img src="{{ asset('images/ava-stand.webp') }}" alt="AVA"></div>
         <div class="wf-body">
           <div class="wf-name">AVA</div>
           <div class="wf-role">AI Renewal Worker</div>
@@ -140,7 +140,7 @@
         </div>
       </a>
       <div class="wf-card">
-        <div class="wf-img"><img src="{{ asset('images/dox.png') }}" alt="DOX"></div>
+        <div class="wf-img"><img src="{{ asset('images/dox.webp') }}" alt="DOX"></div>
         <div class="wf-body">
           <div class="wf-name">DOX <span class="wf-badge">Coming Soon</span></div>
           <div class="wf-role">AI Document Worker</div>
@@ -148,7 +148,7 @@
         </div>
       </div>
       <div class="wf-card">
-        <div class="wf-img"><img src="{{ asset('images/mox.png') }}" alt="MOX"></div>
+        <div class="wf-img"><img src="{{ asset('images/mox.webp') }}" alt="MOX"></div>
         <div class="wf-body">
           <div class="wf-name">MOX <span class="wf-badge">Coming Soon</span></div>
           <div class="wf-role">AI Brand Intelligence Worker</div>
@@ -156,7 +156,7 @@
         </div>
       </div>
       <div class="wf-card">
-        <div class="wf-img"><img src="{{ asset('images/nux.png') }}" alt="NUX"></div>
+        <div class="wf-img"><img src="{{ asset('images/nux.webp') }}" alt="NUX"></div>
         <div class="wf-body">
           <div class="wf-name">NUX <span class="wf-badge">Coming Soon</span></div>
           <div class="wf-role">AI Publishing Worker</div>

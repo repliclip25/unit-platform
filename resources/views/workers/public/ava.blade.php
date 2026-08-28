@@ -1161,7 +1161,7 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
   <div class="w">
     <div class="meet-grid">
       <div class="meet-img-wrap">
-        <img src="/images/ava-selfie.png" alt="AVA, UNITELO's AI Renewal Worker, speaking directly to camera">
+        <img src="/images/ava-selfie.webp" alt="AVA, UNITELO's AI Renewal Worker, speaking directly to camera">
       </div>
       <div>
         <div class="sec-eye">In her own words</div>
@@ -1791,7 +1791,7 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
         @endif
       </div>
       <div class="cta-final-right">
-        <img src="/images/ava-stand.png" alt="AVA, ready to deploy" style="object-position:center top;max-height:380px;width:auto;margin:0 auto">
+        <img src="/images/ava-stand.webp" alt="AVA, ready to deploy" style="object-position:center top;max-height:380px;width:auto;margin:0 auto">
       </div>
     </div>
   </div>

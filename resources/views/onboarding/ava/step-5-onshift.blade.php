@@ -591,7 +591,7 @@ body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-fon
           <div class="ob-stage-num">{{ $col['num'] }}. {{ $col['label'] }}</div>
         </div>
         <div class="ob-stage-img">
-          <img src="{{ $col['image'] ?? '/images/ava-stand.png' }}" alt="{{ $col['label'] }}">
+          <img src="{{ $col['image'] ?? '/images/ava-stand.webp' }}" alt="{{ $col['label'] }}">
         </div>
         <div class="ob-stage-footer">
           <div class="ob-progress-bar"><div class="ob-progress-fill" id="prog{{ $col['num'] }}"></div></div>
@@ -749,7 +749,7 @@ body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-fon
     {{-- Right: Ava mini-hero + draft --}}
     <div class="ob-sc-right">
       <div class="ob-sc-hero-mini">
-        <img src="/images/ava-desk.png" alt="Ava on shift">
+        <img src="/images/ava-desk.webp" alt="Ava on shift">
         <div class="ob-sc-nameplate">
           <div class="ob-sc-nameplate-name">AVA</div>
           <div class="ob-sc-nameplate-title">Renewal Specialist</div>

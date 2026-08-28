@@ -370,7 +370,7 @@ body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-fon
 
       {{-- Hero --}}
       <div class="ob-hero">
-        <img class="ob-hero-img" src="/images/ava-stand.png" alt="AVA">
+        <img class="ob-hero-img" src="/images/ava-stand.webp" alt="AVA">
         <div class="ob-hero-fade"></div>
         <div class="ob-hero-content">
 
@@ -410,8 +410,8 @@ body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-fon
           <div class="ob-proof">
             <div class="ob-proof-avs">
               <img src="/images/ava.png" alt="">
-              <img src="/images/ava-stand.png" alt="">
-              <img src="/images/ava-life.png" alt="">
+              <img src="/images/ava-stand.webp" alt="">
+              <img src="/images/ava-life.webp" alt="">
               <img src="/images/ava.png" alt="" style="filter:hue-rotate(40deg) saturate(.8)">
             </div>
             <div class="ob-proof-txt">

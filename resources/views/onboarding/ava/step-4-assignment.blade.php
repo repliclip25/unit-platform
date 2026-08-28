@@ -324,7 +324,7 @@ body{font-family:'Inter',sans-serif;background:#F4F3F1;color:#0D0D0D;-webkit-fon
 
       {{-- Hero --}}
       <div class="ob-hero">
-        <img class="ob-hero-img" src="/images/ava-stand.png" alt="Ava ready to work">
+        <img class="ob-hero-img" src="/images/ava-stand.webp" alt="Ava ready to work">
         <div class="ob-hero-fade"></div>
 
         <div class="ob-bubble">

@@ -23,7 +23,7 @@ $steps = [
 <x-onboarding-shell title="Onboarding Template — UNITELO" :steps="$steps">
 
     <x-slot:hero>
-        <img class="ob-hero-img" src="/images/ava-stand.png" alt="Example worker illustration">
+        <img class="ob-hero-img" src="/images/ava-stand.webp" alt="Example worker illustration">
         <div class="ob-hero-fade"></div>
         <div class="ob-bubble">
             <p>Example chat bubble — tell me who your first client is, I'll take it from there.</p>

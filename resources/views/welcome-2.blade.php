@@ -1137,7 +1137,7 @@ body{
       <!-- AVA -->
       <div class="wk-card" style="border-top:3px solid #0D0D0D">
         <div class="wk-img-bg">
-          <img src="/images/ava-stand.png" alt="AVA" style="object-position:center 10%;transform:scale(1.5);transform-origin:top center">
+          <img src="/images/ava-stand.webp" alt="AVA" style="object-position:center 10%;transform:scale(1.5);transform-origin:top center">
         </div>
         <div class="wk-content">
           <div class="wk-head">
@@ -1173,7 +1173,7 @@ body{
       <!-- DOX -->
       <div class="wk-card" style="border-top:3px solid #0D0D0D">
         <div class="wk-img-bg">
-          <img src="/images/dox.png" alt="DOX" style="object-position:center top">
+          <img src="/images/dox.webp" alt="DOX" style="object-position:center top">
         </div>
         <div class="wk-content">
           <div class="wk-head">
@@ -1199,7 +1199,7 @@ body{
       <!-- MOX -->
       <div class="wk-card" style="border-top:3px solid #0D0D0D">
         <div class="wk-img-bg">
-          <img src="/images/mox.png" alt="MOX" style="object-position:center top">
+          <img src="/images/mox.webp" alt="MOX" style="object-position:center top">
         </div>
         <div class="wk-content">
           <div class="wk-head">
@@ -1225,7 +1225,7 @@ body{
       <!-- NUX -->
       <div class="wk-card" style="border-top:3px solid #0D0D0D">
         <div class="wk-img-bg">
-          <img src="/images/nux.png" alt="NUX" style="object-position:center top">
+          <img src="/images/nux.webp" alt="NUX" style="object-position:center top">
         </div>
         <div class="wk-content">
           <div class="wk-head">
@@ -1458,7 +1458,7 @@ body{
       </div>
       <div class="lc-row">
         <div class="lc-photo">
-          <img src="/images/ava-life.png" alt="Wake up">
+          <img src="/images/ava-life.webp" alt="Wake up">
           <div class="lc-photo-body">
             <div class="lc-photo-step" style="color:#0D0D0D">1. Wake Up</div>
             <div class="lc-photo-txt">Ready for the day at the desk.</div>
