@@ -69,6 +69,25 @@ class AvaWave1ContentSeeder extends Seeder
             body: $this->page3Body(),
             faqs: $this->page3Faqs(),
         );
+
+        $this->seedPage(
+            worker: 'ava',
+            tier: 'Tier 2',
+            pageFamily: 'Asset Solution',
+            urlPath: 'assets/ssl-certificates',
+            lifecycleStage: 'Detect',
+            primaryQuery: 'SSL expiration monitoring',
+            secondaryQueries: ['SSL certificate renewal tracking', 'SSL certificate expiration alerts'],
+            seoTitle: 'SSL Certificate Renewal & Expiration Tracking | AVA by UNITELO',
+            metaDescription: "Track SSL certificate renewal and expiration work with AVA. Detect renewal risk, coordinate human review, track fulfillment, record the outcome, and schedule the next cycle.",
+            h1: "SSL Certificate Renewal & Expiration Tracking That Goes Beyond Alerts",
+            ctaLabel: 'Have AVA Own SSL Renewals',
+            ctaHeadline: 'Have AVA own SSL Renewal Operations.',
+            ctaSubtext: "Expiration monitoring matters, but businesses ultimately don't need certificates to be monitored. They need certificates not to quietly expire. Give that operational responsibility an owner.",
+            ctaRoute: 'register',
+            body: $this->page4Body(),
+            faqs: $this->page4Faqs(),
+        );
     }
 
     // Named-route helper so internal links survive any future URL change,
@@ -545,7 +564,7 @@ HTML;
 
 <h2>Manage domains and SSL renewals as connected operational obligations</h2>
 <p>Domains and SSL certificates are separate renewable assets, but they can exist within the same customer environment. A domain can remain registered while an SSL certificate expires. A certificate can be valid while a domain renewal is approaching.</p>
-<p>Each obligation therefore needs its own transaction, deadline, status, and outcome. AVA can support renewal operations for both asset types while keeping each renewal accountable.</p>
+<p>Each obligation therefore needs its own transaction, deadline, status, and outcome. AVA can support renewal operations for both asset types while keeping each renewal accountable. See how she manages the certificate side of that environment in <a href="{$this->pageUrl('ava', 'assets/ssl-certificates')}">SSL Certificate Renewal &amp; Expiration Tracking</a>.</p>
 
 <h2>Domain renewal spreadsheets work, until the work outgrows the spreadsheet</h2>
 <p>A spreadsheet can be perfectly adequate for storing domain names, customers, expiration dates, registrar information, owners, and notes.</p>
@@ -579,6 +598,143 @@ HTML;
             ['Can AVA track SSL certificates too?', "Yes. SSL certificates are another supported Version 1 renewal asset and should be managed as their own renewal transactions."],
             ['Is AVA just a domain expiration reminder?', "No. Detection and deadline monitoring are only the beginning of AVA's lifecycle. Her operational responsibility continues through human review, fulfillment, records, future scheduling, archive, and completion."],
             ['Who should use AVA for domain renewals?', "AVA is designed for organizations managing recurring operational obligations. Her approved customer scope includes Managed Service Providers, IT service companies, digital agencies, hosting providers, professional service firms, compliance teams, and organizations managing recurring customer renewals."],
+        ];
+    }
+
+    private function page4Body(): string
+    {
+        return <<<HTML
+<p><strong>Catch SSL renewal risk before expiration becomes a business problem.</strong></p>
+<p>An SSL certificate can work perfectly today and become an operational problem when it expires. The expiration date may already be known. A notification may already have been sent. Someone may even have received a reminder.</p>
+<p>But knowing a certificate is approaching expiration and making sure the renewal is successfully completed are two different responsibilities.</p>
+<p>AVA is an AI Worker for Renewal Operations. She helps organizations detect SSL certificate renewal work, understand what requires attention, identify the customer and certificate involved, coordinate the appropriate people, track the renewal through fulfillment, record the outcome, archive supporting evidence, and schedule the next renewal cycle.</p>
+<p>Don't just monitor SSL expiration. Own the renewal.</p>
+
+<h2>Why SSL certificates still expire</h2>
+<p>SSL certificate expiration is predictable. That doesn't make the operational process around renewal automatic.</p>
+<p>Renewal information can become scattered across employee inboxes, shared mailboxes, spreadsheets, calendars, vendor systems, customer accounts, and individual employees.</p>
+<p>One person may receive the expiration notice. Another may manage the website. Another may own the customer relationship. Someone else may need to approve an expense. The employee who originally configured the certificate may no longer be responsible for it.</p>
+<p>The organization can know the expiration date and still lack clear operational ownership. That's the problem AVA is designed to solve.</p>
+
+<h2>What is SSL certificate expiration tracking?</h2>
+<p>SSL certificate expiration tracking helps organizations maintain visibility into certificates that are approaching expiration. That can involve information such as:</p>
+<ul>
+<li>Certificate or protected asset</li>
+<li>Customer</li>
+<li>Expiration date</li>
+<li>Renewal status</li>
+<li>Responsible contact</li>
+<li>Upcoming deadline</li>
+<li>Renewal reminders</li>
+<li>Related communications</li>
+<li>Renewal history</li>
+<li>Next renewal cycle</li>
+</ul>
+<p>Expiration visibility matters. An organization cannot act on a renewal it doesn't know is approaching. But tracking the expiration date is only the first stage. The certificate still needs to make it safely through the renewal process.</p>
+
+<h2>SSL expiration monitoring is detection. Renewal Operations is ownership.</h2>
+<p>An SSL expiration monitor answers: which certificate is approaching expiration?</p>
+<p>AVA's responsibility continues with: what needs to happen next, who needs to be involved, and has the renewal actually been completed?</p>
+<p>That's the distinction between monitoring and operational ownership. Once SSL renewal work is detected, someone may still need to understand the renewal requirement, identify the correct customer, identify the certificate or associated asset, find the responsible contact, prepare necessary communication, obtain human approval, track fulfillment, record the result, archive supporting evidence, and schedule the next renewal cycle.</p>
+<p>AVA is designed to keep those activities connected to the renewal.</p>
+
+<h2>Meet AVA: a Renewal Operations Worker for SSL renewals</h2>
+<p>AVA isn't simply an SSL expiration notification system. She is a Renewal Operations Worker on the UNITELO platform. SSL certificates are one of the renewable asset types she supports.</p>
+<p>When SSL renewal work is detected, AVA can turn it into an accountable renewal transaction. The transaction remains active through the operational lifecycle rather than ending when an alert is delivered.</p>
+<p>That changes the objective from "we warned someone" to "the renewal reached completion."</p>
+
+<h2>How AVA manages an SSL certificate renewal</h2>
+
+<h3>1. Detect</h3>
+<p>AVA's responsibility begins when renewal work is detected. Version 1 supports Gmail, Asset Watch, and Manual Trigger. This allows renewal work to enter the lifecycle from supported monitored activity, incoming communications, or a person initiating the transaction. Detection establishes that something requires attention. It doesn't close the work.</p>
+
+<h3>2. Understand</h3>
+<p>Renewal notices don't always look the same. Vendors use different terminology. Customers communicate differently. Information can arrive in different formats. AVA uses AI to interpret renewal intent and business context. The objective is to determine what the renewal is about and what operational action is required.</p>
+
+<h3>3. Identify the customer</h3>
+<p>For organizations managing certificates across multiple customers, customer identification is essential. A Managed Service Provider may support many client environments. A digital agency may manage certificates associated with many websites. A hosting provider may have renewal obligations spread across customer accounts. AVA connects the renewal transaction to the appropriate customer relationship, turning a technical expiration event into accountable business work.</p>
+
+<h3>4. Identify the asset</h3>
+<p>AVA identifies the renewable asset associated with the transaction. For this workflow, the supported renewable asset is the SSL certificate. The organization can then move from a generic alert to a contextualized renewal: this certificate requires renewal for this customer.</p>
+
+<h3>5. Identify the responsible contact</h3>
+<p>A known expiration date doesn't guarantee someone is accountable for the next action. AVA identifies the responsible contact associated with the renewal. This helps prevent SSL renewal work from sitting between departments or employees because everyone assumes someone else is handling it.</p>
+
+<h3>6. Prepare communication</h3>
+<p>When communication is necessary, AVA can prepare personalized renewal communications based on the context available to her. This can support coordination around the renewal without turning AVA into an autonomous communication system. Human review remains part of the lifecycle.</p>
+
+<h3>7. Require human review</h3>
+<p>AVA owns operational coordination. Humans retain consequential decision authority. No customer-facing communication proceeds without human approval in AVA Version 1.</p>
+<p>AVA also does not own financial approval, payment authorization, vendor selection, contract negotiation, legal decisions, or executive approval. And she does not automatically execute payments or make autonomous purchases.</p>
+<p><strong>AVA owns the process. Humans own the decisions.</strong></p>
+
+<h3>8. Track fulfillment</h3>
+<p>An approved renewal is not necessarily a completed renewal. AVA continues tracking the transaction through fulfillment. This matters because the business outcome isn't "someone approved the SSL renewal." The business outcome is "the obligation was successfully renewed." AVA keeps the transaction accountable until the renewal reaches its required outcome.</p>
+
+<h3>9. Record the outcome</h3>
+<p>After fulfillment, AVA updates the relevant renewal records. The Renewal Register is updated as part of the completed lifecycle. This creates continuity between the current renewal and future renewal work. Instead of reconstructing the history later, the organization maintains an operational record of what happened.</p>
+
+<h3>10. Archive supporting evidence</h3>
+<p>AVA maintains audit history and archives supporting renewal evidence. That helps preserve the story of the transaction: what renewal was detected, what asset and customer were involved, what actions occurred, and what was the outcome. Renewal history becomes organizational information rather than employee memory.</p>
+
+<h3>11. Schedule the next renewal</h3>
+<p>Renewing an SSL certificate doesn't eliminate the recurring obligation. It creates another future renewal. AVA schedules the next renewal cycle so monitoring can be re-established.</p>
+<p>The process becomes: Detect, Renew, Record, Schedule, Monitor Again. That's what turns an expiration event into a managed lifecycle.</p>
+
+<h2>One SSL renewal. One accountable transaction.</h2>
+<p>A certificate renewal can involve multiple emails, reminders, contacts, approvals, documents, and invoices. AVA keeps them associated with one renewal transaction. That transaction becomes the unit of accountability.</p>
+<p>The work doesn't become "done" simply because an employee replied to an email or dismissed an alert. The transaction stays open until the renewal reaches completion.</p>
+
+<h2>SSL renewal tracking for Managed Service Providers</h2>
+<p>Managed Service Providers may be responsible for recurring technology obligations across many customers. SSL certificates can be one of those obligations. The challenge becomes larger as customer count grows: different certificates, different customers, different dates, different contacts, different systems, different renewal communications.</p>
+<p>AVA's lifecycle gives the renewal structure: Customer, Asset, Contact, Action, Human Review, Fulfillment, Outcome. Instead of depending on individual technicians or account managers to remember every recurring obligation, each SSL renewal can become an accountable transaction.</p>
+
+<h2>SSL renewal tracking for digital agencies</h2>
+<p>Digital agencies frequently operate websites and digital infrastructure on behalf of customers. That can leave the agency responsible for recurring technical obligations long after the original project has launched.</p>
+<p>An SSL certificate is easy to forget precisely because it may require little attention while everything is working correctly. Until it doesn't.</p>
+<p>AVA helps agencies maintain operational continuity around those recurring obligations even when teams, clients, and responsibilities change.</p>
+
+<h2>Manage domain and SSL renewals without treating them as the same obligation</h2>
+<p>Domains and SSL certificates often exist in the same digital environment. But they aren't the same renewable asset. A domain can remain registered while its certificate expires. A certificate can remain valid while the associated domain approaches renewal.</p>
+<p>Each therefore deserves its own renewal transaction. AVA can support both while maintaining separate accountability for each obligation. One asset renewal should not disappear inside another asset's status.</p>
+
+<h2>SSL renewal spreadsheets still require someone to operate them</h2>
+<p>A spreadsheet can store certificate information, customers, expiration dates, owners, renewal status, and notes. But the spreadsheet cannot take responsibility for what those fields mean.</p>
+<p>Someone still needs to maintain the information, check upcoming dates, investigate the renewal, coordinate communication, follow up, record completion, and schedule the next cycle.</p>
+<p>AVA's purpose isn't merely to provide another place to store SSL expiration dates. Her purpose is to own the operational renewal work those dates create.</p>
+
+<h2>What AVA does not do with SSL certificates</h2>
+<p>AVA's approved responsibility is Renewal Operations. That distinction matters. AVA should not be confused with certificate infrastructure or certificate lifecycle tooling outside her approved scope.</p>
+<p>AVA does not gain authority to make financial, legal, purchasing, vendor, or executive decisions simply because she is responsible for coordinating the renewal. Her role is to make sure renewal work doesn't quietly disappear between detection and completion.</p>
+
+<h2>What does a completed SSL renewal mean to AVA?</h2>
+<p>AVA has a strict definition of done. The renewal isn't complete merely because an expiration alert was generated, someone received a reminder, an email was drafted, or an approval was recorded.</p>
+<p>AVA considers the renewal complete only when the business obligation has been successfully renewed, organizational records reflect the outcome, supporting evidence has been archived, the Renewal Register has been updated, the next renewal cycle has been scheduled, and no further operational work remains.</p>
+<p>This is the fundamental difference between alerting and ownership. An SSL expiration alert is not success. A completed SSL renewal is success.</p>
+
+<h2>Related Renewal Operations resources</h2>
+<p>SSL renewals are one part of a larger responsibility. See the complete operational lifecycle in <a href="{$this->pageUrl('ava', 'renewal-management')}">Renewal Management Software</a>, see how AVA detects renewal work across every supported asset in <a href="{$this->pageUrl('ava', 'detect/renewal-tracking-software')}">Renewal Tracking &amp; Reminder Software</a>, or see how she manages a closely related recurring obligation in <a href="{$this->pageUrl('ava', 'assets/domains')}">Domain Renewal &amp; Expiration Tracking</a>.</p>
+
+<h2>Stop depending on someone noticing the SSL reminder</h2>
+<p>Expiration monitoring matters. But businesses ultimately don't need certificates to be monitored. They need certificates not to quietly expire.</p>
+<p>Give that operational responsibility an owner.</p>
+HTML;
+    }
+
+    private function page4Faqs(): array
+    {
+        return [
+            ['What is SSL certificate expiration tracking?', "SSL certificate expiration tracking is the process of maintaining visibility into certificates and their upcoming expiration or renewal activity so organizations can act before an important certificate expires. AVA uses that visibility as part of a broader Renewal Operations lifecycle."],
+            ['Can AVA track SSL certificate renewals?', "Yes. SSL certificates are explicitly included among AVA's supported Version 1 renewal assets."],
+            ['How does AVA detect SSL renewal work?', "AVA Version 1 supports Gmail, Asset Watch, and Manual Trigger as renewal sources. The approved specification does not define the underlying technical certificate discovery or monitoring mechanism beyond Asset Watch, so specific monitoring methods should depend on the implemented product."],
+            ['Does AVA automatically renew SSL certificates?', "AVA's Version 1 scope excludes automatic payment execution, financial authorization, and autonomous purchasing. Her responsibility is operational coordination rather than autonomous purchasing authority."],
+            ['Does AVA install SSL certificates?', "AVA's approved business contract defines her responsibility as Renewal Operations and does not establish certificate installation or technical deployment as an AVA capability. Those functions should not be assumed."],
+            ['Does AVA replace SSL monitoring software?', "AVA's approved scope supports SSL certificates as renewable assets and Asset Watch as a renewal source. Whether AVA replaces a particular certificate monitoring product depends on the technical capabilities implemented in Asset Watch. AVA's defined responsibility is the renewal operation that follows detection."],
+            ['Can AVA manage SSL renewals for multiple customers?', "AVA is designed for organizations with recurring customer renewals, and her lifecycle explicitly includes customer identification. That makes multi-customer renewal operations part of the intended business context."],
+            ['Can AVA prepare renewal communications?', "Yes. Draft generation and personalized communication preparation are supported capabilities. Customer-facing communication requires human approval."],
+            ['What happens after the certificate renewal is completed?', "AVA's definition of done includes updating records and the Renewal Register, archiving supporting evidence, scheduling the next renewal cycle, and ensuring no further operational work remains."],
+            ['Can AVA manage domain renewals too?', "Yes. Domains are also explicitly supported Version 1 renewable assets and should be managed as separate renewal transactions."],
+            ['How is AVA different from an SSL expiration reminder?', "An expiration reminder creates awareness. AVA's operational responsibility continues beyond detection through understanding, customer and asset identification, contact identification, communication, human review, fulfillment, records, future scheduling, archive, and completion."],
         ];
     }
 }
