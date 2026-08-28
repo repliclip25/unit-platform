@@ -10,7 +10,11 @@
 
 @section('head')
 <style>
-.wc-hero{padding:clamp(48px,7vw,76px) 0 clamp(28px,4vw,40px)}
+/* Fixed nav is 63px tall and position:fixed — hero padding-top must clear
+   it. Flat 88px on mobile (a vw-scaled value bottoms out too low at narrow
+   widths); from 520px up, the clamp already stays safely above 63px. */
+.wc-hero{padding:88px 0 clamp(28px,4vw,40px)}
+@media(min-width:520px){.wc-hero{padding-top:clamp(56px,7vw,76px)}}
 .wc-hero .eyebrow{margin-bottom:14px}
 .wc-hero h1{font-family:var(--fd);font-size:clamp(28px,4vw,44px);font-weight:800;letter-spacing:-1px;line-height:1.1;color:var(--text);max-width:760px}
 .wc-hero-sub{font-size:16.5px;color:var(--t2);line-height:1.7;max-width:640px;margin-top:16px}
@@ -98,8 +102,8 @@
 </div>
 
 <div class="w wc-cta-band">
-    <h2>{{ $page->cta_label ?? "Deploy {$__workerName}" }}</h2>
-    <p>{{ $page->meta_description }}</p>
+    <h2>{{ $page->cta_headline ?? "Give {$__workerName} the responsibility." }}</h2>
+    <p>{{ $page->cta_subtext ?? $page->meta_description }}</p>
     <a href="{{ $page->cta_route ? route($page->cta_route) : route('register') }}" class="btn-g" style="display:inline-flex">{{ $page->cta_label ?? "Deploy {$__workerName}" }}</a>
 </div>
 
