@@ -48,6 +48,7 @@
         <div class="ft-col-h">Workers</div>
         <div class="ft-links">
           <a href="{{ route('public.workers.show', 'ava') }}">AVA: Renewals</a>
+          <a href="{{ route('worker.content', ['ava', 'renewal-management']) }}">Renewal Management Software</a>
           <a href="{{ route('public.workers.index') }}">All Workers</a>
           <a href="{{ route('app.referral.index') }}">Refer &amp; Earn</a>
           <a href="{{ route('influencer.apply') }}">Partner Program</a>
