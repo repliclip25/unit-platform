@@ -13,7 +13,7 @@
 /* Fixed nav is 63px tall and position:fixed — hero padding-top must clear
    it. Flat 88px on mobile (a vw-scaled value bottoms out too low at narrow
    widths); from 520px up, the clamp already stays safely above 63px. */
-.wc-hero{padding:88px 0 clamp(28px,4vw,40px)}
+.wc-hero{padding-top:88px;padding-bottom:clamp(28px,4vw,40px)}
 @media(min-width:520px){.wc-hero{padding-top:clamp(56px,7vw,76px)}}
 .wc-hero .eyebrow{margin-bottom:14px}
 .wc-hero h1{font-family:var(--fd);font-size:clamp(28px,4vw,44px);font-weight:800;letter-spacing:-1px;line-height:1.1;color:var(--text);max-width:760px}
