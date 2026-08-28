@@ -65,6 +65,20 @@ class SitemapController extends Controller
         // Hardcoded fallback post (not in the DB) , see PublicPageController::blogPostData()
         $urls[] = ['loc' => route('blog.show', 'how-ava-processes-nycsca-renewal'), 'priority' => '0.5'];
 
+        // Worker search-market content pages (/{worker}/{path}) — queried directly
+        // so new pages seeded into worker_content_pages appear here automatically,
+        // no edit needed per page. Tier 1 pillar pages rank higher than Tier 2/3.
+        $contentPages = DB::table('worker_content_pages')->where('status', 'published')->get(['worker_slug', 'url_path', 'tier', 'updated_at']);
+        foreach ($contentPages as $cp) {
+            $urls[] = [
+                'loc'      => route('worker.content', [$cp->worker_slug, $cp->url_path]),
+                'lastmod'  => optional($cp->updated_at)
+                    ? \Illuminate\Support\Carbon::parse($cp->updated_at)->toAtomString()
+                    : null,
+                'priority' => $cp->tier === 'Tier 1' ? '0.85' : ($cp->tier === 'Tier 2' ? '0.7' : '0.5'),
+            ];
+        }
+
         return response()
             ->view('sitemap.index', ['urls' => $urls])
             ->header('Content-Type', 'text/xml');

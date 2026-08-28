@@ -633,3 +633,14 @@ Route::middleware(['auth', 'verified'])->prefix('presale')->name('presale.')->gr
 Route::get('/presale/{slug}', [\App\Http\Controllers\PresaleWorkerController::class, 'show'])->name('presale.worker');
 
 require __DIR__.'/auth.php';
+
+// ── Worker search-market content pages ─────────────────────────────────────
+// Generic catch-all for /{worker}/{path}, e.g. /ava/renewal-management/,
+// /ava/assets/domains/. Registered dead last so it can never shadow a
+// higher-priority route (login, register, /about, /ai-workers/{slug}, etc.)
+// — Laravel matches routes in registration order, and this one is designed
+// to lose every collision. See WorkerContentController.
+Route::get('/{worker}/{path?}', [\App\Http\Controllers\WorkerContentController::class, 'show'])
+    ->where('worker', '[a-z0-9-]+')
+    ->where('path', '.*')
+    ->name('worker.content');
