@@ -509,7 +509,7 @@ class AdminMessagingController extends Controller
                 'day_offset'  => null,
                 'trigger_state' => null,
                 'subject'     => 'Re: Your worker request — a few questions from us',
-                'body'        => "Hi {name},\n\nWe've gone through what you shared about {current_process} and we'd like to learn more before we scope anything.\n\nA few questions:\n\n1. What does the input look like — is it an email, a form submission, a file, or something else?\n2. What does a completed output look like — a draft, a filed document, a sent message?\n3. Who reviews or approves the output before it goes anywhere?\n4. What tools or systems are already in place that a worker would need to read from or write to?\n5. What's the single biggest failure point in how this works today?\n\nReply to this email and we'll take it from there.\n\n— Franklin\nUNIT · hello@unit.report",
+                'body'        => "Hi {name},\n\nWe've gone through what you shared about {current_process} and we'd like to learn more before we scope anything.\n\nA few questions:\n\n1. What does the input look like — is it an email, a form submission, a file, or something else?\n2. What does a completed output look like — a draft, a filed document, a sent message?\n3. Who reviews or approves the output before it goes anywhere?\n4. What tools or systems are already in place that a worker would need to read from or write to?\n5. What's the single biggest failure point in how this works today?\n\nReply to this email and we'll take it from there.\n\n— Franklin\nUNITELO AI · hello@unitelo.ai",
                 'from_name'   => 'Franklin at UNITELO AI',
                 'sort_order'  => 5,
             ],
