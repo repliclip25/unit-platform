@@ -175,9 +175,14 @@ class BillingController extends Controller
             $builder = $builder->trialDays($remainingTrial);
         }
 
+        // {CHECKOUT_SESSION_ID} lets success() fetch the completed session directly
+        // from Stripe's API — deterministic, unlike waiting on Cashier's local
+        // subscription-sync webhook to land before the browser redirects back.
+        $successUrl = route('app.billing.success', $deploymentId) . '?session_id={CHECKOUT_SESSION_ID}';
+
         try {
             $session = $builder->checkout([
-                'success_url' => route('app.billing.success', $deploymentId),
+                'success_url' => $successUrl,
                 'cancel_url'  => route('app.billing'),
             ]);
         } catch (\Stripe\Exception\InvalidRequestException $e) {
@@ -189,7 +194,7 @@ class BillingController extends Controller
                 $builder2 = $builder2->allowPromotionCodes();
                 if ($remainingTrial > 0) $builder2 = $builder2->trialDays($remainingTrial);
                 $session = $builder2->checkout([
-                    'success_url' => route('app.billing.success', $deploymentId),
+                    'success_url' => $successUrl,
                     'cancel_url'  => route('app.billing'),
                 ]);
             } else {
@@ -219,39 +224,81 @@ class BillingController extends Controller
         session()->forget('pending_plan_slug_' . $deploymentId);
 
         // Resolve the Stripe subscription ID — either existing master or newly created
-        $stripeSubId     = DB::table('users')->where('id', $user->id)->value('stripe_subscription_id');
-        $stripeItemId    = null;
+        $stripeSubId  = DB::table('users')->where('id', $user->id)->value('stripe_subscription_id');
+        $stripeItemId = null;
 
-        try {
-            // Get the most recent subscription for this user from Cashier
-            $subscription = $user->subscriptions()->latest()->first();
-            if ($subscription) {
-                if (!$stripeSubId) {
-                    // First worker — store master subscription on user
-                    $stripeSubId = $subscription->stripe_id;
+        $pricing = DB::table('worker_pricing')
+            ->where('worker_slug', $deployment->worker_slug)
+            ->where('plan_slug', $planSlug)
+            ->first();
+
+        // Primary path: fetch the completed Checkout Session directly from Stripe's
+        // API using session_id (Stripe substitutes {CHECKOUT_SESSION_ID} into the
+        // success_url). This is deterministic — it doesn't depend on Cashier's local
+        // subscription-sync webhook having already landed by the time Stripe redirects
+        // the browser back here, which is a real race condition: without this, a
+        // customer's stripe_subscription_id could stay null forever, silently
+        // breaking every future webhook (payment_failed, canceled, resolved) for them.
+        $sessionId = $request->query('session_id');
+        if ($sessionId) {
+            try {
+                $stripe          = new \Stripe\StripeClient(config('cashier.secret'));
+                $checkoutSession = $stripe->checkout->sessions->retrieve($sessionId, [
+                    'expand' => ['subscription', 'subscription.items'],
+                ]);
+
+                $stripeSubscription = $checkoutSession->subscription ?? null;
+                if ($stripeSubscription) {
+                    $stripeSubId = $stripeSubscription->id;
                     DB::table('users')->where('id', $user->id)->update([
                         'stripe_subscription_id' => $stripeSubId,
                         'updated_at'             => now(),
                     ]);
-                }
-                // Get the item for this price
-                $pricing = DB::table('worker_pricing')
-                    ->where('worker_slug', DB::table('worker_deployments')->where('id', $deploymentId)->value('worker_slug'))
-                    ->where('plan_slug', $planSlug)
-                    ->first();
 
-                if ($pricing?->stripe_flat_price_id) {
-                    $stripeItem = $subscription->items()
-                        ->where('stripe_price', $pricing->stripe_flat_price_id)
-                        ->first();
-                    $stripeItemId = $stripeItem?->stripe_id;
+                    if ($pricing?->stripe_flat_price_id) {
+                        foreach ($stripeSubscription->items->data as $item) {
+                            if ($item->price->id === $pricing->stripe_flat_price_id) {
+                                $stripeItemId = $item->id;
+                                break;
+                            }
+                        }
+                    }
                 }
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::error('Billing success: failed to resolve Checkout Session', [
+                    'deployment_id' => $deploymentId,
+                    'session_id'    => $sessionId,
+                    'error'         => $e->getMessage(),
+                ]);
             }
-        } catch (\Throwable $e) {
-            \Illuminate\Support\Facades\Log::error('Billing success: failed to resolve Stripe item', [
-                'deployment_id' => $deploymentId,
-                'error'         => $e->getMessage(),
-            ]);
+        }
+
+        // Fallback: old path via Cashier's locally-synced subscription table, for
+        // links without a session_id (e.g. stale bookmarks) or if the API call above failed.
+        if (!$stripeItemId) {
+            try {
+                $subscription = $user->subscriptions()->latest()->first();
+                if ($subscription) {
+                    if (!$stripeSubId) {
+                        $stripeSubId = $subscription->stripe_id;
+                        DB::table('users')->where('id', $user->id)->update([
+                            'stripe_subscription_id' => $stripeSubId,
+                            'updated_at'             => now(),
+                        ]);
+                    }
+                    if ($pricing?->stripe_flat_price_id) {
+                        $stripeItem = $subscription->items()
+                            ->where('stripe_price', $pricing->stripe_flat_price_id)
+                            ->first();
+                        $stripeItemId = $stripeItem?->stripe_id;
+                    }
+                }
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::error('Billing success: failed to resolve Stripe item', [
+                    'deployment_id' => $deploymentId,
+                    'error'         => $e->getMessage(),
+                ]);
+            }
         }
 
         DB::table('deployment_billing')
@@ -268,10 +315,7 @@ class BillingController extends Controller
         \App\Platform\Services\ReferralService::handleConversion($user->id);
         \App\Platform\Services\InfluencerService::handleConversion($user->id);
 
-        $activatedPricing = DB::table('worker_pricing')
-            ->where('worker_slug', $deployment->worker_slug)
-            ->where('plan_slug', $planSlug)
-            ->first();
+        $activatedPricing = $pricing;
 
         if ($activatedPricing) {
             try {
@@ -373,7 +417,7 @@ class BillingController extends Controller
         $builder = $builder->allowPromotionCodes();
 
         $session = $builder->checkout([
-            'success_url' => route('app.billing.success', $deploymentId),
+            'success_url' => route('app.billing.success', $deploymentId) . '?session_id={CHECKOUT_SESSION_ID}',
             'cancel_url'  => route('app.workers.show', $deploymentId),
         ]);
 
