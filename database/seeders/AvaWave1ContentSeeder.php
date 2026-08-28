@@ -71,6 +71,13 @@ class AvaWave1ContentSeeder extends Seeder
         );
     }
 
+    // Named-route helper so internal links survive any future URL change,
+    // usable inside heredoc body strings via {$this->pageUrl(...)} interpolation.
+    private function pageUrl(string $worker, string $path): string
+    {
+        return route('worker.content', [$worker, $path]);
+    }
+
     private function seedPage(
         string $worker,
         string $tier,
@@ -263,6 +270,9 @@ class AvaWave1ContentSeeder extends Seeder
 <p>Renewal operations become difficult when responsibility is fragmented. Sales sees one email. Finance receives an invoice. Operations knows about the asset. Management handles approval. Someone updates a spreadsheet. Someone else remembers the next date.</p>
 <p>AVA changes the unit of accountability. One renewal = one transaction. All the emails, reminders, contacts, documents, approvals, records, and actions associated with that renewal belong to the same operational responsibility. The renewal remains open until the work is actually complete.</p>
 
+<h2>Explore AVA's Renewal Operations</h2>
+<p>Detection is where most renewals start. See how AVA turns a renewal alert into an accountable transaction in <a href="{$this->pageUrl('ava', 'detect/renewal-tracking-software')}">Renewal Tracking &amp; Reminder Software</a>, or see how she manages one of the most commonly missed recurring obligations in <a href="{$this->pageUrl('ava', 'assets/domains')}">Domain Renewal &amp; Expiration Tracking</a>.</p>
+
 <h2>Stop managing renewals by memory.</h2>
 <p>The goal isn't more automation for its own sake. It's operational consistency.</p>
 <p>AVA exists so organizations don't have to depend on individual employees remembering hundreds of recurring obligations across inboxes, spreadsheets, calendars, and disconnected systems.</p>
@@ -406,6 +416,9 @@ HTML;
 <h3>Compliance Teams</h3>
 <p>Keep supported recurring obligations visible while maintaining records, evidence, and future scheduling.</p>
 
+<h2>Go deeper on Renewal Operations</h2>
+<p>Renewal tracking is the Detect stage of a larger responsibility. See the complete operational lifecycle in <a href="{$this->pageUrl('ava', 'renewal-management')}">Renewal Management Software</a>, or see how detection works for one specific renewable asset in <a href="{$this->pageUrl('ava', 'assets/domains')}">Domain Renewal &amp; Expiration Tracking</a>.</p>
+
 <h2>From "expires soon" to "renewal complete"</h2>
 <p>The purpose of renewal tracking isn't to create more notifications. It's to prevent expiration.</p>
 <p>AVA's success isn't measured by how many alerts she generates. It isn't measured by how many emails she drafts. It isn't measured by how many reminders your team receives.</p>
@@ -542,6 +555,9 @@ HTML;
 <h2>What AVA does not do with your domains</h2>
 <p>AVA's scope matters as much as her capabilities. AVA does not become your registrar. AVA does not autonomously purchase domains. AVA does not independently authorize renewal payments. AVA does not select vendors on your behalf. AVA does not negotiate contracts. AVA does not make legal decisions. AVA does not replace the people responsible for consequential business decisions.</p>
 <p>Her responsibility is narrower and clearer: own the operational renewal process.</p>
+
+<h2>Related Renewal Operations resources</h2>
+<p>Domain renewals are one part of a larger responsibility. See the complete operational lifecycle in <a href="{$this->pageUrl('ava', 'renewal-management')}">Renewal Management Software</a>, or see how AVA detects renewal work across every supported asset in <a href="{$this->pageUrl('ava', 'detect/renewal-tracking-software')}">Renewal Tracking &amp; Reminder Software</a>.</p>
 
 <h2>The real goal isn't tracking expiration dates</h2>
 <p>The goal is keeping important domains active. Expiration monitoring is necessary because AVA needs to know when renewal work requires attention. Reminders are useful because people need visibility. Records matter because the organization needs continuity.</p>
