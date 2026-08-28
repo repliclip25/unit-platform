@@ -508,7 +508,7 @@ details summary::-webkit-details-marker { display:none; }
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#06b6d4" stroke-width="1.8"><path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
                     </div>
                     <div class="flex-1">
-                        <p style="font-size:13px;font-weight:600;color:var(--text-primary)">SMTP (unit.report)</p>
+                        <p style="font-size:13px;font-weight:600;color:var(--text-primary)">SMTP (unitelo.ai)</p>
                         <p style="font-size:11px;color:var(--text-muted)">{{ config('mail.mailers.smtp.host') }}:{{ config('mail.mailers.smtp.port') }} · {{ count($smtpHealth['routes']) }} routes configured</p>
                     </div>
                     <div class="flex items-center gap-2">

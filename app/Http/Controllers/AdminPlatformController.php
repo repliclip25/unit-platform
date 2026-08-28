@@ -623,7 +623,7 @@ class AdminPlatformController extends Controller
                 'config'  => 'STRIPE_KEY · STRIPE_SECRET · STRIPE_WEBHOOK_SECRET',
             ],
             [
-                'name'    => 'SMTP (unit.report)',
+                'name'    => 'SMTP (unitelo.ai)',
                 'type'    => 'email',
                 'icon'    => '✉️',
                 'status'  => !empty(config('mail.mailers.smtp.host')) ? 'connected' : 'missing',

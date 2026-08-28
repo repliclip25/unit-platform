@@ -777,7 +777,7 @@ class AdminTenantController extends Controller
                             <p style='margin:0 0 24px;font-size:14px;line-height:1.6;color:#444;'>
                                 If you didn't expect this, or have any questions at all, just reply to this email and we'll sort it out right away.
                             </p>
-                            <a href='https://unit.report/dashboard' style='display:inline-block;background:#f1d362;color:#1a1404;font-weight:700;padding:12px 28px;border-radius:8px;text-decoration:none;font-size:14px;'>Go to your dashboard →</a>
+                            <a href='https://unitelo.ai/dashboard' style='display:inline-block;background:#f1d362;color:#1a1404;font-weight:700;padding:12px 28px;border-radius:8px;text-decoration:none;font-size:14px;'>Go to your dashboard →</a>
                             <p style='margin:28px 0 0;font-size:13px;color:#888;'>— The UNITELO Team</p>
                         </div>
                     </div>

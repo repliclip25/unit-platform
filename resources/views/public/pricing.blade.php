@@ -312,7 +312,7 @@
                     @endforeach
                 </ul>
                 <div class="pc-cta">
-                    <a href="mailto:hello@unit.report?subject=Enterprise inquiry" class="pc-btn pc-btn-ghost">Talk to us</a>
+                    <a href="mailto:hello@unitelo.ai?subject=Enterprise inquiry" class="pc-btn pc-btn-ghost">Talk to us</a>
                 </div>
             </div>
         </div>
@@ -335,7 +335,7 @@
     @endphp
     <div class="faq-wrap">
         <h2 style="font-family:var(--fd);font-size:24px;font-weight:800;color:var(--text);text-align:center;margin-bottom:6px">Common questions</h2>
-        <p style="text-align:center;color:var(--t3);font-size:13px;margin-bottom:32px">Anything else? <a href="mailto:hello@unit.report" style="color:var(--text);font-weight:600;text-decoration:underline">hello@unit.report</a></p>
+        <p style="text-align:center;color:var(--t3);font-size:13px;margin-bottom:32px">Anything else? <a href="mailto:hello@unitelo.ai" style="color:var(--text);font-weight:600;text-decoration:underline">hello@unitelo.ai</a></p>
         @foreach($__pricingFaqs as $faq)
         <details class="faq-item">
             <summary>{{ $faq['q'] }}<svg class="faq-chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></summary>

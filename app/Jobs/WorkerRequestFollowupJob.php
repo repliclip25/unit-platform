@@ -142,7 +142,7 @@ class WorkerRequestFollowupJob implements ShouldQueue
     </div>
   </div>
   <div style='background:#f9f9f7;border:1px solid #e2e2e0;border-top:none;border-radius:0 0 12px 12px;padding:14px 32px'>
-    <p style='margin:0;color:#aaaaaa;font-size:12px'>You submitted a worker request at unit.report.</p>
+    <p style='margin:0;color:#aaaaaa;font-size:12px'>You submitted a worker request at unitelo.ai.</p>
   </div>
 </div></body></html>");
             });

@@ -296,11 +296,11 @@
             <div class="wb-row-3">
                 <div class="wb-field">
                     <label class="wb-label">CONTACT EMAIL</label>
-                    <input type="email" name="owner_contact" value="{{ old('owner_contact', $worker->owner['contact'] ?? 'hello@unit.report') }}" class="wb-input">
+                    <input type="email" name="owner_contact" value="{{ old('owner_contact', $worker->owner['contact'] ?? 'hello@unitelo.ai') }}" class="wb-input">
                 </div>
                 <div class="wb-field">
                     <label class="wb-label">WEBSITE</label>
-                    <input type="url" name="owner_website" value="{{ old('owner_website', $worker->owner['website'] ?? 'https://unit.report') }}" class="wb-input">
+                    <input type="url" name="owner_website" value="{{ old('owner_website', $worker->owner['website'] ?? 'https://unitelo.ai') }}" class="wb-input">
                 </div>
                 <div class="wb-field">
                     <label class="wb-label">SINCE (year) · SLA</label>

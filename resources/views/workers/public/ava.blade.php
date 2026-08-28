@@ -1608,7 +1608,7 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
           @endforeach
         </div>
         <div class="testi-more">
-          <a href="mailto:hello@unit.report?subject=My AVA Experience&body=Hi UNITELO team, I'd like to share my experience with AVA...">Share your own experience →</a>
+          <a href="mailto:hello@unitelo.ai?subject=My AVA Experience&body=Hi UNITELO team, I'd like to share my experience with AVA...">Share your own experience →</a>
         </div>
         @else
         {{-- Skeleton placeholders, not fake quotes - no invented names,
@@ -1649,7 +1649,7 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
                 Shared on our socials
               </span>
             </div>
-            <a href="mailto:hello@unit.report?subject=My AVA Experience&body=Hi UNITELO team, I'd like to share my experience with AVA..." class="btn-tov">
+            <a href="mailto:hello@unitelo.ai?subject=My AVA Experience&body=Hi UNITELO team, I'd like to share my experience with AVA..." class="btn-tov">
               Share Your Experience →
             </a>
             <div class="tov-sub">Takes 2 minutes · We reply to every submission</div>

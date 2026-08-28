@@ -24,7 +24,7 @@
   </ul>
 
   <h2>2. Accounts</h2>
-  <p>You are responsible for maintaining the security of your account. You must immediately notify us of any unauthorized access at <a href="mailto:hello@unit.report">hello@unit.report</a>. We are not liable for losses caused by unauthorized account access if you failed to take reasonable precautions.</p>
+  <p>You are responsible for maintaining the security of your account. You must immediately notify us of any unauthorized access at <a href="mailto:hello@unitelo.ai">hello@unitelo.ai</a>. We are not liable for losses caused by unauthorized account access if you failed to take reasonable precautions.</p>
 
   <h2>3. Gmail Integration</h2>
   <p>When you connect a Gmail inbox, you authorize UNITELO to read incoming emails and push draft replies to your Gmail Drafts folder. UNITELO <strong>does not send emails on your behalf without your explicit approval</strong>. All drafted responses require you to review and approve before anything is sent. You may disconnect Gmail access at any time from your dashboard.</p>
@@ -50,7 +50,7 @@
   <p>Your use of UNITELO is also governed by our <a href="{{ route('privacy') }}">Privacy Policy</a>, which is incorporated into these Terms by reference.</p>
 
   <h2>9. Termination</h2>
-  <p>We reserve the right to suspend or terminate accounts that violate these Terms, engage in abusive usage patterns, or fail to pay for subscription services. You may terminate your account at any time by contacting <a href="mailto:hello@unit.report">hello@unit.report</a>.</p>
+  <p>We reserve the right to suspend or terminate accounts that violate these Terms, engage in abusive usage patterns, or fail to pay for subscription services. You may terminate your account at any time by contacting <a href="mailto:hello@unitelo.ai">hello@unitelo.ai</a>.</p>
 
   <h2>10. Limitation of Liability</h2>
   <p>To the maximum extent permitted by law, UNITELO is not liable for indirect, incidental, special, consequential, or punitive damages arising from your use of the platform. Our total liability for any claim shall not exceed the amount you paid to us in the 12 months preceding the claim.</p>
@@ -59,7 +59,7 @@
   <p>We may update these Terms. We'll notify you of material changes by email. Continued use of the platform after the effective date constitutes acceptance of the revised Terms.</p>
 
   <h2>12. Contact</h2>
-  <p>Questions about these Terms? Email us at <a href="mailto:hello@unit.report">hello@unit.report</a>.</p>
+  <p>Questions about these Terms? Email us at <a href="mailto:hello@unitelo.ai">hello@unitelo.ai</a>.</p>
 
 </div>
 @endsection

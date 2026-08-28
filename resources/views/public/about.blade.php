@@ -187,7 +187,7 @@
     <div class="about-cta-inner">
       <div class="about-cta-eyebrow">Get in touch</div>
       <h2>Questions, partnerships, or a workflow you want automated.</h2>
-      <p>Email us at <a href="mailto:hello@unit.report" class="cta-link">hello@unit.report</a> and we'll get back to you.</p>
+      <p>Email us at <a href="mailto:hello@unitelo.ai" class="cta-link">hello@unitelo.ai</a> and we'll get back to you.</p>
       <p>Interested in early access, a pilot, or building a worker for your team's workflow?</p>
       <a href="{{ route('influencer.apply') }}" class="btn-cta-final">
         Apply to our partner program

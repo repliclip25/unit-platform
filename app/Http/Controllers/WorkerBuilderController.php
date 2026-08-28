@@ -297,7 +297,7 @@ PHP;
         $credPhp = "[\n" . implode("\n", $credItems) . "\n        ]";
         $instancesPhp  = $phpAssoc(array_merge(['multiple'=>false,'min'=>1,'max'=>1,'label'=>'deployment','rationale'=>''], $instances));
         $tagsPhp       = $phpArray($tags);
-        $ownerPhp      = $phpAssoc(array_merge(['type'=>'platform','name'=>'UNITELO','contact'=>config('services.unit.noreply_email'),'website'=>'https://unit.report','license'=>'proprietary','sla'=>'','since'=>date('Y'),'verified'=>true], $owner));
+        $ownerPhp      = $phpAssoc(array_merge(['type'=>'platform','name'=>'UNITELO','contact'=>config('services.unit.noreply_email'),'website'=>'https://unitelo.ai','license'=>'proprietary','sla'=>'','since'=>date('Y'),'verified'=>true], $owner));
         $mediaPhp      = $phpAssoc(array_merge(['color'=>'#f1d362','quote'=>'','avatar'=>null,'banner'=>null], $media));
 
         $stub = <<<PHP

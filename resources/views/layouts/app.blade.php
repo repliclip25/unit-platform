@@ -624,7 +624,7 @@
                 <span class="text-xs font-semibold" style="color:var(--text-faint)">&copy; {{ date('Y') }} {{ config('app.name') }}</span>
                 <a href="{{ route('terms') }}" class="text-xs" style="color:var(--text-muted)" target="_blank">Terms</a>
                 <a href="{{ route('privacy') }}" class="text-xs" style="color:var(--text-muted)" target="_blank">Privacy</a>
-                <a href="mailto:hello@unit.report" class="text-xs" style="color:var(--text-muted)">Support</a>
+                <a href="mailto:hello@unitelo.ai" class="text-xs" style="color:var(--text-muted)">Support</a>
                 <a href="{{ route('app.billing') }}" class="text-xs" style="color:var(--text-muted)">Billing</a>
             </footer>
         </main>

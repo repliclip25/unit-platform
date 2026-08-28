@@ -11,7 +11,7 @@
 
 <div class="w pub-body">
 
-  <p>UNITELO ("we," "our," or "us") operates the platform available at unit.report. This Privacy Policy explains how we collect, use, and protect information when you use our services.</p>
+  <p>UNITELO ("we," "our," or "us") operates the platform available at unitelo.ai. This Privacy Policy explains how we collect, use, and protect information when you use our services.</p>
 
   <h2>1. Information We Collect</h2>
   <p><strong>Account information.</strong> When you register, we collect your name, email address, and password hash. We never store passwords in plain text.</p>
@@ -33,7 +33,7 @@
   <p>We do not sell your data to third parties. We do not use your email content for advertising.</p>
 
   <h2>3. Data Retention</h2>
-  <p>Transaction records (including processed email content) are retained for as long as your account is active. You may request deletion of specific transactions from the Transactions log in your dashboard. To delete your account and all associated data, contact <a href="mailto:hello@unit.report">hello@unit.report</a>.</p>
+  <p>Transaction records (including processed email content) are retained for as long as your account is active. You may request deletion of specific transactions from the Transactions log in your dashboard. To delete your account and all associated data, contact <a href="mailto:hello@unitelo.ai">hello@unitelo.ai</a>.</p>
 
   <h2>4. Third-Party Services</h2>
   <p>UNITELO integrates with:</p>
@@ -54,13 +54,13 @@
     <li><strong>Analytics.</strong> Google Tag Manager and Google Analytics help us understand how the platform is used in aggregate, page views and basic product events like a worker being deployed. This runs automatically for a US-focused product and does not build advertising profiles.</li>
     <li><strong>Advertising measurement.</strong> The Meta (Facebook) Pixel only loads after you explicitly accept our cookie consent banner. If you decline, or simply don't interact with the banner, it never loads, and you can use UNITELO fully either way.</li>
   </ul>
-  <p>Admins and internal team members are excluded from all analytics and advertising tracking. You can withdraw consent at any time by clearing your browser's local storage for unit.report, which resets the consent banner.</p>
+  <p>Admins and internal team members are excluded from all analytics and advertising tracking. You can withdraw consent at any time by clearing your browser's local storage for unitelo.ai, which resets the consent banner.</p>
 
   <h2>6. Security</h2>
   <p>We use TLS/HTTPS for all data in transit. OAuth tokens are stored encrypted at rest. Access to production data is restricted to authorized personnel. We use Google's standard OAuth2 flow, we never handle your Google password.</p>
 
   <h2>7. Your Rights</h2>
-  <p>You may request access to, correction of, or deletion of your personal data at any time by emailing <a href="mailto:hello@unit.report">hello@unit.report</a>. You may also disconnect Gmail access from your dashboard at any time, which revokes our inbox access immediately.</p>
+  <p>You may request access to, correction of, or deletion of your personal data at any time by emailing <a href="mailto:hello@unitelo.ai">hello@unitelo.ai</a>. You may also disconnect Gmail access from your dashboard at any time, which revokes our inbox access immediately.</p>
 
   <h2>8. Children's Privacy</h2>
   <p>UNITELO is a business operations platform not intended for use by anyone under the age of 18. We do not knowingly collect personal information from minors.</p>
@@ -69,7 +69,7 @@
   <p>We may update this policy from time to time. We'll notify active users by email of any material changes. Continued use of UNITELO after changes constitutes acceptance of the updated policy.</p>
 
   <h2>10. Contact</h2>
-  <p>Questions about this Privacy Policy? Reach us at <a href="mailto:hello@unit.report">hello@unit.report</a>.</p>
+  <p>Questions about this Privacy Policy? Reach us at <a href="mailto:hello@unitelo.ai">hello@unitelo.ai</a>.</p>
 
 </div>
 @endsection

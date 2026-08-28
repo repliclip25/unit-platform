@@ -33,7 +33,7 @@
         <p class="text-gray-400 text-sm leading-relaxed mb-6">
             Account deletion confirmation links expire after 72 hours and can only be used once. If you still need to delete your account, please contact us.
         </p>
-        <a href="https://unit.report" class="block text-center text-sm text-gray-500 hover:text-gray-300 transition">← Back to UNITELO</a>
+        <a href="https://unitelo.ai" class="block text-center text-sm text-gray-500 hover:text-gray-300 transition">← Back to UNITELO</a>
     </div>
 
     @else
@@ -67,7 +67,7 @@
         </button>
     </form>
 
-    <a href="https://unit.report/dashboard"
+    <a href="https://unitelo.ai/dashboard"
        class="block text-center text-sm text-gray-600 hover:text-gray-400 transition-colors">
         No — take me back to my dashboard
     </a>

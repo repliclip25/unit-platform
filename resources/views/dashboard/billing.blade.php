@@ -508,7 +508,7 @@ $statusColors = [
                   @endforeach
                 </ul>
                 @if($isEnterprise)
-                <a href="mailto:hello@unit.report?subject=AVA Enterprise Enquiry" class="bill-plan-cta">Contact Us →</a>
+                <a href="mailto:hello@unitelo.ai?subject=AVA Enterprise Enquiry" class="bill-plan-cta">Contact Us →</a>
                 @elseif($isCanceled)
                 <form method="POST" action="{{ route('app.billing.reactivate', $dep->id) }}">
                   @csrf

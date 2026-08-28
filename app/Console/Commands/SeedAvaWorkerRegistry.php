@@ -207,7 +207,7 @@ class SeedAvaWorkerRegistry extends Command
                 'type'     => 'platform',
                 'name'     => 'UNITELO',
                 'contact'  => config('services.unit.noreply_email'),
-                'website'  => 'https://unit.report',
+                'website'  => 'https://unitelo.ai',
                 'license'  => 'proprietary',
                 'sla'      => '99.9% pipeline uptime · 4h support response · daily digest on failures',
                 'since'    => 2024,

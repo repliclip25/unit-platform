@@ -310,7 +310,7 @@
                     <input type="hidden" name="label" value="{{ $int->label }}">
                     <input type="hidden" name="local_url" value="{{ $int->local_url }}">
                     <input type="hidden" name="notes" value="{{ $int->notes }}">
-                    <input type="text" name="production_url" value="{{ $int->production_url }}" class="ir-input" style="font-family:monospace;font-size:11px" placeholder="https://unit.report/...">
+                    <input type="text" name="production_url" value="{{ $int->production_url }}" class="ir-input" style="font-family:monospace;font-size:11px" placeholder="https://unitelo.ai/...">
                     <button type="submit" class="ir-edit-btn" style="white-space:nowrap;flex-shrink:0">Save</button>
                 </form>
             </div>
@@ -342,7 +342,7 @@
             </div>
             <div>
                 <div class="ir-label-sm">Production URL</div>
-                <input type="text" name="production_url" id="edit_prod_url" class="ir-input" placeholder="https://unit.report/...">
+                <input type="text" name="production_url" id="edit_prod_url" class="ir-input" placeholder="https://unitelo.ai/...">
             </div>
             <div>
                 <div class="ir-label-sm">Notes <span style="font-weight:400;text-transform:none;letter-spacing:0">— warnings, deployment instructions</span></div>
@@ -422,7 +422,7 @@
             </div>
             <div>
                 <div class="ir-label-sm">Production URL</div>
-                <input type="text" name="production_url" class="ir-input" placeholder="https://unit.report/...">
+                <input type="text" name="production_url" class="ir-input" placeholder="https://unitelo.ai/...">
             </div>
             <div>
                 <div class="ir-label-sm">ENV Keys <span style="color:var(--text-muted);font-weight:400">(comma-separated)</span></div>
