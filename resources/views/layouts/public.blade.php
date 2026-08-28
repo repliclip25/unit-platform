@@ -26,7 +26,7 @@
 @include('partials.seo-meta', [
     'title'       => $__fullTitle,
     'description' => $__fullDesc,
-    'image'       => $__env->yieldContent('og_image', asset('images/hero-team-2.png')),
+    'image'       => $__env->yieldContent('og_image', asset('images/hero-team-2.jpg')),
     'type'        => $__env->yieldContent('og_type', 'website'),
 ])
 <script>(function(){var t=localStorage.getItem('unit-theme');if(t)document.getElementById('html-root').setAttribute('data-theme',t)})();</script>

@@ -10,7 +10,7 @@
 @include('partials.seo-meta', [
     'title'       => 'AI Agent Platform for Business | UNITELO AI Workers',
     'description' => "Deploy specialized AI Workers trained on your organization's Memory to monitor, execute, and complete recurring business workflows.",
-    'image'       => asset('images/hero-team-2.png'),
+    'image'       => asset('images/hero-team-2.jpg'),
 ])
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1063,7 +1063,7 @@ body{
   </div>
 
   <div class="hero-right">
-    <img src="/images/hero-team-2.png" alt="AVA, DOX, MOX and NUX: the UNITELO AI workforce" class="hero-slide active" id="slide-0">
+    <img src="/images/hero-team-2.jpg" alt="AVA, DOX, MOX and NUX: the UNITELO AI workforce" class="hero-slide active" id="slide-0">
     <img src="/images/hero-team.png"   alt="AVA, DOX, MOX and NUX: selfie"                 class="hero-slide hidden" id="slide-1">
     <span class="hero-right-spacer" aria-hidden="true"></span>
     <div class="hero-fade"></div>

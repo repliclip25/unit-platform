@@ -34,7 +34,7 @@ $driveLogo = '<svg viewBox="0 0 87.3 78" xmlns="http://www.w3.org/2000/svg">
 @include('partials.seo-meta', [
     'title'       => "{$worker['name']}: {$worker['role']} | UNITELO (Early Access)",
     'description' => $worker['meta_desc'],
-    'image'       => asset('images/hero-team-2.png'),
+    'image'       => asset('images/hero-team-2.jpg'),
 ])
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

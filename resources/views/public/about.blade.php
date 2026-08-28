@@ -72,7 +72,7 @@
       <p class="about-hero-p">We're operations leads and engineers who got tired of building automation that still needed people to babysit it. UNITELO is what we built instead.</p>
     </div>
     <div class="about-hero-img">
-      <img src="{{ asset('images/hero-team-2.png') }}" alt="AVA, DOX, MOX and NUX: the UNITELO AI workforce">
+      <img src="{{ asset('images/hero-team-2.jpg') }}" alt="AVA, DOX, MOX and NUX: the UNITELO AI workforce">
     </div>
   </div>
 </section>

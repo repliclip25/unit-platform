@@ -2,7 +2,7 @@
 @php
     $__postImage = !empty($post['cover_image'])
         ? (str_starts_with(Storage::url($post['cover_image']), 'http') ? Storage::url($post['cover_image']) : url(Storage::url($post['cover_image'])))
-        : asset('images/hero-team-2.png');
+        : asset('images/hero-team-2.jpg');
 @endphp
 @section('title', $post['title'])
 @section('description', $post['excerpt'])

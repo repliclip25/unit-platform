@@ -1,7 +1,7 @@
 {{-- Canonical + Open Graph + Twitter Card tags, shared by every public page.
      Expects: $title, $description, optional $image, $type ('website'/'article'), $canonical --}}
 @php
-    $__seoImage     = $image ?? asset('images/hero-team-2.png');
+    $__seoImage     = $image ?? asset('images/hero-team-2.jpg');
     $__seoCanonical = $canonical ?? url()->current();
     $__seoType      = $type ?? 'website';
 @endphp

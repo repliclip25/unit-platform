@@ -10,7 +10,7 @@
 @include('partials.seo-meta', [
     'title'       => 'AI Workers for Business | Specialized AI Agents by UNITELO',
     'description' => "Meet UNITELO AI Workers: specialized AI agents trained on your Memory, connected to your tools, and built to own specific business workflows.",
-    'image'       => asset('images/hero-team-2.png'),
+    'image'       => asset('images/hero-team-2.jpg'),
 ])
 <script type="application/ld+json">{!! json_encode([
     '@@context' => 'https://schema.org',
@@ -385,7 +385,7 @@ body{font-family:var(--font-b);color:var(--text);background:var(--bg);-webkit-fo
   </div>
   <div class="hero-page-right">
     <span class="hero-page-spacer" aria-hidden="true"></span>
-    <img src="/images/hero-team-2.png" alt="AVA, DOX, MOX and NUX: the UNITELO AI workforce">
+    <img src="/images/hero-team-2.jpg" alt="AVA, DOX, MOX and NUX: the UNITELO AI workforce">
     <div class="hero-fade-page"></div>
     <div class="hero-badge">
       <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M12 2l1.5 4.5H18l-3.75 2.75 1.5 4.5L12 11l-3.75 2.75 1.5-4.5L6 6.5h4.5L12 2z" fill="#F59E0B"/></svg>

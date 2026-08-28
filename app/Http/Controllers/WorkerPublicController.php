@@ -27,7 +27,7 @@ class WorkerPublicController extends Controller
                 // the real file (ffprobe), not guessed.
                 'hero_video' => [
                     'url'          => 'videos/AVA.MP4',
-                    'thumbnail'    => 'images/ava-skyline.png',
+                    'thumbnail'    => 'images/ava-skyline.webp',
                     'duration_iso' => 'PT22S',
                     'upload_date'  => '2026-07-11',
                     'transcript'   => "Hey, I'm AVA, UNIT's renewal worker. People remember birthdays. They forget renewals, licenses expire, subscriptions end, deadlines sneak up. I remember. I prepare everything. I make sure nothing important slips through. I sleep better when your renewals are done. See you tomorrow!",

@@ -10,7 +10,7 @@
 @include('partials.seo-meta', [
     'title'       => 'AI Renewal Agent | Meet AVA by UNITELO',
     'description' => $worker['meta_desc'],
-    'image'       => asset('images/ava-skyline-og.png'),
+    'image'       => asset('images/ava-skyline-og.jpg'),
 ])
 @php
     $__serviceSchema = [
@@ -19,7 +19,7 @@
         'name'        => $worker['name'] . ': AI Renewal Worker',
         'serviceType' => $worker['category'] ?? $worker['role'],
         'description' => $worker['meta_desc'],
-        'image'       => asset('images/ava-skyline-og.png'),
+        'image'       => asset('images/ava-skyline-og.jpg'),
         'url'         => url()->current(),
         'provider'    => [
             '@type' => 'Organization',
@@ -997,7 +997,7 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
 ]" />
 
 {{-- HERO -
-     Real photo (ava-skyline.png) as poster, real video (AVA.MP4) wired
+     Real photo (ava-skyline.webp) as poster, real video (AVA.MP4) wired
      with an actual play/pause toggle instead of a decorative scrubber
      bar around a static image with a hardcoded fake elapsed time. --}}
 <section class="hero-worker">
