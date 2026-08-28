@@ -26,6 +26,7 @@
 .wc-body ul,.wc-body ol{margin:0 0 16px;padding-left:22px}
 .wc-body li{font-size:15px;color:var(--t2);line-height:1.7;margin-bottom:6px}
 .wc-body strong{color:var(--text)}
+.wc-body a{color:var(--text);font-weight:600;text-decoration:underline;text-underline-offset:3px}
 
 .wc-cta-band{background:var(--text);color:#fff;border-radius:20px;padding:clamp(32px,5vw,52px);margin:52px auto;text-align:center}
 [data-theme="dark"] .wc-cta-band{background:var(--raised)}
