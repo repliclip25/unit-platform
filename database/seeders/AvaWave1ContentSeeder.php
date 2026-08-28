@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\DB;
 // Seeds worker_content_pages / worker_content_faqs from the approved AVA SEO
 // Market Map, Wave 1. Run once per page as copy is approved:
 //   php artisan db:seed --class=Database\\Seeders\\AvaWave1ContentSeeder
-// Idempotent — upserts by url_path so re-running updates rather than duplicates.
+// Idempotent: upserts by url_path so re-running updates rather than duplicates.
 class AvaWave1ContentSeeder extends Seeder
 {
     public function run(): void
@@ -22,11 +22,11 @@ class AvaWave1ContentSeeder extends Seeder
             primaryQuery: 'renewal management software',
             secondaryQueries: ['business renewal management', 'human in the loop renewal automation'],
             seoTitle: 'Renewal Management Software That Owns the Process | AVA by UNITELO',
-            metaDescription: "AVA manages business renewals from detection through human review, fulfillment, records, audit evidence and the next renewal cycle—so important renewals don't quietly expire.",
+            metaDescription: "AVA manages business renewals from detection through human review, fulfillment, records, audit evidence and the next renewal cycle, so important renewals don't quietly expire.",
             h1: "Renewal Management Software That Doesn't Stop at Reminders",
             ctaLabel: 'Hire AVA for Renewal Operations',
             ctaHeadline: 'Give Renewal Operations an owner.',
-            ctaSubtext: "If you could hire one employee whose only responsibility was to make sure every important business renewal was completed on time—without relying on memory and while keeping your team in control of every important decision—that's the job AVA is designed to do.",
+            ctaSubtext: "If you could hire one employee whose only responsibility was to make sure every important business renewal was completed on time, without relying on memory, while keeping your team in control of every important decision, that's the job AVA is designed to do.",
             ctaRoute: 'register',
             body: $this->page1Body(),
             faqs: $this->page1Faqs(),
@@ -179,7 +179,7 @@ class AvaWave1ContentSeeder extends Seeder
 </ul>
 <p>This creates a fundamentally different accountability model. Most systems help people remember renewal work. AVA is responsible for helping the organization move that work through an operational lifecycle.</p>
 
-<h2>What AVA owns—and what she doesn't</h2>
+<h2>What AVA owns, and what she doesn't</h2>
 <p>Giving an AI Worker responsibility should not mean giving it unlimited authority. AVA owns the renewal process. Your people retain control of important decisions.</p>
 <p>AVA owns operational work such as: monitoring renewal activity and deadlines, detecting renewal requests, understanding customer relationships, identifying assets and contacts, preparing communications, coordinating human review, tracking progress, updating records, scheduling future renewals, and maintaining audit history.</p>
 <p>Humans retain authority over: financial approval, vendor selection, contract negotiation, payment authorization, legal decisions, executive approval, accounting ownership, and other consequential business decisions.</p>
@@ -188,7 +188,7 @@ class AvaWave1ContentSeeder extends Seeder
 
 <h2>Why use AI for renewal management?</h2>
 <p>Renewal operations contain uncertainty. One vendor might send a clear renewal notice. Another may send an invoice. A customer might reference an asset by an internal name. Dates may appear in attachments, email threads, or different systems. The same business process can arrive in many different forms.</p>
-<p>AVA uses AI where interpretation is necessary—to understand renewal intent, identify customers and assets, classify requests, understand context, generate personalized communications, and recommend appropriate next actions.</p>
+<p>AVA uses AI where interpretation is necessary: to understand renewal intent, identify customers and assets, classify requests, understand context, generate personalized communications, and recommend appropriate next actions.</p>
 <p>But predictable operational work should remain predictable. The UNITELO platform handles deterministic execution such as creating transactions, recording renewal history, updating the Renewal Register, scheduling future renewals, enforcing approval policies, maintaining audit records, and tracking workflow state.</p>
 <p>AI handles uncertainty. The platform handles execution. That separation allows renewal operations to remain controlled, consistent, and auditable.</p>
 
@@ -229,7 +229,7 @@ class AvaWave1ContentSeeder extends Seeder
 <p>The goal isn't more automation for its own sake. It's operational consistency.</p>
 <p>AVA exists so organizations don't have to depend on individual employees remembering hundreds of recurring obligations across inboxes, spreadsheets, calendars, and disconnected systems.</p>
 <p>She doesn't replace the people who make business decisions. She removes one repetitive, time-sensitive, and operationally risky responsibility from their workload.</p>
-<p>If you could hire one employee whose only responsibility was to make sure every important business renewal was completed on time—without relying on memory and while keeping your team in control of every important decision—that's the job AVA is designed to do.</p>
+<p>If you could hire one employee whose only responsibility was to make sure every important business renewal was completed on time, without relying on memory, while keeping your team in control of every important decision, that's the job AVA is designed to do.</p>
 HTML;
     }
 
@@ -237,7 +237,7 @@ HTML;
     {
         return [
             ['What is renewal management software?', "Renewal management software helps organizations organize and manage recurring business obligations such as contracts, subscriptions, domains, certificates, licenses, insurance policies, and other renewable assets. AVA extends that concept beyond tracking dates and sending reminders by owning the operational lifecycle from detection through completion and future scheduling."],
-            ['What is the difference between renewal tracking and renewal management?', "Renewal tracking focuses primarily on visibility: dates, deadlines, owners, calendars, and reminders. Renewal management includes the operational work required after detection—understanding the renewal, identifying the correct customer and asset, coordinating communication and approval, tracking fulfillment, recording the outcome, preserving evidence, and scheduling the next cycle."],
+            ['What is the difference between renewal tracking and renewal management?', "Renewal tracking focuses primarily on visibility: dates, deadlines, owners, calendars, and reminders. Renewal management includes the operational work required after detection: understanding the renewal, identifying the correct customer and asset, coordinating communication and approval, tracking fulfillment, recording the outcome, preserving evidence, and scheduling the next cycle."],
             ['What types of renewals can AVA manage?', "AVA Version 1 supports domains, SSL certificates, hosting services, SaaS subscriptions, insurance policies, licenses, and maintenance agreements."],
             ['Does AVA automatically approve renewals?', "No. Human review is required. AVA does not own financial approval, payment authorization, vendor selection, contract negotiation, legal decisions, or executive approval."],
             ['Can AVA automatically send customer communications?', "No customer-facing communication proceeds without human approval in Version 1. AVA can prepare personalized communications and coordinate the review process."],
@@ -245,7 +245,7 @@ HTML;
             ['What happens after a renewal is completed?', "AVA updates the renewal records and Renewal Register, archives supporting evidence, schedules the next renewal cycle, and re-establishes future monitoring."],
             ['Is AVA a contract management system?', "AVA's responsibility is Renewal Operations. She may coordinate renewal work associated with agreements, but she does not own contract negotiation, legal approval, autonomous purchasing, or broader contract lifecycle management."],
             ['Is AVA an email automation tool?', "No. Email is one communication channel through which renewal work can enter the organization. AVA's responsibility is the renewal itself, not the email."],
-            ['How does AVA use AI?', "AVA uses AI to interpret uncertain information—such as renewal intent, customers, assets, contacts, context, and communications. Deterministic systems on the UNITELO platform handle transaction creation, workflow state, approval policies, records, scheduling, notifications, and audit history."],
+            ['How does AVA use AI?', "AVA uses AI to interpret uncertain information, such as renewal intent, customers, assets, contacts, context, and communications. Deterministic systems on the UNITELO platform handle transaction creation, workflow state, approval policies, records, scheduling, notifications, and audit history."],
         ];
     }
 }

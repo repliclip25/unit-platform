@@ -27,7 +27,7 @@
 .wc-body li{font-size:15px;color:var(--t2);line-height:1.7;margin-bottom:6px}
 .wc-body strong{color:var(--text)}
 
-.wc-cta-band{background:var(--text);color:#fff;border-radius:20px;padding:clamp(32px,5vw,52px);margin:52px 0;text-align:center}
+.wc-cta-band{background:var(--text);color:#fff;border-radius:20px;padding:clamp(32px,5vw,52px);margin:52px auto;text-align:center}
 [data-theme="dark"] .wc-cta-band{background:var(--raised)}
 .wc-cta-band h2{color:#fff;margin-top:0}
 [data-theme="dark"] .wc-cta-band h2{color:var(--text)}
