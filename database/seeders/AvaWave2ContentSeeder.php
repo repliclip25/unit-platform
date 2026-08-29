@@ -150,6 +150,29 @@ class AvaWave2ContentSeeder extends Seeder
             faqImage: 'images/ava-life.webp',
             faqImageAlt: 'AVA working at her desk, preparing renewal communications',
         );
+
+        $this->seedPage(
+            worker: 'ava',
+            tier: 'Tier 2',
+            pageFamily: 'Asset Solution',
+            urlPath: 'assets/hosting',
+            lifecycleStage: 'Detect',
+            primaryQuery: 'hosting renewal management',
+            secondaryQueries: ['hosting renewal tracking', 'hosting expiration reminder'],
+            seoTitle: 'Hosting Renewal Management & Tracking | AVA by UNITELO',
+            metaDescription: "AVA connects every hosting renewal to the right customer, service, and contact so recurring hosting obligations don't quietly expire between projects.",
+            h1: 'Hosting Renewal Management & Tracking That Doesn\'t Stop at the Invoice',
+            ctaLabel: 'Have AVA Own Hosting Renewals',
+            ctaHeadline: 'Keep hosting renewals under operational ownership.',
+            ctaSubtext: "Hosting services can run quietly for months, then the renewal arrives with no clear owner. AVA connects the renewal to the right customer, service, contact, and outcome so recurring hosting obligations don't quietly expire between projects.",
+            ctaRoute: 'register',
+            body: $this->page17Body(),
+            faqs: $this->page17Faqs(),
+            heroImage: 'images/ava-desk.webp',
+            heroImageAlt: 'AVA focused at her laptop, managing hosting renewals',
+            faqImage: 'images/ava-skyline.webp',
+            faqImageAlt: 'AVA in the UNITELO boardroom',
+        );
     }
 
     // Named-route helper so internal links survive any future URL change,
@@ -1034,6 +1057,153 @@ HTML;
             ['Does AVA negotiate renewals by email?', "No. Contract negotiation and vendor selection remain outside AVA's responsibility."],
             ['Is sending a renewal reminder enough to complete a renewal?', "No. AVA defines success around successful completion of the underlying renewal obligation. The transaction continues through fulfillment, records, future scheduling, archive, and completion after communication and Human Review."],
             ['Why use AVA instead of renewal email templates?', "Templates solve a communication task. AVA owns the broader Renewal Operations lifecycle surrounding the communication. For organizations managing recurring renewal obligations at scale, that distinction creates accountability beyond the email itself."],
+        ];
+    }
+
+    private function page17Body(): string
+    {
+        return <<<HTML
+<p><strong>Keep Hosting Renewals From Becoming Last-Minute Client Problems</strong></p>
+<p>Hosting services can run quietly for months. Then the renewal arrives. Which customer does it belong to? Which hosting service is renewing? Who is responsible for it? When does it require attention? Does the customer need to be contacted? Does someone need to review the renewal? Has the renewal actually been completed? And after it is renewed, who makes sure the next cycle doesn't become another surprise?</p>
+<p>AVA is an AI Worker for Renewal Operations designed to manage the operational lifecycle around recurring hosting renewals. She connects the renewal to the right customer, hosting service, contact, workflow, outcome, and future cycle.</p>
+<p>Don't just remember the hosting renewal. Give it an operational owner.</p>
+
+<h2>Why hosting renewals get missed</h2>
+<p>Hosting is often purchased during another piece of work. A website is launched. An application is deployed. A client project goes live. A service relationship begins. Someone sets up the hosting account. Then the original project ends. The hosting continues. Months later, the recurring obligation comes back. By then, the original employee may have changed roles. The customer contact may have changed. The agency may be managing dozens of other clients. The person receiving the renewal notice may not know what the hosting service supports. The renewal date may exist somewhere, but ownership is unclear. This is how an ordinary recurring service becomes an operational risk.</p>
+
+<h2>What is hosting renewal management?</h2>
+<p>Hosting renewal management is the operational process of keeping a recurring hosting service visible and accountable as it approaches renewal. It involves more than knowing the expiration or renewal date. The organization may need to establish which hosting service is renewing, which customer it belongs to, who is the responsible contact, what needs to happen before renewal, does communication need to be prepared, does a human need to review the next action, has fulfillment occurred, was the outcome recorded, was supporting evidence preserved, and was the next renewal scheduled. AVA provides an operating lifecycle around those questions.</p>
+
+<h2>Hosting Services are a supported AVA asset</h2>
+<p>AVA Version 1 explicitly supports Hosting Services as a renewable asset. Other supported assets include domains, SSL certificates, SaaS subscriptions, insurance policies, licenses, and maintenance agreements. That means hosting renewal work can enter AVA's Renewal Operations lifecycle. The important word is renewal. AVA owns the operational renewal process around the hosting service. She is not a hosting administration platform.</p>
+
+<h2>Customer, Hosting Service, Contact, Renewal Transaction</h2>
+<p>Hosting renewals become particularly useful when modeled as transactions. For client-facing organizations, the structure can look like this: Customer, then Hosting Service, then Responsible Contact, then Renewal Transaction. The customer establishes whose service is involved. The hosting service establishes what is renewing. The contact establishes who is relevant to the next operational action. The renewal transaction becomes the unit of accountability. AVA keeps those pieces connected as the work moves through the lifecycle.</p>
+
+<h2>A hosting invoice is not the renewal</h2>
+<p>An invoice may be part of hosting renewal activity. But the invoice itself is not the entire renewal process. Someone may receive the invoice. Someone may forward it. Someone may approve it. Someone may even pay it. The organization can still fail to preserve the renewal outcome, supporting evidence, or future cycle. AVA keeps the business obligation at the center. One hosting renewal equals one renewal transaction. Emails, invoices, reminders, approvals, and documents become activities or evidence associated with that transaction.</p>
+
+<h2>A hosting expiration date is not operational ownership</h2>
+<p>Knowing when a hosting service renews is valuable. But a date alone cannot tell you which customer is affected, who owns the next action, whether communication is required, whether Human Review is pending, whether fulfillment has occurred, whether the outcome has been recorded, or whether the next cycle has been scheduled. A renewal tracker creates visibility. AVA adds operational ownership.</p>
+
+<h2>How AVA manages a hosting renewal</h2>
+<p>AVA applies the same controlled Renewal Operations lifecycle to supported hosting services.</p>
+
+<h3>1. Detect</h3>
+<p>AVA identifies renewal work through supported sources. Version 1 sources include Gmail, Asset Watch, and Manual Trigger. The renewal enters the operational lifecycle.</p>
+
+<h3>2. Understand</h3>
+<p>AVA uses AI to understand the renewal intent and available business context. The objective is to determine what the renewal activity represents operationally.</p>
+
+<h3>3. Identify Customer</h3>
+<p>Where the hosting service belongs to a customer, AVA connects the renewal to that customer context.</p>
+
+<h3>4. Identify Asset</h3>
+<p>The relevant Hosting Service is identified as the renewable asset.</p>
+
+<h3>5. Identify Contact</h3>
+<p>AVA establishes the appropriate contact context for the renewal.</p>
+
+<h3>6. Prepare Communication</h3>
+<p>If communication is required, AVA can prepare personalized renewal communication using the transaction context.</p>
+
+<h3>7. Human Review</h3>
+<p>Customer-facing communication requires Human Review. Consequential decisions remain with authorized people.</p>
+
+<h3>8. Fulfillment</h3>
+<p>AVA tracks the approved renewal toward its required operational outcome.</p>
+
+<h3>9. Record Outcome</h3>
+<p>The result of the hosting renewal is recorded.</p>
+
+<h3>10. Schedule Next Renewal</h3>
+<p>If the hosting service continues, the next renewal cycle is established.</p>
+
+<h3>11. Archive</h3>
+<p>Supporting evidence is preserved.</p>
+
+<h3>12. Complete</h3>
+<p>The transaction reaches Complete only when the renewal's operational requirements have been satisfied.</p>
+
+<h2>Hosting renewal management for digital agencies</h2>
+<p>Digital agencies are a natural example of the hosting renewal problem. An agency builds a website. The project launches. The project is marked complete. But the client may still depend on services connected to that work: a domain, an SSL certificate, hosting, software subscriptions, licenses, maintenance agreements. The project can end while those recurring obligations continue. That creates a new type of responsibility. It is no longer project delivery. It is Renewal Operations. AVA gives those recurring obligations an operational owner. See <a href="{$this->pageUrl('ava', 'industries/digital-agencies')}">Renewal Management for Digital Agencies</a>.</p>
+
+<h2>The project ended. The hosting renewal didn't.</h2>
+<p>This is one of the reasons hosting renewals become fragmented. Organizations often structure work around projects. Renewals operate on time. The original website project might have lasted three months. The hosting relationship may continue for five years. That means the renewal process needs to survive project closure, employee turnover, customer-contact changes, organizational changes, and long gaps between renewal cycles. AVA's renewal transaction model is designed around that continuity.</p>
+
+<h2>Hosting renewal management for Managed Service Providers</h2>
+<p>Managed Service Providers can face an even larger version of the same problem. One provider may manage recurring services across many customers. Each customer may have different hosting services, domains, SSL certificates, software subscriptions, licenses, maintenance agreements, renewal dates, contacts, and human reviewers. The operational problem quickly becomes more than "when does this hosting plan renew?" It becomes "which hosting renewal needs attention, for which customer, and what needs to happen next?" AVA provides a consistent lifecycle for answering that question. See <a href="{$this->pageUrl('ava', 'industries/managed-service-providers')}">Renewal Management for MSPs</a>.</p>
+
+<h2>Manage hosting renewals across multiple clients</h2>
+<p>For multi-client environments, the customer relationship must remain attached to the renewable asset. Otherwise the organization can end up with a list such as Hosting Plan A on October 12, Hosting Plan B on November 3, Hosting Plan C on November 18. The dates exist. The operational context does not. AVA's model creates a stronger structure: Customer, Hosting Service, Contact, Renewal Transaction. That makes each hosting renewal accountable within its actual business context.</p>
+
+<h2>Hosting, domain, and SSL renewals are connected, but different</h2>
+<p>A website or online service may depend on several recurring assets. For example, a domain is the name or address used to reach the service, an SSL certificate secures connections, and a hosting service is the infrastructure where the site or application is hosted. These assets can be operationally related. They are not the same renewal. Each may have a different renewal date, a different provider, a different contact, a different workflow, and a different outcome. AVA therefore treats each underlying renewal as its own transaction. See <a href="{$this->pageUrl('ava', 'assets/domains')}">Domain Renewal &amp; Expiration Tracking</a> and <a href="{$this->pageUrl('ava', 'assets/ssl-certificates')}">SSL Certificate Renewal &amp; Expiration Tracking</a>.</p>
+
+<h2>One client can have multiple renewal transactions</h2>
+<p>Consider a digital agency managing a customer's website. The customer may have a domain renewing in March, hosting renewing in June, an SSL certificate requiring renewal at another point, a software subscription renewing in September, and a maintenance agreement renewing in January. Those should not become one vague "client renewal." Each obligation can have its own transaction. AVA can still connect them to the same customer context while maintaining individual accountability.</p>
+
+<h2>Hosting renewal reminders are useful, but they are not enough</h2>
+<p>A reminder can tell someone "hosting renews in 30 days." That creates awareness. But the organization may still need to identify the customer, identify the responsible contact, prepare communication, obtain Human Review, track fulfillment, record the outcome, archive evidence, and schedule the next renewal. The reminder is one signal inside a larger operation. AVA is designed to own the larger operation.</p>
+
+<h2>Human Review stays in the hosting renewal workflow</h2>
+<p>AVA does not use automation to remove humans from consequential hosting renewal decisions. She can prepare and coordinate the renewal. But people retain authority over decisions such as financial approval, payment authorization, vendor selection, contract negotiation, legal decisions, and executive approval. No customer-facing communication proceeds without required Human Review in Version 1. The operating principle remains: AVA owns the process. Your people own the decisions.</p>
+
+<h2>AVA does not automatically authorize hosting payments</h2>
+<p>A hosting service may require payment to renew. That does not make payment authorization part of AVA's responsibility. AVA does not own automatic payment execution, financial authorization, payment authorization, or autonomous purchasing. The Worker can track the renewal toward fulfillment while the appropriate human or system handles the financial decision.</p>
+
+<h2>AVA does not choose your hosting provider</h2>
+<p>A renewal may cause an organization or customer to ask "should we stay with this provider?" That is a legitimate question. It is not AVA's decision. Vendor selection remains outside AVA's responsibility. AVA can keep the existing renewal transaction accountable while the organization decides what it wants to do.</p>
+
+<h2>AVA does not negotiate hosting contracts</h2>
+<p>Some hosting arrangements may involve contractual terms. AVA can manage Renewal Operations around the supported hosting service. She does not negotiate the contract. She does not make legal decisions. She does not approve contractual terms. Those responsibilities remain human.</p>
+
+<h2>Hosting Renewal Operations is not hosting administration</h2>
+<p>This distinction matters. AVA should not be understood as a Worker that configures servers, migrates websites, manages infrastructure, changes hosting plans autonomously, administers hosting accounts, troubleshoots server performance, deploys applications, performs backups, or manages DNS. Those capabilities are not established by AVA's Renewal Operations responsibility. AVA's job is specific: own the operational renewal lifecycle around the Hosting Service.</p>
+
+<h2>Hosting renewal tracking without replacing your infrastructure tools</h2>
+<p>Your organization may already use technical systems to operate or monitor hosting infrastructure. AVA does not need to replace them. Her responsibility begins from a different business question: what recurring hosting obligation requires renewal work, and has that renewal reached successful completion? That allows technical systems to remain technical systems. AVA remains the Renewal Operations Worker.</p>
+
+<h2>Record what happened after the hosting renewal</h2>
+<p>Once fulfillment occurs, AVA does not simply close the task. She records the outcome. This matters because the next renewal cycle may happen months later. The organization should not have to reconstruct what happened last time, which customer was involved, which service renewed, who participated, and whether the renewal was completed. The outcome becomes part of organizational memory.</p>
+
+<h2>Schedule the next hosting renewal</h2>
+<p>A successful hosting renewal often creates another future renewal. That future obligation should not depend on someone remembering to create a reminder later. AVA's lifecycle includes Schedule Next Renewal before the current transaction reaches Complete. That creates continuity: current renewal completed, outcome recorded, next renewal scheduled, evidence archived, transaction complete. Future monitoring is re-established before the current work closes.</p>
+
+<h2>Preserve the renewal evidence</h2>
+<p>AVA's definition of done also requires supporting evidence to be archived. The purpose is traceability. If someone needs to understand the previous hosting renewal later, the organization should have more than "someone handled it." The transaction should have history.</p>
+
+<h2>What does a completed hosting renewal mean?</h2>
+<p>For AVA, completion is more demanding than sending a reminder or obtaining approval. A hosting renewal reaches completion when the supported business obligation has been successfully renewed, the records accurately reflect the outcome, supporting evidence is archived, the Renewal Register is updated, the next renewal cycle is scheduled, and no further operational work remains. That is the difference between tracking a hosting renewal and owning it.</p>
+
+<h2>Stop rebuilding hosting renewal context every year</h2>
+<p>Recurring hosting services should not repeatedly create the same questions: who owns this, which customer is this for, when does it renew, who do we contact, did we renew it last year, what happened, when does it renew again. AVA gives those questions a permanent operational home. She keeps the renewal connected to the customer, asset, contact, transaction, outcome, evidence, and future cycle.</p>
+
+<h2>Related Renewal Operations resources</h2>
+<p>Hosting renewals build on the same lifecycle used across every AVA page. See the complete operational lifecycle in <a href="{$this->pageUrl('ava', 'renewal-management')}">Renewal Management Software</a>, or see how it scales across a customer portfolio in <a href="{$this->pageUrl('ava', 'industries/managed-service-providers')}">Renewal Management for MSPs</a>.</p>
+
+<h2>Keep hosting renewals under operational ownership</h2>
+<p>Hosting services can run quietly for months, then the renewal arrives with no clear owner. AVA connects the renewal to the right customer, service, contact, and outcome so recurring hosting obligations don't quietly expire between projects.</p>
+HTML;
+    }
+
+    private function page17Faqs(): array
+    {
+        return [
+            ['What is hosting renewal management?', "Hosting renewal management is the operational process of tracking and coordinating recurring hosting renewal work from detection through completion and future scheduling."],
+            ['Can AVA manage hosting renewals?', "Yes. Hosting Services are explicitly supported AVA Version 1 assets. AVA can manage the Renewal Operations surrounding those services."],
+            ['Can AVA track hosting expiration and renewal dates?', "AVA's approved responsibility includes renewal detection, deadline monitoring, renewal tracking, and future scheduling for supported assets including Hosting Services. The exact technical mechanism used to obtain or monitor hosting dates should not be assumed beyond implemented supported sources."],
+            ['Does AVA automatically discover all our hosting accounts?', "AVA's approved Version 1 scope does not establish universal automatic hosting-account discovery. Supported renewal sources are Gmail, Asset Watch, and Manual Trigger. Any more specific discovery or provider-integration claim should depend on the implemented product."],
+            ['Does AVA automatically renew hosting services?', "AVA owns Renewal Operations, but automatic payment execution, financial authorization, and autonomous purchasing are outside Version 1 scope."],
+            ['Can AVA pay a hosting renewal?', "No. Payment authorization and automatic payment execution are outside AVA's responsibility."],
+            ['Can AVA choose a hosting provider?', "No. Vendor selection remains outside AVA's responsibility."],
+            ['Can AVA negotiate hosting contracts?', "No. Contract negotiation is outside AVA's responsibility."],
+            ['Does AVA administer hosting servers?', "No. AVA's approved responsibility is Renewal Operations. Hosting administration, infrastructure management, migration, server configuration, and similar technical hosting functions are not established AVA responsibilities."],
+            ['Can AVA manage hosting renewals for clients?', "Yes. AVA's customer, asset, contact, and renewal transaction model supports organizations managing recurring renewal work across customers, including agencies and Managed Service Providers."],
+            ['Can AVA manage domains and SSL certificates too?', "Yes. Domains and SSL Certificates are also explicitly supported Version 1 assets. Each renewal should remain its own accountable transaction even when several assets support the same customer or website."],
+            ['Does AVA send hosting renewal reminders?', "AVA supports renewal tracking, draft generation, and personalized communication preparation. Customer-facing communication requires Human Review before proceeding."],
+            ['What happens after the hosting service is renewed?', "AVA records the outcome, updates renewal records, schedules the next renewal cycle, archives supporting evidence, and moves the transaction toward Complete."],
+            ['When does AVA consider a hosting renewal complete?', "AVA's definition of done requires the supported obligation to be successfully renewed, records to be accurate, supporting evidence to be archived, the Renewal Register to be updated, the next renewal cycle to be scheduled, and no further operational work to remain."],
         ];
     }
 }
