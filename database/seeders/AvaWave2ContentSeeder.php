@@ -173,6 +173,29 @@ class AvaWave2ContentSeeder extends Seeder
             faqImage: 'images/ava-skyline.webp',
             faqImageAlt: 'AVA in the UNITELO boardroom',
         );
+
+        $this->seedPage(
+            worker: 'ava',
+            tier: 'Tier 2',
+            pageFamily: 'Asset Solution',
+            urlPath: 'assets/insurance',
+            lifecycleStage: 'Detect',
+            primaryQuery: 'insurance renewal tracking',
+            secondaryQueries: ['insurance policy renewal reminder', 'insurance policy expiration tracking'],
+            seoTitle: 'Insurance Renewal Tracking & Reminders | AVA by UNITELO',
+            metaDescription: "AVA keeps supported insurance policy renewals visible and accountable, connecting each renewal to the right customer, contact, and outcome without acting as your broker, underwriter, or legal advisor.",
+            h1: "Insurance Renewal Tracking & Reminders That Don't Stop at the Alert",
+            ctaLabel: 'Have AVA Track Insurance Renewals',
+            ctaHeadline: 'Keep insurance renewals visible, accountable, and moving.',
+            ctaSubtext: "Insurance policies are recurring obligations that are easy to underestimate. AVA detects the renewal, connects it to the right business context, coordinates the operational workflow, records the outcome, preserves evidence, and schedules the next cycle, while your people retain every insurance and financial decision.",
+            ctaRoute: 'register',
+            body: $this->page18Body(),
+            faqs: $this->page18Faqs(),
+            heroImage: 'images/ava-stand.webp',
+            heroImageAlt: "AVA, UNITELO's AI Renewal Operations Worker",
+            faqImage: 'images/ava-selfie.webp',
+            faqImageAlt: "AVA, UNITELO's AI Renewal Worker",
+        );
     }
 
     // Named-route helper so internal links survive any future URL change,
@@ -1204,6 +1227,154 @@ HTML;
             ['Does AVA send hosting renewal reminders?', "AVA supports renewal tracking, draft generation, and personalized communication preparation. Customer-facing communication requires Human Review before proceeding."],
             ['What happens after the hosting service is renewed?', "AVA records the outcome, updates renewal records, schedules the next renewal cycle, archives supporting evidence, and moves the transaction toward Complete."],
             ['When does AVA consider a hosting renewal complete?', "AVA's definition of done requires the supported obligation to be successfully renewed, records to be accurate, supporting evidence to be archived, the Renewal Register to be updated, the next renewal cycle to be scheduled, and no further operational work to remain."],
+        ];
+    }
+
+    private function page18Body(): string
+    {
+        return <<<HTML
+<p><strong>Track Insurance Renewals Before Important Policies Quietly Expire</strong></p>
+<p>Insurance renewals are predictable. The operational problems surrounding them often are not. A renewal notice arrives. A policy expiration date approaches. Someone needs to review the renewal. Information may need to be gathered. A decision may need to be made. The renewal may need to move through several people before it is completed. And once the policy is renewed, the organization still needs to record what happened and make sure the next cycle is already monitored.</p>
+<p>AVA is an AI Worker for Renewal Operations designed to keep supported insurance renewal work visible, accountable, and moving toward completion. She detects renewal activity, connects it to the right business context, coordinates the operational workflow, records the outcome, preserves evidence, and schedules the next cycle.</p>
+<p>Know what's approaching renewal. Know what needs attention. Make sure the renewal reaches completion.</p>
+
+<h2>Insurance Policies are a supported AVA asset</h2>
+<p>AVA Version 1 explicitly supports Insurance Policies as a renewable asset. That means insurance policy renewal work can enter AVA's Renewal Operations lifecycle. AVA can help manage the operational process surrounding the renewal. She does not become the organization's insurance broker, insurance carrier, underwriter, legal advisor, or financial authority. AVA owns Renewal Operations around the supported obligation. Specialized insurance and business decisions remain with the appropriate people.</p>
+
+<h2>Why insurance renewals become operational risks</h2>
+<p>Insurance policies are recurring obligations. That makes them easy to underestimate. The organization knows the policy exists. Someone handled it last year. A renewal notice will probably arrive. The broker or carrier may make contact. Someone internally will deal with it. Until responsibility becomes unclear. The renewal notice goes to an employee who has changed roles. The responsible person is busy. The deadline is recorded but the next action isn't. Someone assumes another department is handling it. The policy approaches expiration while the renewal is still moving between people. The risk isn't always that nobody knew the policy existed. The risk is that nobody owned the renewal process from beginning to end.</p>
+
+<h2>What is insurance renewal tracking?</h2>
+<p>Insurance renewal tracking is the operational process of keeping an approaching policy renewal visible and accountable. At a basic level, that means knowing which policy is approaching renewal and when it requires attention. But operational renewal management goes further. The organization may also need to know who is responsible for the renewal, which customer or business context it belongs to, who the relevant contacts are, what action is required, whether Human Review is pending, whether fulfillment occurred, what the final outcome was, what evidence should be preserved, and when the next renewal cycle begins. AVA connects those pieces into one renewal transaction.</p>
+
+<h2>A policy expiration reminder is only the beginning</h2>
+<p>Imagine receiving an alert: "insurance policy expires in 30 days." Useful? Absolutely. Complete? No. Someone still needs to determine what policy is involved, what the renewal requires, who needs to participate, who has authority to make the relevant decision, has the renewal been fulfilled, was the outcome recorded, and has future monitoring been re-established. A reminder creates attention. AVA provides operational ownership around what happens after the reminder.</p>
+
+<h2>Where insurance renewal tracking begins</h2>
+<p>AVA supports three Version 1 renewal sources: Gmail, Asset Watch, and Manual Trigger. These sources allow renewal work to enter the lifecycle. The important distinction is that detection is not completion. Detection means "this renewal requires attention." AVA then owns the process of moving the supported renewal toward its required operational outcome.</p>
+
+<h2>How AVA manages insurance renewal work</h2>
+<p>AVA applies her defined renewal lifecycle to supported Insurance Policies.</p>
+
+<h3>1. Detect</h3>
+<p>AVA identifies renewal work through a supported source. An insurance renewal can now become an accountable transaction rather than remaining an isolated notice or deadline.</p>
+
+<h3>2. Understand</h3>
+<p>AVA uses AI to understand the renewal intent and available business context. The goal is to determine what the renewal activity represents operationally.</p>
+
+<h3>3. Identify Customer</h3>
+<p>Where customer context applies, AVA associates the renewal with the relevant customer.</p>
+
+<h3>4. Identify Asset</h3>
+<p>The Insurance Policy is established as the renewable asset.</p>
+
+<h3>5. Identify Contact</h3>
+<p>AVA matches the relevant contact context required for the renewal process.</p>
+
+<h3>6. Prepare Communication</h3>
+<p>Where communication is required, AVA can prepare personalized renewal communication using the transaction context.</p>
+
+<h3>7. Human Review</h3>
+<p>Customer-facing communication requires Human Review. Consequential decisions remain with authorized humans.</p>
+
+<h3>8. Fulfillment</h3>
+<p>AVA tracks the renewal toward fulfillment.</p>
+
+<h3>9. Record Outcome</h3>
+<p>The result of the renewal is recorded.</p>
+
+<h3>10. Schedule Next Renewal</h3>
+<p>Where the obligation continues, the next renewal cycle is established.</p>
+
+<h3>11. Archive</h3>
+<p>Supporting renewal evidence is preserved.</p>
+
+<h3>12. Complete</h3>
+<p>The renewal reaches Complete only when the required operational work has been satisfied.</p>
+
+<h2>One insurance renewal equals one transaction</h2>
+<p>An insurance renewal may create many activities: emails, documents, reminders, internal discussions, approvals, invoices, responses, supporting evidence. Those activities should not fragment the underlying renewal. AVA maintains one renewal equals one transaction. The transaction remains the unit of accountability as different people and activities enter the process. That makes it easier to answer the question that matters: is this policy renewal actually complete?</p>
+
+<h2>Connect the policy to the right business context</h2>
+<p>A date without context creates weak operational visibility. Consider "policy renewal, October 31." Which policy? For which customer or business entity? Who is the relevant contact? Who needs to act? What is the current status? AVA's lifecycle adds context to the renewal before it moves downstream. The policy becomes part of an accountable transaction rather than simply another expiration date.</p>
+
+<h2>Identify the responsible contacts</h2>
+<p>Insurance renewals can involve several people: an internal responsible person, a customer contact where applicable, a broker or other external contact, a manager, a financial decision-maker, and other authorized participants. AVA supports contact matching as part of Renewal Operations. But identifying a contact does not grant that person, or AVA, authority they do not have. Ownership tells the process who is responsible. Authority tells the organization who is allowed to decide.</p>
+
+<h2>AVA does not provide insurance advice</h2>
+<p>Insurance Renewal Operations and insurance advice are different responsibilities. AVA can manage the operational renewal process around a supported Insurance Policy. She should not be represented as determining what coverage an organization should purchase, whether a policy provides sufficient protection, which insurance product is best, what exclusions should be accepted, how risk should be underwritten, or what insurance strategy an organization should follow. Those responsibilities belong to appropriate insurance professionals and organizational decision-makers. AVA keeps the renewal process accountable around those decisions.</p>
+
+<h2>AVA is not an insurance broker</h2>
+<p>A broker may advise the organization, communicate with carriers, obtain options, or support insurance decisions. AVA's responsibility is different. She is the Renewal Operations Worker. AVA can maintain the operational workflow surrounding the renewal while brokers, carriers, employees, executives, financial decision-makers, and other specialists perform their respective responsibilities. The Worker does not need to replace those participants to improve the process. She needs to make sure the renewal itself has an owner.</p>
+
+<h2>AVA does not underwrite insurance</h2>
+<p>Underwriting involves specialized insurance assessment and decision-making. That is outside AVA's Renewal Operations responsibility. AVA's support for Insurance Policies means she can manage the recurring renewal workflow surrounding the policy. It does not mean she evaluates or assumes underwriting authority.</p>
+
+<h2>AVA does not make legal insurance decisions</h2>
+<p>Insurance policies can involve contractual and legal considerations. Legal decisions remain outside AVA's responsibility. Legal approval is outside Version 1 scope. Contract negotiation is outside AVA's responsibility. AVA can help understand renewal intent and business context. She does not convert that operational understanding into autonomous legal judgment.</p>
+
+<h2>AVA does not authorize insurance payments</h2>
+<p>Insurance renewals can also involve financial commitments. AVA does not own financial approval, payment authorization, automatic payment execution, or autonomous purchasing. Those decisions remain with authorized people and systems. AVA can keep the renewal transaction moving while the required financial decision takes place.</p>
+
+<h2>Human Review remains part of the process</h2>
+<p>AVA's operating model deliberately separates Worker responsibility from human authority. AVA can detect the renewal, understand its context, identify the policy, identify contacts, prepare communication, track workflow state, and maintain the renewal record. But customer-facing communication requires Human Review, and consequential decisions remain with humans. This creates a controlled model: AVA owns the process. Your people own the decisions.</p>
+
+<h2>Insurance renewal reminders vs Renewal Operations</h2>
+<p>A reminder system answers "when is this policy approaching renewal?" AVA needs to answer a larger operational question: "what must happen to move this policy renewal from detection to successful completion?" That can involve detection, understanding, context, contacts, communication, Human Review, fulfillment, records, future scheduling, evidence, and completion. The reminder is useful. The lifecycle is what closes the loop.</p>
+
+<h2>Insurance renewal spreadsheets can create visibility without ownership</h2>
+<p>Many organizations can track renewal dates in a spreadsheet containing a policy, renewal date, owner, and status. This is already better than relying entirely on memory. But someone still needs to operate the process. Who monitors the dates? Who understands incoming renewal information? Who updates the status? Who follows up? Who records the outcome? Who preserves the evidence? Who creates the next cycle? AVA is designed to provide that operational ownership.</p>
+
+<h2>Insurance renewal tracking for multi-client organizations</h2>
+<p>Some organizations may manage supported renewal work across multiple customers. That makes context especially important. A renewal should not simply say "insurance policy, November 15." The organization should understand which customer, which policy, which contact, which renewal transaction, and what happens next. AVA's operating model connects those pieces: Customer, Insurance Policy, Contact, Renewal Transaction. The renewal stays attached to its business context.</p>
+
+<h2>Renewal work should survive staff changes</h2>
+<p>An insurance policy may renew annually. That is a long time between transactions. The person who managed the previous cycle may no longer own the responsibility when the next renewal begins. They may have changed roles, changed departments, left the organization, or transferred the customer and responsibility elsewhere. The policy still exists. AVA helps move renewal knowledge away from individual memory and into a repeatable operational lifecycle. The renewal should survive the handoff.</p>
+
+<h2>Record the insurance renewal outcome</h2>
+<p>Once fulfillment occurs, AVA moves to Record Outcome. This matters because the organization should not have to reconstruct the previous renewal from scratch during the next cycle. The renewal transaction should become part of organizational history: what happened, what was renewed, what supporting context exists. The record preserves continuity.</p>
+
+<h2>Update the Renewal Register</h2>
+<p>Updating the Renewal Register is part of AVA's approved responsibility. That allows the completed insurance renewal to remain connected to the organization's broader renewal operations. The objective is not merely to store data. It is to make sure the renewal creates organizational memory.</p>
+
+<h2>Schedule the next insurance renewal</h2>
+<p>A completed policy renewal may create another future renewal. AVA's lifecycle therefore includes Schedule Next Renewal before Complete. Future monitoring is re-established before the current transaction closes. This changes the operating model from "remember to deal with this again next year" to "the next renewal cycle is already part of the process."</p>
+
+<h2>Archive supporting renewal evidence</h2>
+<p>AVA also preserves supporting evidence as part of the Archive stage. That gives the organization traceability around the renewal transaction. The approved scope establishes renewal-specific audit history and evidence. It does not turn AVA into a general insurance compliance, financial auditing, or legal auditing platform. The evidence belongs to the renewal operation.</p>
+
+<h2>When is an insurance renewal complete?</h2>
+<p>AVA uses a business definition of completion. A renewal is complete when the supported obligation has been successfully renewed, records accurately reflect the outcome, supporting evidence is archived, the Renewal Register is updated, the next renewal cycle is scheduled, and no further operational work remains. Reminder sent does not equal complete. Email received does not equal complete. Review completed does not equal complete. Approval given does not equal complete. Successful renewal plus records plus evidence plus next cycle equals complete.</p>
+
+<h2>Don't let recurring insurance obligations depend on recurring human memory</h2>
+<p>Insurance policies renew. People change. Inbox ownership changes. Responsibilities change. Organizations grow. Customers change. A recurring business obligation needs an operating process capable of surviving those changes. AVA gives the renewal itself a persistent operational owner. She detects the work, understands it, connects it to the correct context, coordinates Human Review, tracks fulfillment, records the outcome, schedules the next cycle, archives the evidence, and closes the transaction when the work is actually complete.</p>
+
+<h2>Related Renewal Operations resources</h2>
+<p>Insurance renewals build on the same lifecycle used across every AVA page. See the complete operational lifecycle in <a href="{$this->pageUrl('ava', 'renewal-management')}">Renewal Management Software</a>, or see how it scales across a customer portfolio in <a href="{$this->pageUrl('ava', 'industries/managed-service-providers')}">Renewal Management for MSPs</a>.</p>
+
+<h2>Keep insurance renewals visible, accountable, and moving</h2>
+<p>Insurance policies are recurring obligations that are easy to underestimate. AVA detects the renewal, connects it to the right business context, coordinates the operational workflow, records the outcome, preserves evidence, and schedules the next cycle, while your people retain every insurance and financial decision.</p>
+HTML;
+    }
+
+    private function page18Faqs(): array
+    {
+        return [
+            ['What is insurance renewal tracking?', "Insurance renewal tracking is the operational process of monitoring approaching policy renewals and keeping the work required to complete them visible and accountable."],
+            ['Can AVA track insurance renewals?', "Yes. Insurance Policies are explicitly supported AVA Version 1 assets."],
+            ['Can AVA provide insurance renewal reminders?', "AVA supports renewal detection, deadline monitoring, renewal tracking, notifications, communication preparation, and future scheduling within her approved Renewal Operations scope."],
+            ['Does AVA automatically discover every insurance policy?', "AVA's approved Version 1 scope establishes Gmail, Asset Watch, and Manual Trigger as supported renewal sources. It does not establish universal automatic insurance-policy discovery, so that capability should not be assumed unless separately implemented."],
+            ['Does AVA recommend which insurance policy we should purchase?', "No. AVA owns Renewal Operations. Insurance product selection and specialized insurance advice are outside that responsibility."],
+            ['Is AVA an insurance broker?', "No. AVA is an AI Worker for Renewal Operations."],
+            ['Does AVA underwrite insurance policies?', "No. Underwriting is outside AVA's responsibility."],
+            ['Can AVA negotiate an insurance renewal?', "No. Contract negotiation is outside AVA's responsibility."],
+            ['Can AVA approve an insurance renewal?', "AVA coordinates the operational process and Human Review, but financial, legal, executive, and other consequential authority remains with appropriate humans."],
+            ['Can AVA pay an insurance renewal?', "No. Payment authorization and automatic payment execution are outside AVA's responsibility."],
+            ['Can AVA prepare insurance renewal communications?', "Yes. Personalized communication generation is a supported AVA capability. Customer-facing communication requires Human Review before proceeding."],
+            ['Does AVA provide legal advice about insurance policies?', "No. Legal decisions and legal approval remain outside AVA's responsibility."],
+            ['Can AVA manage insurance renewals for multiple customers?', "AVA's lifecycle supports customer identification, asset identification, contact matching, and renewal tracking, allowing supported renewal work to remain connected to the appropriate customer context."],
+            ['What happens after an insurance policy is renewed?', "AVA records the outcome, updates renewal records, schedules the next renewal cycle, archives supporting evidence, and moves the transaction toward Complete."],
+            ['When does AVA consider the insurance renewal complete?', "The renewal reaches completion when the supported obligation has been successfully renewed, records are accurate, supporting evidence is archived, the Renewal Register is updated, the next renewal cycle is scheduled, and no further operational work remains."],
         ];
     }
 }
