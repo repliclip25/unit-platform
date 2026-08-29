@@ -104,6 +104,29 @@ class AvaWave2ContentSeeder extends Seeder
             faqImage: 'images/ava-selfie.webp',
             faqImageAlt: "AVA, UNITELO's AI Renewal Worker",
         );
+
+        $this->seedPage(
+            worker: 'ava',
+            tier: 'Tier 2',
+            pageFamily: 'Lifecycle Solution',
+            urlPath: 'archive/renewal-audit-trail-evidence',
+            lifecycleStage: 'Archive',
+            primaryQuery: 'renewal audit trail',
+            secondaryQueries: ['renewal evidence archiving', 'renewal traceability'],
+            seoTitle: 'Renewal Audit Trail & Evidence | AVA by UNITELO',
+            metaDescription: "AVA preserves the traceable history and supporting evidence behind every renewal, so completed work stays auditable without turning AVA into a compliance platform.",
+            h1: 'Renewal Audit Trail & Evidence That Makes Completed Work Traceable',
+            ctaLabel: 'Have AVA Preserve Renewal Evidence',
+            ctaHeadline: 'Complete the renewal. Preserve the history.',
+            ctaSubtext: "When AVA completes a renewal, the organization shouldn't simply know \"we handled it.\" The renewal should leave behind operational history: a recorded outcome, supporting evidence, an updated Renewal Register, a scheduled future cycle, and a completed transaction. That is what makes Renewal Operations durable.",
+            ctaRoute: 'register',
+            body: $this->page15Body(),
+            faqs: $this->page15Faqs(),
+            heroImage: 'images/ava-desk.webp',
+            heroImageAlt: 'AVA focused at her laptop, preserving renewal evidence',
+            faqImage: 'images/ava-stand.webp',
+            faqImageAlt: "AVA, UNITELO's AI Renewal Operations Worker",
+        );
     }
 
     // Named-route helper so internal links survive any future URL change,
@@ -623,7 +646,7 @@ HTML;
 <p>Organizations often treat documentation as a separate activity: first do the work, then remember to document it. That creates predictable gaps. AVA's lifecycle takes a different approach. Recording the outcome is part of doing the work. Scheduling the next renewal is part of doing the work. Archiving evidence is part of doing the work. The process itself creates the organizational memory required for continuity.</p>
 
 <h2>Related Renewal Operations resources</h2>
-<p>Records are what keep a completed renewal from becoming next year's mystery. See the complete operational lifecycle in <a href="{$this->pageUrl('ava', 'renewal-management')}">Renewal Management Software</a>, see the human decision point that precedes this stage in <a href="{$this->pageUrl('ava', 'approval/renewal-approval-workflow')}">Renewal Approval Workflow</a>, or see how the next cycle gets re-established in <a href="{$this->pageUrl('ava', 'scheduling/renewal-calendar')}">Renewal Calendar &amp; Scheduling Software</a>.</p>
+<p>Records are what keep a completed renewal from becoming next year's mystery. See the complete operational lifecycle in <a href="{$this->pageUrl('ava', 'renewal-management')}">Renewal Management Software</a>, see the human decision point that precedes this stage in <a href="{$this->pageUrl('ava', 'approval/renewal-approval-workflow')}">Renewal Approval Workflow</a>, see how the next cycle gets re-established in <a href="{$this->pageUrl('ava', 'scheduling/renewal-calendar')}">Renewal Calendar &amp; Scheduling Software</a>, or see how the record's evidence stays traceable in <a href="{$this->pageUrl('ava', 'archive/renewal-audit-trail-evidence')}">Renewal Audit Trail &amp; Evidence</a>.</p>
 
 <h2>Don't make next year's renewal start from zero</h2>
 <p>A renewal should leave the organization better prepared for the next cycle. The outcome should be known. The record should be accurate. The evidence should exist. The future renewal should already be scheduled. The transaction should become part of organizational history.</p>
@@ -648,6 +671,123 @@ HTML;
             ['What happens after AVA records the renewal outcome?', "The next lifecycle stage is Schedule Next Renewal. AVA then archives supporting evidence before the transaction reaches Complete."],
             ['When is a renewal considered complete?', "AVA's definition of done requires the business obligation to be successfully renewed, records to accurately reflect the outcome, supporting evidence to be archived, the Renewal Register to be updated, the next renewal cycle to be scheduled, and no operational work to remain."],
             ['Why are renewal records important?', "Recurring work happens over time. Accurate records reduce dependence on employee memory and help preserve the context required for future renewal cycles. The objective is not recordkeeping for its own sake. It is operational continuity."],
+        ];
+    }
+
+    private function page15Body(): string
+    {
+        return <<<HTML
+<p><strong>Keep an Audit Trail for Every Renewal</strong></p>
+<p>The renewal says Complete. But can the organization show what happened? What was renewed? Which customer and asset were involved? Who participated? Was Human Review required? What outcome was recorded? What supporting evidence was preserved? And what was scheduled for the next cycle?</p>
+<p>A completed renewal should leave behind more than a status.</p>
+<p>AVA is an AI Worker for Renewal Operations designed to keep renewal work accountable from detection through completion. As part of that responsibility, AVA maintains renewal history and archives supporting evidence so completed work remains traceable after the transaction closes.</p>
+<p>Complete the work. Preserve the evidence. Keep the history.</p>
+
+<h2>Why renewal evidence disappears</h2>
+<p>Renewals create evidence as work happens. The problem is where that evidence ends up. A renewal notice remains in an inbox. A document gets downloaded. Someone provides approval in a message. A customer responds. A vendor sends confirmation. Someone updates a spreadsheet. Another employee records the result somewhere else.</p>
+<p>The renewal is eventually considered finished. Months later, someone asks: what actually happened? The organization knows the renewal was handled. Finding the supporting history is another matter. That is the gap a renewal audit trail should address.</p>
+
+<h2>What is a renewal audit trail?</h2>
+<p>A renewal audit trail is the traceable history surrounding a renewal transaction. Its purpose is to help the organization understand the path the renewal took through its operational lifecycle: Detect, Understand, Identify Customer, Identify Asset, Identify Contact, Prepare Communication, Human Review, Fulfillment, Record Outcome, Schedule Next Renewal, Archive, Complete. The audit history supports continuity around that transaction. It helps preserve what happened before the transaction reached completion.</p>
+
+<h2>Archive is a lifecycle stage</h2>
+<p>AVA does not treat archiving as unrelated administrative cleanup. Archive is an explicit stage in the renewal lifecycle. It occurs after the outcome has been recorded and the next renewal has been scheduled. Only after the required supporting evidence has been archived can the renewal proceed to Complete. That sequence creates an important operating rule: <strong>if the renewal happened but the required evidence was not preserved, AVA's work is not finished.</strong> Evidence is part of completion.</p>
+
+<h2>A completed status is not evidence</h2>
+<p>Imagine opening a spreadsheet and seeing "Status: Renewed." That tells you the reported outcome. It does not necessarily tell you what supports that outcome, what happened during the transaction, what communication occurred, whether Human Review happened where required, what documentation was retained, or how the next cycle was established. A status can summarize the result. An audit trail preserves the history surrounding it. Organizations need both.</p>
+
+<h2>Renewal Register vs renewal audit trail</h2>
+<p>These two concepts are closely connected, but they serve different operational purposes.</p>
+<h3>Renewal Register</h3>
+<p>The Renewal Register provides structured information about renewal obligations and their outcomes. It helps answer what exists, what happened, what is its current state, and what happens next.</p>
+<h3>Renewal Audit Trail</h3>
+<p>The audit trail focuses on traceability around the transaction. It helps answer how this renewal moved through the process, what history exists, and what supporting evidence was preserved. Together they create a stronger operational record. The Renewal Register preserves organizational memory. The audit trail preserves traceability.</p>
+
+<h2>Evidence should belong to the renewal transaction</h2>
+<p>AVA treats one renewal as one transaction. That principle matters for evidence. A renewal can involve multiple emails, documents, contacts, reminders, approvals, invoices, and actions. But those pieces of activity should remain connected to the underlying renewal they support. Instead of thinking "here are several documents and messages," AVA's operating model asks "which renewal transaction do these belong to?" That relationship makes the evidence more useful.</p>
+
+<h2>One renewal equals one auditable transaction</h2>
+<p>Consider a maintenance agreement renewal. The transaction might involve an incoming renewal notice, customer identification, agreement identification, contact matching, a prepared communication, Human Review, several follow-ups, fulfillment activity, a recorded outcome, supporting documentation, and future scheduling. Those are not separate business obligations. They are parts of one renewal. AVA maintains the renewal as the unit of accountability throughout the lifecycle. That same transaction can then become the unit of traceability. One renewal. One transaction. One operational history.</p>
+
+<h2>Human Review should remain connected to the transaction</h2>
+<p>Human Review is a required stage in AVA Version 1. No customer-facing communication proceeds without approval. That decision point should not become disconnected from the renewal history. The organization should be able to preserve the fact that the transaction passed through the required review stage as part of its operational history. This matters because Human Review is not an external interruption to AVA's process. It is part of the process. AVA prepares the work. The human provides authority. AVA continues the transaction. The history should preserve that continuity.</p>
+
+<h2>Approval is not the end of the audit trail</h2>
+<p>A renewal may be approved and still fail operationally. Someone approves the next action. Then fulfillment stalls. The result is never properly recorded. Evidence is not preserved. The next cycle isn't scheduled. An approval record alone would therefore provide an incomplete picture. AVA continues after Human Review through Fulfillment, Record Outcome, Schedule Next Renewal, and Archive, all the way to Complete. Traceability should follow the transaction through the lifecycle, not stop at the approval.</p>
+
+<h2>Preserve the outcome, not just the activity</h2>
+<p>Activity logs can become noisy. Someone opened something. Someone sent something. Someone changed something. Someone replied. Those events may matter. But the core business question remains: what happened to the renewal? AVA's operating model keeps the business outcome at the center. The transaction history exists to support the renewal operation, not to create activity for activity's sake.</p>
+
+<h2>Renewal evidence supports continuity</h2>
+<p>Evidence is valuable after the current renewal ends. The next cycle may happen months later. Different employees may be involved. The customer contact may change. The organizational context may change. Without preserved history, the next team may have to reconstruct the previous renewal. With records and evidence, the organization begins from a stronger position. The previous transaction can help answer what happened last time, what outcome was recorded, what supporting information exists, and when the next cycle was established. That turns archived evidence into operational continuity.</p>
+
+<h2>Renewal evidence should survive employee turnover</h2>
+<p>If the only person who understands a renewal leaves the organization, the renewal history should not leave with them. Important evidence should not depend on one employee's inbox, one person's folder structure, one person's notes, or one person's memory. AVA's responsibility is designed to make renewal operations more durable than the tenure of any individual employee. The transaction belongs to the organization. Its history should too.</p>
+
+<h2>Auditability without turning AVA into a compliance platform</h2>
+<p>"Audit trail" can imply a very broad category of governance, regulatory, security, and compliance capabilities. AVA's approved responsibility is narrower. AVA provides renewal-specific operational history and evidence as part of Renewal Operations. That does not automatically mean AVA provides regulatory compliance certification, legal compliance determinations, formal financial auditing, security auditing, Governance, Risk and Compliance management, or industry-specific regulatory interpretation. AVA's auditability concerns the renewal transaction. The purpose is to keep the work traceable.</p>
+
+<h2>Evidence without legal judgment</h2>
+<p>Some archived evidence may relate to agreements or other business documents. Preserving that evidence does not mean AVA makes legal judgments about it. Legal decisions remain outside AVA's responsibility. Contract negotiation remains outside AVA's responsibility. Legal approval remains outside Version 1 scope. AVA can maintain the operational history surrounding a supported renewal. Humans retain legal authority.</p>
+
+<h2>Evidence without financial authority</h2>
+<p>Renewals may also involve invoices, pricing, payments, or financial decisions. The existence of financial information within the transaction does not give AVA financial authority. AVA does not own financial approval, payment authorization, automatic payment execution, or autonomous purchasing. The Worker can maintain renewal-specific operational history around those processes without becoming the financial decision-maker.</p>
+
+<h2>Renewal evidence for SaaS and software</h2>
+<p>A SaaS renewal may involve several pieces of information over time: a renewal notice, subscription context, internal communication, Human Review, fulfillment, a recorded outcome, and future scheduling. AVA keeps the renewal transaction accountable across those stages. The archive helps preserve supporting evidence before the transaction is considered complete. This creates continuity for the next software renewal cycle.</p>
+
+<h2>Renewal evidence for domains, SSL, and hosting</h2>
+<p>Client infrastructure renewals can be especially vulnerable to fragmented history. A digital agency or Managed Service Provider may manage domains, SSL certificates, and hosting services. Different customers may have different assets, contacts, dates, and renewal histories. When renewal evidence is scattered across employee inboxes and customer folders, reconstructing what happened becomes expensive. AVA connects renewal work to the customer, asset, contact, transaction, outcome, and archive. That makes the history part of Renewal Operations.</p>
+
+<h2>Renewal evidence for insurance policies</h2>
+<p>Insurance Policies are a supported AVA asset. The renewal operation may include deadlines, contacts, Human Review, fulfillment, records, and supporting evidence. AVA can preserve the operational history of that renewal. She does not become an insurer, a broker, an underwriter, a legal advisor, or a financial authority. The distinction remains consistent: AVA owns the renewal operation. Specialized humans retain specialized authority.</p>
+
+<h2>Renewal evidence for licenses</h2>
+<p>Licenses are also supported renewal assets. AVA can keep the renewal work connected to the appropriate transaction and preserve its operational history. That does not mean AVA provides regulatory interpretation or determines whether an organization legally satisfies a licensing requirement. Those are separate responsibilities. AVA's job is to keep the supported renewal work from becoming operationally fragmented.</p>
+
+<h2>Renewal evidence for maintenance agreements</h2>
+<p>Maintenance Agreements are explicitly supported in AVA Version 1. An agreement renewal may involve communication, review, fulfillment, records, and evidence. AVA can own the renewal process surrounding the supported agreement. Contract negotiation and legal approval remain human responsibilities. The archive preserves the operational history without transferring contractual authority to the Worker.</p>
+
+<h2>What should happen before a renewal reaches Archive?</h2>
+<p>Archive appears near the end of AVA's lifecycle for a reason. By this stage, the renewal has been detected, its context has been understood, the customer has been identified, the asset has been identified, the contact has been identified, required communication has been prepared, Human Review has occurred, fulfillment has been tracked, the outcome has been recorded, and the next renewal has been scheduled. Now the supporting evidence can be preserved as part of closing the transaction. Archive is therefore connected to everything that came before it.</p>
+
+<h2>What happens after Archive?</h2>
+<p>One stage remains: Complete. Completion is not merely the absence of another task. AVA's definition of done requires the obligation to be successfully renewed, records to accurately reflect the outcome, supporting evidence to be archived, the Renewal Register to be updated, the next renewal cycle to be scheduled, and no further operational work to remain. Archive helps satisfy that standard. Once the requirements have been met, the renewal can reach Complete.</p>
+
+<h2>A sent email is not evidence of renewal success</h2>
+<p>A renewal reminder can be sent. A customer can be contacted. A manager can approve the next action. None of those events independently proves the renewal was successfully completed. AVA's definition of success is centered on the business obligation. Generated email does not equal success. Sent email does not equal success. Reminder does not equal success. Approval does not equal success. Completed renewal equals success. The audit history should support that outcome.</p>
+
+<h2>Don't archive the email and lose the transaction</h2>
+<p>Organizations often archive communication because communication is what their systems naturally store. But Renewal Operations should preserve the business context around the communication. The email should belong to the renewal. The evidence should belong to the renewal. The outcome should belong to the renewal. The future cycle should belong to the renewal. The renewal transaction remains the organizing object.</p>
+
+<h2>Traceability should be created by the workflow</h2>
+<p>Auditability is strongest when it is part of the process rather than a cleanup exercise afterward. AVA's lifecycle creates that opportunity. The transaction moves through defined stages. The outcome is recorded. The next cycle is scheduled. Evidence is archived. The work reaches Complete. Instead of asking employees to reconstruct an audit trail months later, the operating process itself preserves renewal history.</p>
+
+<h2>Related Renewal Operations resources</h2>
+<p>Archive is the stage that keeps a completed renewal traceable. See the complete operational lifecycle in <a href="{$this->pageUrl('ava', 'renewal-management')}">Renewal Management Software</a>, see the stage right before this one in <a href="{$this->pageUrl('ava', 'records/renewal-register-records')}">Renewal Register &amp; Records</a>, or see the human decision point earlier in the same lifecycle in <a href="{$this->pageUrl('ava', 'approval/renewal-approval-workflow')}">Renewal Approval Workflow</a>.</p>
+
+<h2>The renewal should leave evidence behind</h2>
+<p>When AVA completes a renewal, the organization should not simply know "we handled it." The renewal should leave behind operational history: a recorded outcome, supporting evidence, an updated Renewal Register, a scheduled future cycle, and a completed transaction.</p>
+<p>That is what makes Renewal Operations durable.</p>
+HTML;
+    }
+
+    private function page15Faqs(): array
+    {
+        return [
+            ['What is a renewal audit trail?', "A renewal audit trail is the operational history surrounding a renewal transaction. It helps preserve traceability around what happened as the renewal moved through its lifecycle."],
+            ['Does AVA maintain renewal history?', "Yes. Maintaining renewal history and audit records is part of the deterministic system responsibility supporting AVA's Renewal Operations."],
+            ['Does AVA archive renewal evidence?', "Yes. Audit archive is a supported AVA capability, and AVA's definition of done requires supporting evidence to be archived before the renewal is considered complete."],
+            ['What is renewal evidence?', "Renewal evidence is supporting information associated with the renewal transaction that helps preserve its operational history. AVA's Business Contract establishes evidence archiving as a requirement but does not define every possible evidence type or exact data field. Those details should follow the implemented product."],
+            ['Is a Renewal Register the same as an audit trail?', "No. The Renewal Register provides structured operational information about renewal obligations and outcomes. The audit trail focuses on transaction history, traceability, and supporting evidence. They work together."],
+            ['Does AVA keep an approval history?', "Human Review is part of AVA's lifecycle, and the UNITELO platform maintains workflow state and audit records. The approved scope does not establish a specific approval-log interface or detailed approval-record schema, so those implementation details should not be assumed until implemented."],
+            ['Can AVA prove regulatory compliance?', "AVA's approved scope establishes renewal-specific audit history and evidence. It does not establish AVA as a general regulatory compliance, legal compliance, or Governance, Risk and Compliance platform."],
+            ['Does AVA perform financial audits?', "No. AVA is a Renewal Operations Worker, not a financial auditor. Financial approval and accounting ownership remain outside her responsibility."],
+            ['Does AVA provide legal audit records?', "AVA preserves operational renewal history. Legal decisions and legal approval remain outside her responsibility."],
+            ['What happens before evidence is archived?', "AVA's lifecycle moves through detection, understanding, customer identification, asset identification, contact identification, communication preparation, Human Review, fulfillment, recording the outcome, and scheduling the next renewal before Archive."],
+            ['What happens after AVA archives the evidence?', "The renewal can move toward Complete once all requirements in AVA's definition of done have been satisfied and no further operational work remains."],
+            ['Is an approval enough to close a renewal?', "No. Human Review is only one lifecycle stage. AVA continues through fulfillment, records, future scheduling, archive, and completion."],
+            ['Is sending a renewal reminder enough to close the transaction?', "No. AVA explicitly defines success around successful completion of the underlying renewal obligation, not generating or sending an email."],
         ];
     }
 }
