@@ -126,6 +126,25 @@ class AvaWave1ContentSeeder extends Seeder
             body: $this->page6Body(),
             faqs: $this->page6Faqs(),
         );
+
+        $this->seedPage(
+            worker: 'ava',
+            tier: 'Tier 2',
+            pageFamily: 'Industry/Customer',
+            urlPath: 'industries/digital-agencies',
+            lifecycleStage: 'Identify Customer',
+            primaryQuery: 'renewal management for digital agencies',
+            secondaryQueries: ['digital agency renewal tracking', 'client renewal management software'],
+            seoTitle: 'Renewal Management for Digital Agencies | AVA by UNITELO',
+            metaDescription: "AVA helps digital agencies manage recurring client renewals across domains, SSL certificates, hosting, SaaS, licenses, and maintenance agreements.",
+            h1: 'Renewal Management for Digital Agencies That Outlives the Project',
+            ctaLabel: 'Put AVA on Client Renewal Operations',
+            ctaHeadline: 'Protect the client relationship from preventable renewal failures.',
+            ctaSubtext: "Clients don't care that the renewal reminder went to the wrong employee, or that the person who launched their website left two years ago. They care that the services and assets they depend on continue operating. Recurring client obligations deserve a process that survives projects, people, and inboxes.",
+            ctaRoute: 'register',
+            body: $this->page7Body(),
+            faqs: $this->page7Faqs(),
+        );
     }
 
     // Named-route helper so internal links survive any future URL change,
@@ -328,7 +347,8 @@ class AvaWave1ContentSeeder extends Seeder
 <p>AVA changes the unit of accountability. One renewal = one transaction. All the emails, reminders, contacts, documents, approvals, records, and actions associated with that renewal belong to the same operational responsibility. The renewal remains open until the work is actually complete.</p>
 
 <h2>Explore AVA's Renewal Operations</h2>
-<p>Detection is where most renewals start. See how AVA turns a renewal alert into an accountable transaction in <a href="{$this->pageUrl('ava', 'detect/renewal-tracking-software')}">Renewal Tracking &amp; Reminder Software</a>, see how she manages one of the most commonly missed recurring obligations in <a href="{$this->pageUrl('ava', 'assets/domains')}">Domain Renewal &amp; Expiration Tracking</a>, see how the same lifecycle applies to recurring subscriptions in <a href="{$this->pageUrl('ava', 'assets/saas')}">SaaS &amp; Software Renewal Management</a>, or see how it scales across an entire customer base in <a href="{$this->pageUrl('ava', 'industries/managed-service-providers')}">Renewal Management for MSPs</a>.</p>
+<p>Detection is where most renewals start. See how AVA turns a renewal alert into an accountable transaction in <a href="{$this->pageUrl('ava', 'detect/renewal-tracking-software')}">Renewal Tracking &amp; Reminder Software</a>, see how she manages one of the most commonly missed recurring obligations in <a href="{$this->pageUrl('ava', 'assets/domains')}">Domain Renewal &amp; Expiration Tracking</a>, or see how the same lifecycle applies to recurring subscriptions in <a href="{$this->pageUrl('ava', 'assets/saas')}">SaaS &amp; Software Renewal Management</a>.</p>
+<p>She scales the same way across organization types: see how it works across an entire customer base in <a href="{$this->pageUrl('ava', 'industries/managed-service-providers')}">Renewal Management for MSPs</a>, or across client work in <a href="{$this->pageUrl('ava', 'industries/digital-agencies')}">Renewal Management for Digital Agencies</a>.</p>
 
 <h2>Stop managing renewals by memory.</h2>
 <p>The goal isn't more automation for its own sake. It's operational consistency.</p>
@@ -474,7 +494,8 @@ HTML;
 <p>Keep supported recurring obligations visible while maintaining records, evidence, and future scheduling.</p>
 
 <h2>Go deeper on Renewal Operations</h2>
-<p>Renewal tracking is the Detect stage of a larger responsibility. See the complete operational lifecycle in <a href="{$this->pageUrl('ava', 'renewal-management')}">Renewal Management Software</a>, see how detection works for one specific renewable asset in <a href="{$this->pageUrl('ava', 'assets/domains')}">Domain Renewal &amp; Expiration Tracking</a>, see how it applies to recurring subscriptions in <a href="{$this->pageUrl('ava', 'assets/saas')}">SaaS &amp; Software Renewal Management</a>, or see how it scales across an entire customer base in <a href="{$this->pageUrl('ava', 'industries/managed-service-providers')}">Renewal Management for MSPs</a>.</p>
+<p>Renewal tracking is the Detect stage of a larger responsibility. See the complete operational lifecycle in <a href="{$this->pageUrl('ava', 'renewal-management')}">Renewal Management Software</a>, see how detection works for one specific renewable asset in <a href="{$this->pageUrl('ava', 'assets/domains')}">Domain Renewal &amp; Expiration Tracking</a>, or see how it applies to recurring subscriptions in <a href="{$this->pageUrl('ava', 'assets/saas')}">SaaS &amp; Software Renewal Management</a>.</p>
+<p>The same lifecycle scales across organization types: see how it works across an entire customer base in <a href="{$this->pageUrl('ava', 'industries/managed-service-providers')}">Renewal Management for MSPs</a>, or across client work in <a href="{$this->pageUrl('ava', 'industries/digital-agencies')}">Renewal Management for Digital Agencies</a>.</p>
 
 <h2>From "expires soon" to "renewal complete"</h2>
 <p>The purpose of renewal tracking isn't to create more notifications. It's to prevent expiration.</p>
@@ -1056,6 +1077,143 @@ HTML;
             ['How does AVA know which customer a renewal belongs to?', "Customer identification is one of AVA's defined lifecycle stages and supported capabilities. The precise technical matching methods should be described according to the implemented product rather than assumed beyond AVA's approved specification."],
             ['What happens after a customer renewal is completed?', "AVA's definition of done requires records to reflect the outcome, supporting evidence to be archived, the Renewal Register to be updated, the next renewal cycle to be scheduled, and no further operational work to remain."],
             ['Why would an MSP use AVA instead of renewal reminders?', "Renewal reminders create awareness. AVA is designed to provide continuous operational ownership from detection through customer and asset identification, human review, fulfillment, records, future scheduling, archive, and completion."],
+        ];
+    }
+
+    private function page7Body(): string
+    {
+        return <<<HTML
+<p><strong>Stop managing client renewals from inboxes and spreadsheets.</strong></p>
+<p>The website launched two years ago. The project is complete. But the domain still renews. The SSL certificate still expires. Hosting still has a recurring cycle. Software subscriptions continue. Licenses remain active. Maintenance agreements come up for renewal.</p>
+<p>The project ended. The recurring obligations didn't.</p>
+<p>AVA is an AI Worker for Renewal Operations that helps digital agencies manage recurring client renewal work after the original project is delivered. She detects renewal work, identifies the client and asset involved, finds the responsible contact, prepares communications, coordinates human review, tracks fulfillment, records the outcome, archives evidence, and schedules the next renewal cycle.</p>
+<p>So important client assets don't depend on somebody at the agency remembering them.</p>
+
+<h2>Digital projects create long-term renewal obligations</h2>
+<p>Agencies build things: websites, applications, digital experiences, campaign infrastructure, customer systems. But delivering the project can also create recurring operational obligations. A domain may renew annually. An SSL certificate may expire. Hosting continues. A SaaS product supporting the customer may renew. A license may need to remain active. A maintenance agreement may continue after launch.</p>
+<p>Those obligations can survive much longer than the original project team. That's where renewal risk begins.</p>
+
+<h2>The person who launched the project shouldn't become the renewal system</h2>
+<p>Imagine an agency launches a new customer website. Someone registers or manages the domain. Another employee handles hosting. A developer works with the certificate. An account manager knows the customer. A subscription supports part of the service. Everything works. The project is delivered.</p>
+<p>Six months pass. A year passes. Employees change roles. Customers change contacts. Teams reorganize. Then a renewal notice arrives. Who owns it?</p>
+<p>That's the problem. Recurring operational obligations often become attached to the people who originally worked on the project rather than to a defined business process. AVA changes that. The renewal belongs to the organization, not to someone's memory.</p>
+
+<h2>What is renewal management for digital agencies?</h2>
+<p>Renewal management for digital agencies is the operational process of keeping recurring client obligations visible, organized, and moving toward completion before they expire. That can involve identifying the client, identifying the renewable asset, understanding the renewal requirement, monitoring the deadline, identifying the responsible contact, preparing communication, coordinating human approval, tracking fulfillment, recording the outcome, archiving evidence, and scheduling the next renewal cycle.</p>
+<p>The important word is operational. AVA isn't trying to become every system an agency uses. Her responsibility is narrower: she owns Renewal Operations.</p>
+
+<h2>Client renewal tracking is harder than internal renewal tracking</h2>
+<p>An internal renewal has one organizational context. Client renewal operations introduce another dimension: which client does this belong to?</p>
+<p>A digital agency might manage Client A's domain, SSL certificate, and hosting; Client B's domain, hosting, SaaS subscription, and maintenance agreement; and Client C's several domains, several certificates, and licenses. Each obligation can have a different deadline, involve different contacts, and require different actions.</p>
+<p>The agency isn't simply managing expiration dates. It's managing recurring obligations across a portfolio of client relationships.</p>
+
+<h2>Meet AVA: a Renewal Operations Worker for agencies</h2>
+<p>AVA is not an AI email assistant. She isn't a calendar reminder. She isn't simply a domain expiration notification tool.</p>
+<p>AVA is a Renewal Operations Worker on the UNITELO platform. Her mission is to make sure important recurring business obligations don't quietly expire because of manual work, fragmented systems, or human oversight. Digital agencies are one of the organization types AVA is designed to support. She provides continuous ownership over the renewal work while agency employees retain control over important business decisions.</p>
+
+<h2>How AVA manages an agency client renewal</h2>
+
+<h3>1. Detect</h3>
+<p>AVA's responsibility starts when renewal work is detected. Version 1 supports Gmail, Asset Watch, and Manual Trigger. A renewal notice can arrive, a supported asset can require attention, or a team member can initiate the work manually. Once detected, the renewal becomes an operational transaction.</p>
+
+<h3>2. Understand</h3>
+<p>Renewal communications aren't standardized. Different vendors use different language, different clients have different arrangements, and different asset types create different renewal contexts. AVA uses AI to interpret the renewal intent and understand the business context before moving the transaction forward.</p>
+
+<h3>3. Identify the client</h3>
+<p>For agencies, this stage is fundamental. Who does this renewal belong to? AVA identifies the customer relationship associated with the renewal. That creates the first layer of accountability, moving the agency from "a renewal notice arrived" to "this renewal belongs to Client A."</p>
+
+<h3>4. Identify the asset</h3>
+<p>Next: what is being renewed? AVA Version 1 supports domains, SSL certificates, hosting services, SaaS subscriptions, insurance policies, licenses, and maintenance agreements. For a digital agency, domains, SSL certificates, hosting, subscriptions, licenses, and maintenance agreements can be especially relevant recurring obligations. The client and asset are connected: Client A, Domain, Renewal. The renewal now has operational context.</p>
+
+<h3>5. Identify the responsible contact</h3>
+<p>Knowing the client and asset still doesn't determine who needs to act. AVA identifies the responsible contact associated with the renewal. The important operational change is that the work doesn't remain ownerless.</p>
+
+<h3>6. Prepare communication</h3>
+<p>Some renewals require client communication. AVA can prepare personalized communications based on the renewal context. This can reduce repetitive administrative work while maintaining human oversight. No customer-facing communication proceeds without human approval in Version 1.</p>
+
+<h3>7. Coordinate human review</h3>
+<p>AVA can prepare and organize the work. Your people make the decisions. AVA does not decide whether the client should renew, whether an expense should be approved, which vendor should be selected, whether a contract should be negotiated, whether payment should be authorized, whether a purchase should occur, or whether a legal decision should be made. Those decisions remain with people.</p>
+<p><strong>AVA owns the process. Humans own the decisions.</strong></p>
+
+<h3>8. Track fulfillment</h3>
+<p>A client saying "approved" doesn't necessarily mean the renewal has been completed. The underlying obligation still needs to reach its outcome. AVA tracks the transaction through fulfillment. The renewal stays open until the operational work is actually complete.</p>
+
+<h3>9. Record the outcome</h3>
+<p>After fulfillment, AVA updates the renewal records and Renewal Register. The agency now has organizational history around the transaction. The next employee doesn't have to search through old messages to understand what happened last year.</p>
+
+<h3>10. Schedule the next cycle</h3>
+<p>The domain was renewed. It will renew again. The hosting service continued. Another cycle exists. The maintenance agreement was renewed. Another future obligation may now exist. AVA schedules the next renewal cycle so future monitoring is re-established. The agency doesn't have to rebuild the process every year.</p>
+
+<h3>11. Archive and complete</h3>
+<p>AVA archives supporting evidence and maintains audit history around the renewal. The transaction reaches completion only after the renewal is fulfilled, records are updated, evidence is archived, the Renewal Register is updated, the next cycle is scheduled, and no further operational work remains. Then, and only then, is the renewal done.</p>
+
+<h2>One client. Many recurring obligations.</h2>
+<p>This is where AVA becomes especially relevant to agencies. A client relationship can generate multiple renewable assets. For example, a single client might have a domain, an SSL certificate, a hosting service, a SaaS subscription, and a maintenance agreement.</p>
+<p>Each is a separate recurring obligation. Each may have a separate renewal cycle. Each should therefore remain independently accountable. AVA doesn't collapse everything into a vague "client renewals." Each renewal remains its own transaction.</p>
+
+<h2>One renewal. One accountable transaction.</h2>
+<p>A single renewal can involve multiple emails, reminders, invoices, approvals, documents, and contacts. Those interactions can make the process look more complicated than the underlying responsibility. AVA simplifies the accountability model: one renewal equals one transaction. Everything associated with that renewal supports the same transaction until the obligation reaches completion.</p>
+
+<h2>Domain renewal management for agencies</h2>
+<p>Domains are one of the clearest examples of recurring agency responsibility. A domain can remain operational for years after the website project that introduced the client to the agency. That creates continuity risk: who receives the renewal notice, who knows which client owns the domain, who communicates with the client, who confirms the renewal, who records what happened, who makes sure the next cycle is monitored? AVA gives that process an operational owner. See <a href="{$this->pageUrl('ava', 'assets/domains')}">Domain Renewal &amp; Expiration Tracking</a>.</p>
+
+<h2>SSL renewal management for agencies</h2>
+<p>An agency can deliver a working website and still inherit recurring certificate-related renewal responsibility. The certificate may require little attention while everything is functioning correctly, which makes it easy for the obligation to disappear into the background. AVA supports SSL certificates as renewable assets and keeps renewal work connected to the correct client context. See <a href="{$this->pageUrl('ava', 'assets/ssl-certificates')}">SSL Certificate Renewal &amp; Expiration Tracking</a>.</p>
+
+<h2>Hosting renewal management for agencies</h2>
+<p>Hosting relationships can continue long after a project launches. The agency may manage hosting directly or coordinate recurring obligations associated with the customer. Hosting services are explicitly included among AVA's supported renewal assets, so AVA can keep the renewal operation visible and accountable as part of the client lifecycle.</p>
+
+<h2>SaaS and software renewals for agency clients</h2>
+<p>Agencies can also accumulate recurring software obligations. A tool may support a customer website. A subscription may be associated with an ongoing service. A license may need to remain active. AVA can coordinate the renewal operation around supported SaaS subscriptions and licenses. But AVA does not become an autonomous purchasing system: vendor selection, negotiation, payment authorization, and financial approval remain human responsibilities. See <a href="{$this->pageUrl('ava', 'assets/saas')}">SaaS &amp; Software Renewal Management</a>.</p>
+
+<h2>Maintenance agreements create their own renewal cycle</h2>
+<p>An agency may continue supporting a customer after the initial project through a maintenance agreement. That agreement itself can become a recurring obligation. AVA supports maintenance agreements as renewable assets. The renewal can therefore become an accountable transaction rather than an agreement somebody remembers when the date approaches.</p>
+
+<h2>Stop tying recurring obligations to individual employees</h2>
+<p>Agency teams change. That is normal. But recurring client obligations shouldn't become fragile because someone leaves. If renewal responsibility exists primarily inside an employee's inbox, calendar, spreadsheet, or memory, then employee turnover becomes renewal risk.</p>
+<p>AVA creates continuity by assigning the responsibility to a Worker and a defined operational lifecycle. Employees can change. The renewal process remains.</p>
+
+<h2>Stop making account managers chase renewal operations</h2>
+<p>Account managers should understand customer relationships. That doesn't mean they should spend their time manually checking dozens of recurring expiration dates. Developers should build and maintain technical systems. That doesn't mean their inboxes should become the organization's renewal database. Finance should retain financial authority. That doesn't mean invoices should become the only way renewal work gets discovered.</p>
+<p>AVA creates a dedicated operational layer around recurring obligations. Everyone keeps their actual responsibility. AVA gets Renewal Operations.</p>
+
+<h2>Renewal spreadsheets don't solve ownership</h2>
+<p>An agency can create a spreadsheet containing the client, asset, renewal date, owner, status, and notes. That can improve visibility. But someone still has to operate the process around it: update the spreadsheet, check it, investigate approaching renewals, communicate with the client, coordinate approval, track fulfillment, record the outcome, and schedule the next cycle.</p>
+<p>AVA isn't simply another place to store the spreadsheet. She's the operational owner of the work represented by it.</p>
+
+<h2>What AVA does not own for an agency</h2>
+<p>AVA has a defined boundary. She does not own financial approval, vendor selection, contract negotiation, payment authorization, legal decisions, executive approval, CRM ownership, or accounting ownership.</p>
+<p>Version 1 also excludes automatic payment execution, autonomous purchasing, cross-worker collaboration, ERP orchestration, and multi-department workflow orchestration. That keeps AVA focused. She isn't trying to become your agency operating system. She's your Renewal Operations Worker.</p>
+
+<h2>A reminder is not a successful client renewal</h2>
+<p>The agency receives an alert. That's detection. The account manager receives an email. That's communication. The client approves. That's a decision. Someone completes the renewal. That's fulfillment. The records are updated. Evidence is archived. The next renewal cycle is scheduled. Now the renewal can reach completion.</p>
+<p>AVA's success criteria are intentionally built around the final outcome. A generated email is not success. A sent email is not success. A completed renewal is success.</p>
+
+<h2>Related Renewal Operations resources</h2>
+<p>Agency renewals build on the same lifecycle used across every AVA page. See the complete operational lifecycle in <a href="{$this->pageUrl('ava', 'renewal-management')}">Renewal Management Software</a>, or see how the same portfolio-scale approach applies to service providers in <a href="{$this->pageUrl('ava', 'industries/managed-service-providers')}">Renewal Management for MSPs</a>.</p>
+
+<h2>Protect the client relationship from preventable renewal failures</h2>
+<p>Clients don't care that the renewal reminder went to the wrong employee. They don't care that the spreadsheet wasn't updated. They don't care that the person who launched their website left two years ago.</p>
+<p>They care that the services and assets they depend on continue operating. Recurring client obligations deserve a process that survives projects, people, and inboxes.</p>
+HTML;
+    }
+
+    private function page7Faqs(): array
+    {
+        return [
+            ['What is renewal management for digital agencies?', "Renewal management for digital agencies is the operational process of tracking and coordinating recurring client obligations such as domains, SSL certificates, hosting services, software subscriptions, licenses, and maintenance agreements through their renewal cycles."],
+            ['What types of agency renewals can AVA manage?', "AVA Version 1 supports domains, SSL certificates, hosting services, SaaS subscriptions, insurance policies, licenses, and maintenance agreements."],
+            ['Can AVA manage renewals across multiple agency clients?', "AVA is designed for organizations managing recurring customer renewals, and identifying the customer is a defined stage of her renewal lifecycle."],
+            ['Can AVA manage client domain renewals?', "Yes. Domains are explicitly supported Version 1 renewable assets. AVA owns the operational renewal process rather than acting as a domain registrar."],
+            ['Can AVA manage SSL certificate renewals?', "Yes. SSL certificates are supported renewable assets. The approved scope establishes Renewal Operations around those assets but does not establish certificate installation or technical deployment as AVA responsibilities."],
+            ['Can AVA manage hosting renewals?', "Yes. Hosting services are explicitly included among AVA's supported Version 1 assets."],
+            ['Can AVA manage SaaS subscriptions for agency clients?', "SaaS subscriptions and licenses are supported renewal assets. AVA can coordinate their renewal operations while financial, purchasing, negotiation, and vendor-selection decisions remain with people."],
+            ['Can AVA manage maintenance agreement renewals?', "Yes. Maintenance agreements are explicitly included among AVA's supported Version 1 renewable assets."],
+            ['Does AVA automatically charge clients for renewals?', "AVA's Version 1 scope excludes automatic payment execution and financial authorization. Automatic customer billing should therefore not be assumed as an AVA capability."],
+            ['Does AVA replace our CRM or agency management system?', "No. CRM ownership is explicitly outside AVA's responsibility. AVA should be positioned as the Worker responsible for Renewal Operations rather than as a general agency management platform."],
+            ['Can AVA send renewal emails to clients?', "AVA can prepare personalized communications. Human review is required, and no customer-facing communication proceeds without approval in Version 1."],
+            ["What happens after a client's asset is renewed?", "AVA's definition of completion requires organizational records to reflect the outcome, supporting evidence to be archived, the Renewal Register to be updated, the next renewal cycle to be scheduled, and no further operational work to remain."],
+            ['Why use AVA instead of a renewal spreadsheet?', "A spreadsheet can store renewal information. AVA is designed to own the operational lifecycle represented by that information, from detection and customer identification through human review, fulfillment, records, future scheduling, and completion."],
         ];
     }
 }
