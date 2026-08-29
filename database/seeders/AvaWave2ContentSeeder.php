@@ -81,6 +81,29 @@ class AvaWave2ContentSeeder extends Seeder
             faqImage: 'images/ava-skyline.webp',
             faqImageAlt: 'AVA in the UNITELO boardroom',
         );
+
+        $this->seedPage(
+            worker: 'ava',
+            tier: 'Tier 2',
+            pageFamily: 'Lifecycle Solution',
+            urlPath: 'records/renewal-register-records',
+            lifecycleStage: 'Record Outcome',
+            primaryQuery: 'renewal register software',
+            secondaryQueries: ['renewal record keeping', 'renewal audit trail'],
+            seoTitle: 'Renewal Register & Records | AVA by UNITELO',
+            metaDescription: "AVA records every renewal outcome, updates the Renewal Register, and preserves supporting evidence, turning completed renewals into organizational memory instead of disconnected history.",
+            h1: 'Renewal Register & Records That Turn Completion Into Organizational Memory',
+            ctaLabel: 'Put AVA on Renewal Records',
+            ctaHeadline: 'Turn every completed renewal into organizational memory.',
+            ctaSubtext: "A renewal should leave the organization better prepared for the next cycle. The outcome should be known. The record should be accurate. The evidence should exist. The future renewal should already be scheduled. AVA gives renewal records an operational purpose: remember what happened so the organization knows what happens next.",
+            ctaRoute: 'register',
+            body: $this->page14Body(),
+            faqs: $this->page14Faqs(),
+            heroImage: 'images/ava-life.webp',
+            heroImageAlt: 'AVA working at her desk, managing renewal records',
+            faqImage: 'images/ava-selfie.webp',
+            faqImageAlt: "AVA, UNITELO's AI Renewal Worker",
+        );
     }
 
     // Named-route helper so internal links survive any future URL change,
@@ -245,7 +268,7 @@ class AvaWave2ContentSeeder extends Seeder
 
 <h2>Related Renewal Operations resources</h2>
 <p>Human Review is one stage inside a larger responsibility. See the complete operational lifecycle in <a href="{$this->pageUrl('ava', 'renewal-management')}">Renewal Management Software</a>, see how detection starts the loop in <a href="{$this->pageUrl('ava', 'detect/renewal-tracking-software')}">Renewal Tracking &amp; Reminder Software</a>, or see how it closes after approval in <a href="{$this->pageUrl('ava', 'scheduling/renewal-calendar')}">Renewal Calendar &amp; Scheduling Software</a>.</p>
-<p>See the two stages right before this one: <a href="{$this->pageUrl('ava', 'understand/renewal-notice-dates-terms')}">Renewal Notice, Dates &amp; Terms Tracking</a> and <a href="{$this->pageUrl('ava', 'ownership/renewal-ownership-responsible-contacts')}">Renewal Ownership &amp; Responsible Contact Tracking</a>.</p>
+<p>See the two stages right before this one: <a href="{$this->pageUrl('ava', 'understand/renewal-notice-dates-terms')}">Renewal Notice, Dates &amp; Terms Tracking</a> and <a href="{$this->pageUrl('ava', 'ownership/renewal-ownership-responsible-contacts')}">Renewal Ownership &amp; Responsible Contact Tracking</a>, or the stage right after it in <a href="{$this->pageUrl('ava', 'records/renewal-register-records')}">Renewal Register &amp; Records</a>.</p>
 
 <h2>Give your team decisions, not renewal administration</h2>
 <p>Your people should remain in control of consequential decisions. That doesn't mean they should also carry every repetitive operational step required to get a renewal to the decision point and then move it toward completion.</p>
@@ -513,6 +536,118 @@ HTML;
             ['What renewable assets does AVA support?', "AVA Version 1 supports domains, SSL certificates, hosting services, SaaS subscriptions, insurance policies, licenses, and maintenance agreements."],
             ['Is AVA Contract Lifecycle Management software?', "No. AVA is an AI Worker for Renewal Operations. Her approved scope does not establish general contract authoring, negotiation, legal review, clause management, or full Contract Lifecycle Management functionality."],
             ['Why use AI for renewal notices?', "Renewal activity can vary in language, format, customer context, asset type, contact information, and required next action. AI helps interpret that uncertainty, while the UNITELO platform handles deterministic workflow execution, records, scheduling, approval policies, and audit history."],
+        ];
+    }
+
+    private function page14Body(): string
+    {
+        return <<<HTML
+<p><strong>Turn Every Completed Renewal Into Organizational Memory</strong></p>
+<p>A renewal was completed. What happens to everything the organization learned during the process? Which customer was involved? What asset was renewed? Who was involved? What happened? When was it completed? What supporting evidence exists? When does the next renewal need attention?</p>
+<p>If those answers disappear into inboxes, spreadsheets, individual memory, and disconnected systems, the organization may have completed the renewal without preserving the operational knowledge created by it.</p>
+<p>AVA is an AI Worker for Renewal Operations. Her responsibility doesn't end when fulfillment occurs. AVA records the outcome, updates the Renewal Register, preserves the transaction history, and helps establish the next renewal cycle before the work is considered complete.</p>
+<p>Complete the renewal. Keep the record. Carry the knowledge forward.</p>
+
+<h2>Why renewal history gets lost</h2>
+<p>Renewal work creates information. But that information often ends up scattered across the systems used to complete the work. The renewal notice is in an inbox. The date is in a calendar. The customer is in another system. The asset is tracked somewhere else. The approval is in a message thread. Supporting documentation lives in a folder. Someone updates a spreadsheet. Someone else knows what actually happened.</p>
+<p>The renewal gets completed. Then twelve months pass. The next cycle begins. And the organization starts reconstructing the story: who handled this last time, which customer does this belong to, what did we do, who approved it, where is the evidence, when exactly does it renew again. That is not just a documentation problem. It is a continuity problem.</p>
+
+<h2>Recording the outcome is part of the renewal lifecycle</h2>
+<p>AVA's lifecycle is: Detect, Understand, Identify Customer, Identify Asset, Identify Contact, Prepare Communication, Human Review, Fulfillment, Record Outcome, Schedule Next Renewal, Archive, Complete.</p>
+<p>Notice what happens after fulfillment. The transaction does not immediately become complete. AVA first needs to record the outcome. Then the next renewal needs to be scheduled. Supporting evidence needs to be archived. Only then can the transaction reach completion. This means recordkeeping isn't administrative cleanup after the "real work." It is part of the real work.</p>
+
+<h2>Fulfillment answers one question</h2>
+<p>Fulfillment answers: did the required renewal action happen? Record Outcome answers a different question: what happened, and what should the organization remember about it? Both matter. A business can successfully renew an obligation and still create future operational risk if the outcome isn't properly recorded. AVA connects the result of the renewal back into the organization's renewal history.</p>
+
+<h2>One renewal becomes one historical transaction</h2>
+<p>AVA treats one renewal as one transaction. That remains true even when the transaction generates multiple emails, reminders, documents, contacts, approvals, and activities. Those interactions belong to the underlying renewal. When the outcome is recorded, the organization retains the history around the transaction rather than treating each piece of activity as an unrelated record. One renewal. One accountable transaction. One operational history.</p>
+
+<h2>What should a renewal record tell you?</h2>
+<p>A useful renewal record should help the organization understand the transaction without reconstructing the entire process from scratch. At minimum, the operational record should make it possible to understand what renewed (the renewable asset or obligation should be identifiable), who did it belong to (where applicable, the customer relationship should be connected to the transaction), who was involved (relevant contact context should remain associated with the renewal), what happened (the outcome should be recorded), and what comes next (if the obligation continues, the future renewal cycle should be established). The exact implementation may contain additional fields, but the underlying principle remains: the record should preserve enough operational context for renewal continuity.</p>
+
+<h2>Customer, Asset, Contact, Outcome</h2>
+<p>Earlier in AVA's lifecycle, she establishes important transaction context. Customer: who does this renewal relate to? Asset: what is renewing? Contact: who is relevant to the renewal process? After fulfillment, another element becomes critical. Outcome: what actually happened? This creates a durable operational chain: Customer, Asset, Contact, Renewal Transaction, Outcome. The transaction is no longer just work in progress. It becomes organizational history.</p>
+
+<h2>The Renewal Register is not just a list of upcoming dates</h2>
+<p>A basic renewal spreadsheet might contain asset, customer, and renewal date. That can be useful for tracking upcoming work. But a Renewal Register should support more than future visibility. It should help preserve continuity between what was expected, what work occurred, what outcome was reached, what evidence exists, and what happens next. AVA's model connects upcoming renewal tracking with completed renewal history. That allows the next cycle to begin with context rather than uncertainty.</p>
+
+<h2>Renewal records should survive employee turnover</h2>
+<p>Consider a renewal that happens once every year. An employee manages it successfully. Then that employee leaves six months later. When the next renewal arrives, the organization shouldn't have to depend on finding the previous employee's inbox, notes, or memory. The transaction should already have created organizational knowledge: what was renewed, which customer, which asset, which contact, what happened, what was preserved, when is the next cycle. AVA's recordkeeping responsibility helps make renewal knowledge belong to the organization rather than to an individual employee.</p>
+
+<h2>Renewal records should survive long gaps between cycles</h2>
+<p>Recurring work has an unusual operational problem: the next transaction may not occur for months. That means human memory is a poor system of record. The organization may understand everything perfectly today and remember very little by the time the next renewal arrives. AVA addresses that gap by making records, scheduling, and archive part of the lifecycle itself. The knowledge created during today's renewal becomes context for tomorrow's renewal operations.</p>
+
+<h2>From inbox history to transaction history</h2>
+<p>Email is useful for communication. It is not necessarily the best representation of the underlying business process. Imagine trying to understand a previous renewal from a long email thread. You may need to determine which messages mattered, which action was approved, what happened afterward, was the renewal completed, which attachment is the final evidence, and what date matters next. AVA's transaction model gives the organization a different way to think about history. The emails are activities. The renewal is the transaction. The record should tell the story of the transaction.</p>
+
+<h2>From spreadsheet row to renewal record</h2>
+<p>Spreadsheets are often the first practical renewal register. They are flexible. They are familiar. They can store customers, assets, dates, owners, and statuses. But they still depend heavily on people maintaining them. Someone must remember to update the row, decide what "complete" means, connect the supporting evidence, schedule the next cycle, and preserve the history. AVA's role is not merely to create a more sophisticated spreadsheet. Her responsibility is to operate the renewal lifecycle and ensure the resulting transaction is properly recorded.</p>
+
+<h2>The Renewal Register connects past, present, and future</h2>
+<p>A useful Renewal Register serves three time horizons. Past: what happened during previous renewal transactions? Present: what is the current state of active renewal work? Future: what recurring obligations will require attention next? AVA's lifecycle connects these horizons. A transaction begins when renewal work is detected. It moves through the operational process. The outcome is recorded. The next renewal is scheduled. Evidence is archived. The transaction is completed. Future monitoring then creates the next cycle. Renewal Operations becomes continuous rather than episodic.</p>
+
+<h2>Records make the next renewal easier to understand</h2>
+<p>Imagine the next renewal begins twelve months later. Without history, the organization sees "renewal approaching." With history, it can potentially understand the new transaction within the context of what happened previously. That is a fundamentally different starting point. The previous renewal no longer disappears after completion. It contributes to organizational continuity. This is one reason AVA's responsibility extends beyond reminders. The objective isn't merely to alert people repeatedly. It is to improve how the organization manages recurring renewal obligations over time.</p>
+
+<h2>Record the outcome before scheduling the next cycle</h2>
+<p>AVA's lifecycle intentionally places Record Outcome before Schedule Next Renewal. The organization first establishes what happened. Then the future cycle can be created from a known outcome. This creates a cleaner operational sequence: what happened, then what needs to happen next. The next renewal should not be scheduled as an isolated calendar event with no relationship to the completed transaction. It should emerge from the lifecycle of the obligation.</p>
+
+<h2>Schedule the next renewal before closing the current one</h2>
+<p>The next stage after Record Outcome is Schedule Next Renewal. This is a critical part of continuity. If an obligation will recur, today's renewal should not be considered operationally closed while next year's renewal remains dependent on somebody remembering it later. AVA establishes the next cycle before the current transaction reaches completion. That turns "we renewed it" into "we renewed it, recorded the result, and re-established future monitoring."</p>
+
+<h2>Preserve supporting evidence</h2>
+<p>Records answer what happened. Evidence helps establish what supports that record. AVA's lifecycle therefore includes Archive before Complete. Supporting evidence should not be an afterthought. It is part of the completion standard. This creates traceability around renewal work and reduces the chance that future teams have a status but no supporting history.</p>
+
+<h2>Renewal Register vs renewal audit trail</h2>
+<p>These concepts are related but serve different purposes. The Renewal Register provides structured operational continuity around renewal obligations and outcomes. It helps the organization understand what exists, what happened, and what needs to happen next. The Renewal Audit Trail focuses more specifically on traceability. It helps preserve the history and supporting evidence surrounding the renewal transaction. The two layers work together. The Register preserves operational memory. The audit trail preserves traceability. AVA's lifecycle uses both before considering the work complete.</p>
+
+<h2>Records support human accountability without removing human control</h2>
+<p>AVA can maintain renewal records without taking authority over consequential decisions. The Worker still does not own financial approval, vendor selection, contract negotiation, payment authorization, legal decisions, or executive approval. Those boundaries remain unchanged. AVA's role is to make sure the operational outcome of the renewal is recorded accurately within the workflow. Humans continue to own the decisions that require human authority.</p>
+
+<h2>Renewal records for Managed Service Providers</h2>
+<p>Managed Service Providers can manage recurring obligations across many customers. That makes renewal history particularly valuable. A single customer may have domains, SSL certificates, hosting services, SaaS subscriptions, licenses, and maintenance agreements. Each may renew at a different time. Each renewal can create its own transaction history. AVA helps maintain renewal continuity at the transaction level instead of forcing teams to reconstruct previous work across tickets, inboxes, spreadsheets, and employee memory. See <a href="{$this->pageUrl('ava', 'industries/managed-service-providers')}">Renewal Management for MSPs</a>.</p>
+
+<h2>Renewal records for digital agencies</h2>
+<p>Digital agencies face a similar challenge. A client relationship may continue for years after the original project. Recurring assets and services continue to renew. Staff changes. Client contacts change. Projects are archived. But the renewal obligation remains. A structured renewal record allows the agency to retain operational knowledge even when the original project context is no longer active. See <a href="{$this->pageUrl('ava', 'industries/digital-agencies')}">Renewal Management for Digital Agencies</a>.</p>
+
+<h2>Renewal records for recurring client obligations</h2>
+<p>For organizations managing renewals on behalf of customers, the record becomes part of client-service continuity. The organization should be able to answer what did we manage for this customer, what renewed, what was the outcome, and what is scheduled next. That makes renewal operations less dependent on individual account knowledge and more dependent on an organizational process. See <a href="{$this->pageUrl('ava', 'customers/client-renewal-management')}">Client &amp; Customer Renewal Management</a>.</p>
+
+<h2>A renewal is not complete because someone changed the status to "done"</h2>
+<p>Status labels can be misleading. A person can mark a task complete. A ticket can be closed. An email can be archived. A spreadsheet can say "done." AVA uses a more demanding definition. A renewal is complete only when the underlying business obligation has been successfully renewed, records accurately reflect the outcome, supporting evidence has been archived, the Renewal Register has been updated, the next renewal cycle has been scheduled, and no further operational work remains. Completion is a business state. Not merely a task status.</p>
+
+<h2>The definition of done creates better records</h2>
+<p>AVA's definition of done forces the organization to answer important questions before closing the transaction: was the obligation actually renewed, do the records reflect what happened, was evidence preserved, was the Renewal Register updated, was the next cycle scheduled, and is any operational work still outstanding? If the answer to one of those questions is no, the renewal is not finished. This creates a stronger standard for Renewal Operations.</p>
+
+<h2>Organizational memory should be created automatically by doing the work</h2>
+<p>Organizations often treat documentation as a separate activity: first do the work, then remember to document it. That creates predictable gaps. AVA's lifecycle takes a different approach. Recording the outcome is part of doing the work. Scheduling the next renewal is part of doing the work. Archiving evidence is part of doing the work. The process itself creates the organizational memory required for continuity.</p>
+
+<h2>Related Renewal Operations resources</h2>
+<p>Records are what keep a completed renewal from becoming next year's mystery. See the complete operational lifecycle in <a href="{$this->pageUrl('ava', 'renewal-management')}">Renewal Management Software</a>, see the human decision point that precedes this stage in <a href="{$this->pageUrl('ava', 'approval/renewal-approval-workflow')}">Renewal Approval Workflow</a>, or see how the next cycle gets re-established in <a href="{$this->pageUrl('ava', 'scheduling/renewal-calendar')}">Renewal Calendar &amp; Scheduling Software</a>.</p>
+
+<h2>Don't make next year's renewal start from zero</h2>
+<p>A renewal should leave the organization better prepared for the next cycle. The outcome should be known. The record should be accurate. The evidence should exist. The future renewal should already be scheduled. The transaction should become part of organizational history.</p>
+<p>AVA gives renewal records an operational purpose: remember what happened so the organization knows what happens next.</p>
+HTML;
+    }
+
+    private function page14Faqs(): array
+    {
+        return [
+            ['What is a renewal register?', "A renewal register is an organizational record used to maintain structured information about recurring renewal obligations, their status, outcomes, and future cycles. With AVA, the Renewal Register is part of the broader Renewal Operations lifecycle."],
+            ['Does AVA update the Renewal Register?', "Yes. Updating the Renewal Register is part of AVA's approved renewal process and definition of done."],
+            ['What is a renewal record?', "A renewal record preserves operational information about a renewal transaction, including what the renewal concerned and what outcome occurred. The exact implementation and fields depend on the product, but AVA's approved lifecycle explicitly includes recording renewal outcomes and maintaining renewal history."],
+            ['What does AVA record after a renewal?', "AVA's approved scope establishes Record Outcome, Renewal Register updates, renewal history, audit records, evidence archive, and future scheduling as parts of the operating model. Exact data fields should be represented according to the implemented product rather than assumed beyond that scope."],
+            ['Is a Renewal Register the same as a spreadsheet?', "A spreadsheet can be used as a basic renewal register. AVA's model goes further by connecting the register to the operational lifecycle that detects, understands, tracks, fulfills, records, schedules, archives, and completes renewal work."],
+            ['Does AVA keep renewal history?', "Yes. Recording renewal history is part of the deterministic system responsibilities supporting AVA's Renewal Operations."],
+            ['Does AVA preserve renewal evidence?', "AVA's definition of done requires supporting evidence to be archived before a renewal is considered complete."],
+            ['What is the difference between a Renewal Register and an audit trail?', "The Renewal Register provides structured operational continuity around renewal obligations and outcomes. The audit trail focuses on traceability, history, and supporting evidence around the transaction. They are complementary parts of AVA's Renewal Operations model."],
+            ['Does AVA replace our CRM?', "No. CRM ownership is outside AVA's responsibility. AVA maintains renewal-specific operational records required to perform her responsibility."],
+            ['Does AVA replace accounting software?', "No. Accounting ownership is outside AVA's responsibility. AVA's records concern the renewal operation."],
+            ['Can AVA make financial decisions based on renewal records?', "No. Financial approval and payment authorization remain outside AVA's authority."],
+            ['What happens after AVA records the renewal outcome?', "The next lifecycle stage is Schedule Next Renewal. AVA then archives supporting evidence before the transaction reaches Complete."],
+            ['When is a renewal considered complete?', "AVA's definition of done requires the business obligation to be successfully renewed, records to accurately reflect the outcome, supporting evidence to be archived, the Renewal Register to be updated, the next renewal cycle to be scheduled, and no operational work to remain."],
+            ['Why are renewal records important?', "Recurring work happens over time. Accurate records reduce dependence on employee memory and help preserve the context required for future renewal cycles. The objective is not recordkeeping for its own sake. It is operational continuity."],
         ];
     }
 }
