@@ -183,6 +183,25 @@ class AvaWave1ContentSeeder extends Seeder
             body: $this->page9Body(),
             faqs: $this->page9Faqs(),
         );
+
+        $this->seedPage(
+            worker: 'ava',
+            tier: 'Tier 2',
+            pageFamily: 'Asset Solution',
+            urlPath: 'assets/contracts/renewal-tracking',
+            lifecycleStage: 'Detect',
+            primaryQuery: 'contract renewal tracking software',
+            secondaryQueries: ['maintenance agreement renewal tracking', 'agreement renewal tracking software'],
+            seoTitle: 'Contract Renewal Tracking Software | AVA by UNITELO',
+            metaDescription: "Track recurring contract and agreement renewal work with AVA. Organize deadlines, owners, approvals, outcomes, evidence, and future renewal cycles without automating legal or negotiation decisions.",
+            h1: 'Contract Renewal Tracking Software That Keeps Renewal Work Accountable',
+            ctaLabel: 'Have AVA Own Renewal Operations',
+            ctaHeadline: "Don't just track the contract renewal date.",
+            ctaSubtext: "Track the work required to reach an outcome. Keep the renewal visible. Give it an owner. Bring the right people into the process. Keep consequential decisions human. Record what happened. Preserve the evidence. Schedule what happens next.",
+            ctaRoute: 'register',
+            body: $this->page10Body(),
+            faqs: $this->page10Faqs(),
+        );
     }
 
     // Named-route helper so internal links survive any future URL change,
@@ -385,7 +404,8 @@ class AvaWave1ContentSeeder extends Seeder
 <p>AVA changes the unit of accountability. One renewal = one transaction. All the emails, reminders, contacts, documents, approvals, records, and actions associated with that renewal belong to the same operational responsibility. The renewal remains open until the work is actually complete.</p>
 
 <h2>Explore AVA's Renewal Operations</h2>
-<p>Detection is where most renewals start. See how AVA turns a renewal alert into an accountable transaction in <a href="{$this->pageUrl('ava', 'detect/renewal-tracking-software')}">Renewal Tracking &amp; Reminder Software</a>, see how she manages one of the most commonly missed recurring obligations in <a href="{$this->pageUrl('ava', 'assets/domains')}">Domain Renewal &amp; Expiration Tracking</a>, see how the same lifecycle applies to recurring subscriptions in <a href="{$this->pageUrl('ava', 'assets/saas')}">SaaS &amp; Software Renewal Management</a>, or see how her lifecycle closes the loop after completion in <a href="{$this->pageUrl('ava', 'scheduling/renewal-calendar')}">Renewal Calendar &amp; Scheduling Software</a>.</p>
+<p>Detection is where most renewals start. See how AVA turns a renewal alert into an accountable transaction in <a href="{$this->pageUrl('ava', 'detect/renewal-tracking-software')}">Renewal Tracking &amp; Reminder Software</a>, see how she manages one of the most commonly missed recurring obligations in <a href="{$this->pageUrl('ava', 'assets/domains')}">Domain Renewal &amp; Expiration Tracking</a>, or see how the same lifecycle applies to recurring subscriptions in <a href="{$this->pageUrl('ava', 'assets/saas')}">SaaS &amp; Software Renewal Management</a>.</p>
+<p>She scales the same way to agreements and closes the loop after completion: see <a href="{$this->pageUrl('ava', 'assets/contracts/renewal-tracking')}">Contract Renewal Tracking Software</a>, or <a href="{$this->pageUrl('ava', 'scheduling/renewal-calendar')}">Renewal Calendar &amp; Scheduling Software</a>.</p>
 <p>She scales the same way across organization types: see how it works across an entire customer base in <a href="{$this->pageUrl('ava', 'industries/managed-service-providers')}">Renewal Management for MSPs</a>, across client work in <a href="{$this->pageUrl('ava', 'industries/digital-agencies')}">Renewal Management for Digital Agencies</a>, or across every asset one customer can hold in <a href="{$this->pageUrl('ava', 'customers/client-renewal-management')}">Client &amp; Customer Renewal Management</a>.</p>
 
 <h2>Stop managing renewals by memory.</h2>
@@ -532,7 +552,8 @@ HTML;
 <p>Keep supported recurring obligations visible while maintaining records, evidence, and future scheduling.</p>
 
 <h2>Go deeper on Renewal Operations</h2>
-<p>Renewal tracking is the Detect stage of a larger responsibility. See the complete operational lifecycle in <a href="{$this->pageUrl('ava', 'renewal-management')}">Renewal Management Software</a>, see how detection works for one specific renewable asset in <a href="{$this->pageUrl('ava', 'assets/domains')}">Domain Renewal &amp; Expiration Tracking</a>, or see how it applies to recurring subscriptions in <a href="{$this->pageUrl('ava', 'assets/saas')}">SaaS &amp; Software Renewal Management</a>. Detection is only half the loop; see the other half in <a href="{$this->pageUrl('ava', 'scheduling/renewal-calendar')}">Renewal Calendar &amp; Scheduling Software</a>.</p>
+<p>Renewal tracking is the Detect stage of a larger responsibility. See the complete operational lifecycle in <a href="{$this->pageUrl('ava', 'renewal-management')}">Renewal Management Software</a>, see how detection works for one specific renewable asset in <a href="{$this->pageUrl('ava', 'assets/domains')}">Domain Renewal &amp; Expiration Tracking</a>, or see how it applies to recurring subscriptions in <a href="{$this->pageUrl('ava', 'assets/saas')}">SaaS &amp; Software Renewal Management</a>.</p>
+<p>The same detection also covers agreements, and detection is only half the loop: see <a href="{$this->pageUrl('ava', 'assets/contracts/renewal-tracking')}">Contract Renewal Tracking Software</a>, or the other half in <a href="{$this->pageUrl('ava', 'scheduling/renewal-calendar')}">Renewal Calendar &amp; Scheduling Software</a>.</p>
 <p>The same lifecycle scales across organization types: see how it works across an entire customer base in <a href="{$this->pageUrl('ava', 'industries/managed-service-providers')}">Renewal Management for MSPs</a>, across client work in <a href="{$this->pageUrl('ava', 'industries/digital-agencies')}">Renewal Management for Digital Agencies</a>, or across every asset one customer can hold in <a href="{$this->pageUrl('ava', 'customers/client-renewal-management')}">Client &amp; Customer Renewal Management</a>.</p>
 
 <h2>From "expires soon" to "renewal complete"</h2>
@@ -1508,6 +1529,134 @@ HTML;
             ["Why isn't a normal calendar enough?", "A normal calendar can provide date visibility. AVA is designed to own the operational renewal process represented by that date, including moving the transaction toward completion and scheduling the next cycle."],
             ['What happens after a renewal is completed?', "AVA's definition of done requires records to accurately reflect the outcome, supporting evidence to be archived, the Renewal Register to be updated, the next renewal cycle to be scheduled, and no further operational work to remain."],
             ['Can AVA replace our existing calendar?', "AVA's approved business contract does not establish general calendar replacement as a responsibility. AVA should be positioned around renewal scheduling and Renewal Operations rather than as a general-purpose calendar application."],
+        ];
+    }
+
+    private function page10Body(): string
+    {
+        return <<<HTML
+<p><strong>Know what's approaching renewal, and make sure somebody owns what happens next.</strong></p>
+<p>A contract or agreement can contain a renewal date. A spreadsheet can record it. A calendar can remind you about it. An email can notify someone that the deadline is approaching. But none of those things guarantee that the renewal operation will actually reach completion.</p>
+<p>Someone still needs to understand what requires attention. Someone needs to identify the customer and agreement involved. Someone needs to find the responsible contact. Human review may be required. The outcome needs to be tracked. Records need to be updated. Evidence needs to be preserved. And if the obligation continues, the next renewal cycle needs to be scheduled.</p>
+<p>AVA is an AI Worker for Renewal Operations. She gives recurring renewal work an operational owner while leaving negotiation, legal decisions, financial approval, and other consequential decisions with people.</p>
+<p>Track the deadline. Own the renewal.</p>
+
+<h2>Why contract renewal dates still get missed</h2>
+<p>A renewal date can be perfectly documented and still become an operational problem. Why? Because knowing a date and owning the work associated with that date are different responsibilities.</p>
+<p>Renewal information can become fragmented across employee inboxes, shared mailboxes, spreadsheets, calendars, vendor systems, accounting software, customer records, and individual employees. One person knows the agreement exists. Another receives the renewal notice. Someone else owns the customer relationship. Management may need to review the renewal. Finance may have authority over payment. Legal may need to make a legal determination. Without a dedicated operational owner, the renewal can sit between all of them.</p>
+
+<h2>What is contract renewal tracking?</h2>
+<p>Contract renewal tracking is the process of maintaining visibility into recurring agreements and the operational work associated with their renewal deadlines. A renewal tracking process may include the agreement or obligation, customer, renewal date, expiration date, notice information, responsible contact, renewal status, communications, human approvals, supporting documents, recorded outcome, and next renewal cycle.</p>
+<p>Tracking creates visibility. But visibility is only the beginning. Once an agreement requires renewal attention, the organization needs a process for moving that obligation toward an outcome.</p>
+
+<h2>Contract renewal tracking is not contract negotiation</h2>
+<p>This distinction is essential. AVA can own Renewal Operations without owning the commercial or legal decisions inside a contract. Those are separate responsibilities.</p>
+<p>AVA does not decide whether commercial terms are acceptable, whether the organization should negotiate a better price, whether a clause should be changed, whether a provision is legally enforceable, or whether a different vendor should be selected. Those decisions remain with the appropriate people.</p>
+<p>AVA's question is different: there is a renewal obligation. What operational work needs to happen so it reaches a controlled outcome before the deadline?</p>
+
+<h2>Meet AVA: an AI Worker for Renewal Operations</h2>
+<p>AVA is not a Contract Lifecycle Management system. She is not an autonomous negotiator. She is not legal counsel. She is not an autonomous purchasing agent.</p>
+<p>AVA is a Renewal Operations Worker on the UNITELO platform. Her responsibility is to continuously organize and coordinate recurring renewal work so important business obligations don't quietly expire because of fragmented systems, manual processes, or human oversight.</p>
+
+<h2>How AVA handles renewal work around recurring agreements</h2>
+
+<h3>1. Detect the renewal</h3>
+<p>AVA's responsibility starts when renewal work is detected. Version 1 supports Gmail, Asset Watch, and Manual Trigger. Renewal activity arriving through a supported source can enter AVA's operational lifecycle. The important change is that the information doesn't remain an isolated notice. It becomes accountable work.</p>
+
+<h3>2. Understand the renewal</h3>
+<p>Renewal communications vary. Different vendors use different terminology, different agreements have different contexts, customers communicate differently, and renewal notices arrive in different formats. AVA uses AI where interpretation is necessary to understand renewal intent, classify the request, identify relevant context, and recommend appropriate next actions. The goal is to turn incoming renewal information into structured operational work.</p>
+
+<h3>3. Identify the customer</h3>
+<p>Where the recurring obligation is associated with a customer, AVA identifies that customer relationship. This gives the renewal business context, moving the organization from "agreement renewal approaching" to "this renewal is associated with this customer."</p>
+
+<h3>4. Identify the renewable asset or obligation</h3>
+<p>AVA identifies the supported renewable asset associated with the transaction. Version 1 explicitly supports domains, SSL certificates, hosting services, SaaS subscriptions, insurance policies, licenses, and maintenance agreements. For agreement-oriented renewal use cases, maintenance agreements provide an explicit supported asset class. Other contract-related renewal scenarios should only be represented when they map to AVA's supported assets and implemented capabilities. This keeps the product promise accurate.</p>
+
+<h3>5. Identify the responsible contact</h3>
+<p>A renewal deadline without an owner is still a risk. AVA identifies the responsible contact associated with the renewal transaction. This gives the work a path forward rather than leaving responsibility scattered across employees.</p>
+
+<h3>6. Prepare communication</h3>
+<p>AVA can prepare personalized communications using the context of the renewal. But preparation does not equal authority. Customer-facing communication requires human approval. AVA supports the operational process without removing human control.</p>
+
+<h3>7. Coordinate human review</h3>
+<p>Human Review is a defined stage of AVA's renewal lifecycle. This is particularly important when agreements are involved. AVA can bring the renewal to the appropriate point for human review. The appropriate people can then make the decisions that belong to them, which may involve financial, legal, contractual, vendor, or executive authority. AVA doesn't take that authority from them.</p>
+<p><strong>AVA owns the process. Humans own the decisions.</strong></p>
+
+<h3>8. Track fulfillment</h3>
+<p>Approval doesn't necessarily mean the renewal operation is complete. The agreed outcome still needs to be fulfilled. AVA continues tracking the renewal transaction through fulfillment. That prevents an organization from mistaking "approved" for "completed." The transaction remains accountable until the underlying renewal obligation reaches its outcome.</p>
+
+<h3>9. Record the outcome</h3>
+<p>Once the renewal has been fulfilled, AVA updates the renewal records and Renewal Register. The outcome becomes part of organizational history. The next renewal cycle doesn't have to begin with employees reconstructing the previous one from scattered messages and documents.</p>
+
+<h3>10. Archive supporting evidence</h3>
+<p>AVA maintains audit history and archives supporting evidence around the renewal. This gives the organization continuity: what happened, what was the outcome, was the renewal completed, and what supporting information was preserved. The renewal becomes an auditable operational transaction rather than an event that simply disappeared from a task list.</p>
+
+<h3>11. Schedule the next renewal</h3>
+<p>If the obligation continues, another renewal cycle exists. AVA schedules that future renewal. Monitoring is re-established. The current transaction can then move toward completion. This closes the loop: Detect, Review, Fulfill, Record, Schedule, Monitor Again.</p>
+
+<h2>One renewal remains one transaction</h2>
+<p>A contract or agreement renewal can generate significant activity: multiple emails, invoices, approvals, reminders, documents, and contacts. AVA doesn't treat each interaction as a separate renewal. One renewal remains one transaction, and that transaction becomes the unit of accountability. This creates a clearer question for the organization: not "how many renewal emails did we send?" but "has this renewal transaction reached completion?"</p>
+
+<h2>Maintenance agreement renewal tracking</h2>
+<p>Maintenance agreements are explicitly supported renewable assets in AVA Version 1. They can create exactly the type of recurring operational work AVA is designed to own. An agreement exists. A renewal date approaches. The appropriate customer, asset, and contact need to be identified. Communication may be necessary. Human review occurs. Fulfillment is tracked. The outcome is recorded. Evidence is archived. The next renewal is scheduled. AVA gives that recurring obligation a continuous operational lifecycle.</p>
+
+<h2>Track renewal dates without turning AVA into your legal department</h2>
+<p>Agreement renewals can involve legal questions. That doesn't make those questions AVA's responsibility. AVA does not provide legal approval. She does not make legal decisions. She does not determine whether contractual language is legally acceptable. The appropriate human authority handles those decisions. AVA keeps the renewal transaction organized around them. That distinction allows organizations to automate operational coordination without automating legal judgment.</p>
+
+<h2>Track renewal workflows without automating negotiation</h2>
+<p>Renewals can also involve negotiation. A vendor may change pricing. Terms may change. The organization may want different conditions. A customer may request changes. AVA does not negotiate those terms. Contract negotiation is intentionally outside her responsibility. Instead, AVA keeps the operational renewal transaction accountable while the appropriate people conduct any necessary negotiation. Once those decisions have been made, the renewal can continue through its lifecycle.</p>
+
+<h2>Renewal approval is part of the lifecycle</h2>
+<p>Approval and negotiation are not the same thing. This distinction matters. AVA does not negotiate contracts. But Human Review is explicitly part of her renewal lifecycle. That means AVA can coordinate renewal work to the point where an authorized person needs to review or decide. The Worker keeps the process moving. The person provides the authority. This is controlled automation rather than autonomous decision-making.</p>
+
+<h2>Contract renewal tracking for multiple customers</h2>
+<p>Service organizations can manage recurring agreements or supported renewal obligations across many customer relationships. Each customer can have different assets, renewal dates, contacts, requirements, approvals, and supporting evidence. AVA connects the renewal to customer and asset context before moving the transaction through its lifecycle, creating a chain from customer to renewable asset to renewal transaction instead of a disconnected collection of dates and documents.</p>
+
+<h2>Renewal tracking for Managed Service Providers</h2>
+<p>Managed Service Providers can manage recurring obligations across an entire customer portfolio. Maintenance agreements, software subscriptions, licenses, hosting services, domains, and certificates can each create recurring renewal work. AVA helps give those obligations continuous operational ownership. See <a href="{$this->pageUrl('ava', 'industries/managed-service-providers')}">Renewal Management for MSPs</a>.</p>
+
+<h2>Renewal tracking for digital agencies</h2>
+<p>Digital agencies can also carry recurring agreements and obligations long after the original client project is delivered. Maintenance agreements are one example. Hosting, domains, certificates, subscriptions, and licenses can create additional renewal cycles. AVA keeps those obligations connected to the client relationship and an accountable renewal transaction. See <a href="{$this->pageUrl('ava', 'industries/digital-agencies')}">Renewal Management for Digital Agencies</a>.</p>
+
+<h2>Contract renewal spreadsheet vs Renewal Operations</h2>
+<p>A spreadsheet can track an agreement, customer, renewal date, owner, and status. That's useful. But the spreadsheet doesn't operate the renewal. Someone still has to detect the work, understand the notice, identify the customer, identify the obligation, find the contact, prepare communication, coordinate review, track fulfillment, record the outcome, archive evidence, and schedule the next cycle. AVA isn't simply trying to replace the spreadsheet. She owns the operational work represented by those rows.</p>
+
+<h2>Contract renewal reminders vs Renewal Operations</h2>
+<p>A reminder answers "does someone know this renewal is approaching?" AVA goes further: "is there an accountable transaction moving this renewal toward completion?" That's an important distinction. Alerts are useful. Reminders are useful. Calendar dates are useful. But AVA's responsibility doesn't end when awareness is created. Her responsibility ends when the renewal operation reaches completion and future monitoring has been re-established.</p>
+
+<h2>What AVA does not own</h2>
+<p>AVA intentionally does not own financial approval, vendor selection, contract negotiation, payment authorization, legal decisions, executive approval, CRM ownership, or accounting ownership.</p>
+<p>Version 1 also excludes automatic payment execution, financial authorization, autonomous purchasing, legal approval, cross-worker collaboration, ERP orchestration, and multi-department workflow orchestration. These aren't weaknesses in the model. They're boundaries. AVA has one clear responsibility: Renewal Operations.</p>
+
+<h2>What does "done" mean for a renewal?</h2>
+<p>AVA's definition of done is stricter than "reminder sent," "document reviewed," or "manager approved."</p>
+<p>AVA considers the renewal complete only when the business obligation has been successfully renewed, organizational records accurately reflect the outcome, supporting evidence has been archived, the Renewal Register has been updated, the next renewal cycle has been scheduled, and no further operational work remains.</p>
+<p>A generated email is not success. A sent email is not success. A completed renewal is success.</p>
+
+<h2>Related Renewal Operations resources</h2>
+<p>Contract and agreement renewals build on the same lifecycle used across every AVA page. See the complete operational lifecycle in <a href="{$this->pageUrl('ava', 'renewal-management')}">Renewal Management Software</a>, or see the other half of the loop in <a href="{$this->pageUrl('ava', 'scheduling/renewal-calendar')}">Renewal Calendar &amp; Scheduling Software</a>.</p>
+
+<h2>Track the work, not just the date</h2>
+<p>Keep the renewal visible. Give it an owner. Bring the right people into the process. Keep consequential decisions human. Record what happened. Preserve the evidence. Schedule what happens next.</p>
+HTML;
+    }
+
+    private function page10Faqs(): array
+    {
+        return [
+            ['What is contract renewal tracking software?', "Contract renewal tracking software helps organizations maintain visibility into agreements, renewal dates, responsible people, and renewal status. AVA approaches this problem through Renewal Operations: moving supported recurring obligations from detection through human review, fulfillment, records, evidence, future scheduling, and completion."],
+            ['Does AVA manage contracts?', "AVA's approved responsibility is Renewal Operations. Her Version 1 supported assets explicitly include maintenance agreements but do not define contracts generally as a standalone asset class. AVA should therefore not be represented as a general Contract Lifecycle Management platform unless the product scope is expanded."],
+            ['Can AVA track maintenance agreement renewals?', "Yes. Maintenance agreements are explicitly included among AVA's supported Version 1 renewable assets."],
+            ['Can AVA track contract renewal dates?', "AVA's approved responsibilities include monitoring renewal activity and deadlines, renewal tracking, and future scheduling. Specific support for a particular contract type should depend on whether it maps to an implemented supported renewal asset or workflow."],
+            ['Does AVA negotiate contract renewals?', "No. Contract negotiation is explicitly outside AVA's responsibility and outside Version 1 scope."],
+            ['Can AVA approve contract terms?', "No. Legal decisions and legal approval are outside AVA's authority. Human review is part of the workflow, but the authorized person makes the decision."],
+            ['Can AVA approve renewal payments?', "No. Financial approval and payment authorization are outside AVA's responsibility. Automatic payment execution and financial authorization are also excluded from Version 1."],
+            ['Can AVA select a different vendor during renewal?', "No. Vendor selection is outside AVA's responsibility."],
+            ['Can AVA prepare renewal communications?', "Yes. Draft generation and personalized communication preparation are supported capabilities. Customer-facing communication requires human approval."],
+            ['Does AVA keep a renewal audit trail?', "AVA's approved capabilities include audit archive, while the UNITELO platform is responsible for maintaining audit records and recording renewal history."],
+            ['What happens after an agreement is renewed?', "AVA's definition of done requires organizational records to reflect the outcome, supporting evidence to be archived, the Renewal Register to be updated, the next renewal cycle to be scheduled, and no further operational work to remain."],
+            ['Is AVA a Contract Lifecycle Management system?', "No. AVA should be positioned as a Renewal Operations Worker. Her approved scope does not establish general contract authoring, repository management, clause management, legal review, negotiation, or end-to-end Contract Lifecycle Management functionality."],
+            ['How is AVA different from a contract renewal reminder?', "A reminder creates awareness. AVA's operational responsibility continues through the renewal lifecycle until the obligation reaches completion and future monitoring has been re-established."],
         ];
     }
 }
