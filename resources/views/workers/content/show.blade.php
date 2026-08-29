@@ -15,7 +15,10 @@
    widths); from 520px up, the clamp already stays safely above 63px. */
 .wc-hero{padding-top:88px;padding-bottom:clamp(28px,4vw,40px)}
 @media(min-width:520px){.wc-hero{padding-top:clamp(56px,7vw,76px)}}
-.wc-hero .eyebrow{margin-bottom:14px}
+.wc-hero .eyebrow{margin-bottom:14px;padding:6px 14px;font-size:10.5px;letter-spacing:1.2px}
+.wc-hero a.eyebrow{transition:border-color .15s,background .15s}
+.wc-hero a.eyebrow:hover{border-color:var(--text);background:rgba(0,0,0,.07)}
+[data-theme="dark"] .wc-hero a.eyebrow:hover{background:rgba(255,255,255,.1)}
 .wc-hero h1{font-family:var(--fd);font-size:clamp(28px,4vw,44px);font-weight:800;letter-spacing:-1px;line-height:1.1;color:var(--text);max-width:760px}
 .wc-hero-sub{font-size:16.5px;color:var(--t2);line-height:1.7;max-width:640px;margin-top:16px}
 .wc-cta-row{display:flex;gap:12px;flex-wrap:wrap;margin-top:26px}
@@ -113,7 +116,11 @@
 @section('body')
 <div class="wc-hero{{ $page->hero_image ? ' wc-hero--split' : ' w' }}">
     <div class="wc-hero-text">
+        @if($pillarPage)
+        <a href="{{ route('worker.content', [$workerSlug, $pillarPage]) }}" class="eyebrow">{{ $page->page_family }}</a>
+        @else
         <div class="eyebrow">{{ $page->page_family }}</div>
+        @endif
         <h1>{{ $page->h1 }}</h1>
         <p class="wc-hero-sub">{{ $page->meta_description }}</p>
         <div class="wc-cta-row">
