@@ -15,7 +15,7 @@
    widths); from 520px up, the clamp already stays safely above 63px. */
 .wc-hero{padding-top:88px;padding-bottom:clamp(28px,4vw,40px)}
 @media(min-width:520px){.wc-hero{padding-top:clamp(56px,7vw,76px)}}
-.wc-hero .eyebrow{margin-bottom:14px;padding:6px 14px;font-size:10.5px;letter-spacing:1.2px}
+.wc-hero .eyebrow{align-self:flex-start;margin-bottom:14px;padding:6px 14px;font-size:10.5px;letter-spacing:1.2px}
 .wc-hero a.eyebrow{transition:border-color .15s,background .15s}
 .wc-hero a.eyebrow:hover{border-color:var(--text);background:rgba(0,0,0,.07)}
 [data-theme="dark"] .wc-hero a.eyebrow:hover{background:rgba(255,255,255,.1)}
