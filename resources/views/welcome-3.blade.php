@@ -940,6 +940,7 @@ body{
 @media(max-width:768px){
   .hero{grid-template-columns:1fr;min-height:auto}
   .hero-right{order:-1;min-height:300px}
+  .hero-right-spacer{min-height:300px}
   .hero-left{padding:40px var(--pad);text-align:center}
   .hero-btns{justify-content:center}
   .hero-proof{justify-content:center}
