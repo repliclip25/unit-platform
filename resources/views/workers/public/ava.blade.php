@@ -278,7 +278,7 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
 .hc-feed-btn:hover{background:rgba(255,255,255,.09);color:#fff}
 @media(max-width:900px){
   .hero-worker{flex-direction:column;height:auto}
-  .hero-video-col{min-height:55vh}
+  .hero-video-col{min-height:78vh}
   .hero-panel{width:100%;border-left:none;border-top:1px solid rgba(255,255,255,.07);flex-direction:row;flex-wrap:wrap;gap:20px;padding:20px}
 }
 @media(max-width:600px){
