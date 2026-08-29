@@ -19,11 +19,22 @@
 .wc-hero h1{font-family:var(--fd);font-size:clamp(28px,4vw,44px);font-weight:800;letter-spacing:-1px;line-height:1.1;color:var(--text);max-width:760px}
 .wc-hero-sub{font-size:16.5px;color:var(--t2);line-height:1.7;max-width:640px;margin-top:16px}
 .wc-cta-row{display:flex;gap:12px;flex-wrap:wrap;margin-top:26px}
-.wc-hero--split{display:flex;align-items:center;gap:clamp(24px,4vw,56px)}
-.wc-hero-text{flex:1;min-width:0}
-.wc-hero-img{flex-shrink:0;width:clamp(180px,24vw,280px)}
-.wc-hero-img img{width:100%;height:auto;max-height:360px;object-fit:cover;border-radius:20px;display:block}
-@media(max-width:680px){.wc-hero--split{flex-direction:column}.wc-hero-img{order:-1;width:clamp(160px,52vw,240px);margin:0 auto}}
+
+/* Split hero (worker photo): mirrors the homepage/workers-page hero —
+   a full-bleed image column instead of a padded, rounded photo box.
+   This section is deliberately NOT wrapped in .w; the text column
+   carries its own left inset (replicating .w's 1200px/48px math) so
+   the image can run edge to edge on both mobile and desktop. */
+.wc-hero--split{padding:0;display:grid;grid-template-columns:1fr 1fr;align-items:stretch}
+.wc-hero--split .wc-hero-text{padding:88px clamp(24px,4vw,56px) clamp(28px,4vw,40px) max(20px,calc((100vw - 1200px)/2 + 48px));display:flex;flex-direction:column;justify-content:center}
+@media(min-width:520px){.wc-hero--split .wc-hero-text{padding-top:clamp(56px,7vw,76px)}}
+.wc-hero-img{position:relative;overflow:hidden;background:#000}
+.wc-hero-img img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center top;display:block}
+@media(max-width:680px){
+  .wc-hero--split{grid-template-columns:1fr}
+  .wc-hero--split .wc-hero-text{padding:28px 20px clamp(28px,4vw,40px)}
+  .wc-hero-img{order:-1;min-height:280px}
+}
 
 .wc-body-img{margin:36px auto;text-align:center;max-width:420px}
 .wc-body-img img{width:100%;border-radius:16px;display:block}
@@ -100,7 +111,7 @@
 @endsection
 
 @section('body')
-<div class="w wc-hero{{ $page->hero_image ? ' wc-hero--split' : '' }}">
+<div class="wc-hero{{ $page->hero_image ? ' wc-hero--split' : ' w' }}">
     <div class="wc-hero-text">
         <div class="eyebrow">{{ $page->page_family }}</div>
         <h1>{{ $page->h1 }}</h1>
