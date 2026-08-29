@@ -278,7 +278,13 @@ body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font
 .hc-feed-btn:hover{background:rgba(255,255,255,.09);color:#fff}
 @media(max-width:900px){
   .hero-worker{flex-direction:column;height:auto}
-  .hero-video-col{min-height:78vh}
+  /* Below 900px the overlay pattern (text pinned over the photo) leaves too
+     little of the photo visible no matter how tall the column is. Instead,
+     stack the photo (full, undimmed) above a solid text panel. */
+  .hero-video-col{min-height:auto}
+  .hero-media{position:relative;inset:auto;height:46vh}
+  .hero-media::after{background:linear-gradient(to top, rgba(6,4,15,.5) 0%, transparent 45%)}
+  .hero-text{position:relative;flex:none;justify-content:flex-start;background:#0A0A0F;padding-top:28px}
   .hero-panel{width:100%;border-left:none;border-top:1px solid rgba(255,255,255,.07);flex-direction:row;flex-wrap:wrap;gap:20px;padding:20px}
 }
 @media(max-width:600px){
