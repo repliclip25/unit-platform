@@ -127,6 +127,29 @@ class AvaWave2ContentSeeder extends Seeder
             faqImage: 'images/ava-stand.webp',
             faqImageAlt: "AVA, UNITELO's AI Renewal Operations Worker",
         );
+
+        $this->seedPage(
+            worker: 'ava',
+            tier: 'Tier 3',
+            pageFamily: 'Guide/Resource',
+            urlPath: 'templates/renewal-reminder-email-templates',
+            lifecycleStage: 'Prepare Communication',
+            primaryQuery: 'renewal reminder email template',
+            secondaryQueries: ['renewal email template', 'subscription renewal reminder email'],
+            seoTitle: 'Renewal Reminder Email Templates & Workflow | AVA by UNITELO',
+            metaDescription: "Free renewal reminder email templates for domains, SSL, hosting, SaaS, insurance, licenses, and agreements, plus how AVA turns a one-off reminder into a complete renewal operation.",
+            h1: "Renewal Reminder Email Templates & Workflow That Doesn't Stop at Send",
+            ctaLabel: 'Have AVA Prepare Renewal Communications',
+            ctaHeadline: "Don't just automate the reminder. Own the renewal.",
+            ctaSubtext: "If you need to send one renewal email, the templates on this page may be enough. If you need to manage recurring renewal obligations across customers, assets, contacts, deadlines, approvals, records, evidence, and future cycles, the problem is larger than email. That's the problem AVA is designed to own.",
+            ctaRoute: 'register',
+            body: $this->page16Body(),
+            faqs: $this->page16Faqs(),
+            heroImage: 'images/ava-selfie.webp',
+            heroImageAlt: "AVA, UNITELO's AI Renewal Worker",
+            faqImage: 'images/ava-life.webp',
+            faqImageAlt: 'AVA working at her desk, preparing renewal communications',
+        );
     }
 
     // Named-route helper so internal links survive any future URL change,
@@ -291,7 +314,7 @@ class AvaWave2ContentSeeder extends Seeder
 
 <h2>Related Renewal Operations resources</h2>
 <p>Human Review is one stage inside a larger responsibility. See the complete operational lifecycle in <a href="{$this->pageUrl('ava', 'renewal-management')}">Renewal Management Software</a>, see how detection starts the loop in <a href="{$this->pageUrl('ava', 'detect/renewal-tracking-software')}">Renewal Tracking &amp; Reminder Software</a>, or see how it closes after approval in <a href="{$this->pageUrl('ava', 'scheduling/renewal-calendar')}">Renewal Calendar &amp; Scheduling Software</a>.</p>
-<p>See the two stages right before this one: <a href="{$this->pageUrl('ava', 'understand/renewal-notice-dates-terms')}">Renewal Notice, Dates &amp; Terms Tracking</a> and <a href="{$this->pageUrl('ava', 'ownership/renewal-ownership-responsible-contacts')}">Renewal Ownership &amp; Responsible Contact Tracking</a>, or the stage right after it in <a href="{$this->pageUrl('ava', 'records/renewal-register-records')}">Renewal Register &amp; Records</a>.</p>
+<p>See the stages right before this one: <a href="{$this->pageUrl('ava', 'understand/renewal-notice-dates-terms')}">Renewal Notice, Dates &amp; Terms Tracking</a>, <a href="{$this->pageUrl('ava', 'ownership/renewal-ownership-responsible-contacts')}">Renewal Ownership &amp; Responsible Contact Tracking</a>, and <a href="{$this->pageUrl('ava', 'templates/renewal-reminder-email-templates')}">Renewal Reminder Email Templates &amp; Workflow</a>, or the stage right after it in <a href="{$this->pageUrl('ava', 'records/renewal-register-records')}">Renewal Register &amp; Records</a>.</p>
 
 <h2>Give your team decisions, not renewal administration</h2>
 <p>Your people should remain in control of consequential decisions. That doesn't mean they should also carry every repetitive operational step required to get a renewal to the decision point and then move it toward completion.</p>
@@ -788,6 +811,229 @@ HTML;
             ['What happens after AVA archives the evidence?', "The renewal can move toward Complete once all requirements in AVA's definition of done have been satisfied and no further operational work remains."],
             ['Is an approval enough to close a renewal?', "No. Human Review is only one lifecycle stage. AVA continues through fulfillment, records, future scheduling, archive, and completion."],
             ['Is sending a renewal reminder enough to close the transaction?', "No. AVA explicitly defines success around successful completion of the underlying renewal obligation, not generating or sending an email."],
+        ];
+    }
+
+    private function page16Body(): string
+    {
+        return <<<HTML
+<p><strong>Renewal Reminder Emails With the Renewal Context Already Attached</strong></p>
+<p>A renewal reminder email should do more than say "your renewal is coming up." A useful renewal message needs context: what is renewing, when does it require attention, which customer is involved, which asset or service is involved, who should receive the message, and what action needs to happen next.</p>
+<p>AVA is an AI Worker for Renewal Operations that can prepare personalized renewal communications using the context surrounding the renewal transaction. But AVA doesn't simply generate an email and declare the renewal finished. Customer-facing communication requires Human Review. Then the renewal continues through fulfillment, records, future scheduling, evidence, and completion.</p>
+<p>Below are practical renewal reminder email templates you can use, and a better way to manage the work behind them.</p>
+
+<h2>Renewal reminder email template</h2>
+<p>Use this general template when you need to notify a customer or responsible contact about an approaching renewal.</p>
+<p><strong>Subject:</strong> Upcoming renewal for [service or asset]</p>
+<p>Hi [Name],</p>
+<p>I'm reaching out regarding the upcoming renewal of [service, asset, subscription, or agreement] for [customer/company].</p>
+<p>The current renewal date is [date].</p>
+<p>Please review the renewal and let us know if there is anything we should address before the renewal proceeds.</p>
+<p>If you have any questions or need additional information, please let us know.</p>
+<p>Best,<br>[Name / Team]</p>
+
+<h2>A more action-oriented renewal reminder</h2>
+<p>Use this version when the recipient needs to take a specific action.</p>
+<p><strong>Subject:</strong> Action needed: [service or asset] renewal</p>
+<p>Hi [Name],</p>
+<p>Your [service, asset, subscription, or agreement] is approaching its renewal date on [date].</p>
+<p>To keep the renewal moving, we need the following from you: [required action]</p>
+<p>Please respond by [relevant date] so we can continue the renewal process before the upcoming deadline.</p>
+<p>If you have any questions, please let us know.</p>
+<p>Best,<br>[Name / Team]</p>
+
+<h2>Client renewal reminder email</h2>
+<p>Service businesses often manage recurring obligations on behalf of clients. That makes customer and asset context particularly important.</p>
+<p><strong>Subject:</strong> Upcoming [asset/service] renewal for [Client Name]</p>
+<p>Hi [Name],</p>
+<p>We're reaching out about the upcoming renewal of your [domain, SSL certificate, hosting service, software subscription, license, or maintenance agreement].</p>
+<p><strong>Renewal:</strong> [Asset or Service]<br><strong>Renewal Date:</strong> [Date]<br><strong>Action Required:</strong> [Action]</p>
+<p>Please review the information above and let us know how you'd like to proceed.</p>
+<p>We'll continue tracking the renewal through the required next steps.</p>
+<p>Best,<br>[Name / Team]</p>
+<p>This structure makes the renewal easier to understand because the recipient can immediately see what is renewing, when, and what action is required.</p>
+
+<h2>Subscription renewal reminder email</h2>
+<p>For a recurring software or SaaS subscription:</p>
+<p><strong>Subject:</strong> Upcoming subscription renewal, [Software Name]</p>
+<p>Hi [Name],</p>
+<p>The [Software Name] subscription associated with [customer/company] is approaching renewal on [date].</p>
+<p>We're reviewing the renewal now and need [review/confirmation/other required action] before the process can continue.</p>
+<p><strong>Subscription:</strong> [Software Name]<br><strong>Renewal Date:</strong> [Date]<br><strong>Next Step:</strong> [Required action]</p>
+<p>Please review and respond by [date] if applicable.</p>
+<p>Best,<br>[Name / Team]</p>
+
+<h2>Software renewal approval email</h2>
+<p>When the renewal needs internal review rather than immediate customer communication:</p>
+<p><strong>Subject:</strong> Review required, [Software Name] renewal</p>
+<p>Hi [Name],</p>
+<p>The [Software Name] subscription is approaching renewal on [date].</p>
+<p>The renewal is ready for your review.</p>
+<p><strong>Software:</strong> [Software Name]<br><strong>Renewal Date:</strong> [Date]<br><strong>Customer/Team:</strong> [Relevant context]<br><strong>Decision Needed:</strong> [Decision or review required]</p>
+<p>Please review the renewal and provide the appropriate decision so the transaction can move to the next stage.</p>
+<p>Best,<br>[Name / Team]</p>
+<p>The important distinction here is that the email supports the decision. It does not make the decision.</p>
+
+<h2>Contract or agreement renewal reminder email</h2>
+<p>For a supported recurring agreement such as a maintenance agreement:</p>
+<p><strong>Subject:</strong> Upcoming renewal, [Agreement Name]</p>
+<p>Hi [Name],</p>
+<p>The [Agreement Name] associated with [customer/company] is approaching its renewal date on [date].</p>
+<p>We're preparing for the upcoming renewal and need your review of the next step.</p>
+<p><strong>Agreement:</strong> [Agreement Name]<br><strong>Renewal Date:</strong> [Date]<br><strong>Action Required:</strong> [Action]</p>
+<p>Please review the renewal information and let us know how you'd like to proceed.</p>
+<p>Best,<br>[Name / Team]</p>
+<p>This template should not be treated as legal advice or contract negotiation. Where contractual interpretation, negotiation, or legal approval is required, the appropriate human should handle that decision.</p>
+
+<h2>Maintenance agreement renewal email</h2>
+<p><strong>Subject:</strong> Maintenance agreement renewal, [Customer/Service]</p>
+<p>Hi [Name],</p>
+<p>Your [maintenance agreement/service agreement] is approaching renewal on [date].</p>
+<p>We're reviewing the renewal now to make sure the required next steps are completed before the current period ends.</p>
+<p><strong>Agreement:</strong> [Agreement Name]<br><strong>Renewal Date:</strong> [Date]<br><strong>Next Step:</strong> [Required action]</p>
+<p>Please review the information and respond by [date] if action is required from you.</p>
+<p>Best,<br>[Name / Team]</p>
+
+<h2>Domain renewal reminder email</h2>
+<p><strong>Subject:</strong> Upcoming domain renewal, [Domain Name]</p>
+<p>Hi [Name],</p>
+<p>The domain [domain name] is approaching its renewal date on [date].</p>
+<p>We're tracking the renewal and need [confirmation/review/required action] before the process can continue.</p>
+<p><strong>Domain:</strong> [Domain Name]<br><strong>Renewal Date:</strong> [Date]<br><strong>Action Required:</strong> [Action]</p>
+<p>Please review and let us know how you'd like to proceed.</p>
+<p>Best,<br>[Name / Team]</p>
+<p>AVA can own the Renewal Operations around a supported domain. That does not mean AVA should be represented as a registrar, DNS management system, or autonomous domain purchasing system.</p>
+
+<h2>SSL certificate renewal reminder email</h2>
+<p><strong>Subject:</strong> Upcoming SSL certificate renewal, [Asset/Customer]</p>
+<p>Hi [Name],</p>
+<p>The SSL certificate associated with [asset/customer] is approaching renewal.</p>
+<p><strong>Certificate/Asset:</strong> [Identifier]<br><strong>Renewal Date:</strong> [Date]<br><strong>Next Step:</strong> [Required action]</p>
+<p>Please review the renewal information so the required process can continue before expiration.</p>
+<p>Best,<br>[Name / Team]</p>
+<p>AVA supports SSL certificate renewal operations. Technical certificate deployment, installation, private-key management, or other certificate administration should not be implied unless separately implemented.</p>
+
+<h2>Hosting renewal reminder email</h2>
+<p><strong>Subject:</strong> Upcoming hosting renewal, [Customer/Service]</p>
+<p>Hi [Name],</p>
+<p>The hosting service associated with [customer/service] is approaching renewal on [date].</p>
+<p>We're reviewing the renewal and need [required action] before proceeding.</p>
+<p><strong>Hosting Service:</strong> [Service]<br><strong>Renewal Date:</strong> [Date]<br><strong>Action Required:</strong> [Action]</p>
+<p>Please review and respond by [date] if applicable.</p>
+<p>Best,<br>[Name / Team]</p>
+<p>AVA can manage the Renewal Operations around supported hosting services. She does not become the organization's hosting infrastructure administrator.</p>
+
+<h2>Insurance policy renewal reminder email</h2>
+<p><strong>Subject:</strong> Upcoming policy renewal, [Policy/Company]</p>
+<p>Hi [Name],</p>
+<p>The [policy name/type] associated with [company/customer] is approaching its renewal date on [date].</p>
+<p>The renewal requires review before the next stage can proceed.</p>
+<p><strong>Policy:</strong> [Policy]<br><strong>Renewal Date:</strong> [Date]<br><strong>Next Step:</strong> [Required review/action]</p>
+<p>Please review the renewal information and take the appropriate action.</p>
+<p>Best,<br>[Name / Team]</p>
+<p>AVA can manage the operational renewal workflow around supported insurance policies. She does not act as an insurer, broker, underwriter, or financial decision-maker.</p>
+
+<h2>License renewal reminder email</h2>
+<p><strong>Subject:</strong> License renewal approaching, [License Name]</p>
+<p>Hi [Name],</p>
+<p>The [license name] associated with [company/customer] is approaching renewal or expiration on [date].</p>
+<p><strong>License:</strong> [License]<br><strong>Date:</strong> [Date]<br><strong>Action Required:</strong> [Action]</p>
+<p>Please review the renewal and complete the appropriate next step before the deadline.</p>
+<p>Best,<br>[Name / Team]</p>
+<p>AVA can manage supported license renewal work. Legal, regulatory, or licensing-authority determinations remain outside her Renewal Operations responsibility.</p>
+
+<h2>Internal renewal reminder email</h2>
+<p>Not every renewal communication needs to go to a customer. Sometimes the next action belongs inside the organization.</p>
+<p><strong>Subject:</strong> Renewal action required, [Asset/Service]</p>
+<p>Hi [Name],</p>
+<p>The following renewal requires attention:</p>
+<p><strong>Customer:</strong> [Customer]<br><strong>Asset/Service:</strong> [Asset]<br><strong>Renewal Date:</strong> [Date]<br><strong>Current Status:</strong> [Status]<br><strong>Action Required:</strong> [Action]</p>
+<p>Please review the transaction so the renewal can continue to the next stage.</p>
+<p>Best,<br>[Name / Team]</p>
+<p>This is where structured renewal context becomes especially useful. Instead of forwarding a vague vendor email, the organization can communicate the actual business work requiring attention.</p>
+
+<h2>The best renewal email starts before the writing</h2>
+<p>A good renewal email is not primarily a copywriting problem. It is a context problem. Before preparing communication, the organization should know what renewal this is, which customer it belongs to, what asset is renewing, who is the appropriate contact, and what action appears to be required. That is why Prepare Communication does not happen at the beginning of AVA's lifecycle. It comes after several earlier stages.</p>
+
+<h2>Where renewal communication sits in AVA's lifecycle</h2>
+<p>AVA's lifecycle is: Detect, Understand, Identify Customer, Identify Asset, Identify Contact, Prepare Communication, Human Review, Fulfillment, Record Outcome, Schedule Next Renewal, Archive, Complete. By the time AVA reaches Prepare Communication, the renewal should have more context than a generic prompt saying "write a renewal reminder." The communication belongs to an actual renewal transaction.</p>
+
+<h3>Step 1: Detect the renewal work</h3>
+<p>AVA first needs to know renewal work exists. Version 1 supports renewal detection from Gmail, Asset Watch, and Manual Trigger. Detection creates the beginning of the operational lifecycle. It does not immediately trigger autonomous customer communication.</p>
+
+<h3>Step 2: Understand the renewal</h3>
+<p>AVA uses AI to help understand renewal intent and business context. This matters because renewal information can arrive in different formats and language. The Worker needs to understand what the activity represents before preparing a useful communication.</p>
+
+<h3>Step 3: Identify the customer</h3>
+<p>If the organization manages renewals across multiple customers, AVA needs to establish who the renewal belongs to. That customer context becomes part of the transaction.</p>
+
+<h3>Step 4: Identify the asset</h3>
+<p>AVA establishes what is actually renewing. Version 1 supported assets include domains, SSL certificates, hosting services, SaaS subscriptions, insurance policies, licenses, and maintenance agreements. Knowing the asset helps make the communication specific.</p>
+
+<h3>Step 5: Identify the contact</h3>
+<p>AVA supports contact matching. The appropriate contact context should be established before a personalized message is prepared. This gives us the operating chain: Customer, Asset, Contact, Renewal Transaction. Now AVA has a stronger foundation for communication.</p>
+
+<h3>Step 6: Prepare the communication</h3>
+<p>AVA can generate personalized renewal communications using the context established in the transaction. This is where AI can reduce repetitive writing work. Instead of an employee repeatedly assembling the same basic information, AVA can prepare a draft based on the renewal context. But preparation is not authorization. The next stage matters.</p>
+
+<h3>Step 7: Human Review</h3>
+<p>No customer-facing communication proceeds without approval in AVA Version 1. That boundary is deliberate. AVA prepares. A human reviews. The approved process continues. This means organizations can use AI to reduce repetitive communication work while retaining control over what is actually communicated externally. AVA can prepare the message. Your people control the message.</p>
+
+<h2>Why Human Review matters for renewal emails</h2>
+<p>Renewal communications can touch customer relationships, financial commitments, contracts, vendors, and other consequential business matters. Even when AVA understands the operational context, authority still belongs to people. Human Review provides a defined decision point before customer-facing communication proceeds. That is different from simply asking AI to write and send an email autonomously.</p>
+
+<h2>Sending the email is not renewal success</h2>
+<p>This is one of the most important principles in AVA's operating model. A renewal email can be beautifully written, personalized, reviewed, approved, and sent on time, and the renewal can still fail. Why? Because communication is only one stage. After Human Review comes Fulfillment. Then the outcome must be recorded. The next renewal must be scheduled. Supporting evidence must be archived. The transaction must reach completion. Therefore: drafted email does not equal success, approved email does not equal success, sent email does not equal success, completed renewal equals success.</p>
+
+<h2>From communication to fulfillment</h2>
+<p>Once approved communication proceeds, AVA continues owning the renewal operation. The transaction does not disappear simply because a message was sent. AVA tracks the renewal toward fulfillment. That keeps the organization focused on the underlying obligation rather than the communication activity. The question is not "did we send the reminder?" The question is "did the renewal get completed?"</p>
+
+<h2>From fulfillment to records</h2>
+<p>Once fulfillment occurs, AVA moves into Record Outcome. The organization should preserve what actually happened. That creates renewal history. The Renewal Register is updated. The result becomes organizational memory rather than disappearing into the communication thread.</p>
+
+<h2>From records to the next renewal</h2>
+<p>If the obligation continues, AVA schedules the next renewal cycle. This matters because today's successful renewal may create next year's recurring obligation. A reminder email solves today's communication need. A renewal lifecycle preserves future continuity.</p>
+
+<h2>From the next renewal to evidence and completion</h2>
+<p>AVA then archives supporting evidence. Only after the completion requirements have been satisfied does the renewal reach Complete. This is why AVA should not be understood as an email-writing assistant. Communication is one capability inside a larger business responsibility. AVA is the Renewal Operations Worker.</p>
+
+<h2>Renewal email templates vs Renewal Operations</h2>
+<p>Templates are useful. They save time. They improve consistency. They help employees avoid starting from a blank page. But templates cannot independently determine which renewal needs attention, which customer it belongs to, which asset is involved, who the correct contact is, whether Human Review occurred, whether fulfillment happened, what outcome should be recorded, when the next cycle begins, or whether supporting evidence exists. Templates solve the message. AVA owns the work around the message.</p>
+
+<h2>Personalization should come from renewal context</h2>
+<p>Adding a person's first name is not enough to make a renewal message operationally personalized. Useful personalization can involve context such as the customer, the renewable asset, the renewal transaction, the relevant date, the required next action, and the responsible contact. AVA uses business context to prepare communications appropriate to the renewal. The goal is not personalization for marketing. The goal is clearer operational communication.</p>
+
+<h2>One renewal can create multiple communications</h2>
+<p>A single renewal may require more than one email. There may be an initial reminder, an internal review request, a follow-up, a customer response, additional information, and another follow-up. Those messages should not become separate renewal transactions. AVA maintains the underlying model: one renewal equals one transaction. Multiple communications can belong to the same renewal. This preserves accountability around the business outcome.</p>
+
+<h2>Communication should not become the unit of work</h2>
+<p>Email-centric renewal management can create a subtle problem. Teams start measuring the communication instead of the renewal: email sent, follow-up sent, customer contacted. Those may all be necessary actions. But they are not the business outcome. AVA keeps the renewal transaction as the unit of accountability. Communication supports the transaction. The transaction does not exist merely to generate communication.</p>
+
+<h2>Use templates when you need a message. Use AVA when you need an owner.</h2>
+<p>If you need to send one renewal email, the templates on this page may be enough. If you need to manage recurring renewal obligations across customers, assets, contacts, deadlines, approvals, records, evidence, and future cycles, the problem is larger than email. That is the problem AVA is designed to own. She detects the work, understands it, connects it to the right context, prepares communication, brings it to Human Review, tracks fulfillment, records the outcome, schedules the next renewal, archives the evidence, and closes the transaction when the renewal is actually complete.</p>
+
+<h2>Related Renewal Operations resources</h2>
+<p>Communication is one stage inside a larger responsibility. See the complete operational lifecycle in <a href="{$this->pageUrl('ava', 'renewal-management')}">Renewal Management Software</a>, see the required human decision point in <a href="{$this->pageUrl('ava', 'approval/renewal-approval-workflow')}">Renewal Approval Workflow</a>, or see how each renewal gets connected to the right contact in <a href="{$this->pageUrl('ava', 'ownership/renewal-ownership-responsible-contacts')}">Renewal Ownership &amp; Responsible Contact Tracking</a>.</p>
+HTML;
+    }
+
+    private function page16Faqs(): array
+    {
+        return [
+            ['What should a renewal reminder email include?', "A useful renewal reminder generally identifies what is renewing, the relevant date, the customer or business context where appropriate, and the action required from the recipient. The exact content should reflect the specific renewal transaction."],
+            ['Can AVA write renewal reminder emails?', "Yes. Draft generation and personalized communication are supported AVA capabilities."],
+            ['Can AVA automatically send customer renewal emails?', "AVA Version 1 requires Human Review before customer-facing communication proceeds. The approved scope should therefore not be represented as unrestricted autonomous customer email sending."],
+            ['Does a renewal email need approval?', "For AVA Version 1, customer-facing communication requires Human Review before proceeding."],
+            ['Can AVA personalize renewal emails?', "Yes. AVA can generate personalized communications using the customer, asset, contact, and business context surrounding the renewal."],
+            ['Can AVA write SaaS renewal emails?', "SaaS subscriptions are supported AVA assets, and personalized communication generation is a supported capability."],
+            ['Can AVA prepare domain renewal communications?', "Yes. Domains are supported AVA assets. AVA can prepare communication as part of the Renewal Operations workflow, subject to required Human Review for customer-facing messages."],
+            ['Can AVA prepare SSL certificate renewal communications?', "Yes. SSL Certificates are supported assets. This does not imply AVA performs certificate installation, deployment, or private-key administration."],
+            ['Can AVA prepare maintenance agreement renewal emails?', "Yes. Maintenance Agreements are explicitly supported AVA assets. Contract negotiation and legal approval remain outside AVA's responsibility."],
+            ['Can AVA prepare insurance renewal communications?', "Insurance Policies are supported AVA assets. AVA can support renewal communication within her operational scope, while insurance underwriting, legal, and financial decisions remain with appropriate humans or specialists."],
+            ['Can AVA prepare license renewal reminders?', "Yes. Licenses are supported AVA assets. Legal or regulatory interpretation is not implied by that capability."],
+            ['Does AVA negotiate renewals by email?', "No. Contract negotiation and vendor selection remain outside AVA's responsibility."],
+            ['Is sending a renewal reminder enough to complete a renewal?', "No. AVA defines success around successful completion of the underlying renewal obligation. The transaction continues through fulfillment, records, future scheduling, archive, and completion after communication and Human Review."],
+            ['Why use AVA instead of renewal email templates?', "Templates solve a communication task. AVA owns the broader Renewal Operations lifecycle surrounding the communication. For organizations managing recurring renewal obligations at scale, that distinction creates accountability beyond the email itself."],
         ];
     }
 }
