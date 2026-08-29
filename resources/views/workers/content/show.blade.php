@@ -19,6 +19,18 @@
 .wc-hero h1{font-family:var(--fd);font-size:clamp(28px,4vw,44px);font-weight:800;letter-spacing:-1px;line-height:1.1;color:var(--text);max-width:760px}
 .wc-hero-sub{font-size:16.5px;color:var(--t2);line-height:1.7;max-width:640px;margin-top:16px}
 .wc-cta-row{display:flex;gap:12px;flex-wrap:wrap;margin-top:26px}
+.wc-hero--split{display:flex;align-items:center;gap:clamp(24px,4vw,56px)}
+.wc-hero-text{flex:1;min-width:0}
+.wc-hero-img{flex-shrink:0;width:clamp(180px,24vw,280px)}
+.wc-hero-img img{width:100%;height:auto;max-height:360px;object-fit:cover;border-radius:20px;display:block}
+@media(max-width:680px){.wc-hero--split{flex-wrap:wrap-reverse}.wc-hero-img{width:clamp(160px,52vw,240px);margin:0 auto}}
+
+.wc-body-img{margin:36px auto;text-align:center;max-width:420px}
+.wc-body-img img{width:100%;border-radius:16px;display:block}
+.wc-body-img figcaption{font-size:12.5px;color:var(--t3);margin-top:10px}
+
+.wc-preface-img{max-width:280px;margin:0 auto 44px;text-align:center}
+.wc-preface-img img{width:100%;border-radius:20px;display:block}
 
 .wc-body h2{font-family:var(--fd);font-size:clamp(22px,2.6vw,28px);font-weight:800;letter-spacing:-.5px;color:var(--text);margin:44px 0 14px}
 .wc-body h3{font-size:16px;font-weight:700;color:var(--text);margin:24px 0 8px}
@@ -88,14 +100,21 @@
 @endsection
 
 @section('body')
-<div class="w wc-hero">
-    <div class="eyebrow">{{ $page->page_family }}</div>
-    <h1>{{ $page->h1 }}</h1>
-    <p class="wc-hero-sub">{{ $page->meta_description }}</p>
-    <div class="wc-cta-row">
-        <a href="{{ $page->cta_route ? route($page->cta_route) : route('register') }}" class="btn-g">{{ $page->cta_label ?? "Deploy {$__workerName}" }}</a>
-        <a href="{{ route('public.workers.show', $workerSlug) }}" class="btn-ln">See How {{ $__workerName }} Works</a>
+<div class="w wc-hero{{ $page->hero_image ? ' wc-hero--split' : '' }}">
+    <div class="wc-hero-text">
+        <div class="eyebrow">{{ $page->page_family }}</div>
+        <h1>{{ $page->h1 }}</h1>
+        <p class="wc-hero-sub">{{ $page->meta_description }}</p>
+        <div class="wc-cta-row">
+            <a href="{{ $page->cta_route ? route($page->cta_route) : route('register') }}" class="btn-g">{{ $page->cta_label ?? "Deploy {$__workerName}" }}</a>
+            <a href="{{ route('public.workers.show', $workerSlug) }}" class="btn-ln">See How {{ $__workerName }} Works</a>
+        </div>
     </div>
+    @if($page->hero_image)
+    <div class="wc-hero-img">
+        <img src="{{ asset($page->hero_image) }}" alt="{{ $page->hero_image_alt ?? $__workerName }}" loading="eager">
+    </div>
+    @endif
 </div>
 
 <div class="w wc-body">
@@ -107,6 +126,14 @@
     <p>{{ $page->cta_subtext ?? $page->meta_description }}</p>
     <a href="{{ $page->cta_route ? route($page->cta_route) : route('register') }}" class="btn-g" style="display:inline-flex">{{ $page->cta_label ?? "Deploy {$__workerName}" }}</a>
 </div>
+
+@if($page->faq_image)
+<div class="w">
+    <div class="wc-preface-img">
+        <img src="{{ asset($page->faq_image) }}" alt="{{ $page->faq_image_alt ?? $__workerName }}" loading="lazy">
+    </div>
+</div>
+@endif
 
 @if($faqs->count())
 <div class="w" style="max-width:760px;margin:0 auto;padding-bottom:80px">

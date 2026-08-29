@@ -30,6 +30,10 @@ class AvaWave1ContentSeeder extends Seeder
             ctaRoute: 'register',
             body: $this->page1Body(),
             faqs: $this->page1Faqs(),
+            heroImage: 'images/ava-stand.webp',
+            heroImageAlt: "AVA, UNITELO's AI Renewal Operations Worker",
+            faqImage: 'images/ava-desk.webp',
+            faqImageAlt: 'AVA working at her desk, managing renewal operations',
         );
 
         $this->seedPage(
@@ -49,6 +53,10 @@ class AvaWave1ContentSeeder extends Seeder
             ctaRoute: 'register',
             body: $this->page2Body(),
             faqs: $this->page2Faqs(),
+            heroImage: 'images/ava-selfie.webp',
+            heroImageAlt: "AVA, UNITELO's AI Renewal Worker, ready to track renewals",
+            faqImage: 'images/ava-skyline.webp',
+            faqImageAlt: 'AVA in the UNITELO office',
         );
 
         $this->seedPage(
@@ -68,6 +76,10 @@ class AvaWave1ContentSeeder extends Seeder
             ctaRoute: 'register',
             body: $this->page3Body(),
             faqs: $this->page3Faqs(),
+            heroImage: 'images/ava-life.webp',
+            heroImageAlt: 'AVA working at her desk, managing domain renewals',
+            faqImage: 'images/ava-stand.webp',
+            faqImageAlt: "AVA, UNITELO's AI Renewal Operations Worker",
         );
 
         $this->seedPage(
@@ -87,6 +99,10 @@ class AvaWave1ContentSeeder extends Seeder
             ctaRoute: 'register',
             body: $this->page4Body(),
             faqs: $this->page4Faqs(),
+            heroImage: 'images/ava-desk.webp',
+            heroImageAlt: 'AVA focused at her laptop, managing SSL renewal work',
+            faqImage: 'images/ava-selfie.webp',
+            faqImageAlt: "AVA, UNITELO's AI Renewal Worker",
         );
 
         $this->seedPage(
@@ -106,6 +122,10 @@ class AvaWave1ContentSeeder extends Seeder
             ctaRoute: 'register',
             body: $this->page5Body(),
             faqs: $this->page5Faqs(),
+            heroImage: 'images/ava-skyline.webp',
+            heroImageAlt: 'AVA in the UNITELO boardroom',
+            faqImage: 'images/ava-life.webp',
+            faqImageAlt: 'AVA working at her desk, managing software renewals',
         );
 
         $this->seedPage(
@@ -125,6 +145,10 @@ class AvaWave1ContentSeeder extends Seeder
             ctaRoute: 'register',
             body: $this->page6Body(),
             faqs: $this->page6Faqs(),
+            heroImage: 'images/ava-stand.webp',
+            heroImageAlt: "AVA, UNITELO's AI Renewal Operations Worker",
+            faqImage: 'images/ava-desk.webp',
+            faqImageAlt: 'AVA working at her desk, managing renewal operations',
         );
 
         $this->seedPage(
@@ -144,6 +168,10 @@ class AvaWave1ContentSeeder extends Seeder
             ctaRoute: 'register',
             body: $this->page7Body(),
             faqs: $this->page7Faqs(),
+            heroImage: 'images/ava-selfie.webp',
+            heroImageAlt: "AVA, UNITELO's AI Renewal Worker",
+            faqImage: 'images/ava-skyline.webp',
+            faqImageAlt: 'AVA in the UNITELO office',
         );
 
         $this->seedPage(
@@ -163,6 +191,10 @@ class AvaWave1ContentSeeder extends Seeder
             ctaRoute: 'register',
             body: $this->page8Body(),
             faqs: $this->page8Faqs(),
+            heroImage: 'images/ava-life.webp',
+            heroImageAlt: 'AVA working at her desk, managing client renewals',
+            faqImage: 'images/ava-stand.webp',
+            faqImageAlt: "AVA, UNITELO's AI Renewal Operations Worker",
         );
 
         $this->seedPage(
@@ -182,6 +214,10 @@ class AvaWave1ContentSeeder extends Seeder
             ctaRoute: 'register',
             body: $this->page9Body(),
             faqs: $this->page9Faqs(),
+            heroImage: 'images/ava-desk.webp',
+            heroImageAlt: 'AVA focused at her laptop, managing renewal scheduling',
+            faqImage: 'images/ava-selfie.webp',
+            faqImageAlt: "AVA, UNITELO's AI Renewal Worker",
         );
 
         $this->seedPage(
@@ -201,6 +237,10 @@ class AvaWave1ContentSeeder extends Seeder
             ctaRoute: 'register',
             body: $this->page10Body(),
             faqs: $this->page10Faqs(),
+            heroImage: 'images/ava-skyline.webp',
+            heroImageAlt: 'AVA in the UNITELO boardroom',
+            faqImage: 'images/ava-life.webp',
+            faqImageAlt: 'AVA working at her desk, managing contract renewals',
         );
     }
 
@@ -228,6 +268,10 @@ class AvaWave1ContentSeeder extends Seeder
         string $ctaRoute,
         string $body,
         array $faqs,
+        ?string $heroImage = null,
+        ?string $heroImageAlt = null,
+        ?string $faqImage = null,
+        ?string $faqImageAlt = null,
     ): void {
         $pageId = DB::table('worker_content_pages')->updateOrInsert(
             ['url_path' => $urlPath],
@@ -242,6 +286,10 @@ class AvaWave1ContentSeeder extends Seeder
                 'meta_description'         => $metaDescription,
                 'h1'                       => $h1,
                 'body'                     => $body,
+                'hero_image'               => $heroImage,
+                'hero_image_alt'           => $heroImageAlt,
+                'faq_image'                => $faqImage,
+                'faq_image_alt'            => $faqImageAlt,
                 'cta_label'                => $ctaLabel,
                 'cta_headline'             => $ctaHeadline,
                 'cta_subtext'              => $ctaSubtext,
