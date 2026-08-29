@@ -107,6 +107,25 @@ class AvaWave1ContentSeeder extends Seeder
             body: $this->page5Body(),
             faqs: $this->page5Faqs(),
         );
+
+        $this->seedPage(
+            worker: 'ava',
+            tier: 'Tier 2',
+            pageFamily: 'Industry/Customer',
+            urlPath: 'industries/managed-service-providers',
+            lifecycleStage: 'Identify Customer',
+            primaryQuery: 'renewal management for MSPs',
+            secondaryQueries: ['MSP renewal management software', 'managed service provider renewal tracking'],
+            seoTitle: 'Renewal Management for MSPs | AVA by UNITELO',
+            metaDescription: "AVA gives MSPs an AI Renewal Operations Worker to manage recurring client renewals across domains, SSL, hosting, SaaS, licenses, and maintenance agreements.",
+            h1: "Renewal Management for Managed Service Providers That Doesn't Depend on Who Received the Email",
+            ctaLabel: 'Hire AVA for MSP Renewal Operations',
+            ctaHeadline: 'Give your MSP a dedicated Renewal Operations Worker.',
+            ctaSubtext: "Your customers trust you with recurring technology obligations. Those obligations shouldn't depend on somebody remembering the right date, checking the right spreadsheet, or finding the right email. Give every renewal a transaction. Give every transaction an owner. Keep your people in control of the decisions.",
+            ctaRoute: 'register',
+            body: $this->page6Body(),
+            faqs: $this->page6Faqs(),
+        );
     }
 
     // Named-route helper so internal links survive any future URL change,
@@ -309,7 +328,7 @@ class AvaWave1ContentSeeder extends Seeder
 <p>AVA changes the unit of accountability. One renewal = one transaction. All the emails, reminders, contacts, documents, approvals, records, and actions associated with that renewal belong to the same operational responsibility. The renewal remains open until the work is actually complete.</p>
 
 <h2>Explore AVA's Renewal Operations</h2>
-<p>Detection is where most renewals start. See how AVA turns a renewal alert into an accountable transaction in <a href="{$this->pageUrl('ava', 'detect/renewal-tracking-software')}">Renewal Tracking &amp; Reminder Software</a>, see how she manages one of the most commonly missed recurring obligations in <a href="{$this->pageUrl('ava', 'assets/domains')}">Domain Renewal &amp; Expiration Tracking</a>, or see how the same lifecycle applies to recurring subscriptions in <a href="{$this->pageUrl('ava', 'assets/saas')}">SaaS &amp; Software Renewal Management</a>.</p>
+<p>Detection is where most renewals start. See how AVA turns a renewal alert into an accountable transaction in <a href="{$this->pageUrl('ava', 'detect/renewal-tracking-software')}">Renewal Tracking &amp; Reminder Software</a>, see how she manages one of the most commonly missed recurring obligations in <a href="{$this->pageUrl('ava', 'assets/domains')}">Domain Renewal &amp; Expiration Tracking</a>, see how the same lifecycle applies to recurring subscriptions in <a href="{$this->pageUrl('ava', 'assets/saas')}">SaaS &amp; Software Renewal Management</a>, or see how it scales across an entire customer base in <a href="{$this->pageUrl('ava', 'industries/managed-service-providers')}">Renewal Management for MSPs</a>.</p>
 
 <h2>Stop managing renewals by memory.</h2>
 <p>The goal isn't more automation for its own sake. It's operational consistency.</p>
@@ -455,7 +474,7 @@ HTML;
 <p>Keep supported recurring obligations visible while maintaining records, evidence, and future scheduling.</p>
 
 <h2>Go deeper on Renewal Operations</h2>
-<p>Renewal tracking is the Detect stage of a larger responsibility. See the complete operational lifecycle in <a href="{$this->pageUrl('ava', 'renewal-management')}">Renewal Management Software</a>, see how detection works for one specific renewable asset in <a href="{$this->pageUrl('ava', 'assets/domains')}">Domain Renewal &amp; Expiration Tracking</a>, or see how it applies to recurring subscriptions in <a href="{$this->pageUrl('ava', 'assets/saas')}">SaaS &amp; Software Renewal Management</a>.</p>
+<p>Renewal tracking is the Detect stage of a larger responsibility. See the complete operational lifecycle in <a href="{$this->pageUrl('ava', 'renewal-management')}">Renewal Management Software</a>, see how detection works for one specific renewable asset in <a href="{$this->pageUrl('ava', 'assets/domains')}">Domain Renewal &amp; Expiration Tracking</a>, see how it applies to recurring subscriptions in <a href="{$this->pageUrl('ava', 'assets/saas')}">SaaS &amp; Software Renewal Management</a>, or see how it scales across an entire customer base in <a href="{$this->pageUrl('ava', 'industries/managed-service-providers')}">Renewal Management for MSPs</a>.</p>
 
 <h2>From "expires soon" to "renewal complete"</h2>
 <p>The purpose of renewal tracking isn't to create more notifications. It's to prevent expiration.</p>
@@ -595,7 +614,7 @@ HTML;
 <p>Her responsibility is narrower and clearer: own the operational renewal process.</p>
 
 <h2>Related Renewal Operations resources</h2>
-<p>Domain renewals are one part of a larger responsibility. See the complete operational lifecycle in <a href="{$this->pageUrl('ava', 'renewal-management')}">Renewal Management Software</a>, see how AVA detects renewal work across every supported asset in <a href="{$this->pageUrl('ava', 'detect/renewal-tracking-software')}">Renewal Tracking &amp; Reminder Software</a>, or see how the same lifecycle applies to recurring subscriptions in <a href="{$this->pageUrl('ava', 'assets/saas')}">SaaS &amp; Software Renewal Management</a>.</p>
+<p>Domain renewals are one part of a larger responsibility. See the complete operational lifecycle in <a href="{$this->pageUrl('ava', 'renewal-management')}">Renewal Management Software</a>, see how AVA detects renewal work across every supported asset in <a href="{$this->pageUrl('ava', 'detect/renewal-tracking-software')}">Renewal Tracking &amp; Reminder Software</a>, see how the same lifecycle applies to recurring subscriptions in <a href="{$this->pageUrl('ava', 'assets/saas')}">SaaS &amp; Software Renewal Management</a>, or see how it scales across a customer portfolio in <a href="{$this->pageUrl('ava', 'industries/managed-service-providers')}">Renewal Management for MSPs</a>.</p>
 
 <h2>The real goal isn't tracking expiration dates</h2>
 <p>The goal is keeping important domains active. Expiration monitoring is necessary because AVA needs to know when renewal work requires attention. Reminders are useful because people need visibility. Records matter because the organization needs continuity.</p>
@@ -852,7 +871,7 @@ HTML;
 
 <h2>SaaS renewal management for Managed Service Providers</h2>
 <p>Managed Service Providers can face an additional layer of complexity. The software renewal may not belong directly to the MSP. It may belong to a customer, and different clients can have different software products, renewal dates, contacts, requirements, approvals, and supporting documents.</p>
-<p>AVA's customer identification stage helps connect each renewal to the appropriate client relationship. The asset is identified. The responsible contact is identified. The transaction remains accountable until completion.</p>
+<p>AVA's customer identification stage helps connect each renewal to the appropriate client relationship. The asset is identified. The responsible contact is identified. The transaction remains accountable until completion. See how this applies across an entire customer portfolio in <a href="{$this->pageUrl('ava', 'industries/managed-service-providers')}">Renewal Management for MSPs</a>.</p>
 
 <h2>Software renewals shouldn't depend on the employee who bought the software</h2>
 <p>One of the risks of recurring software is organizational memory. Someone signs up for a product. Their email becomes the account contact. They understand why the software exists and know when it renews. Then responsibilities change: the employee moves teams, or leaves. The subscription remains.</p>
@@ -898,6 +917,145 @@ HTML;
             ['Can AVA manage software renewals for multiple customers?', "AVA is designed for organizations managing recurring customer obligations, and customer identification is a defined stage of her renewal lifecycle."],
             ['What happens after a software renewal is completed?', "AVA updates renewal records and the Renewal Register, archives supporting evidence, schedules the next renewal cycle, and ensures no further operational work remains before the transaction reaches completion."],
             ['How is AVA different from SaaS renewal reminder software?', "Reminder software primarily creates awareness around an upcoming renewal. AVA uses detection as the beginning of a larger operational lifecycle that continues through understanding, customer and asset identification, human review, fulfillment, records, future scheduling, archive, and completion."],
+        ];
+    }
+
+    private function page6Body(): string
+    {
+        return <<<HTML
+<p><strong>Give every client renewal an operational owner.</strong></p>
+<p>Managed Service Providers don't manage one technology environment. They manage many. Every customer can bring another set of recurring obligations: domains, SSL certificates, hosting services, software subscriptions, licenses, and maintenance agreements. Each can have its own renewal date, customer contact, vendor communication, approval process, and operational history.</p>
+<p>As the customer portfolio grows, so does the renewal workload.</p>
+<p>AVA is an AI Worker for Renewal Operations built to help organizations manage recurring operational obligations across customers. She detects renewal work, identifies the customer and asset involved, finds the responsible contact, prepares communications, coordinates human review, tracks fulfillment, records outcomes, archives evidence, and schedules the next renewal cycle.</p>
+<p>Your MSP manages the customer relationship. AVA owns the renewal operation.</p>
+
+<h2>The MSP renewal problem isn't one deadline. It's hundreds of recurring obligations.</h2>
+<p>Imagine an MSP with 50 customers. One customer has several domains. Another has SSL certificates. Another has software subscriptions. Another depends on licenses. Another has a maintenance agreement. Some renewal notices arrive by email. Some obligations are already being monitored. Some are known only by the employees responsible for the account. Now multiply those obligations across the entire customer base.</p>
+<p>The challenge quickly stops being "when does this expire?" It becomes "how do we make sure every recurring customer obligation gets handled by the right people before anything important expires?" That's a Renewal Operations problem.</p>
+
+<h2>Why MSP renewals become fragmented</h2>
+<p>Renewal information can live across technician inboxes, shared mailboxes, account managers, spreadsheets, calendars, vendor portals, accounting software, customer records, and individual employees.</p>
+<p>Different people see different parts of the renewal. An account manager understands the customer. A technician understands the asset. Finance may receive an invoice. Management may provide approval. A vendor sends the renewal notice. Someone still has to connect everything.</p>
+<p>Without clear operational ownership, responsibility becomes fragmented, and fragmented responsibility creates renewal risk.</p>
+
+<h2>What is MSP renewal management?</h2>
+<p>MSP renewal management is the operational process of tracking and coordinating recurring obligations across managed customers so important renewals reach completion before expiration. That may involve identifying the customer, the renewable asset, the renewal deadline, the responsible contact, the renewal requirements, required communication, required human approval, current renewal status, supporting records, the completed outcome, and the next renewal cycle.</p>
+<p>For an MSP, the customer dimension makes this especially important. A renewal isn't simply "SSL certificate expires soon." It is "this SSL certificate for this customer requires renewal, and this is the transaction responsible for making sure the work reaches completion."</p>
+
+<h2>Meet AVA: a Renewal Operations Worker for MSPs</h2>
+<p>AVA is not another inbox rule. She isn't a reminder bot. She isn't a spreadsheet replacement disguised as AI.</p>
+<p>AVA is a Renewal Operations Worker on the UNITELO platform. Her responsibility is to make sure important recurring business obligations don't quietly expire because of manual work, fragmented systems, or human oversight. Managed Service Providers are one of the organization types AVA is designed to support, because recurring customer obligations deserve continuous operational ownership.</p>
+
+<h2>One customer can have many renewable assets</h2>
+<p>AVA Version 1 supports renewal operations involving:</p>
+<ul>
+<li><strong>Domains:</strong> track recurring domain obligations associated with customers before expiration creates operational disruption.</li>
+<li><strong>SSL Certificates:</strong> keep SSL renewal work visible and moving toward completion before certificates quietly expire.</li>
+<li><strong>Hosting Services:</strong> coordinate recurring hosting renewal obligations associated with customer environments.</li>
+<li><strong>SaaS Subscriptions:</strong> track recurring software subscription renewal work without giving AVA purchasing or financial decision authority.</li>
+<li><strong>Licenses:</strong> maintain operational ownership over supported license renewal obligations.</li>
+<li><strong>Maintenance Agreements:</strong> track recurring maintenance agreement renewals through their operational lifecycle.</li>
+<li><strong>Insurance Policies:</strong> included among AVA's supported renewal assets where they form part of the organization's recurring operational obligations.</li>
+</ul>
+<p>Different asset types. One Renewal Operations model.</p>
+
+<h2>One renewal becomes one accountable transaction</h2>
+<p>This is particularly important for MSPs. A single customer renewal may involve multiple emails, invoices, reminders, documents, approvals, and contacts. AVA does not treat those as six unrelated pieces of work. One renewal remains one transaction, and that transaction becomes the unit of accountability.</p>
+<p>This makes it easier to distinguish between activity and completion. Five emails don't mean the renewal is finished. Three reminders don't mean the renewal is finished. An approval doesn't necessarily mean the renewal is finished. The transaction remains accountable until the renewal reaches completion.</p>
+
+<h2>How AVA manages an MSP renewal</h2>
+
+<h3>1. Detect</h3>
+<p>AVA's responsibility starts when renewal work is detected. Version 1 supports Gmail, Asset Watch, and Manual Trigger, giving renewal work multiple supported entry points without changing the underlying responsibility. Once detected, the renewal enters the lifecycle.</p>
+
+<h3>2. Understand</h3>
+<p>Customer renewals don't arrive in a standardized format. Different vendors communicate differently, different customers have different contexts, and different assets have different renewal requirements. AVA uses AI where interpretation is necessary to understand renewal intent, classify the request, identify relevant context, and recommend appropriate next actions.</p>
+
+<h3>3. Identify the customer</h3>
+<p>For an MSP, this is one of the most important stages. AVA determines which customer relationship the renewal belongs to, turning disconnected renewal information into customer-specific operational work. Instead of "we received a renewal notice," the MSP can work from "this renewal belongs to Customer A."</p>
+
+<h3>4. Identify the asset</h3>
+<p>Next, AVA identifies what is being renewed: a domain, an SSL certificate, a hosting service, a SaaS subscription, a license, or a maintenance agreement. Connecting the customer and asset gives the renewal its operational identity: Customer A, Domain A, Renewal Transaction, rather than "email #14,382, somebody should probably look at this."</p>
+
+<h3>5. Identify the responsible contact</h3>
+<p>AVA identifies the responsible contact associated with the renewal. Depending on the transaction, different people may need to participate. The important point is that responsibility doesn't remain ambiguous: the renewal has a customer, an asset, the appropriate contact context, and a transaction responsible for moving the work forward.</p>
+
+<h3>6. Prepare communication</h3>
+<p>When the renewal requires communication, AVA can prepare personalized communications using the context she has identified. This can reduce repetitive coordination work without removing human control. No customer-facing communication proceeds without approval in Version 1.</p>
+
+<h3>7. Coordinate human review</h3>
+<p>Managed Service Providers still control their business decisions. AVA doesn't decide whether a vendor should be retained, whether a customer should approve an expense, whether a price is acceptable, whether a contract should be negotiated, whether payment should be authorized, whether a purchase should occur, or whether a legal decision should be made. Those responsibilities remain with people. AVA coordinates the operational process surrounding them.</p>
+<p><strong>AVA owns the process. Humans own the decisions.</strong></p>
+
+<h3>8. Track fulfillment</h3>
+<p>A customer approves the renewal. Is the transaction finished? Not necessarily. The underlying obligation still has to reach its outcome. AVA tracks renewal progress through fulfillment so the MSP doesn't confuse an approval, email, or reminder with successful completion.</p>
+
+<h3>9. Record the outcome</h3>
+<p>Once the renewal is fulfilled, AVA updates the renewal records and Renewal Register. The transaction now contains organizational history, so when the same obligation returns in the future, the MSP doesn't need to reconstruct the previous cycle from employee memory and old inboxes.</p>
+
+<h3>10. Schedule the next renewal</h3>
+<p>Recurring obligations don't disappear after fulfillment. A renewed domain creates another future domain renewal. A renewed software subscription creates another renewal cycle. A renewed maintenance agreement can create another future obligation. AVA schedules the next renewal cycle so monitoring is re-established, and the current renewal can then move toward completion.</p>
+
+<h3>11. Archive and complete</h3>
+<p>Supporting evidence is archived. Audit history is maintained. Records reflect the outcome. The next renewal has been scheduled. No further operational work remains. Now the transaction is complete. That's AVA's definition of success.</p>
+
+<h2>Manage renewals by customer, not by whoever received the email</h2>
+<p>This is one of the most important operational changes AVA can create for an MSP. Without structured ownership, renewal work can become organized around communication channels: Sarah received this email, Finance received this invoice, James has a calendar reminder, the customer mentioned this to their account manager. That's fragile.</p>
+<p>AVA's lifecycle reorganizes the work around the business obligation: which customer, which asset, which renewal, which contact, what is the status, what needs to happen next, has it reached completion. The renewal belongs to the organization, not to the employee who happened to receive the message.</p>
+
+<h2>Renewal management for growing MSPs</h2>
+<p>Manual renewal tracking can work when an MSP has a small number of customers and obligations. The difficulty increases as the business grows. More customers create more assets. More assets create more renewal dates. More dates create more notices. More notices create more coordination. More coordination creates more opportunities for something to be forgotten.</p>
+<p>Adding customers shouldn't require employees to carry an ever-growing number of renewal obligations in their heads. AVA creates an operational owner for that recurring work.</p>
+
+<h2>Domain renewal management for MSPs</h2>
+<p>Domains are particularly well suited to the MSP renewal model. A customer may have one domain. Another may have ten. Different domains may have different renewal cycles and operational contexts. AVA can support the renewal operation around those domains while connecting each transaction to the correct customer and contact. The objective isn't simply to know the expiration date. It's to make sure the domain renewal reaches completion. See <a href="{$this->pageUrl('ava', 'assets/domains')}">Domain Renewal &amp; Expiration Tracking</a>.</p>
+
+<h2>SSL renewal management for MSPs</h2>
+<p>SSL certificates create another recurring technical obligation. The certificate can be working correctly today while an expiration deadline approaches in the future. AVA supports SSL certificates as renewable assets and keeps the renewal transaction connected to the appropriate customer context, so the expiration event becomes operational work rather than just another alert. See <a href="{$this->pageUrl('ava', 'assets/ssl-certificates')}">SSL Certificate Renewal &amp; Expiration Tracking</a>.</p>
+
+<h2>SaaS and software renewal management for MSPs</h2>
+<p>MSPs may also manage recurring software and license obligations associated with customers. AVA can coordinate the renewal lifecycle around those supported assets while keeping consequential purchasing and financial decisions with humans. That boundary matters: AVA manages Renewal Operations. She doesn't become the MSP's autonomous procurement department. See <a href="{$this->pageUrl('ava', 'assets/saas')}">SaaS &amp; Software Renewal Management</a>.</p>
+
+<h2>Replace fragmented renewal responsibility, not your team</h2>
+<p>AVA isn't designed to replace technicians. She doesn't replace account managers. She doesn't replace Finance. She doesn't replace executives. And she doesn't remove human approval.</p>
+<p>Her job is narrower: remove the repetitive, time-sensitive responsibility of making sure renewal work doesn't disappear between all those people. Your technicians can remain technicians. Your account managers can manage customers. Your leaders can make business decisions. AVA keeps Renewal Operations moving.</p>
+
+<h2>What AVA does not own for an MSP</h2>
+<p>AVA intentionally does not own financial approval, vendor selection, contract negotiation, payment authorization, legal decisions, executive approval, CRM ownership, or accounting ownership.</p>
+<p>Version 1 also excludes automatic payment execution, autonomous purchasing, cross-worker collaboration, ERP orchestration, and multi-department workflow orchestration.</p>
+<p>These boundaries matter. AVA should be hired for a clear business responsibility rather than slowly expanding into every activity surrounding the customer. That responsibility is Renewal Operations.</p>
+
+<h2>Stop measuring renewal management by reminders sent</h2>
+<p>For an MSP, success isn't "we sent the customer three reminders." It isn't "the expiration date was in our spreadsheet." It isn't "the account manager received the email."</p>
+<p>AVA measures success by the business outcome. A renewal reaches completion when the obligation has been successfully renewed, organizational records accurately reflect the outcome, supporting evidence has been archived, the Renewal Register has been updated, the next renewal cycle has been scheduled, and no further operational work remains.</p>
+<p>A generated email isn't success. A sent email isn't success. A completed renewal is success.</p>
+
+<h2>Related Renewal Operations resources</h2>
+<p>MSP renewal management builds on the same lifecycle used across every AVA page. See the complete operational lifecycle in <a href="{$this->pageUrl('ava', 'renewal-management')}">Renewal Management Software</a>, or see how AVA detects renewal work across every supported asset in <a href="{$this->pageUrl('ava', 'detect/renewal-tracking-software')}">Renewal Tracking &amp; Reminder Software</a>.</p>
+
+<h2>Recurring customer obligations deserve a dedicated owner</h2>
+<p>Your customers trust you with recurring technology obligations. Those obligations shouldn't depend on somebody remembering the right date, checking the right spreadsheet, or finding the right email.</p>
+<p>Give every renewal a transaction. Give every transaction an owner. Keep your people in control of the decisions.</p>
+HTML;
+    }
+
+    private function page6Faqs(): array
+    {
+        return [
+            ['What is MSP renewal management?', "MSP renewal management is the operational process of tracking and coordinating recurring obligations across managed customers so important renewals can reach completion before expiration."],
+            ['What types of renewals can AVA manage for an MSP?', "AVA Version 1 supports domains, SSL certificates, hosting services, SaaS subscriptions, insurance policies, licenses, and maintenance agreements."],
+            ['Can AVA manage renewals across multiple customers?', "AVA is specifically designed for organizations managing recurring customer renewals, and Identify Customer is a defined stage of her renewal lifecycle."],
+            ['Can AVA track customer domains?', "Domains are explicitly supported Version 1 renewable assets. AVA's responsibility is the Renewal Operations surrounding the domain rather than acting as a domain registrar."],
+            ['Can AVA manage SSL certificate renewals?', "Yes. SSL certificates are explicitly supported Version 1 renewable assets."],
+            ['Can AVA manage customer software renewals?', "SaaS subscriptions and licenses are supported assets. AVA can coordinate the operational renewal lifecycle while humans retain purchasing, financial, vendor, and contractual decision authority."],
+            ['Can AVA manage hosting renewals?', "Yes. Hosting services are explicitly included among AVA's supported Version 1 renewal assets."],
+            ['Does AVA automatically charge customers or pay vendors?', "No. Automatic payment execution, financial authorization, payment authorization, and autonomous purchasing are outside AVA's Version 1 scope."],
+            ['Does AVA send renewal communications directly to MSP customers?', "AVA can prepare personalized communications, but human review is required and no customer-facing communication proceeds without approval in Version 1."],
+            ['Does AVA replace our PSA or CRM?', "AVA's approved responsibility does not include CRM ownership, and her business contract does not establish PSA replacement as a capability. AVA should be positioned as a Renewal Operations Worker rather than as a general replacement for an MSP's operational software stack."],
+            ['Does AVA negotiate vendor or customer contracts?', "No. Contract negotiation is explicitly outside AVA's responsibility."],
+            ['How does AVA know which customer a renewal belongs to?', "Customer identification is one of AVA's defined lifecycle stages and supported capabilities. The precise technical matching methods should be described according to the implemented product rather than assumed beyond AVA's approved specification."],
+            ['What happens after a customer renewal is completed?', "AVA's definition of done requires records to reflect the outcome, supporting evidence to be archived, the Renewal Register to be updated, the next renewal cycle to be scheduled, and no further operational work to remain."],
+            ['Why would an MSP use AVA instead of renewal reminders?', "Renewal reminders create awareness. AVA is designed to provide continuous operational ownership from detection through customer and asset identification, human review, fulfillment, records, future scheduling, archive, and completion."],
         ];
     }
 }
